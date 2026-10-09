@@ -1,0 +1,95 @@
+# OccurrenceCleaner — Claude Code context
+
+## What it is
+
+An R package that flags errors in species occurrence records (GBIF and similar) at any scale,
+from a data frame of a few thousand records to a whole GBIF snapshot of billions. It runs the
+record tests of CoordinateCleaner (Zizka et al. 2019, doi:10.1111/2041-210X.13152) with the same
+definitions and default buffers, computed as nearest-neighbour queries in C++ instead of
+per-record polygon buffers, and streams records from disk so memory does not bound the input.
+
+It grows past CoordinateCleaner by adding tests of its own (duplicate definitions, stated
+coordinate uncertainty, record year, GBIF issue flags, habitat-aware sea test). Those are marked
+as additions and never change what a CoordinateCleaner-equivalent test returns.
+
+`START.md` is the build list to version 0.1.0. Read it first while it exists; delete it once
+every item is done.
+
+## Principles
+
+- **Flag, never drop.** Every test writes one bit per record; nothing is removed and no
+  threshold is baked in. A cleaning rule is a query over the flags, chosen afterwards. Year and
+  coordinate uncertainty stay raw columns and are cut at analysis time.
+- **Equivalence is the trust argument.** Each CoordinateCleaner-equivalent test has a test in
+  `tests/testthat/` that runs CoordinateCleaner itself on sampled records and requires identical
+  flags (`skip_if_not_installed("CoordinateCleaner")`). A disagreement is a bug unless it is a
+  documented, deliberate difference listed in the test file and in the help page of that test.
+- **One front door.** One flagging verb whose input can be a data frame or an on-disk table
+  (vectra node / Parquet directory); the return follows the input. Tests are chosen by an
+  argument, not by separate `flag_*()` functions. A second verb tallies flags into loss tables.
+  Never export CoordinateCleaner's `cc_*` names: that would mask its functions on attach.
+- **Reference data is pinned and versioned.** Every gazetteer the package uses carries its
+  source, version and retrieval date, and the flag output records which reference version
+  produced it.
+
+## Licence and dependencies
+
+- **MIT.** CoordinateCleaner is GPL-3, so nothing from it (code or its bundled data) is copied
+  into this package. It is in **Suggests** only: used by the equivalence tests and by an
+  explicit `reference = "CoordinateCleaner"` choice that reads its tables from the user's own
+  installation at run time. It also pulls 66 packages recursively, which is the second reason it
+  is not in Imports.
+- **Own reference data** is built in `data-raw/` from the original public sources that
+  CoordinateCleaner itself draws on: Natural Earth (public domain) for land, countries,
+  admin-1 units, populated places/capitals and urban areas; the institution gazetteer from
+  sources whose terms allow redistribution (open item in `START.md`).
+- **Planned Imports**, each added only when code that calls it lands: `vectra` (CRAN, the
+  user's own C11 columnar engine; `tbl_parquet()` and `collect_chunked()` for streaming) and
+  `Rcpp` (the nearest-neighbour core). Check the recursive footprint before adding anything
+  else.
+
+## Prior implementation to port
+
+The algorithm already ran over 2,460,201,588 GBIF records in the mountain-area-garcia project:
+
+- `C:/GillesC/Documents/TaskGoblin/colabs/mountain-area-garcia/occurrences/clean/clean_tag.py`
+  (Python, numpy + scipy cKDTree): one `uint16` per record, proximity tests as nearest-neighbour
+  queries on the unit sphere (chord distance), gazetteers exported from CoordinateCleaner 3.0.1
+  by `export_gazetteers.R` in the same folder, radii asserted from `gazetteers/cc_defaults.csv`.
+- `verify_clean.py` (same folder) checks a tagged stream against its tally.
+- `dev_notes/cleaning_rule_decision.md` in that repo is the worked example of choosing a rule
+  over the flags (nine rules from `raw` to `strict`).
+
+Differences to fix in the port, not to carry over: the sea test there used that project's
+own land mask, not Natural Earth land; there is no duplicate test; it was never checked record
+by record against CoordinateCleaner.
+
+## Consumer
+
+The ali-filters collaboration (Ali Omar, same working group): a data paper on what the
+standard filters remove across taxonomic groups, record age and coordinate precision, run over
+the GBIF snapshot of 2026-10-01 at `E:/research/raw/occurrences/gbif_snapshot/2026-10-01/`.
+Project notes: `C:/GillesC/Documents/TaskGoblin/colabs/ali-filters/`. Version 0.1.0 is what
+gets shared with Ali.
+
+## Build and test
+
+Windows R at `C:/Program Files/R/R-4.6.1/bin/Rscript.exe`. Write multi-line R to a `.run*.R`
+file (ignored by git and the build) rather than `Rscript -e`.
+
+```r
+devtools::document()
+devtools::test()
+devtools::check(args = "--no-manual")
+```
+
+After any C++ change: `Rcpp::compileAttributes()` then `devtools::document()`. After a
+header-only change, delete `src/*.o` and `src/*.so`/`*.dll` before building, or nothing
+recompiles.
+
+## Conventions
+
+- Branch `main`, commit directly.
+- Roxygen and Rd text ASCII only.
+- CI workflows trigger on `push`, `pull_request` and `workflow_dispatch`; no `schedule:`.
+- README follows the house skeleton (gitRPak / readme-aura skills).
