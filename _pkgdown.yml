@@ -1,13 +1,39 @@
 url: https://gillescolling.com/OccurrenceCleaner/
-
 template:
   bootstrap: 5
-
+  bootswatch: sandstone
+  light-switch: yes
+  includes:
+    in_header: |
+      <script>
+      (function () {
+        var D = String.fromCharCode(36);
+        window.MathJax = {
+          tex: {
+            inlineMath: [[D, D], ["\\(", "\\)"]],
+            displayMath: [[D + D, D + D], ["\\[", "\\]"]]
+          },
+          chtml: { linebreaks: { automatic: true, width: "90% container" } },
+          svg: { linebreaks: { automatic: true, width: "90% container" } },
+          options: { renderActions: { addMenu: [] } }
+        };
+      })();
+      </script>
 figures:
-  dev: svglite
+  dev: svglite::svglite
   fig.ext: svg
-  bg: "#F5F6F8"
-
+  bg: '#F5F6F8'
+navbar:
+  structure:
+    left:
+    - intro
+    - reference
+    - articles
+    - news
+    right:
+    - search
+    - github
+    - lightswitch
 reference:
 - title: Flagging
   contents:
@@ -29,10 +55,7 @@ reference:
   - reference_info
   - download_reference
 - title: Package
-  contents:
-  - OccurrenceCleaner-package
-
+  contents: OccurrenceCleaner-package
 articles:
 - title: Articles
-  contents:
-  - quickstart
+  contents: quickstart
