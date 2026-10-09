@@ -62,13 +62,18 @@ check_rules <- function(rules, tests) {
   lapply(rules, check_tests)
 }
 
+# Bin labels in break order, lowest first.
+bin_labels <- function(breaks) {
+  breaks <- sort(unique(breaks))
+  c(paste0("<", breaks[1]),
+    if (length(breaks) > 1) paste0(breaks[-length(breaks)], "-", breaks[-1]),
+    paste0(">=", breaks[length(breaks)]))
+}
+
 bin_column <- function(v, breaks) {
   v <- suppressWarnings(as.numeric(v))
-  breaks <- sort(unique(breaks))
-  labels <- c(paste0("<", breaks[1]),
-              if (length(breaks) > 1) paste0(breaks[-length(breaks)], "-", breaks[-1]),
-              paste0(">=", breaks[length(breaks)]))
-  out <- labels[findInterval(v, breaks) + 1L]
+  labels <- bin_labels(breaks)
+  out <- labels[findInterval(v, sort(unique(breaks))) + 1L]
   out[is.na(v)] <- "missing"
   out
 }
@@ -130,7 +135,16 @@ finish_tally <- function(t, by, bins, rules) {
   for (r in names(rules)) t[[paste0("kept_", r)]] <- t$n - t[[paste0("removed_", r)]]
   key_cols <- c(by[by %in% names(t)], paste0(names(bins), "_bin"))
   key_cols <- intersect(key_cols, names(t))
-  if (length(key_cols)) t <- t[do.call(order, t[key_cols]), , drop = FALSE]
+  if (length(key_cols)) {
+    # Groups sort by value with "missing" last; bins sort in break order.
+    sort_keys <- lapply(key_cols, function(k) {
+      v <- t[[k]]
+      bin <- sub("_bin$", "", k)
+      if (k != bin && bin %in% names(bins)) return(list(match(v, c(bin_labels(bins[[bin]]), "missing"))))
+      list(v == "missing", v)
+    })
+    t <- t[do.call(order, unlist(sort_keys, recursive = FALSE)), , drop = FALSE]
+  }
   rownames(t) <- NULL
   attr(t, "occ_rules") <- rules
   t
