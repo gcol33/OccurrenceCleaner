@@ -1,0 +1,24 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "OccurrenceCleaner: Fast Quality Flags for Species Occurrence Records at Any Scale",
+  author   = person("Gilles", "Colling"),
+  year     = "2026",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/gcol33/OccurrenceCleaner"
+)
+
+bibentry(
+  bibtype = "Article",
+  title   = "CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases",
+  author  = c(person("Alexander", "Zizka"), person("Daniele", "Silvestro"), person("Tobias", "Andermann"),
+              person("Josue", "Azevedo"), person("Camila", "Duarte Ritter"), person("Daniel", "Edler"),
+              person("Harith", "Farooq"), person("Andrei", "Herdean"), person("Maria", "Ariza"),
+              person("Ruud", "Scharn"), person("Sten", "Svantesson"), person("Niklas", "Wengstrom"),
+              person("Vera", "Zizka"), person("Alexandre", "Antonelli")),
+  journal = "Methods in Ecology and Evolution",
+  year    = "2019",
+  volume  = "10",
+  pages   = "744--751",
+  doi     = "10.1111/2041-210X.13152",
+  header  = "The tests and default buffers follow CoordinateCleaner; please cite it too:"
+)

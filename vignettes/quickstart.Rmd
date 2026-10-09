@@ -1,0 +1,103 @@
+---
+title: "Quick start"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+OccurrenceCleaner flags errors in species occurrence records and keeps every record. Each test sets one bit in an integer flag word, so deciding which records to drop is a query over the flags, made after the pass and changed without rerunning it.
+
+```{r setup}
+library(OccurrenceCleaner)
+```
+
+## Flag a data frame
+
+The input needs longitude, latitude and a species column under their Darwin Core names (`decimalLongitude`, `decimalLatitude`, `species`; matching is case-insensitive, and `occ_columns()` renames them).
+
+```{r}
+x <- data.frame(
+  species = c("Quercus robur", "Quercus robur", "Quercus robur", "Fagus sylvatica", "Fagus sylvatica"),
+  decimalLongitude = c(12.58, 0, 16.37, 16.37, -30),
+  decimalLatitude = c(55.67, 0, 48.21, 48.21, 40),
+  countryCode = c("DK", NA, "AT", "AT", "FR")
+)
+f <- flag_occurrences(x, tests = c("val", "zero", "cap", "gbif", "sea", "coun", "dupl"))
+f[, c("species", "flags", "flag_zero", "flag_cap", "flag_gbif", "flag_sea", "flag_coun", "flag_dupl")]
+```
+
+The first record is within 1 km of the GBIF headquarters in Copenhagen, hence also within 10 km of a capital. The second is a zero coordinate at sea with no country code. The third and fourth are the same species at the same place in Vienna, so the fourth is a duplicate; both are in a capital. The fifth is in the Atlantic with a French country code.
+
+## The tests
+
+```{r}
+flag_tests()[, c("bit", "test", "definition", "equivalent")]
+```
+
+The first eleven tests reproduce CoordinateCleaner's record tests with its default buffers; the rest read GBIF's `issue`, `basisOfRecord` and `establishmentMeans` fields. `default_tests()` names the tests that need only coordinates and a species.
+
+## Rules are queries over the flags
+
+A rule is a set of tests. `has_flag()` marks the records any of them flags:
+
+```{r}
+strict <- c("zero", "cap", "gbif", "sea", "dupl")
+mild <- c("zero", "sea")
+data.frame(species = f$species, strict = has_flag(f$flags, strict), mild = has_flag(f$flags, mild))
+```
+
+`tally_flags()` counts, per group, how many records each test flags and how many each rule removes:
+
+```{r}
+tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
+```
+
+Numeric columns such as the record year or the stated coordinate uncertainty stay raw and are cut at tally time:
+
+```{r}
+f$year <- c(1890, 1950, 1999, 2015, NA)
+tally_flags(f, bins = list(year = c(1950, 2000)), rules = list(strict = strict))
+```
+
+## Buffers, reference data and scale
+
+The buffers default to CoordinateCleaner's (10 km capitals, 1 km centroids, 100 m institutions, 1 km GBIF headquarters, 0.5 degrees around the origin) and can be changed per test:
+
+```{r}
+flag_occurrences(x[3, ], tests = "cap", buffers = list(cap = 1000))$flag_cap
+```
+
+The gazetteers are rebuilt from Natural Earth and GBIF's registry of scientific collections, each pinned to a version and checksum:
+
+```{r}
+reference_info()[, c("layer", "source", "version", "retrieved")]
+```
+
+`reference = "CoordinateCleaner"` uses that package's own tables instead, which reproduces its flags record by record (CoordinateCleaner must be installed). The land layer for the `sea` test comes at Natural Earth scale 110 (CoordinateCleaner's default), 50, or 10; the 1:10m layer is downloaded once on first use.
+
+## A table on disk
+
+The same verb streams an on-disk table through vectra: a directory of Parquet parts such as a GBIF snapshot, a `.vtr` file, or a delimited file. Each input file is one unit of work; the flags are written as `.vtr` parts next to the columns kept for grouping, and a rerun skips finished units.
+
+```{r}
+src <- tempfile("records"); dir.create(src)
+set.seed(1)
+big <- data.frame(gbifID = as.character(1:5000), kingdom = sample(c("Animalia", "Plantae"), 5000, TRUE),
+                  year = sample(1900:2020, 5000, TRUE), species = sample(letters, 5000, TRUE),
+                  decimalLongitude = runif(5000, -180, 180), decimalLatitude = runif(5000, -60, 70))
+vectra::write_vtr(big[1:2500, ], file.path(src, "part-1.vtr"))
+vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
+
+out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
+out
+tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
+            rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
+```
+
+For a GBIF snapshot, point `flag_occurrences()` at the `occurrence.parquet` directory and pass the taxon, year and uncertainty columns through `keep`. `flagged_table()` opens the output as a vectra table for anything the tally does not cover.

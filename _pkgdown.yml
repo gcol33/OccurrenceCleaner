@@ -1,0 +1,38 @@
+url: https://gillescolling.com/OccurrenceCleaner/
+
+template:
+  bootstrap: 5
+
+figures:
+  dev: svglite
+  fig.ext: svg
+  bg: "#F5F6F8"
+
+reference:
+- title: Flagging
+  contents:
+  - flag_occurrences
+  - default_tests
+  - occ_columns
+- title: Rules and tallies
+  contents:
+  - tally_flags
+  - flag_mask
+  - has_flag
+  - flag_tests
+- title: On-disk output
+  contents:
+  - read_flagged
+  - flagged_table
+- title: Reference data
+  contents:
+  - reference_info
+  - download_reference
+- title: Package
+  contents:
+  - OccurrenceCleaner-package
+
+articles:
+- title: Articles
+  contents:
+  - quickstart

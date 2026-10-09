@@ -12,8 +12,9 @@ It grows past CoordinateCleaner by adding tests of its own (duplicate definition
 coordinate uncertainty, record year, GBIF issue flags, habitat-aware sea test). Those are marked
 as additions and never change what a CoordinateCleaner-equivalent test returns.
 
-`START.md` is the build list to version 0.1.0. Read it first while it exists; delete it once
-every item is done.
+Version 0.1.0 is built (2026-10-09). `dev_notes/` holds the equivalence findings against
+CoordinateCleaner, the reference-data comparison and the benchmark table; read them before
+changing a test or a gazetteer.
 
 ## Principles
 
@@ -42,11 +43,11 @@ every item is done.
 - **Own reference data** is built in `data-raw/` from the original public sources that
   CoordinateCleaner itself draws on: Natural Earth (public domain) for land, countries,
   admin-1 units, populated places/capitals and urban areas; the institution gazetteer from
-  sources whose terms allow redistribution (open item in `START.md`).
-- **Planned Imports**, each added only when code that calls it lands: `vectra` (CRAN, the
-  user's own C11 columnar engine; `tbl_parquet()` and `collect_chunked()` for streaming) and
-  `Rcpp` (the nearest-neighbour core). Check the recursive footprint before adding anything
-  else.
+  GBIF's GRSciColl bulk export (licence not yet confirmed, see `dev_notes/reference_data.md`).
+- **Imports**: `vectra (>= 0.13.0)` (CRAN, the user's own C11 columnar engine;
+  `tbl_parquet()` and `collect_chunked()` for streaming, `write_vtr()` for the flag parts) and
+  `Rcpp` (kd-tree, geodesic and point-in-polygon core). Check the recursive footprint before
+  adding anything else.
 
 ## Prior implementation to port
 

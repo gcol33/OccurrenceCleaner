@@ -8,3 +8,6 @@
 src/*.o
 src/*.so
 src/*.dll
+data-raw/cache/
+.run*
+.bench.log

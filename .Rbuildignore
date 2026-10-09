@@ -21,3 +21,6 @@
 ^\.lintr$
 .*\.tar\.gz$
 .*\.Rcheck$
+^\.run.*$
+^\.bench\.log$
+^bench$
