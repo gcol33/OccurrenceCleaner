@@ -8,6 +8,10 @@ coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+Version 0.1.0 is the first release, installed from GitHub; the
+[changelog](https://gillescolling.com/OccurrenceCleaner/news/index.html)
+lists what it contains.
+
 OccurrenceCleaner is an extension of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 (Zizka et al. 2019) tailored to large-scale occurrence data. It flags

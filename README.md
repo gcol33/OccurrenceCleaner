@@ -6,6 +6,8 @@
 [![Codecov test coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https://app.codecov.io/gh/gcol33/OccurrenceCleaner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+Version 0.1.0 is the first release, installed from GitHub; the [changelog](https://gillescolling.com/OccurrenceCleaner/news/index.html) lists what it contains.
+
 OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea, in the wrong country or outside the species range; duplicates; records far from the rest of their species; and datasets whose coordinates were converted from degrees and minutes or published on a grid.
 
 It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.
