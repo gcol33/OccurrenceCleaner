@@ -51,6 +51,12 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Places the package in the workflow by naming its inputs and the one neighbouring task it leaves out.
 - leaves: a GBIF download, a snapshot or any Darwin Core table works; names are cleaned elsewhere
 
+### readme.neighbours  [A3]
+- idea: upstream sources, name matching, downstream uses
+- job: Names the packages records come from (rgbif, paleobioDB), the one that matches names first (taxize) and where the kept records go (dismo, sdm, PyRate via `export_pyrate()`).
+- leaves: where the package sits between data sources and analyses
+- note: overlaps readme.input, which already names rgbif as a source and name cleaning as out of scope (`restated-arc`); candidate to merge into one paragraph
+
 ### readme.equivalence  [A1]
 - idea: reimplemented; same flags, tested
 - job: Says the tests are reimplemented with CoordinateCleaner's definitions and defaults, that CoordinateCleaner is needed only to compare, and that the test suite checks both return the same flags, pointing to the deliberate differences.
