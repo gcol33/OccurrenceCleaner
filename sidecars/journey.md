@@ -1,0 +1,228 @@
+# Journey: OccurrenceCleaner
+
+Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries are matched by order and first words. Entries for tests, rules, on-disk, gbif-workflow and reference-data are pending: those vignettes were being written in another session on 2026-10-10 and are not mapped until they settle.
+
+## DESCRIPTION
+
+### desc.claim  [A1 A2]
+- idea: extension of CC for scale
+- job: Names the package as an extension of CoordinateCleaner for large-scale occurrence data.
+- leaves: the parent package and the reason this one exists
+
+### desc.tests  [A1]
+- idea: the record tests, same buffers
+- job: Lists the problems the tests catch and says they use CoordinateCleaner's tests and default buffers.
+- leaves: what is flagged and that the definitions are CoordinateCleaner's
+
+### desc.gbif  [A4]
+- idea: GBIF fields
+- job: Adds the tests that read GBIF's own quality fields.
+- leaves: issue warnings, basis of record and establishment means are tests too
+
+### desc.flags  [A3]
+- idea: flagged and kept
+- job: States that records are kept and the filter is chosen afterwards.
+- leaves: the package never removes a record
+
+### desc.scale  [A2]
+- idea: seconds; billions by chunks
+- job: Gives the scale: millions in seconds in memory, snapshots by streaming Parquet.
+- leaves: both ends of the size range are covered
+- warning: format: the line "afterwards which flags to filter on. Data frames of a few million records are flagged in" is over 80 characters (R Packages 2e); rewrap
+
+## README
+
+### readme.claim  [A1 A2 A4]
+- idea: extension of CC · what is flagged · GBIF fields
+- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists what it flags, coordinates and GBIF fields.
+- leaves: the parent, the purpose and the list of problems
+- warning: crowded: three ideas in one paragraph (relation, coordinate tests, the three GBIF fields); the GBIF fields could be their own sentence group or move to the test table, which lists them again
+
+### readme.flags  [A3]
+- idea: flagged and kept
+- job: States that records are kept and the filter is chosen afterwards.
+- leaves: the package never removes a record
+
+### readme.equivalence  [A1 A2]
+- idea: same flags · scale numbers
+- job: Says the test suite checks both packages return the same flags, then gives the scale.
+- leaves: equivalence is tested, and how large an input is practical
+- warning: crowded: A1 (equivalence) and A2 (scale) share one paragraph with no link between them
+
+### readme.example  [A3]  (code)
+- idea: smallest call
+- job: Shows the smallest call on three records.
+- leaves: the call and its input shape
+
+### readme.example-result  [A1 A3]
+- idea: what each record trips
+- job: Explains the returned columns and why each of the three records is flagged.
+- leaves: the `flags` and `flag_<test>` columns, and that one record can trip several tests
+
+### readme.rules  [A3]  (section)
+- idea: several rules, one pass
+- job: Shows a rule as a set of tests and compares two rules on the same flags.
+- leaves: `has_flag()`, `tally_flags()`, and that year and uncertainty are binned at tally time
+
+### readme.snapshot  [A2]  (section)
+- idea: streaming a snapshot
+- job: Shows the same verb on a GBIF Parquet snapshot, with resumable units.
+- leaves: the on-disk call, `keep`, `out`, and that a rerun resumes
+
+### readme.box  (list)
+- idea: exported functions
+- job: Lists each exported function by what it does.
+- leaves: the verb map
+- warning: undefined: "flag word", "bit mask" and "loss table" are used here and defined nowhere in the README
+
+### readme.tests  [A1 A4]  (table)
+- idea: tests, definitions, sources
+- job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
+- leaves: the test names and their origin
+
+### readme.method  [A1 A5]
+- idea: how tests are computed · gazetteers
+- job: Says how proximity and polygon tests are computed, where the gazetteers come from, and where the differences are documented.
+- leaves: the method in one paragraph and the pointer to the documented differences
+- warning: crowded: computation method and reference data in one paragraph
+
+### readme.install  (section)
+### readme.docs  (section)
+- warning: routing: only Quick Start and Reference are listed; the six articles, including "Coming from CoordinateCleaner", are not routed from the README
+
+### readme.support  (section)
+### readme.license  (section)
+### readme.citation  (section)
+
+## ?OccurrenceCleaner
+
+### pkg.overview  [A1 A3]
+- idea: flags, rule afterwards, CC buffers, verb map
+- job: Says what the package does inside R and points to the three main functions.
+- leaves: the verb map
+- warning: relation-drift: "The tests and their default buffers follow CoordinateCleaner" instead of the relation phrase
+## Quick start
+
+### qs.opener  [A3]
+- idea: flag, keep, query
+- job: States that records are kept and the drop decision is a query over the flags.
+- leaves: the flag word and the idea of choosing afterwards
+- warning: relation-missing: the Get Started opener does not mention CoordinateCleaner, which the overview of every entry point carries
+
+### qs.input
+- idea: required columns
+- job: Names the columns the input needs.
+- leaves: Darwin Core names, case-insensitive, `occ_columns()`
+
+### qs.flag  (code)
+### qs.flag-result  [A1]
+- idea: why each record is flagged
+- job: Explains each of the five records' flags.
+- leaves: one record can trip several tests; coastline effects on `country_mismatch`
+
+### qs.tests  [A1 A4]  (table)
+### qs.tests-note  [A1 A4]
+- idea: eleven CC tests, then GBIF fields
+- job: Says which tests come from CoordinateCleaner and which read GBIF fields.
+- leaves: the split between equivalent tests and additions
+- warning: overreach: "reproduce CoordinateCleaner's record tests" without "up to the documented differences"; ?flag_occurrences and the comparison article both qualify it
+
+### qs.rules  [A3]  (section)
+- idea: rules as queries; tally
+- job: Defines a rule and compares two with `has_flag()` and `tally_flags()`.
+- leaves: a rule, the tally columns
+
+### qs.bins  [A3]
+- idea: raw columns cut at tally time
+- job: Shows year binned at tally time.
+- leaves: `bins`
+
+### qs.buffers  [A1]
+- idea: CC default buffers; override
+- job: States the default buffers and shows changing one.
+- leaves: `buffers = list(capital = 500)`
+
+### qs.reference  [A5]
+- idea: pinned gazetteers; CC tables; land scale
+- job: Shows where the gazetteers come from and the alternative.
+- leaves: `reference_info()`, `reference = "CoordinateCleaner"`, `land_scale`
+- warning: overreach: "which reproduces its flags" without "up to the documented differences"
+- warning: relation: "scale 110 (CoordinateCleaner's default)" is `cc_sea()`'s default; `clean_coordinates()` defaults to `seas_scale = 50`
+
+### qs.disk  [A2]  (section)
+- idea: stream a table
+- job: Streams a two-part table and tallies it.
+- leaves: `out`, `keep`, resumable units
+
+### qs.snapshot-pointer  [A2]
+- idea: for a snapshot
+- job: Says how to point the same call at a GBIF snapshot.
+- leaves: the snapshot path and `flagged_table()`
+
+## Coming from CoordinateCleaner
+
+### cc.opener  [A1]
+- idea: same tests, flags; what this article covers
+- job: States the relation and lists what the article covers.
+- leaves: the article's scope; CoordinateCleaner is only suggested
+
+### cc.mapping  [A1]  (table)
+- idea: function to test map
+- job: Maps each CoordinateCleaner function and argument to its counterpart here.
+- leaves: the name map
+- warning: relation-gap: `clean_coordinates()`'s plural test names ("capitals", "centroids", "seas", "zeros", "institutions", "duplicates") and their singular counterparts are not in the table; the side-by-side code shows them only implicitly
+
+### cc.no-cc-names  [A1]
+- idea: one verb, no cc_* names
+- job: Explains that tests are chosen by name and no `cc_*` function is masked.
+- leaves: both packages can be attached together
+
+### cc.pipe  [A1 A3]  (section)
+- idea: filter-as-you-go vs flag and subset
+- job: Shows a dropping `cc_*()` pipe and the same cleaning as one flag call and one subset.
+- leaves: the rule can be changed without flagging again
+
+### cc.clean-coordinates  [A1]
+- idea: clean_coordinates is closer; TRUE means opposite
+- job: Names `clean_coordinates()` as the closer equivalent and warns that its TRUE means pass.
+- leaves: the sign convention differs
+
+### cc.both  [A1]  (code)
+### cc.agreement  [A1]  (table)
+### cc.agreement-note  [A1]
+- idea: where they differ and that it is tested
+- job: Names the two tests that differ in the example and says the suite enforces the documented differences.
+- leaves: the reader expects the next section
+
+### cc.buffer-circles  [A1]
+### cc.zero-buffer  [A1]
+### cc.country-codes  [A1]
+### cc.invalid  [A1]
+### cc.streamed-duplicates  [A1 A2]
+### cc.gazetteers  [A1 A5]
+
+### cc.speed  [A2]  (section)
+- idea: kd-tree vs polygons; timings
+- job: Explains why proximity tests are faster and gives timings with machine and versions.
+- leaves: the speed ratio per test and the benchmark script
+- warning: placement: the README routes nowhere to this table, though it is the only source of the README's "few million records in seconds"
+
+### cc.no-counterpart  [A1]  (section)
+- idea: what stays in CoordinateCleaner
+- job: Lists the CoordinateCleaner functions with no counterpart and why `cc_outl()` is not a record test.
+- leaves: when to keep using CoordinateCleaner
+
+## tests
+TODO: pending (being written 2026-10-10).
+
+## rules
+TODO: pending.
+
+## on-disk
+TODO: pending.
+
+## gbif-workflow
+TODO: pending.
+
+## reference-data
+TODO: pending.

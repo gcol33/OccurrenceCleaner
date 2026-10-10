@@ -15,6 +15,7 @@
 ^\.run.*\.R$
 ^data-raw$
 ^dev_notes$
+^sidecars$
 ^bench$
 ^cran-comments\.md$
 ^codecov\.yml$
