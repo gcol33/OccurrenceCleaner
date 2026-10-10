@@ -17,8 +17,8 @@ flag_occurrences(
   reference = c("natural_earth", "CoordinateCleaner"),
   land_scale = 110,
   buffers = NULL,
-  dupl_by = NULL,
-  dupl_cell = NULL,
+  duplicate_by = NULL,
+  duplicate_cell = NULL,
   out = NULL,
   keep = NULL,
   part_rows = 2e+06,
@@ -60,16 +60,16 @@ flag_occurrences(
 
 - buffers:
 
-  Named list overriding buffer distances in metres for `cap`, `cen`,
-  `inst`, `gbif`, or in degrees for `zero`. Unnamed entries keep the
-  defaults.
+  Named list overriding buffer distances in metres for `capital`,
+  `centroid`, `institution`, `gbif_headquarters`, or in degrees for
+  `zero`. Unnamed entries keep the defaults.
 
-- dupl_by:
+- duplicate_by:
 
   Additional column names a duplicate must share (as CoordinateCleaner's
   `additions`), for example an event date.
 
-- dupl_cell:
+- duplicate_cell:
 
   Cell size in degrees. When given, coordinates are binned to this grid
   before comparing duplicates, so "same cell and species" counts.
@@ -104,9 +104,14 @@ flag_occurrences(
 ## Value
 
 For a data frame: `x` with an integer column `flags` and one logical
-column `flag_<test>` per test, and attributes `occ_tests`,
-`occ_layout_version` and `occ_reference`. For streamed input: an object
-of class `occ_flagged` describing the output directory, which
+column `flag_<test>` per test, class `occ_flags` added in front, and
+attributes `occ_tests`, `occ_layout_version`, `occ_reference` and
+`occ_columns`.
+[summary()](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
+reports the share of records each test flags,
+[plot()](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+draws it or maps the records. For streamed input: an object of class
+`occ_flagged` describing the output directory, which
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 accepts; the parts are `.vtr` files holding the `id` and `keep` columns
 and `flags`, readable with
@@ -129,16 +134,18 @@ see Value.
 See
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
 for the layout. Tests equivalent to CoordinateCleaner use its default
-buffers: `cap` 10 km, `cen` 1 km, `inst` 100 m, `gbif` 1 km, `zero` 0.5
-degrees. Proximity tests are closed balls in WGS84 geodesic distance.
-Records failing `val` are given no spatial flag.
+buffers: `capital` 10 km, `centroid` 1 km, `institution` 100 m,
+`gbif_headquarters` 1 km, `zero` 0.5 degrees. Proximity tests are closed
+balls in WGS84 geodesic distance. Records failing `invalid` are given no
+spatial flag.
 
 Documented differences to CoordinateCleaner 3.0.1, each verified in the
 package tests:
 
 - CoordinateCleaner approximates each buffer circle by an inscribed
-  polygon (72 vertices for `cap`, `cen`, `gbif`; 40 for `inst`), so a
-  record between 99.9 % (`cap`, `cen`, `gbif`) or 99.7 % (`inst`) of the
+  polygon (72 vertices for `capital`, `centroid`, `gbif_headquarters`;
+  40 for `institution`), so a record between 99.9 % (`capital`,
+  `centroid`, `gbif_headquarters`) or 99.7 % (`institution`) of the
   buffer and the buffer itself is flagged here and may not be there.
   Everything CoordinateCleaner flags is flagged here.
 
@@ -146,13 +153,13 @@ package tests:
   so CoordinateCleaner 3.0.1 flags only exact zeros; this package
   applies the documented 0.5 degree radius.
 
-- `coun` compares the record's code with both the alpha-2 and alpha-3
-  codes of the Natural Earth country polygon the point falls in;
-  CoordinateCleaner compares alpha-3 only. Records without a code, or at
-  sea, are flagged as in CoordinateCleaner.
+- `country_mismatch` compares the record's code with both the alpha-2
+  and alpha-3 codes of the Natural Earth country polygon the point falls
+  in; CoordinateCleaner compares alpha-3 only. Records without a code,
+  or at sea, are flagged as in CoordinateCleaner.
 
-- `dupl` on streamed input is evaluated within each input file (Parquet
-  part), not across the whole table.
+- `duplicate` on streamed input is evaluated within each input file
+  (Parquet part), not across the whole table.
 
 - With the default reference the gazetteers are rebuilt from the
   original sources; `reference = "CoordinateCleaner"` uses that
@@ -164,6 +171,6 @@ package tests:
 x <- data.frame(species = c("a", "a", "b", "c"),
                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-f[, c("species", "flags", "flag_zero", "flag_gbif", "flag_cap")]
+f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+f[, c("species", "flags", "flag_zero", "flag_gbif_headquarters", "flag_capital")]
 ```

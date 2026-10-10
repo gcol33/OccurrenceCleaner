@@ -14,8 +14,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height
 `flag_occurrences()` writes one flag per record and test and removes nothing. A cleaning rule is a set of tests: a record is dropped when it carries any of them. This article flags a set of records once, measures what share each test and each candidate rule would remove, overall and by group, and then applies the chosen rule. All of the comparisons below reuse the flags from that single pass.
 
 1. **Flag** the records once with every test of interest, `flag_occurrences()`.
+
 2. **Measure** the share each test and rule removes, `summary()` and `plot()`.
+
 3. **Break it down** by taxon, record age and coordinate precision, `tally_flags()` with `by` and `bins`.
+
 4. **Apply** the chosen rule, `has_flag()`.
 
 ## Example
@@ -186,7 +189,9 @@ The removed records keep their flags, and a different rule only needs a differen
 All counts come from the integer flag word. For a rule with tests $T$ and the bit mask $m_T$ of those tests (`flag_mask(T)`), a record with flag word $w$ is
 
 * flagged by test $t$ when bit $t$ of $w$ is set,
+
 * removed by the rule when $w \mathbin{\&} m_T \neq 0$,
+
 * removed by $t$ alone when $w \mathbin{\&} m_T = m_t$.
 
-`tally_flags()` counts these per group in one pass over the flags, which is also how it runs on on-disk output part by part (see the article on flagging a GBIF snapshot). The percentages in `summary()` divide each count by the number of records in its group.
+`tally_flags()` counts these per group in one pass over the flags, which is also how it runs on on-disk output part by part (see [Large tables on disk](on-disk.html)). The percentages in `summary()` divide each count by the number of records in its group.

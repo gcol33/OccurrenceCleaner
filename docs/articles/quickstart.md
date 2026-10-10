@@ -26,25 +26,27 @@ x <- data.frame(
   decimalLatitude = c(55.67, 0, 48.21, 48.21, 40),
   countryCode = c("DK", NA, "AT", "AT", "FR")
 )
-f <- flag_occurrences(x, tests = c("val", "zero", "cap", "gbif", "sea", "coun", "dupl"))
-knitr::kable(f[, c("species", "flags", "flag_zero", "flag_cap", "flag_gbif", "flag_sea", "flag_coun", "flag_dupl")])
+f <- flag_occurrences(x, tests = c("invalid", "zero", "capital", "gbif_headquarters", "sea",
+                                  "country_mismatch", "duplicate"))
+knitr::kable(f[, c("species", "flags", "flag_zero", "flag_capital", "flag_gbif_headquarters",
+                   "flag_sea", "flag_country_mismatch", "flag_duplicate")])
 ```
 
-| species         | flags | flag_zero | flag_cap | flag_gbif | flag_sea | flag_coun | flag_dupl |
-|:----------------|------:|:----------|:---------|:----------|:---------|:----------|:----------|
-| Quercus robur   |   584 | FALSE     | TRUE     | TRUE      | FALSE    | TRUE      | FALSE     |
-| Quercus robur   |   642 | TRUE      | FALSE    | FALSE     | TRUE     | TRUE      | FALSE     |
-| Fagus sylvatica |     8 | FALSE     | TRUE     | FALSE     | FALSE    | FALSE     | FALSE     |
-| Fagus sylvatica |  1032 | FALSE     | TRUE     | FALSE     | FALSE    | FALSE     | TRUE      |
-| Pinus nigra     |   640 | FALSE     | FALSE    | FALSE     | TRUE     | TRUE      | FALSE     |
+| species | flags | flag_zero | flag_capital | flag_gbif_headquarters | flag_sea | flag_country_mismatch | flag_duplicate |
+|:---|---:|:---|:---|:---|:---|:---|:---|
+| Quercus robur | 584 | FALSE | TRUE | TRUE | FALSE | TRUE | FALSE |
+| Quercus robur | 642 | TRUE | FALSE | FALSE | TRUE | TRUE | FALSE |
+| Fagus sylvatica | 8 | FALSE | TRUE | FALSE | FALSE | FALSE | FALSE |
+| Fagus sylvatica | 1032 | FALSE | TRUE | FALSE | FALSE | FALSE | TRUE |
+| Pinus nigra | 640 | FALSE | FALSE | FALSE | TRUE | TRUE | FALSE |
 
 The first record is within 1 km of the GBIF headquarters in Copenhagen,
-hence also within 10 km of a capital; it also fails `coun`, because that
-point lies just off the 1:50m Natural Earth coastline of Denmark. The
-second is a zero coordinate at sea with no country code. The third and
-fourth are the same species at the same place in Vienna, so the fourth
-is a duplicate; both are in a capital. The fifth is in the Atlantic with
-a French country code.
+hence also within 10 km of a capital; it also fails `country_mismatch`,
+because that point lies just off the 1:50m Natural Earth coastline of
+Denmark. The second is a zero coordinate at sea with no country code.
+The third and fourth are the same species at the same place in Vienna,
+so the fourth is a duplicate; both are in a capital. The fifth is in the
+Atlantic with a French country code.
 
 ## The tests
 
@@ -55,25 +57,25 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 
 | bit | test | definition | equivalent |
 |---:|:---|:---|:---|
-| 0 | val | coordinate missing, not numeric or outside \[-180, 180\] x \[-90, 90\] | cc_val |
+| 0 | invalid | coordinate missing, not numeric or outside \[-180, 180\] x \[-90, 90\] | cc_val |
 | 1 | zero | longitude or latitude exactly zero, or within 0.5 degrees of (0, 0) | cc_zero |
-| 2 | equ | absolute longitude equal to absolute latitude | cc_equ |
-| 3 | cap | within 10 km of a country capital | cc_cap |
-| 4 | cen | within 1 km of a country or province centroid | cc_cen |
-| 5 | inst | within 100 m of a biodiversity institution | cc_inst |
-| 6 | gbif | within 1 km of the GBIF headquarters (12.58 E, 55.67 N) | cc_gbif |
+| 2 | equal | absolute longitude equal to absolute latitude | cc_equ |
+| 3 | capital | within 10 km of a country capital | cc_cap |
+| 4 | centroid | within 1 km of a country or province centroid | cc_cen |
+| 5 | institution | within 100 m of a biodiversity institution | cc_inst |
+| 6 | gbif_headquarters | within 1 km of the GBIF headquarters (12.58 E, 55.67 N) | cc_gbif |
 | 7 | sea | outside the land polygons | cc_sea |
-| 8 | urb | inside an urban-area polygon | cc_urb |
-| 9 | coun | coordinates fall outside the country given by the record’s country code | cc_coun |
-| 10 | dupl | same coordinates and species as an earlier record | cc_dupl |
-| 11 | issue_geo | a GBIF georeferencing issue is present | NA |
-| 12 | issue_tax | GBIF matched the taxon fuzzily or to a higher rank | NA |
+| 8 | urban | inside an urban-area polygon | cc_urb |
+| 9 | country_mismatch | coordinates fall outside the country given by the record’s country code | cc_coun |
+| 10 | duplicate | same coordinates and species as an earlier record | cc_dupl |
+| 11 | issue_coordinate | a GBIF georeferencing issue is present | NA |
+| 12 | issue_taxon | GBIF matched the taxon fuzzily or to a higher rank | NA |
 | 13 | issue_date | GBIF found the recorded date invalid or unlikely | NA |
-| 14 | rounded | GBIF rounded the coordinates (COORDINATE_ROUNDED) | NA |
-| 15 | fossil | basis of record is a fossil specimen | NA |
-| 16 | living | basis of record is a living specimen | NA |
-| 17 | introduced | establishment means is introduced, naturalised or invasive | NA |
-| 18 | managed | establishment means is managed or cultivated | NA |
+| 14 | issue_rounded | GBIF rounded the coordinates (COORDINATE_ROUNDED) | NA |
+| 15 | basis_fossil | basis of record is a fossil specimen | NA |
+| 16 | basis_living | basis of record is a living specimen | NA |
+| 17 | establishment_introduced | establishment means is introduced, naturalised or invasive | NA |
+| 18 | establishment_managed | establishment means is managed or cultivated | NA |
 
 The first eleven tests reproduce CoordinateCleaner’s record tests with
 its default buffers; the rest read GBIF’s `issue`, `basisOfRecord` and
@@ -89,7 +91,7 @@ marks the records any of them flags:
 
 ``` r
 
-strict <- c("zero", "cap", "gbif", "sea", "dupl")
+strict <- c("zero", "capital", "gbif_headquarters", "sea", "duplicate")
 mild <- c("zero", "sea")
 knitr::kable(data.frame(species = f$species, strict = has_flag(f$flags, strict), mild = has_flag(f$flags, mild)))
 ```
@@ -110,11 +112,11 @@ shown here:
 ``` r
 
 t <- tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
-knitr::kable(t[, c("species", "n", "flagged_cap", "flagged_sea", "flagged_dupl",
+knitr::kable(t[, c("species", "n", "flagged_capital", "flagged_sea", "flagged_duplicate",
                    "removed_strict", "removed_mild")])
 ```
 
-| species | n | flagged_cap | flagged_sea | flagged_dupl | removed_strict | removed_mild |
+| species | n | flagged_capital | flagged_sea | flagged_duplicate | removed_strict | removed_mild |
 |:---|---:|---:|---:|---:|---:|---:|
 | Fagus sylvatica | 2 | 2 | 0 | 1 | 2 | 0 |
 | Pinus nigra | 1 | 0 | 1 | 0 | 1 | 1 |
@@ -145,9 +147,9 @@ around the origin) and can be changed per test:
 
 ``` r
 
-flag_occurrences(x[3, ], tests = "cap")$flag_cap
+flag_occurrences(x[3, ], tests = "capital")$flag_capital
 #> [1] TRUE
-flag_occurrences(x[3, ], tests = "cap", buffers = list(cap = 500))$flag_cap
+flag_occurrences(x[3, ], tests = "capital", buffers = list(capital = 500))$flag_capital
 #> [1] FALSE
 ```
 
@@ -198,24 +200,25 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpWYzopv\flags1c6901261f5e
-#>   tests:     val, zero, equ, cap, cen, inst, gbif, sea, dupl
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp4qyzX7\flags16e202cf8515d
+#>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v1
 #>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
-                 rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
-knitr::kable(t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_cap", "removed_cc", "kept_cc")])
+                 rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",
+                                     "gbif_headquarters", "sea")))
+knitr::kable(t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital", "removed_cc", "kept_cc")])
 ```
 
-| kingdom  | year_bin  |    n | flagged_sea | flagged_cap | removed_cc | kept_cc |
-|:---------|:----------|-----:|------------:|------------:|-----------:|--------:|
-| Animalia | \<1950    | 1011 |         723 |           0 |        723 |     288 |
-| Animalia | 1950-2000 | 1024 |         715 |           0 |        715 |     309 |
-| Animalia | \>=2000   |  414 |         279 |           0 |        279 |     135 |
-| Plantae  | \<1950    | 1087 |         753 |           0 |        753 |     334 |
-| Plantae  | 1950-2000 | 1004 |         709 |           0 |        709 |     295 |
-| Plantae  | \>=2000   |  460 |         333 |           0 |        333 |     127 |
+| kingdom  | year_bin  |    n | flagged_sea | flagged_capital | removed_cc | kept_cc |
+|:---------|:----------|-----:|------------:|----------------:|-----------:|--------:|
+| Animalia | \<1950    | 1011 |         723 |               0 |        723 |     288 |
+| Animalia | 1950-2000 | 1024 |         715 |               0 |        715 |     309 |
+| Animalia | \>=2000   |  414 |         279 |               0 |        279 |     135 |
+| Plantae  | \<1950    | 1087 |         753 |               0 |        753 |     334 |
+| Plantae  | 1950-2000 | 1004 |         709 |               0 |        709 |     295 |
+| Plantae  | \>=2000   |  460 |         333 |               0 |        333 |     127 |
 
 For a GBIF snapshot, point
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)

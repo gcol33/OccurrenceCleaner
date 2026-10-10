@@ -35,7 +35,20 @@ summarised with tally_flags()."><script>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
+    <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
+    <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
+    <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -75,8 +88,8 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 <span>  reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"natural_earth"</span>, <span class="st">"CoordinateCleaner"</span><span class="op">)</span>,</span>
 <span>  land_scale <span class="op">=</span> <span class="fl">110</span>,</span>
 <span>  buffers <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  dupl_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  dupl_cell <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  duplicate_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  duplicate_cell <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  out <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  keep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  part_rows <span class="op">=</span> <span class="fl">2e+06</span>,</span>
@@ -115,19 +128,20 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 
 
 <dt id="arg-buffers">buffers<a class="anchor" aria-label="anchor" href="#arg-buffers"></a></dt>
-<dd><p>Named list overriding buffer distances in metres for <code>cap</code>,
-<code>cen</code>, <code>inst</code>, <code>gbif</code>, or in degrees for <code>zero</code>. Unnamed entries keep the
-defaults.</p></dd>
+<dd><p>Named list overriding buffer distances in metres for
+<code>capital</code>, <code>centroid</code>, <code>institution</code>, <code>gbif_headquarters</code>, or in degrees
+for <code>zero</code>. Unnamed entries keep the defaults.</p></dd>
 
 
-<dt id="arg-dupl-by">dupl_by<a class="anchor" aria-label="anchor" href="#arg-dupl-by"></a></dt>
+<dt id="arg-duplicate-by">duplicate_by<a class="anchor" aria-label="anchor" href="#arg-duplicate-by"></a></dt>
 <dd><p>Additional column names a duplicate must share (as
 CoordinateCleaner's <code>additions</code>), for example an event date.</p></dd>
 
 
-<dt id="arg-dupl-cell">dupl_cell<a class="anchor" aria-label="anchor" href="#arg-dupl-cell"></a></dt>
-<dd><p>Cell size in degrees. When given, coordinates are binned to
-this grid before comparing duplicates, so "same cell and species" counts.</p></dd>
+<dt id="arg-duplicate-cell">duplicate_cell<a class="anchor" aria-label="anchor" href="#arg-duplicate-cell"></a></dt>
+<dd><p>Cell size in degrees. When given, coordinates are
+binned to this grid before comparing duplicates, so "same cell and
+species" counts.</p></dd>
 
 
 <dt id="arg-out">out<a class="anchor" aria-label="anchor" href="#arg-out"></a></dt>
@@ -158,8 +172,10 @@ end of each input unit.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>For a data frame: <code>x</code> with an integer column <code>flags</code> and one logical
-column <code>flag_&lt;test&gt;</code> per test, and attributes <code>occ_tests</code>,
-<code>occ_layout_version</code> and <code>occ_reference</code>. For streamed input: an object of
+column <code>flag_&lt;test&gt;</code> per test, class <code>occ_flags</code> added in front, and
+attributes <code>occ_tests</code>, <code>occ_layout_version</code>, <code>occ_reference</code> and
+<code>occ_columns</code>. <a href="summary.occ_flags.html">summary()</a> reports the share of records
+each test flags, <a href="plot.occ_summary.html">plot()</a> draws it or maps the records. For streamed input: an object of
 class <code>occ_flagged</code> describing the output directory, which <code><a href="tally_flags.html">tally_flags()</a></code>
 accepts; the parts are <code>.vtr</code> files holding the <code>id</code> and <code>keep</code> columns and
 <code>flags</code>, readable with <code><a href="https://gillescolling.com/vectra/reference/tbl.html" class="external-link">vectra::tbl()</a></code>.</p>
@@ -178,23 +194,25 @@ input, see Value.</p>
 
 
 <p>See <code><a href="flag_tests.html">flag_tests()</a></code> for the layout. Tests equivalent to CoordinateCleaner use
-its default buffers: <code>cap</code> 10 km, <code>cen</code> 1 km, <code>inst</code> 100 m, <code>gbif</code> 1 km,
-<code>zero</code> 0.5 degrees. Proximity tests are closed balls in WGS84 geodesic
-distance. Records failing <code>val</code> are given no spatial flag.</p>
+its default buffers: <code>capital</code> 10 km, <code>centroid</code> 1 km, <code>institution</code> 100 m,
+<code>gbif_headquarters</code> 1 km, <code>zero</code> 0.5 degrees. Proximity tests are closed
+balls in WGS84 geodesic distance. Records failing <code>invalid</code> are given no
+spatial flag.</p>
 <p>Documented differences to CoordinateCleaner 3.0.1, each verified in the
 package tests:</p><ul><li><p>CoordinateCleaner approximates each buffer circle by an inscribed polygon
-(72 vertices for <code>cap</code>, <code>cen</code>, <code>gbif</code>; 40 for <code>inst</code>), so a record between
-99.9 % (<code>cap</code>, <code>cen</code>, <code>gbif</code>) or 99.7 % (<code>inst</code>) of the buffer and the
+(72 vertices for <code>capital</code>, <code>centroid</code>, <code>gbif_headquarters</code>; 40 for
+<code>institution</code>), so a record between 99.9 % (<code>capital</code>, <code>centroid</code>,
+<code>gbif_headquarters</code>) or 99.7 % (<code>institution</code>) of the buffer and the
 buffer itself is flagged here and may not be there. Everything
 CoordinateCleaner flags is flagged here.</p></li>
 <li><p><code>cc_zero</code>'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.</p></li>
-<li><p><code>coun</code> compares the record's code with both the alpha-2 and alpha-3 codes
-of the Natural Earth country polygon the point falls in; CoordinateCleaner
-compares alpha-3 only. Records without a code, or at sea, are flagged as in
+<li><p><code>country_mismatch</code> compares the record's code with both the alpha-2 and
+alpha-3 codes of the Natural Earth country polygon the point falls in;
+CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
 CoordinateCleaner.</p></li>
-<li><p><code>dupl</code> on streamed input is evaluated within each input file (Parquet
+<li><p><code>duplicate</code> on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.</p></li>
 <li><p>With the default reference the gazetteers are rebuilt from the original
 sources; <code>reference = "CoordinateCleaner"</code> uses that package's own tables.</p></li>
@@ -205,8 +223,8 @@ sources; <code>reference = "CoordinateCleaner"</code> uses that package's own ta
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span>, <span class="fl">2.35</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span>, <span class="fl">48.85</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu">flag_occurrences</span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"val"</span>, <span class="st">"zero"</span>, <span class="st">"gbif"</span>, <span class="st">"cap"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">f</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"flags"</span>, <span class="st">"flag_zero"</span>, <span class="st">"flag_gbif"</span>, <span class="st">"flag_cap"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu">flag_occurrences</span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"flags"</span>, <span class="st">"flag_zero"</span>, <span class="st">"flag_gbif_headquarters"</span>, <span class="st">"flag_capital"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

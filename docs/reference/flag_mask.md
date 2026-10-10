@@ -33,6 +33,6 @@ length of `flags`; `NA` flags give `NA`.
 ## Examples
 
 ``` r
-flag_mask(c("cap", "cen"))
-has_flag(c(0L, 8L, 16L, 24L), c("cap", "cen"))
+flag_mask(c("capital", "centroid"))
+has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
 ```

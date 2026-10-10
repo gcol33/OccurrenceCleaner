@@ -47,7 +47,22 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
+    <li><a class="dropdown-item" href="articles/quickstart.html">Quick start</a></li>
+    <li><a class="dropdown-item" href="articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="articles/rules.html">Choosing a cleaning rule</a></li>
+    <li><a class="dropdown-item" href="articles/on-disk.html">Large tables on disk</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
+    <li><a class="dropdown-item" href="articles/tests.html">The tests in detail</a></li>
+    <li><a class="dropdown-item" href="articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -91,14 +106,14 @@
 </h2>
 <p>A rule is a set of tests. <code><a href="reference/flag_mask.html">has_flag()</a></code> marks the records a rule removes, and <code><a href="reference/tally_flags.html">tally_flags()</a></code> compares several rules on the same flags:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"val"</span>, <span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"cap"</span>, <span class="st">"cen"</span>, <span class="st">"inst"</span>, <span class="st">"gbif"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>,</span>
+<span>                                  <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"cap"</span>, <span class="st">"cen"</span>, <span class="st">"inst"</span>, <span class="st">"gbif"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">mild</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"gbif"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
+<span><span class="va">mild</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"gbif_headquarters"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>,</span>
-<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"cap"</span>, <span class="st">"cen"</span>, <span class="st">"inst"</span>, <span class="st">"gbif"</span>, <span class="st">"sea"</span><span class="op">)</span>,</span>
-<span>                         mild <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"gbif"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">strict</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="reference/tally_flags.html">tally_flags()</a></code> gives, per group, the number of records each test flags and the number each rule removes and keeps. Year and coordinate uncertainty stay raw columns and are cut at tally time with <code>bins</code>.</p>
 </div>
 <div class="section level2">
@@ -107,14 +122,16 @@
 <p>The same verb streams an on-disk table through <a href="https://cran.r-project.org/package=vectra" class="external-link">vectra</a>: a directory of Parquet parts (a GBIF snapshot), a <code>.vtr</code> file, a delimited file or any <code>vectra_node</code>. Each input file is one resumable unit, and the flags are written as <code>.vtr</code> parts next to the columns you keep for grouping:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
-<span>                      tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"coun"</span>, <span class="st">"rounded"</span>, <span class="st">"fossil"</span><span class="op">)</span>,</span>
+<span>                      tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"country_mismatch"</span>, <span class="st">"issue_rounded"</span>,</span>
+<span>                                <span class="st">"basis_fossil"</span><span class="op">)</span>,</span>
 <span>                      out <span class="op">=</span> <span class="st">"flags"</span>,</span>
 <span>                      keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>,</span>
 <span>            bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2000</span><span class="op">)</span>,</span>
 <span>                        coordinateuncertaintyinmeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equ"</span>, <span class="st">"cap"</span>, <span class="st">"cen"</span>, <span class="st">"inst"</span>, <span class="st">"gbif"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>                                <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Rerunning the same call after an interruption skips the input files already finished.</p>
 </div>
 <div class="section level2">
@@ -125,6 +142,8 @@
 <strong><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code></strong>: the one flagging verb. Data frame in, data frame out; path or <code>vectra_node</code> in, flag parts on disk out.</li>
 <li>
 <strong><code><a href="reference/tally_flags.html">tally_flags()</a></code></strong>: flags to a loss table by any grouping columns, with bins and named rules.</li>
+<li>
+<strong><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code></strong>, <strong><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code></strong>: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.</li>
 <li>
 <strong><code><a href="reference/flag_mask.html">has_flag()</a></code></strong>, <strong><code><a href="reference/flag_mask.html">flag_mask()</a></code></strong>: a rule as a bit mask over the flag word.</li>
 <li>
@@ -155,7 +174,7 @@
 </tr></thead>
 <tbody>
 <tr>
-<td><code>val</code></td>
+<td><code>invalid</code></td>
 <td>coordinate missing or out of range</td>
 <td><code>cc_val</code></td>
 </tr>
@@ -165,27 +184,27 @@
 <td><code>cc_zero</code></td>
 </tr>
 <tr>
-<td><code>equ</code></td>
+<td><code>equal</code></td>
 <td>absolute longitude equals absolute latitude</td>
 <td><code>cc_equ</code></td>
 </tr>
 <tr>
-<td><code>cap</code></td>
+<td><code>capital</code></td>
 <td>within 10 km of a capital</td>
 <td><code>cc_cap</code></td>
 </tr>
 <tr>
-<td><code>cen</code></td>
+<td><code>centroid</code></td>
 <td>within 1 km of a country or province centroid</td>
 <td><code>cc_cen</code></td>
 </tr>
 <tr>
-<td><code>inst</code></td>
+<td><code>institution</code></td>
 <td>within 100 m of a biodiversity institution</td>
 <td><code>cc_inst</code></td>
 </tr>
 <tr>
-<td><code>gbif</code></td>
+<td><code>gbif_headquarters</code></td>
 <td>within 1 km of the GBIF headquarters</td>
 <td><code>cc_gbif</code></td>
 </tr>
@@ -195,37 +214,37 @@
 <td><code>cc_sea</code></td>
 </tr>
 <tr>
-<td><code>urb</code></td>
+<td><code>urban</code></td>
 <td>inside an urban area</td>
 <td><code>cc_urb</code></td>
 </tr>
 <tr>
-<td><code>coun</code></td>
+<td><code>country_mismatch</code></td>
 <td>outside the country given by the record’s country code</td>
 <td><code>cc_coun</code></td>
 </tr>
 <tr>
-<td><code>dupl</code></td>
+<td><code>duplicate</code></td>
 <td>same coordinates and species as an earlier record</td>
 <td><code>cc_dupl</code></td>
 </tr>
 <tr>
 <td>
-<code>issue_geo</code>, <code>issue_tax</code>, <code>issue_date</code>, <code>rounded</code>
+<code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>
 </td>
 <td>GBIF quality warnings (<code>issue</code> field) on coordinates, taxon match, date, rounding</td>
 <td>addition</td>
 </tr>
 <tr>
 <td>
-<code>fossil</code>, <code>living</code>
+<code>basis_fossil</code>, <code>basis_living</code>
 </td>
 <td>basis of record</td>
 <td>addition</td>
 </tr>
 <tr>
 <td>
-<code>introduced</code>, <code>managed</code>
+<code>establishment_introduced</code>, <code>establishment_managed</code>
 </td>
 <td>establishment means</td>
 <td>addition</td>
@@ -247,6 +266,12 @@
 </h2>
 <ul>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html">Quick Start</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/tests.html">The tests in detail</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/reference/">Full Reference</a></li>
 </ul>
 </div>

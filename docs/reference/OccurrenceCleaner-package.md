@@ -22,6 +22,8 @@ databases. Methods in Ecology and Evolution 10:744-751.
 
 Useful links:
 
+- <https://gillescolling.com/OccurrenceCleaner/>
+
 - <https://github.com/gcol33/OccurrenceCleaner>
 
 - Report bugs at <https://github.com/gcol33/OccurrenceCleaner/issues>

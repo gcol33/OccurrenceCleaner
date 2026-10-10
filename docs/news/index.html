@@ -29,7 +29,20 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
+    <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
+    <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
+    <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -59,14 +72,16 @@
 <h3 id="flagging-0-1-0">Flagging<a class="anchor" aria-label="anchor" href="#flagging-0-1-0"></a></h3>
 <ul><li>
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>: one verb for a data frame or an on-disk table (Parquet directory, <code>.vtr</code>, delimited file, or any <code>vectra_node</code>). Nineteen tests, one bit each in an integer flag word; nothing is dropped.</li>
-<li>Eleven tests reproduce CoordinateCleaner’s record tests with its default buffers (<code>val</code>, <code>zero</code>, <code>equ</code>, <code>cap</code>, <code>cen</code>, <code>inst</code>, <code>gbif</code>, <code>sea</code>, <code>urb</code>, <code>coun</code>, <code>dupl</code>); eight read GBIF fields (<code>issue_geo</code>, <code>issue_tax</code>, <code>issue_date</code>, <code>rounded</code>, <code>fossil</code>, <code>living</code>, <code>introduced</code>, <code>managed</code>).</li>
+<li>Eleven tests reproduce CoordinateCleaner’s record tests with its default buffers (<code>invalid</code>, <code>zero</code>, <code>equal</code>, <code>capital</code>, <code>centroid</code>, <code>institution</code>, <code>gbif_headquarters</code>, <code>sea</code>, <code>urban</code>, <code>country_mismatch</code>, <code>duplicate</code>); eight read GBIF fields (<code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>, <code>basis_fossil</code>, <code>basis_living</code>, <code>establishment_introduced</code>, <code>establishment_managed</code>). Tests read from a record field carry that field as a prefix.</li>
 <li>Proximity tests run as kd-tree candidate searches on the unit sphere decided by WGS84 geodesic distance; polygon tests as grid-indexed point-in-polygon with exact boundary cells. Both in C++ with no external library.</li>
 <li>Streamed input is processed per file, written as <code>.vtr</code> parts with the kept columns, and resumable.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="rules-and-tallies-0-1-0">Rules and tallies<a class="anchor" aria-label="anchor" href="#rules-and-tallies-0-1-0"></a></h3>
 <ul><li>
-<code><a href="../reference/tally_flags.html">tally_flags()</a></code>: loss tables by grouping columns, with numeric bins and named rules, over a data frame or the on-disk output.</li>
+<code><a href="../reference/tally_flags.html">tally_flags()</a></code>: loss tables by grouping columns, with numeric bins and named rules, over a data frame or the on-disk output. Per rule it also counts the records each test is the sole reason for.</li>
+<li>
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> on flagged records, on-disk output or a tally gives the percentage of records each test and rule removes, with the sole-reason share; <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws it as bars or, by group, as a grid, and maps kept and removed records with <code>type = "map"</code>.</li>
 <li>
 <code><a href="../reference/flag_mask.html">has_flag()</a></code>, <code><a href="../reference/flag_mask.html">flag_mask()</a></code>, <code><a href="../reference/flag_tests.html">flag_tests()</a></code>, <code><a href="../reference/default_tests.html">default_tests()</a></code>.</li>
 </ul></div>

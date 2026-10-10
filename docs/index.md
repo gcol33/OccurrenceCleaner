@@ -53,14 +53,14 @@ compares several rules on the same flags:
 
 ``` r
 
-f <- flag_occurrences(x, tests = c("val", "zero", "equ", "cap", "cen", "inst", "gbif", "sea"))
+f <- flag_occurrences(x, tests = c("invalid", "zero", "equal", "capital", "centroid",
+                                  "institution", "gbif_headquarters", "sea"))
 
-strict <- has_flag(f$flags, c("zero", "equ", "cap", "cen", "inst", "gbif", "sea"))
-mild   <- has_flag(f$flags, c("zero", "equ", "gbif"))
+strict <- c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea")
+mild   <- c("zero", "equal", "gbif_headquarters")
 
-tally_flags(f, by = "species",
-            rules = list(strict = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea"),
-                         mild = c("zero", "equ", "gbif")))
+has_flag(f$flags, strict)
+tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
 ```
 
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
@@ -79,14 +79,16 @@ written as `.vtr` parts next to the columns you keep for grouping:
 ``` r
 
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
-                      tests = c(default_tests(), "coun", "rounded", "fossil"),
+                      tests = c(default_tests(), "country_mismatch", "issue_rounded",
+                                "basis_fossil"),
                       out = "flags",
                       keep = c("kingdom", "year", "coordinateuncertaintyinmeters"))
 
 tally_flags(f, by = "kingdom",
             bins = list(year = c(1950, 1970, 1990, 2000),
                         coordinateuncertaintyinmeters = c(10, 100, 1000)),
-            rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
+            rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",
+                                "gbif_headquarters", "sea")))
 ```
 
 Rerunning the same call after an interruption skips the input files
@@ -100,6 +102,11 @@ already finished.
 - **[`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)**:
   flags to a loss table by any grouping columns, with bins and named
   rules.
+- **[`summary()`](https://rdrr.io/r/base/summary.html)**,
+  **[`plot()`](https://rdrr.io/r/graphics/plot.default.html)**: the
+  percentage of records each test and rule removes, and how much of it
+  each test is the sole reason for; bars, a grid by group, or a map of
+  kept and removed records.
 - **[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)**,
   **[`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)**:
   a rule as a bit mask over the flag word.
@@ -124,20 +131,20 @@ already finished.
 
 | test | definition | source |
 |----|----|----|
-| `val` | coordinate missing or out of range | `cc_val` |
+| `invalid` | coordinate missing or out of range | `cc_val` |
 | `zero` | zero longitude or latitude, or within 0.5 degrees of (0, 0) | `cc_zero` |
-| `equ` | absolute longitude equals absolute latitude | `cc_equ` |
-| `cap` | within 10 km of a capital | `cc_cap` |
-| `cen` | within 1 km of a country or province centroid | `cc_cen` |
-| `inst` | within 100 m of a biodiversity institution | `cc_inst` |
-| `gbif` | within 1 km of the GBIF headquarters | `cc_gbif` |
+| `equal` | absolute longitude equals absolute latitude | `cc_equ` |
+| `capital` | within 10 km of a capital | `cc_cap` |
+| `centroid` | within 1 km of a country or province centroid | `cc_cen` |
+| `institution` | within 100 m of a biodiversity institution | `cc_inst` |
+| `gbif_headquarters` | within 1 km of the GBIF headquarters | `cc_gbif` |
 | `sea` | outside the land polygons (Natural Earth, scale 110, 50 or 10) | `cc_sea` |
-| `urb` | inside an urban area | `cc_urb` |
-| `coun` | outside the country given by the record’s country code | `cc_coun` |
-| `dupl` | same coordinates and species as an earlier record | `cc_dupl` |
-| `issue_geo`, `issue_tax`, `issue_date`, `rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
-| `fossil`, `living` | basis of record | addition |
-| `introduced`, `managed` | establishment means | addition |
+| `urban` | inside an urban area | `cc_urb` |
+| `country_mismatch` | outside the country given by the record’s country code | `cc_coun` |
+| `duplicate` | same coordinates and species as an earlier record | `cc_dupl` |
+| `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
+| `basis_fossil`, `basis_living` | basis of record | addition |
+| `establishment_introduced`, `establishment_managed` | establishment means | addition |
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with
 a kd-tree on the unit sphere and decided with the Vincenty inverse
@@ -164,6 +171,18 @@ Needs a C++ compiler (Rtools on Windows).
 
 - [Quick
   Start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html)
+- [Cleaning GBIF
+  data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html)
+- [Choosing a cleaning
+  rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.html)
+- [Large tables on
+  disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
+- [The tests in
+  detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html)
+- [Reference
+  data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html)
+- [Coming from
+  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html)
 - [Full
   Reference](https://gillescolling.com/OccurrenceCleaner/reference/)
 

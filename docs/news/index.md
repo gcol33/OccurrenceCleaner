@@ -11,10 +11,13 @@ Initial release.
   `.vtr`, delimited file, or any `vectra_node`). Nineteen tests, one bit
   each in an integer flag word; nothing is dropped.
 - Eleven tests reproduce CoordinateCleaner’s record tests with its
-  default buffers (`val`, `zero`, `equ`, `cap`, `cen`, `inst`, `gbif`,
-  `sea`, `urb`, `coun`, `dupl`); eight read GBIF fields (`issue_geo`,
-  `issue_tax`, `issue_date`, `rounded`, `fossil`, `living`,
-  `introduced`, `managed`).
+  default buffers (`invalid`, `zero`, `equal`, `capital`, `centroid`,
+  `institution`, `gbif_headquarters`, `sea`, `urban`,
+  `country_mismatch`, `duplicate`); eight read GBIF fields
+  (`issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded`,
+  `basis_fossil`, `basis_living`, `establishment_introduced`,
+  `establishment_managed`). Tests read from a record field carry that
+  field as a prefix.
 - Proximity tests run as kd-tree candidate searches on the unit sphere
   decided by WGS84 geodesic distance; polygon tests as grid-indexed
   point-in-polygon with exact boundary cells. Both in C++ with no
@@ -26,7 +29,14 @@ Initial release.
 
 - [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md):
   loss tables by grouping columns, with numeric bins and named rules,
-  over a data frame or the on-disk output.
+  over a data frame or the on-disk output. Per rule it also counts the
+  records each test is the sole reason for.
+- [`summary()`](https://rdrr.io/r/base/summary.html) on flagged records,
+  on-disk output or a tally gives the percentage of records each test
+  and rule removes, with the sole-reason share;
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) draws it as
+  bars or, by group, as a grid, and maps kept and removed records with
+  `type = "map"`.
 - [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md),
   [`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md),
   [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md),

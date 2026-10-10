@@ -13,6 +13,15 @@
 
 - [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
   : Tally flags into a loss table
+- [`summary(`*`<occ_flags>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
+  [`summary(`*`<occ_flagged>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
+  [`summary(`*`<occ_tally>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
+  : Share of records flagged, per test and rule
+- [`plot(`*`<occ_summary>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+  [`plot(`*`<occ_tally>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+  [`plot(`*`<occ_flags>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+  [`plot(`*`<occ_flagged>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+  : Plot flag percentages, or map flagged records
 - [`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
   [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
   : Bit mask and membership for sets of tests

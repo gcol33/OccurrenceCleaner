@@ -35,7 +35,20 @@ flag_occurrences(), which is streamed part by part."><script>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
+    <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
+    <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
+    <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -83,7 +96,8 @@ directory.</p></dd>
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>Character vector of grouping columns. For on-disk output these must
-have been passed as <code>keep</code> when flagging.</p></dd>
+have been passed as <code>keep</code> when flagging. Missing values form the group
+<code>"missing"</code>.</p></dd>
 
 
 <dt id="arg-rules">rules<a class="anchor" aria-label="anchor" href="#arg-rules"></a></dt>
@@ -104,10 +118,14 @@ flags, or every test with a set bit.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with the <code>by</code> columns, <code>n</code> (records), <code>n_valid</code>
-(records without the <code>val</code> flag, when <code>val</code> was run), one column
-<code>flagged_&lt;test&gt;</code> per test, and per rule <code>removed_&lt;rule&gt;</code> and <code>kept_&lt;rule&gt;</code>.
-The attribute <code>occ_rules</code> holds the rules.</p>
+    <p>A data frame of class <code>occ_tally</code> with the <code>by</code> columns, <code>n</code>
+(records), <code>n_valid</code> (records without the <code>invalid</code> flag, when <code>invalid</code>
+was run), one column <code>flagged_&lt;test&gt;</code> per test, per rule <code>removed_&lt;rule&gt;</code>
+and <code>kept_&lt;rule&gt;</code>, and per rule and test of the rule <code>only_&lt;rule&gt;_&lt;test&gt;</code>:
+the records that test is the sole reason the rule removes. The attribute
+<code>occ_rules</code> holds the rules and <code>occ_by</code> the grouping columns.
+<a href="summary.occ_flags.html">summary()</a> turns the counts into percentages and
+<a href="plot.occ_summary.html">plot()</a> draws them.</p>
     </div>
 
     <div class="section level2">
@@ -115,8 +133,9 @@ The attribute <code>occ_rules</code> holds the rules.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>, kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="st">"P"</span>, <span class="st">"A"</span>, <span class="st">"A"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span>, <span class="fl">2.35</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span>, <span class="fl">48.85</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"val"</span>, <span class="st">"zero"</span>, <span class="st">"gbif"</span>, <span class="st">"cap"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">tally_flags</span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"gbif"</span>, <span class="st">"cap"</span><span class="op">)</span>, mild <span class="op">=</span> <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">tally_flags</span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>,</span>
+<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"capital"</span><span class="op">)</span>, mild <span class="op">=</span> <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

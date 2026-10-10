@@ -25,7 +25,8 @@ tally_flags(x, by = NULL, rules = NULL, bins = NULL, tests = NULL)
 - by:
 
   Character vector of grouping columns. For on-disk output these must
-  have been passed as `keep` when flagging.
+  have been passed as `keep` when flagging. Missing values form the
+  group `"missing"`.
 
 - rules:
 
@@ -45,10 +46,16 @@ tally_flags(x, by = NULL, rules = NULL, bins = NULL, tests = NULL)
 
 ## Value
 
-A data frame with the `by` columns, `n` (records), `n_valid` (records
-without the `val` flag, when `val` was run), one column `flagged_<test>`
-per test, and per rule `removed_<rule>` and `kept_<rule>`. The attribute
-`occ_rules` holds the rules.
+A data frame of class `occ_tally` with the `by` columns, `n` (records),
+`n_valid` (records without the `invalid` flag, when `invalid` was run),
+one column `flagged_<test>` per test, per rule `removed_<rule>` and
+`kept_<rule>`, and per rule and test of the rule `only_<rule>_<test>`:
+the records that test is the sole reason the rule removes. The attribute
+`occ_rules` holds the rules and `occ_by` the grouping columns.
+[summary()](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
+turns the counts into percentages and
+[plot()](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
+draws them.
 
 ## Examples
 
@@ -56,6 +63,7 @@ per test, and per rule `removed_<rule>` and `kept_<rule>`. The attribute
 x <- data.frame(species = c("a", "a", "b", "c"), kingdom = c("P", "P", "A", "A"),
                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "gbif", "cap"), mild = "zero"))
+f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+tally_flags(f, by = "kingdom",
+            rules = list(strict = c("zero", "gbif_headquarters", "capital"), mild = "zero"))
 ```

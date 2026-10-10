@@ -35,7 +35,7 @@ occ_columns(
 - country:
 
   Country code of the record (ISO 3166-1 alpha-2 or alpha-3), used by
-  the `coun` test.
+  the `country_mismatch` test.
 
 - issue:
 
