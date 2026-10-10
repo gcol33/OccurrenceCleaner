@@ -40,6 +40,22 @@ reference:
   - flag_occurrences
   - default_tests
   - occ_columns
+- title: Tests
+  contents:
+  - test_invalid
+  - test_zero
+  - test_equal
+  - test_capital
+  - test_centroid
+  - test_institution
+  - test_gbif_headquarters
+  - test_sea
+  - test_urban
+  - test_country_mismatch
+  - test_duplicate
+  - test_gbif_issue
+  - test_basis
+  - test_establishment
 - title: Rules and tallies
   contents:
   - tally_flags

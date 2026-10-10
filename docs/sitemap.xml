@@ -28,5 +28,19 @@
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/reference_info.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_basis.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_equal.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_institution.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_urban.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_zero.html</loc></url>
 </urlset>
 

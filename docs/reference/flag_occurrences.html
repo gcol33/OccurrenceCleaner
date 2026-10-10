@@ -123,7 +123,8 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 
 <dt id="arg-land-scale">land_scale<a class="anchor" aria-label="anchor" href="#arg-land-scale"></a></dt>
 <dd><p>Natural Earth scale of the land layer for <code>sea</code>: 110
-(CoordinateCleaner's default), 50, or 10 (downloaded on first use, see
+(the default of CoordinateCleaner's <code>cc_sea()</code>; its <code>clean_coordinates()</code>
+uses <code>seas_scale = 50</code>), 50, or 10 (downloaded on first use, see
 <code><a href="download_reference.html">download_reference()</a></code>).</p></dd>
 
 
@@ -208,10 +209,10 @@ CoordinateCleaner flags is flagged here.</p></li>
 <li><p><code>cc_zero</code>'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.</p></li>
-<li><p><code>country_mismatch</code> compares the record's code with both the alpha-2 and
-alpha-3 codes of the Natural Earth country polygon the point falls in;
-CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
-CoordinateCleaner.</p></li>
+<li><p><code>country_mismatch</code> compares the record's code with the ISO alpha-2 code,
+the ISO alpha-3 code and the Natural Earth <code>ADM0_A3</code> code of the country
+polygon the point falls in; CoordinateCleaner compares alpha-3 only.
+Records without a code, or at sea, are flagged as in CoordinateCleaner.</p></li>
 <li><p><code>duplicate</code> on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.</p></li>
 <li><p>With the default reference the gazetteers are rebuilt from the original

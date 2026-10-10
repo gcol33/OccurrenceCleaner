@@ -98,12 +98,22 @@
 
     
     
-<p>OccurrenceCleaner flags errors in species occurrence records and
-keeps every record. Each test sets one bit in an integer flag word, so
-deciding which records to drop is a query over the flags, made after the
-pass and changed without rerunning it.</p>
+<p>OccurrenceCleaner is an extension of CoordinateCleaner (Zizka et
+al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) tailored
+to large-scale occurrence data. It flags errors in species occurrence
+records and keeps every record. Each test sets one bit in an integer
+flag word, so deciding which records to drop is a query over the flags,
+made after the pass and changed without rerunning it.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
+<p>Needs a C++ compiler (Rtools on Windows).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="flag-a-data-frame">Flag a data frame<a class="anchor" aria-label="anchor" href="#flag-a-data-frame"></a>
 </h2>
@@ -111,7 +121,7 @@ pass and changed without rerunning it.</p>
 Darwin Core names (<code>decimalLongitude</code>,
 <code>decimalLatitude</code>, <code>species</code>; matching is
 case-insensitive, and <code><a href="../reference/occ_columns.html">occ_columns()</a></code> renames them).</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>, <span class="st">"Fagus sylvatica"</span>, <span class="st">"Fagus sylvatica"</span>, <span class="st">"Pinus nigra"</span><span class="op">)</span>,</span>
 <span>  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>,</span>
@@ -208,7 +218,7 @@ country code.</p>
 <div class="section level2">
 <h2 id="the-tests">The tests<a class="anchor" aria-label="anchor" href="#the-tests"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bit"</span>, <span class="st">"test"</span>, <span class="st">"definition"</span>, <span class="st">"equivalent"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -345,8 +355,9 @@ invasive</td>
 </tr>
 </tbody>
 </table>
-<p>The first eleven tests reproduce CoordinateCleaner’s record tests
-with its default buffers; the rest read GBIF’s <code>issue</code>,
+<p>The first eleven tests are CoordinateCleaner’s record tests with its
+default buffers, up to the differences listed in the article Coming from
+CoordinateCleaner; the rest read GBIF’s <code>issue</code>,
 <code>basisOfRecord</code> and <code>establishmentMeans</code> fields.
 <code><a href="../reference/default_tests.html">default_tests()</a></code> names the tests that need only coordinates
 and a species.</p>
@@ -356,7 +367,7 @@ and a species.</p>
 </h2>
 <p>A rule is a set of tests. <code><a href="../reference/flag_mask.html">has_flag()</a></code> marks the records
 any of them flags:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"capital"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
 <span><span class="va">mild</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="va">f</span><span class="op">$</span><span class="va">species</span>, strict <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">strict</span><span class="op">)</span>, mild <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">mild</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -398,7 +409,7 @@ any of them flags:</p>
 test flags and how many each rule removes. It returns one
 <code>flagged_&lt;test&gt;</code> column per test; a few are shown
 here:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"n"</span>, <span class="st">"flagged_capital"</span>, <span class="st">"flagged_sea"</span>, <span class="st">"flagged_duplicate"</span>,</span>
 <span>                   <span class="st">"removed_strict"</span>, <span class="st">"removed_mild"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -453,7 +464,7 @@ here:</p>
 </table>
 <p>Numeric columns such as the record year or the stated coordinate
 uncertainty stay raw and are cut at tally time:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1890</span>, <span class="fl">1950</span>, <span class="fl">1999</span>, <span class="fl">2015</span>, <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year_bin"</span>, <span class="st">"n"</span>, <span class="st">"removed_strict"</span>, <span class="st">"kept_strict"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -498,14 +509,14 @@ uncertainty stay raw and are cut at tally time:</p>
 <p>The buffers default to CoordinateCleaner’s (10 km capitals, 1 km
 centroids, 100 m institutions, 1 km GBIF headquarters, 0.5 degrees
 around the origin) and can be changed per test:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span>, tests <span class="op">=</span> <span class="st">"capital"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
 <p>The gazetteers are rebuilt from Natural Earth and GBIF’s registry of
 scientific collections, each pinned to a version and checksum:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/reference_info.html">reference_info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"source"</span>, <span class="st">"version"</span>, <span class="st">"retrieved"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -572,10 +583,12 @@ scientific collections, each pinned to a version and checksum:</p>
 </tbody>
 </table>
 <p><code>reference = "CoordinateCleaner"</code> uses that package’s own
-tables instead, which reproduces its flags (CoordinateCleaner must be
-installed). The land layer for the <code>sea</code> test comes at
-Natural Earth scale 110 (CoordinateCleaner’s default), 50, or 10; the
-1:10m layer is downloaded once on first use.</p>
+tables instead, which gives its flags up to the same differences
+(CoordinateCleaner must be installed). The land layer for the
+<code>sea</code> test comes at Natural Earth scale 110 (the default of
+CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code>; its
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> uses 50), 50, or 10; the 1:10m layer is
+downloaded once on first use.</p>
 </div>
 <div class="section level2">
 <h2 id="a-table-on-disk">A table on disk<a class="anchor" aria-label="anchor" href="#a-table-on-disk"></a>
@@ -585,7 +598,7 @@ Parquet parts such as a GBIF snapshot, a <code>.vtr</code> file, or a
 delimited file. Each input file is one unit of work; the flags are
 written as <code>.vtr</code> parts next to the columns kept for
 grouping, and a rerun skips finished units.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"records"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">src</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">big</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>gbifID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">)</span>, kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Animalia"</span>, <span class="st">"Plantae"</span><span class="op">)</span>, <span class="fl">5000</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
@@ -597,7 +610,7 @@ grouping, and a rerun skips finished units.</p>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 5,000 records in 2 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp4qyzX7\flags16e202cf8515d</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpycKqJN\flags1893462e0247f</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate</span></span>
 <span><span class="co">#&gt;   layout:    v1</span></span>
 <span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)</span></span>

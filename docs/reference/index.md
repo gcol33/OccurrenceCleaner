@@ -9,6 +9,37 @@
 - [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
   : Name the record fields
 
+## Tests
+
+- [`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md)
+  : Test: invalid coordinates
+- [`test_zero`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+  : Test: zero coordinates
+- [`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md)
+  : Test: equal coordinates
+- [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md)
+  : Test: country capitals
+- [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md)
+  : Test: country and province centroids
+- [`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md)
+  : Test: biodiversity institutions
+- [`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md)
+  : Test: GBIF headquarters
+- [`test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md)
+  : Test: records at sea
+- [`test_urban`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md)
+  : Test: urban areas
+- [`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md)
+  : Test: country code mismatch
+- [`test_duplicate`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md)
+  : Test: duplicates
+- [`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
+  : Tests: GBIF issue flags
+- [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md)
+  : Tests: basis of record
+- [`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
+  : Tests: establishment means
+
 ## Rules and tallies
 
 - [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)

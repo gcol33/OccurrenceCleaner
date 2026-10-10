@@ -90,22 +90,36 @@
 </h1></div>
 <p><em>quality flags for occurrence records, at any scale</em></p>
 <p><a href="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/gcol33/OccurrenceCleaner" class="external-link"><img src="https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p>OccurrenceCleaner is an extension of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records. These include coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates. It also reads three GBIF fields: the quality warnings GBIF attaches to a record during processing (such as invalid or rounded coordinates, a fuzzy taxon match or an unlikely date), the basis of record (fossil or living specimens), and the establishment means (introduced or cultivated individuals).</p>
+<p>OccurrenceCleaner is an extension of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates.</p>
+<p>It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.</p>
 <p>Records are flagged and kept, and users choose afterwards which flags to filter on.</p>
-<p>The test suite checks that both packages return the same flags with the same default buffers. Data frames containing a few million records are flagged in seconds, and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.</p>
+<p>The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers; the few deliberate differences are listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
+<p>Data frames containing a few million records are flagged in seconds (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed">timings</a>), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
+<p>Needs a C++ compiler (Rtools on Windows).</p>
+</div>
+<div class="section level2">
+<h2 id="flag-a-data-frame">Flag a data frame<a class="anchor" aria-label="anchor" href="#flag-a-data-frame"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<p>The result is <code>x</code> with an integer <code>flags</code> column and one logical <code>flag_&lt;test&gt;</code> column per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.</p>
+<p>The result is <code>x</code> with one logical <code>flag_&lt;test&gt;</code> column per test and an integer <code>flags</code> column that holds all of them, one bit per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.</p>
+</div>
 <div class="section level2">
 <h2 id="several-rules-from-one-pass">Several rules from one pass<a class="anchor" aria-label="anchor" href="#several-rules-from-one-pass"></a>
 </h2>
 <p>A rule is a set of tests. <code><a href="reference/flag_mask.html">has_flag()</a></code> marks the records a rule removes, and <code><a href="reference/tally_flags.html">tally_flags()</a></code> compares several rules on the same flags:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>,</span>
 <span>                                  <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -120,7 +134,7 @@
 <h2 id="a-whole-gbif-snapshot">A whole GBIF snapshot<a class="anchor" aria-label="anchor" href="#a-whole-gbif-snapshot"></a>
 </h2>
 <p>The same verb streams an on-disk table through <a href="https://cran.r-project.org/package=vectra" class="external-link">vectra</a>: a directory of Parquet parts (a GBIF snapshot), a <code>.vtr</code> file, a delimited file or any <code>vectra_node</code>. Each input file is one resumable unit, and the flags are written as <code>.vtr</code> parts next to the columns you keep for grouping:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
 <span>                      tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"country_mismatch"</span>, <span class="st">"issue_rounded"</span>,</span>
 <span>                                <span class="st">"basis_fossil"</span><span class="op">)</span>,</span>
@@ -141,13 +155,13 @@
 <li>
 <strong><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code></strong>: the one flagging verb. Data frame in, data frame out; path or <code>vectra_node</code> in, flag parts on disk out.</li>
 <li>
-<strong><code><a href="reference/tally_flags.html">tally_flags()</a></code></strong>: flags to a loss table by any grouping columns, with bins and named rules.</li>
+<strong><code><a href="reference/tally_flags.html">tally_flags()</a></code></strong>: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.</li>
 <li>
 <strong><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code></strong>, <strong><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code></strong>: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.</li>
 <li>
-<strong><code><a href="reference/flag_mask.html">has_flag()</a></code></strong>, <strong><code><a href="reference/flag_mask.html">flag_mask()</a></code></strong>: a rule as a bit mask over the flag word.</li>
+<strong><code><a href="reference/flag_mask.html">has_flag()</a></code></strong>, <strong><code><a href="reference/flag_mask.html">flag_mask()</a></code></strong>: which records a rule removes, read from the <code>flags</code> column.</li>
 <li>
-<strong><code><a href="reference/flag_tests.html">flag_tests()</a></code></strong>: the versioned flag layout: bit, test, definition, source, CoordinateCleaner equivalent.</li>
+<strong><code><a href="reference/flag_tests.html">flag_tests()</a></code></strong>: which bit of <code>flags</code> holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.</li>
 <li>
 <strong><code><a href="reference/default_tests.html">default_tests()</a></code></strong>: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.</li>
 <li>
@@ -251,15 +265,8 @@
 </tr>
 </tbody>
 </table>
-<p>Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly. The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions); <code>reference = "CoordinateCleaner"</code> reads that package’s own tables instead and reproduces its flags. The documented differences, each enforced by a test, are in <code><a href="reference/flag_occurrences.html">?flag_occurrences</a></code>.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
-<p>Needs a C++ compiler (Rtools on Windows).</p>
+<p>Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.</p>
+<p>The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. <code>reference = "CoordinateCleaner"</code> reads that package’s own tables instead and gives its flags up to the documented differences, which <code><a href="reference/flag_occurrences.html">?flag_occurrences</a></code> lists and the test suite enforces.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>

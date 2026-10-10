@@ -6,7 +6,10 @@ can be changed through an argument. The first eleven reproduce the
 record tests of CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
 buffers; the other eight read GBIF fields and are additions of this
-package.
+package. Each test also has a help page of its own
+([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
+[`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
+…).
 
 ``` r
 
