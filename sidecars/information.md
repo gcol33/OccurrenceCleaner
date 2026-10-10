@@ -207,9 +207,10 @@
 - stated-at: @p:rules.per-test; @p:rules.compare
 
 ### institutions-wikidata
-- metric: 7,435 Wikidata points (3,319 BotanicalGarden, 1,391 Museum, 2,618 ZooAquarium, 107 Herbarium) from 8,341 rows; 13,515 institution points shipped in all
+- metric: 7,613 Wikidata points (3,319 BotanicalGarden, 1,531 Museum, 2,618 ZooAquarium, 107 Herbarium, 38 UniversityCollege) from 8,659 rows, incl. 318 items of Wikipedia's list of natural history museums; 3 GeoNames places; 13,696 institution points shipped in all
+- metric: coverage of CoordinateCleaner's BGCI rows by the shipped points: 36 % within 100 m, 80 % within 1 km, 91 % within 5 km
 - source: data-raw/institutions.R, queried 2026-10-10; dev_notes/reference_data.md
-- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution
+- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (BGCI terms, union)
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine

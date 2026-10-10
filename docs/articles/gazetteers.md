@@ -62,9 +62,9 @@ inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
 #>        BotanicalGarden              Herbarium            ZooAquarium 
-#>                   3406                   3089                   2740 
+#>                   3407                   3089                   2741 
 #>                 Museum      UniversityCollege OtherInstitutionalType 
-#>                   2073                    284                    152
+#>                   2214                    322                    152
 ```
 
 The institution table joins the GBIF registry of scientific collections
@@ -136,6 +136,23 @@ Other point sets fit the same way: regional capitals for a study in
 which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.
+
+The institution table is one of them. CoordinateCleaner’s holds 712
+botanic gardens from Botanic Gardens Conservation International, whose
+terms let the data be used for research but not republished in its
+original form, so the package does not ship them. With CoordinateCleaner
+installed, the union adds them, and its own geocoding of other
+institutions, to the shipped points at run time:
+
+``` r
+
+inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
+nrow(inst_both)
+#> [1] 23469
+```
+
+`gazetteers = list(institution = inst_both)` then flags records near an
+institution of either table.
 
 The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
 the `aohi` test marks each point as a real observation site
@@ -287,7 +304,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

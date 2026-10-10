@@ -7,13 +7,15 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often georeferenced
-to the institution. The default gazetteer holds 13,515 points: the 6,080
+to the institution. The default gazetteer holds 13,696 points: the 6,080
 institutions with coordinates in GBIF's Global Registry of Scientific
 Collections (GRSciColl), less five whose coordinates the \code{zero} test flags
 (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding
-errors), and 7,435 botanical gardens, natural history museums, zoos,
-aquaria and herbaria with coordinates in Wikidata (CC0), retrieved
-2026-10-10. The \code{source} column of \code{\link[=reference_points]{reference_points()}} tells them apart.
+errors); 7,613 points from Wikidata (CC0), retrieved 2026-10-10: every
+botanical garden, natural history museum, zoo, aquarium and herbarium with
+coordinates, and the institutions of Wikipedia's list of natural history
+museums; and the three GeoNames places (CC BY 4.0) of CoordinateCleaner's
+table. The \code{source} column of \code{\link[=reference_points]{reference_points()}} tells them apart.
 }
 \section{Fields}{
  \code{lon}, \code{lat}.
@@ -26,9 +28,12 @@ aquaria and herbaria with coordinates in Wikidata (CC0), retrieved
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. Its \code{institutions} table
-(9,773 points with coordinates) takes botanic gardens from BGCI and
-museums from Wikipedia where this package takes Wikidata;
-\code{reference = "CoordinateCleaner"} uses that table.
+(9,773 points with coordinates) also holds 712 botanic gardens from
+Botanic Gardens Conservation International (BGCI), whose terms do not
+allow the data to be redistributed in its original form, so they are not
+shipped here. \code{reference = "CoordinateCleaner"} uses that table, and
+\code{rbind()} of \code{\link[=reference_points]{reference_points()}} under both references, passed as
+\code{gazetteers = list(institution = ...)}, flags records near either.
 }
 
 \section{Custom gazetteer}{

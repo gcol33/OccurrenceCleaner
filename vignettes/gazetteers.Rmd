@@ -77,6 +77,15 @@ data.frame(city = y$city,
 
 Other point sets fit the same way: regional capitals for a study in which collections were georeferenced to provincial seats, the field stations of a survey, or the coordinates a particular data provider uses as a default.
 
+The institution table is one of them. CoordinateCleaner's holds 712 botanic gardens from Botanic Gardens Conservation International, whose terms let the data be used for research but not republished in its original form, so the package does not ship them. With CoordinateCleaner installed, the union adds them, and its own geocoding of other institutions, to the shipped points at run time:
+
+```{r inst-union, eval = has_cc}
+inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
+nrow(inst_both)
+```
+
+`gazetteers = list(institution = inst_both)` then flags records near an institution of either table.
+
 The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind the `aohi` test marks each point as a real observation site (`determination = TRUE`, for example a birding reserve) or an artificial aggregate of records (`FALSE`, for example a georeferencing default). A study that keeps records from popular sites can flag only the aggregates:
 
 ```{r aohi}

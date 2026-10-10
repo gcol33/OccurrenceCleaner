@@ -43,7 +43,8 @@ knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 | admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
-| institutions_wikidata | Wikidata | wikidata_Q167346.csv, wikidata_Q1970365.csv, wikidata_Q43501.csv, wikidata_Q181916.csv, wikidata_Q2281788.csv | 2026-10-10 | 2026-10-10 |
+| institutions_wikidata | Wikidata | wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv, wikidata_Q43501_v2.csv, wikidata_Q181916_v2.csv, wikidata_Q2281788_v2.csv, wikidata_wplist_Q1000123.csv, wikidata_wplist_Q1479527.csv, wikidata_wplist_Q2044.csv, wikidata_wplist_Q322160.csv, wikidata_wplist_Q472.csv, wikidata_wplist_Q72.csv | 2026-10-10 | 2026-10-10 |
+| institutions_geonames | GeoNames | geonames_MC.zip, geonames_PT.zip, geonames_IT.zip | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | birds_20221010.csv, insects_20221010.csv, mammals_20221010.csv, plants_20221010.csv | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera | IRMNG_genera_DwCA_2026-10-06.zip | 2026-10-06 | 2026-10-10 |
 
@@ -75,14 +76,19 @@ absorbed the Global Registry of Biodiversity Repositories (GRBio) in
 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes
 the registry through its open API and states no separate licence for it.
 
-The institutions are completed from Wikidata, released under CC0: every
-item that is a botanical garden, natural history museum, zoo, public
-aquarium or herbarium, or of a subclass of one, and has a coordinate
-location, queried on 2026-10-10. After duplicate items are dropped these
-are 7,435 points (3,319 botanical gardens, 1,391 museums, 2,618 zoos and
-aquaria, 107 herbaria), none at zero coordinates. The `source` column of
-`reference_points("institution")` says which registry each point comes
-from.
+The institutions are completed from Wikidata, released under CC0,
+queried on 2026-10-10: every item that is a botanical garden, natural
+history museum, zoo, public aquarium or herbarium, or of a subclass of
+one, and has a coordinate location, and the museums, zoos, gardens,
+research institutes and universities linked from Wikipedia’s “List of
+natural history museums”, the list CoordinateCleaner’s Wikipedia rows
+come from, with their Wikidata coordinates. After duplicate items are
+dropped these are 7,613 points (3,319 botanical gardens, 1,531 museums,
+2,618 zoos and aquaria, 107 herbaria, 38 universities), none at zero
+coordinates. The three places CoordinateCleaner’s table takes from
+GeoNames are taken from the GeoNames country files (CC BY 4.0). The
+`source` column of `reference_points("institution")` says which registry
+each point comes from.
 
 The genus habitats of `sea_nonmarine` and `land_marine` come from the
 Interim Register of Marine and Nonmarine Genera (IRMNG), Darwin Core
@@ -122,7 +128,7 @@ same tables. Measured on 2026-10-09:
 | capitals | 225 (one per ISO3 code) | 243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals) |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and geo-locate | 516 (polygon centroid and label point per country, Natural Earth 5.1.1) |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,596 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 13,515 (6,080 GRSciColl, without the five at zero coordinates, and 7,435 Wikidata) |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 13,696 (6,080 GRSciColl, without the five at zero coordinates, 7,613 Wikidata, 3 GeoNames) |
 
 - **Capitals.** 212 countries match by ISO3 code. The median distance
   between the two packages’ capital points for the same country is 0.92
@@ -144,11 +150,20 @@ same tables. Measured on 2026-10-09:
   exist.
 
 - **Institutions.** CoordinateCleaner takes 712 botanic gardens from
-  Botanic Gardens Conservation International, 627 points from Wikipedia
-  and 3 from GeoNames; the package takes botanical gardens, natural
-  history museums, zoos, aquaria and herbaria from Wikidata instead,
-  3,319 botanical gardens among them. GRSciColl has also added
-  institutions since CoordinateCleaner’s table was compiled.
+  Botanic Gardens Conservation International (BGCI), 627 points from
+  Wikipedia and 3 from GeoNames. BGCI’s terms let its data be used for
+  research but not republished in its original form, so the package
+  takes botanical gardens from Wikidata (3,319 of them); for 80 % of
+  BGCI’s gardens a shipped point lies within 1 km and for 91 % within 5
+  km, though only 36 % within the 100 m buffer, since the two sources
+  mark different spots of a garden’s grounds. The Wikipedia rows are
+  rebuilt from the same Wikipedia list with Wikidata coordinates, and
+  the GeoNames rows from GeoNames. CoordinateCleaner geocoded many of
+  its Wikipedia rows itself, to 1 km, so those points can lie up to a
+  kilometre from the Wikidata coordinate of the same museum. GRSciColl
+  has also added institutions since CoordinateCleaner’s table was
+  compiled. With CoordinateCleaner installed, its table can be added at
+  run time (see the article on custom gazetteers).
 
 The capital difference shows directly in the flags. Records at a few
 alternative or official capitals, under both references:
@@ -270,7 +285,7 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 attr(f, "occ_layout_version")
 #> [1] 4
 ```
