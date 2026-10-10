@@ -15,7 +15,7 @@ Description: Flags common errors in species occurrence records, such as
     buffers follow 'CoordinateCleaner' (Zizka et al. 2019
     <doi:10.1111/2041-210X.13152>).
 License: MIT + file LICENSE
-URL: https://github.com/gcol33/OccurrenceCleaner
+URL: https://gillescolling.com/OccurrenceCleaner/, https://github.com/gcol33/OccurrenceCleaner
 BugReports: https://github.com/gcol33/OccurrenceCleaner/issues
 Depends:
     R (>= 4.1.0)

@@ -88,7 +88,7 @@ keeps every record. Each test sets one bit in an integer flag word, so
 deciding which records to drop is a query over the flags, made after the
 pass and changed without rerunning it.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gcol33/OccurrenceCleaner" class="external-link">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="flag-a-data-frame">Flag a data frame<a class="anchor" aria-label="anchor" href="#flag-a-data-frame"></a>
 </h2>
@@ -580,7 +580,7 @@ grouping, and a rerun skips finished units.</p>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 5,000 records in 2 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpqGfDqu\flags9cbc10fc7680</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp6N6o8C\flags53a46449290b</span></span>
 <span><span class="co">#&gt;   tests:     val, zero, equ, cap, cen, inst, gbif, sea, dupl</span></span>
 <span><span class="co">#&gt;   layout:    v1</span></span>
 <span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)</span></span>
