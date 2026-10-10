@@ -39,8 +39,9 @@ on to species distribution models such as
 [dismo](https://cran.r-project.org/package=dismo) or
 [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses
 on phylogenies with
-[phytools](https://cran.r-project.org/package=phytools), or, for
-fossils, to PyRate through
+[phytools](https://cran.r-project.org/package=phytools), to IUCN Red
+List assessments with [red](https://cran.r-project.org/package=red), or,
+for fossils, to PyRate through
 [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md).
 
 The tests are reimplemented with CoordinateCleaner’s definitions,
