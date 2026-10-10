@@ -56,13 +56,11 @@ verb,
 so there are no `cc_*` functions in this package; with both attached,
 CoordinateCleaner’s functions keep their names.
 
-Both
+The test names of
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-and
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-choose their tests by name through a `tests` argument.
-CoordinateCleaner’s names are plural (“capitals”), the names here
-singular (“capital”):
+are plural (“capitals”), the names here singular (“capital”);
+[`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)
+calls the age test “agesequal”, here `age_equal`:
 
 | CoordinateCleaner | OccurrenceCleaner |
 |:------------------|:------------------|

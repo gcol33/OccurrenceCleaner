@@ -11,6 +11,17 @@ arguments of CoordinateCleaner’s `cc_*()` functions do. This article
 filters and extends the shipped point tables, builds polygon layers with
 sf, and shows how a custom layer is recorded with the flags.
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows). The polygon examples also need
+sf.
+
 ``` r
 
 library(OccurrenceCleaner)

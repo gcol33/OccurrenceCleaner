@@ -9,7 +9,8 @@
 - stated-at: @p:desc.claim; @p:readme.claim; @p:pkg.overview; @p:qs.opener; @p:cc.opener
 
 ### test-names
-- detail: `clean_coordinates(tests = )` takes plural names ("capitals", "centroids", "countries", "duplicates", "institutions", "seas", "zeros") and "gbif"; `flag_occurrences(tests = )` takes singular names, "country_mismatch" and "gbif_headquarters"; validity has no test name there and stops the run
+- detail: the `tests` argument of `clean_coordinates()` takes plural names ("capitals", "centroids", "countries", "duplicates", "institutions", "seas", "zeros") and "gbif"; that of `flag_occurrences()` takes singular names, "country_mismatch" and "gbif_headquarters"; the coordinate validity check has no test name in `clean_coordinates()` and stops the run (@p:cc.validity)
+- avoid: `fn(tests = )` as a name for an argument in reader-facing text; write "the `tests` argument of `fn()`"
 - home: @p:cc.test-names
 
 ### value-default
@@ -56,7 +57,7 @@
 - defined: @p:readme.tests (the "source" column)
 
 ### equivalent-test
-- forms: CoordinateCleaner-equivalent test; the first eleven tests
+- forms: CoordinateCleaner-equivalent test; the tests with an `equivalent`
 - as: a record test with CoordinateCleaner's definition and default buffer
 - defined: @p:qs.tests-note
 - note: every "reproduce" now carries "up to the documented differences", except `buffers = list(zero = 0)`, which reproduces 3.0.1 exactly
@@ -66,6 +67,28 @@
 - as: the GBIF office in Copenhagen (12.58 E, 55.67 N), a default location some records receive
 - defined: @p:tests.proximity
 - avoid: GBIF secretariat
+
+### age-equal
+- forms: `age_equal`; the fossil age test; the age test
+- as: flags a record whose minimum age is equal to or greater than its maximum age
+- defined: @p:fossil.flag
+- other-senses: CoordinateCleaner's `cf_equal()`, and "agesequal" in `clean_fossils()`
+
+### age-fields
+- forms: minimum age; maximum age; `min_age`, `max_age` fields of `occ_columns()`; `min_ma`, `max_ma` (PBDB and CoordinateCleaner column names)
+- as: the two ends of a fossil record's stratigraphic age range, in million years
+- defined: @p:fossil.opener
+
+### gazetteers-argument
+- forms: `gazetteers`; custom gazetteer; custom layer
+- as: the argument of `flag_occurrences()` that replaces the reference layer of single tests with the user's points or polygons
+- defined: @p:gaz.opener
+- glossed: @p:readme.reference
+
+### reference-points
+- forms: `reference_points()`
+- as: returns the points a proximity test uses, with their attributes
+- defined: @p:gaz.points; ?reference_points
 
 ### unit
 - forms: unit; input unit; resumable unit

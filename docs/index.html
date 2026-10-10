@@ -172,6 +172,8 @@
 <li>
 <strong><code><a href="reference/reference_info.html">reference_info()</a></code></strong>, <strong><code><a href="reference/download_reference.html">download_reference()</a></code></strong>: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.</li>
 <li>
+<strong><code><a href="reference/reference_points.html">reference_points()</a></code></strong>: the points a proximity test uses, to inspect, filter or extend and pass back through <code>gazetteers</code>.</li>
+<li>
 <strong><code><a href="reference/read_flagged.html">read_flagged()</a></code></strong>, <strong><code><a href="reference/read_flagged.html">flagged_table()</a></code></strong>: open on-disk flag output as a vectra table.</li>
 </ul>
 </div>
@@ -246,6 +248,11 @@
 <td><code>cc_dupl</code></td>
 </tr>
 <tr>
+<td><code>age_equal</code></td>
+<td>fossil minimum age equal to or greater than the maximum age</td>
+<td><code>cf_equal</code></td>
+</tr>
+<tr>
 <td>
 <code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>
 </td>
@@ -269,7 +276,7 @@
 </tbody>
 </table>
 <p>Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.</p>
-<p>The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. <code>reference = "CoordinateCleaner"</code> reads that package’s own tables instead and gives its flags up to the documented differences, which <code><a href="reference/flag_occurrences.html">?flag_occurrences</a></code> lists and the test suite enforces.</p>
+<p>The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. <code>reference = "CoordinateCleaner"</code> reads that package’s own tables instead and gives its flags up to the documented differences, which <code><a href="reference/flag_occurrences.html">?flag_occurrences</a></code> lists and the test suite enforces. The <code>gazetteers</code> argument replaces the layer of single tests with the user’s own points or polygons, recorded with the flags by size and checksum.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -280,7 +287,9 @@
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/tests.html">The tests in detail</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/fossils.html">Cleaning fossil records</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a></li>
+<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html">Using custom gazetteers</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
 <li><a href="https://gillescolling.com/OccurrenceCleaner/reference/">Full Reference</a></li>
 </ul>

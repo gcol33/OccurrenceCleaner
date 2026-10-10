@@ -9,16 +9,16 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 ## Relation
 - to: CoordinateCleaner 3.0.1 (Zizka et al. 2019)
 - phrase: an extension of CoordinateCleaner tailored to large-scale occurrence data
-- same: test definitions and default buffers of the eleven record tests; verified by `tests/testthat/test-equivalence.R`, which runs CoordinateCleaner on sampled records
+- same: test definitions and default buffers of the twelve record tests (eleven coordinate tests and the fossil age test); verified by `tests/testthat/test-equivalence.R`, which runs CoordinateCleaner on sampled records
 - differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, streamed duplicates); additions (GBIF issue, basis of record, establishment means)
-- status: not a replacement; CoordinateCleaner remains the tool for outlier, range, dataset-level and fossil tests
+- status: not a replacement; CoordinateCleaner remains the tool for outlier, range, dataset-level and per-taxon fossil tests
 - home: vignettes/coordinatecleaner.Rmd ("Coming from CoordinateCleaner")
 
 ## Arcs
 
 ### A1 Same answers as CoordinateCleaner
 - question: Will my flags change if I switch from CoordinateCleaner?
-- answer: The eleven record tests use CoordinateCleaner's definitions and default buffers; the test suite requires identical flags except for five documented differences, each tested.
+- answer: The twelve record tests use CoordinateCleaner's definitions and default buffers; the test suite requires identical flags except for five documented differences, each tested.
 - payoff: A user can cite CoordinateCleaner's tests in a methods section and run them here, and knows exactly where and by how much results can differ.
 - evidence: tests/testthat/test-equivalence.R; ?flag_occurrences (Tests section); vignettes/coordinatecleaner.Rmd (side by side, where the flags differ)
 - limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's
@@ -53,17 +53,17 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - also: DESCRIPTION, README
 
 ### A5 Pinned reference data
-- question: Which gazetteer produced these flags, and can I reproduce them?
-- answer: Every gazetteer is rebuilt from its public source, pinned by version and checksum, and recorded in the flag output; `reference = "CoordinateCleaner"` uses that package's tables instead.
+- question: Which gazetteer produced these flags, can I reproduce them, and can I use my own?
+- answer: Every gazetteer is rebuilt from its public source, pinned by version and checksum, and recorded in the flag output; `reference = "CoordinateCleaner"` uses that package's tables instead, and `gazetteers` replaces the layer of single tests with the user's own points or polygons, recorded by size and checksum.
 - payoff: A flag table can be traced to the exact reference data that produced it, years later.
-- evidence: ?reference_info; vignettes/reference-data.Rmd; dev_notes/reference_data.md
+- evidence: ?reference_info; ?reference_points; vignettes/reference-data.Rmd; vignettes/gazetteers.Rmd; tests/testthat/test-gazetteers.R; dev_notes/reference_data.md
 - limits: GRSciColl licence not yet confirmed (dev_notes/reference_data.md)
 - home: vignettes/reference-data.Rmd
 - also: README, quickstart
 
 ## Non-goals
 - No record is removed by the package.
-- No outlier, range, dataset-level or fossil-age tests (CoordinateCleaner's `cc_outl`, `cc_iucn`, `cc_aohi`, `cd_*`, `cf_*`).
+- No outlier, range, dataset-level or per-taxon fossil tests (CoordinateCleaner's `cc_outl`, `cc_iucn`, `cc_aohi`, `cd_*`, `cf_age`, `cf_outl`, `cf_range`); `cf_equal` is ported as `age_equal`.
 - No taxonomic name cleaning.
 
 ## Documents
@@ -76,6 +76,8 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - on-disk: how-to stream a snapshot (A2 home)
 - gbif-workflow: how-to, a GBIF download end to end
 - reference-data: explanation of the gazetteers (A5 home)
+- gazetteers: how-to use custom points and polygons (A5)
+- fossils: how-to flag a fossil table (A1, A3)
 - coordinatecleaner: comparison (A1 home, relation home)
 - help pages: reference
 

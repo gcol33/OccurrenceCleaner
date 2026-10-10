@@ -86,12 +86,12 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.box  (list)
 - idea: exported functions
 - job: Lists each exported function by what it does.
-- leaves: the verb map
+- leaves: the verb map, including `reference_points()` for custom gazetteers
 
 ### readme.tests  [A1 A4]  (table)
 - idea: tests, definitions, sources
 - job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
-- leaves: the test names and their origin
+- leaves: the test names and their origin, including the fossil age test
 
 ### readme.method  [A1]
 - idea: how tests are computed
@@ -101,7 +101,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.reference  [A1 A5]
 - idea: pinned gazetteers; CC tables
 - job: Says where the gazetteers come from and that CoordinateCleaner's tables give its flags up to the documented differences.
-- leaves: own gazetteers are pinned; `reference = "CoordinateCleaner"`; where the differences are listed
+- leaves: own gazetteers are pinned; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
 
 ### readme.docs  (section)
 - idea: routing
@@ -141,7 +141,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### qs.tests  [A1 A4]  (table)
 ### qs.tests-note  [A1 A4]
-- idea: eleven CC tests, then GBIF fields
+- idea: CC-equivalent tests, then GBIF fields
 - job: Says which tests come from CoordinateCleaner, up to the documented differences, and which read GBIF fields.
 - leaves: the split between equivalent tests and additions
 
@@ -195,9 +195,14 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - leaves: both packages can be attached together
 
 ### cc.test-names  [A1]  (table)
-- idea: plural to singular test names; validity
-- job: Maps `clean_coordinates()` test names to the names here and says how validity differs.
-- leaves: the `tests` vocabulary of both packages; invalid records do not stop a run here
+- idea: plural to singular test names
+- job: Maps CoordinateCleaner's plural test names, and `clean_fossils()`'s "agesequal", to the names here.
+- leaves: the `tests` vocabulary of both packages
+
+### cc.validity  [A1]
+- idea: validity is a named test that does not stop the run
+- job: Says `clean_coordinates()` runs an unnamed coordinate check first and stops on failure, while `invalid` here is one test among the others.
+- leaves: invalid records do not stop a run here
 
 ### cc.pipe  [A1 A3]  (section)
 - idea: filter-as-you-go vs flag and subset
@@ -236,7 +241,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ## The tests in detail (explanation, A4 home)
 
 ### tests.opener  [A1 A4]
-- idea: nineteen tests; eleven from CC; per-test help
+- idea: twenty tests; twelve from CC; fossil test in its own article; per-test help
 - job: Says what the article covers per test and which tests come from CoordinateCleaner.
 - leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
 
@@ -492,3 +497,81 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: which reference to use
 - job: Says when to use each reference.
 - leaves: own gazetteers by default; CoordinateCleaner's to compare with published work
+
+## Cleaning fossil records (how-to)
+
+### fossil.opener  [A1 A3]
+- idea: fossils carry an age range too
+- job: Says what fossil records add (a minimum and maximum age) and what the article covers.
+- leaves: the age test, the range as a raw column, fossils in GBIF data
+
+### fossil.install  (section)
+
+### fossil.data  [A3]  (section)
+- idea: simulated PBDB table with planted coordinate and age errors
+- job: Builds a PBDB-shaped table and plants centroid, museum, zero and three kinds of age errors.
+- leaves: PBDB column names; the `truth` column
+
+### fossil.flag  [A1]  (section)
+- idea: clean_fossils' record tests; age_equal defined
+- job: Maps the PBDB columns, runs CoordinateCleaner's fossil record tests, defines `age_equal` and explains what each test caught and missed.
+- leaves: copied and swapped ages are caught only by `age_equal`; period-dated ranges are valid
+
+### fossil.buffers  [A1]  (section)
+- idea: clean_fossils' wider buffers in degrees
+- job: Converts `clean_fossils()`'s degree buffers to metres and shows what the wider centroid buffer adds and costs.
+- leaves: `buffers = list(centroid = 5600, institution = 111)`
+
+### fossil.range  [A3]  (section)
+- idea: range width is a raw column cut at tally time
+- job: Replaces `cf_range(method = "time")` with a binned raw column and a cut next to the rule.
+- leaves: one flag pass serves any range threshold
+
+### fossil.vs-cc  [A1]  (section)
+- idea: identical to cf_equal; per-taxon tests not ported
+- job: Shows identical flags with `cf_equal()` and says why the other fossil tests are not ported.
+- leaves: when to keep CoordinateCleaner for fossils
+
+### fossil.gbif  [A4]  (section)
+- idea: basis_fossil in GBIF data
+- job: Shows how fossil specimens are separated in GBIF data.
+- leaves: `basis_fossil`
+
+## Using custom gazetteers (how-to, A5)
+
+### gaz.opener  [A5]
+- idea: seven reference tests; replace one layer
+- job: Says which tests use reference data and that `gazetteers` replaces the layer of single tests, as CoordinateCleaner's `ref` arguments do.
+- leaves: what the article covers
+
+### gaz.install  (section)
+
+### gaz.points  [A5]  (section)
+- idea: reference_points returns a test's points
+- job: Shows the shipped capital and institution points with their attributes.
+- leaves: `reference_points()`; institution `type` and `master_source`
+
+### gaz.filtered  [A5]  (section)
+- idea: herbaria only, wider buffer
+- job: Filters the institution table to herbaria and shows the flags change.
+- leaves: any data frame with longitude and latitude columns is a point layer
+
+### gaz.extended  [A1 A5]  (section)
+- idea: union of both capital tables
+- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer.
+- leaves: other point sets fit the same way
+
+### gaz.polygons  [A5]  (section)
+- idea: sf polygons for sea, urban, country_mismatch
+- job: Uses a study-area polygon as the land of `sea` and coded polygons for `country_mismatch`.
+- leaves: polygon layer requirements; which code columns are read
+
+### gaz.record  [A5]  (section)
+- idea: size and MD5 in the reference label
+- job: Shows that a custom layer is recorded with the flags and protects streamed output.
+- leaves: the label identifies the exact table
+
+### gaz.vs-cc  [A1 A5]  (section)
+- idea: ref arguments mapped; same flags with same layers
+- job: Maps CoordinateCleaner's `ref` arguments to `gazetteers` entries and states the tested equivalence.
+- leaves: column names found by any common spelling; every code column matched

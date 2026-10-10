@@ -51,7 +51,7 @@ knitr::kable(m)
 
 Every test is chosen by name through the `tests` argument of the one verb, `flag_occurrences()`, so there are no `cc_*` functions in this package; with both attached, CoordinateCleaner's functions keep their names.
 
-Both `clean_coordinates()` and `flag_occurrences()` choose their tests by name through a `tests` argument. CoordinateCleaner's names are plural ("capitals"), the names here singular ("capital"):
+The test names of `clean_coordinates()` are plural ("capitals"), the names here singular ("capital"); `clean_fossils()` calls the age test "agesequal", here `age_equal`:
 
 ```{r test-names, echo = FALSE}
 knitr::kable(data.frame(

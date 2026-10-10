@@ -87,6 +87,7 @@ Rerunning the same call after an interruption skips the input files already fini
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
 - **`occ_columns()`**: which columns hold which field; Darwin Core defaults, case-insensitive.
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
+- **`reference_points()`**: the points a proximity test uses, to inspect, filter or extend and pass back through `gazetteers`.
 - **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a vectra table.
 
 ## Tests
@@ -104,13 +105,14 @@ Rerunning the same call after an interruption skips the input files already fini
 | `urban` | inside an urban area | `cc_urb` |
 | `country_mismatch` | outside the country given by the record's country code | `cc_coun` |
 | `duplicate` | same coordinates and species as an earlier record | `cc_dupl` |
+| `age_equal` | fossil minimum age equal to or greater than the maximum age | `cf_equal` |
 | `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.
 
-The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces.
+The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces. The `gazetteers` argument replaces the layer of single tests with the user's own points or polygons, recorded with the flags by size and checksum.
 
 ## Documentation
 
@@ -119,7 +121,9 @@ The gazetteers are rebuilt from the original public sources (Natural Earth, publ
 - [Choosing a cleaning rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.html)
 - [Large tables on disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
 - [The tests in detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html)
+- [Cleaning fossil records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.html)
 - [Reference data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html)
+- [Using custom gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html)
 - [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html)
 - [Full Reference](https://gillescolling.com/OccurrenceCleaner/reference/)
 

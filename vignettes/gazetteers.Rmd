@@ -15,6 +15,15 @@ has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 
 Seven tests compare records with reference data: four with points (capitals, centroids, institutions, the GBIF headquarters) and three with polygons (land, urban areas, countries). The package ships its own pinned layers for all of them, and `reference = "CoordinateCleaner"` swaps in CoordinateCleaner's. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with sf, and shows how a custom layer is recorded with the flags.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows). The polygon examples also need sf.
+
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```

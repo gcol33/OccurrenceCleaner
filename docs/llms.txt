@@ -145,6 +145,9 @@ already finished.
   **[`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)**:
   the pinned gazetteers (source, version, SHA-256) and the on-demand
   1:10m land layer.
+- **[`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)**:
+  the points a proximity test uses, to inspect, filter or extend and
+  pass back through `gazetteers`.
 - **[`read_flagged()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**,
   **[`flagged_table()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**:
   open on-disk flag output as a vectra table.
@@ -164,6 +167,7 @@ already finished.
 | `urban` | inside an urban area | `cc_urb` |
 | `country_mismatch` | outside the country given by the record’s country code | `cc_coun` |
 | `duplicate` | same coordinates and species as an earlier record | `cc_dupl` |
+| `age_equal` | fossil minimum age equal to or greater than the maximum age | `cf_equal` |
 | `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
@@ -180,7 +184,9 @@ version and checksum. `reference = "CoordinateCleaner"` reads that
 package’s own tables instead and gives its flags up to the documented
 differences, which
 [`?flag_occurrences`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-lists and the test suite enforces.
+lists and the test suite enforces. The `gazetteers` argument replaces
+the layer of single tests with the user’s own points or polygons,
+recorded with the flags by size and checksum.
 
 ## Documentation
 
@@ -194,8 +200,12 @@ lists and the test suite enforces.
   disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
 - [The tests in
   detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html)
+- [Cleaning fossil
+  records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.html)
 - [Reference
   data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html)
+- [Using custom
+  gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html)
 - [Coming from
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html)
 - [Full
