@@ -11,7 +11,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### desc.tests  [A1]
 - idea: the record tests, same buffers
-- job: Lists the problems the tests catch and says they use CoordinateCleaner's tests and default buffers.
+- job: Lists the problems the tests catch, including outliers and converted or gridded datasets, and says they use CoordinateCleaner's tests and defaults.
 - leaves: what is flagged and that the definitions are CoordinateCleaner's
 
 ### desc.gbif  [A4]
@@ -33,7 +33,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### readme.claim  [A1 A2]
 - idea: extension of CC · what is flagged
-- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists the coordinate problems it flags.
+- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists the problems it flags, from coordinates at centroids to outliers and converted datasets.
 - leaves: the parent, the purpose and the list of problems
 
 ### readme.gbif  [A4]
@@ -78,6 +78,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Shows a rule as a set of tests and compares two rules on the same flags.
 - leaves: `has_flag()`, `tally_flags()`, and that year and uncertainty are binned at tally time
 
+### readme.grouped  [A6]  (section)
+- idea: grouped tests; settings
+- job: Says why the outlier and dataset tests run in a pass over the whole input and shows `settings` in one call.
+- leaves: the grouped tests exist, work streamed too, and take CoordinateCleaner's options through `settings`
+
 ### readme.snapshot  [A2]  (section)
 - idea: streaming a snapshot
 - job: Shows the same verb on a GBIF Parquet snapshot, with resumable units.
@@ -86,12 +91,12 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.box  (list)
 - idea: exported functions
 - job: Lists each exported function by what it does.
-- leaves: the verb map, including `reference_points()` for custom gazetteers
+- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields and `reference_points()` for custom gazetteers and AHOI
 
-### readme.tests  [A1 A4]  (table)
+### readme.tests  [A1 A4 A6]  (table)
 - idea: tests, definitions, sources
 - job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
-- leaves: the test names and their origin, including the fossil age test
+- leaves: the test names and their origin: twenty from CoordinateCleaner, including range, hotspot, outlier, dataset and four fossil tests
 
 ### readme.method  [A1]
 - idea: how tests are computed
@@ -225,6 +230,9 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### cc.zero-buffer  [A1]
 ### cc.country-codes  [A1]
 ### cc.invalid  [A1]
+### cc.large-outliers  [A1 A6]
+### cc.age-draws  [A1 A6]
+### cc.small-datasets  [A1 A6]
 ### cc.streamed-duplicates  [A1 A2]
 ### cc.gazetteers  [A1 A5]
 
@@ -235,8 +243,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### cc.no-counterpart  [A1]  (section)
 - idea: what stays in CoordinateCleaner
-- job: Lists the CoordinateCleaner functions with no counterpart and why `cc_outl()` is not a record test.
-- leaves: when to keep using CoordinateCleaner
+- job: Says every CoordinateCleaner test has a counterpart and lists what remains: `sampling_thresh`, `write_pyrate()`, the plot and class check.
+- leaves: the two things only CoordinateCleaner does
 
 ## The tests in detail (explanation, A4 home)
 
@@ -498,6 +506,60 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Says when to use each reference.
 - leaves: own gazetteers by default; CoordinateCleaner's to compare with published work
 
+## Outliers and dataset tests (how-to, A6 home)
+
+### out.opener  [A6]
+- idea: six grouped tests; group pass; what the article covers
+- job: Names the tests that compare a record with its species or dataset, their CoordinateCleaner functions and why they run in a pass of their own.
+- leaves: the grouped tests; the fossil ones are in the fossil article
+
+### out.install  (section)
+
+### out.data  [A6]  (section)
+- idea: alpine plants plus far records and two faulty atlases
+- job: Builds 961 records of four species in three datasets and adds far records, a converted atlas and a gridded atlas.
+- leaves: the `truth` column; `datasetKey`
+
+### out.outlier  [A1 A6]  (section)
+- idea: quantile fence; min_occs
+- job: Flags geographic outliers with the default fence and explains the one miss and the untested small species.
+- leaves: Q75 + 5 x IQR of mean distances; `min_occs`
+
+### out.methods  [A6]
+- idea: three methods via settings
+- job: Compares the quantile, MAD and distance methods and maps the default result.
+- leaves: `settings = list(outlier = list(method = ...))`; MAD is stricter
+
+### out.large  [A1 A6]  (section)
+- idea: raster approximation from 10,000 records
+- job: Flags one far record in a species of 15,001 and says CoordinateCleaner 3.0.1 flags none on this path.
+- leaves: `thinning`, `thinning_res`
+
+### out.datasets  [A6]  (section)
+- idea: ddmm and gridded atlases; what each test reads
+- job: Flags the two faulty atlases and shows the decimal parts that each test reads.
+- leaves: the dataset key; `occ_columns(dataset = ...)`; records without a key untested
+
+### out.aohi  [A5]  (section)
+- idea: artificial hotspots
+- job: Defines `aohi` and the inventory and shows three plant hotspots flagged.
+- leaves: `reference_points("aohi")`; the notes and determination columns for filtering
+
+### out.rule  [A3 A6]  (section)
+- idea: one rule over all grouped tests
+- job: Tallies a rule of all four tests by dataset and explains the herbarium and atlas losses.
+- leaves: whether grid-centre records stay is an analysis decision
+
+### out.stream  [A2 A6]  (section)
+- idea: group pass on streamed input
+- job: Explains how the group pass reads streamed files and shows identical tallies on a split table.
+- leaves: `group_result.rds`; a species over several files is one group
+
+### out.guidance  [A6]  (section)
+- idea: five practical rules
+- job: Turns the article into recommendations on input scope, fences, small groups, dataset keys and the raster.
+- leaves: run grouped tests on the analysis table
+
 ## Cleaning fossil records (how-to)
 
 ### fossil.opener  [A1 A3]
@@ -527,10 +589,15 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Replaces `cf_range(method = "time")` with a binned raw column and a cut next to the rule.
 - leaves: one flag pass serves any range threshold
 
+### fossil.outliers  [A1 A6]  (section)
+- idea: three per-taxon tests; seeded draws; settings
+- job: Runs `age_range_outlier`, `age_outlier` and `spatiotemporal_outlier` on the genera, explains what each catches and shows `settings`.
+- leaves: the range test catches the period-dated records; the draw tests catch fewer; another seed gives other draws
+
 ### fossil.vs-cc  [A1]  (section)
-- idea: identical to cf_equal; per-taxon tests not ported
-- job: Shows identical flags with `cf_equal()` and says why the other fossil tests are not ported.
-- leaves: when to keep CoordinateCleaner for fossils
+- idea: identical flags with CoordinateCleaner's fossil tests
+- job: Shows identical flags with `cf_equal()` and says where the outlier tests are compared with `cf_age()`, `cf_outl()` and `cf_range()`.
+- leaves: `age_range_outlier` identical; the draw tests identical only when nothing is drawn
 
 ### fossil.gbif  [A4]  (section)
 - idea: basis_fossil in GBIF data
@@ -565,6 +632,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: sf polygons for sea, urban, country_mismatch
 - job: Uses a study-area polygon as the land of `sea` and coded polygons for `country_mismatch`.
 - leaves: polygon layer requirements; which code columns are read
+
+### gaz.ranges  [A1 A5]  (section)
+- idea: species range polygons for `range`
+- job: Builds range polygons for two species and shows records inside, outside and with a buffer.
+- leaves: the species column, per-species indices, species without a polygon untested
 
 ### gaz.record  [A5]  (section)
 - idea: size and MD5 in the reference label

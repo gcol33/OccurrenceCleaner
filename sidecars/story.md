@@ -9,19 +9,19 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 ## Relation
 - to: CoordinateCleaner 3.0.1 (Zizka et al. 2019)
 - phrase: an extension of CoordinateCleaner tailored to large-scale occurrence data
-- same: test definitions and default buffers of the twelve record tests (eleven coordinate tests and the fossil age test); verified by `tests/testthat/test-equivalence.R`, which runs CoordinateCleaner on sampled records
-- differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, streamed duplicates); additions (GBIF issue, basis of record, establishment means)
-- status: not a replacement; CoordinateCleaner remains the tool for outlier, range, dataset-level and per-taxon fossil tests
+- same: test definitions and defaults of all twenty CoordinateCleaner tests: eleven coordinate record tests, `range` (`cc_iucn`), `aohi` (`cc_aohi`), the geographic outlier test (`cc_outl`), two dataset tests (`cd_ddmm`, `cd_round`) and four fossil tests (`cf_equal`, `cf_age`, `cf_outl`, `cf_range`); verified by `tests/testthat/test-equivalence.R` and `tests/testthat/test-group.R`, which run CoordinateCleaner on sampled records
+- differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments and one `settings` list for the outlier and dataset options; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, outliers of large species, random age draws, small datasets, streamed duplicates); additions (GBIF issue, basis of record, establishment means)
+- status: every CoordinateCleaner 3.0.1 test has a counterpart; not ported: `cc_outl(sampling_thresh)` (live rgbif query) and `write_pyrate()` (export format)
 - home: vignettes/coordinatecleaner.Rmd ("Coming from CoordinateCleaner")
 
 ## Arcs
 
 ### A1 Same answers as CoordinateCleaner
 - question: Will my flags change if I switch from CoordinateCleaner?
-- answer: The twelve record tests use CoordinateCleaner's definitions and default buffers; the test suite requires identical flags except for five documented differences, each tested.
+- answer: The twenty tests ported from CoordinateCleaner use its definitions and defaults; the test suite requires identical flags except for the documented differences, each tested.
 - payoff: A user can cite CoordinateCleaner's tests in a methods section and run them here, and knows exactly where and by how much results can differ.
-- evidence: tests/testthat/test-equivalence.R; ?flag_occurrences (Tests section); vignettes/coordinatecleaner.Rmd (side by side, where the flags differ)
-- limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's
+- evidence: tests/testthat/test-equivalence.R; tests/testthat/test-group.R; ?flag_occurrences (Tests section); vignettes/coordinatecleaner.Rmd (side by side, where the flags differ)
+- limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's; `outlier` flags on the raster path where 3.0.1 flags nothing; the fossil age draws are seeded per taxon, so they agree in distribution, not draw by draw
 - home: vignettes/coordinatecleaner.Rmd
 - also: DESCRIPTION, README, ?OccurrenceCleaner, quickstart
 
@@ -52,23 +52,33 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - home: vignettes/tests.Rmd
 - also: DESCRIPTION, README
 
+### A6 Tests that need the whole group
+- question: Can it find records that are wrong only relative to the rest of their species or dataset?
+- answer: `outlier`, the three fossil outlier tests and the two dataset tests run in a group pass over the whole input before the record tests, in memory or streamed, with their options in `settings`.
+- payoff: CoordinateCleaner's outlier and dataset checks run on a snapshot, and a species split over many files is still tested as one group.
+- evidence: vignettes/outliers.Rmd; vignettes/fossils.Rmd (Outliers within a taxon); tests/testthat/test-group.R; ?test_outlier
+- limits: a grouped flag depends on the rest of the input; species below `min_occs` and datasets below the span or size thresholds are not tested; `dataset_rounded` can flag small clustered datasets that are not gridded
+- home: vignettes/outliers.Rmd
+- also: DESCRIPTION, README, vignettes/fossils.Rmd, vignettes/coordinatecleaner.Rmd
+
 ### A5 Pinned reference data
 - question: Which gazetteer produced these flags, can I reproduce them, and can I use my own?
 - answer: Every gazetteer is rebuilt from its public source, pinned by version and checksum, and recorded in the flag output; `reference = "CoordinateCleaner"` uses that package's tables instead, and `gazetteers` replaces the layer of single tests with the user's own points or polygons, recorded by size and checksum.
 - payoff: A flag table can be traced to the exact reference data that produced it, years later.
-- evidence: ?reference_info; ?reference_points; vignettes/reference-data.Rmd; vignettes/gazetteers.Rmd; tests/testthat/test-gazetteers.R; dev_notes/reference_data.md
+- evidence: ?reference_info; ?reference_points; vignettes/reference-data.Rmd; vignettes/gazetteers.Rmd; tests/testthat/test-gazetteers.R; dev_notes/reference_data.md; data-raw/aohi.R (AHOI from Dryad, CC0)
 - limits: GRSciColl licence not yet confirmed (dev_notes/reference_data.md)
 - home: vignettes/reference-data.Rmd
 - also: README, quickstart
 
 ## Non-goals
 - No record is removed by the package.
-- No outlier, range, dataset-level or per-taxon fossil tests (CoordinateCleaner's `cc_outl`, `cc_iucn`, `cc_aohi`, `cd_*`, `cf_age`, `cf_outl`, `cf_range`); `cf_equal` is ported as `age_equal`.
+- No test that depends on a live web query (`cc_outl(sampling_thresh)`), no PyRate export.
+- No shipped species range maps; `range` takes the user's polygons.
 - No taxonomic name cleaning.
 
 ## Documents
-- DESCRIPTION: listing text; claim, relation, A1-A4 in one sentence each
-- README / landing: claim, relation, A1-A3 one line each, first example, rules, snapshot, test table, routing
+- DESCRIPTION: listing text; claim, relation, A1-A4 in one sentence each (the A6 tests named in the A1 list)
+- README / landing: claim, relation, A1-A3 one line each, first example, rules, grouped tests (A6), snapshot, test table, routing
 - ?OccurrenceCleaner: entry point inside R; claim, relation, verb map
 - quickstart (Get Started): tutorial from a data frame to a tally and a streamed table
 - tests: explanation of each test (A4 home)
@@ -76,8 +86,9 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - on-disk: how-to stream a snapshot (A2 home)
 - gbif-workflow: how-to, a GBIF download end to end
 - reference-data: explanation of the gazetteers (A5 home)
-- gazetteers: how-to use custom points and polygons (A5)
-- fossils: how-to flag a fossil table (A1, A3)
+- gazetteers: how-to use custom points, polygons and species ranges (A5)
+- fossils: how-to flag a fossil table (A1, A3, A6)
+- outliers: how-to run the outlier, dataset and hotspot tests (A6 home)
 - coordinatecleaner: comparison (A1 home, relation home)
 - help pages: reference
 

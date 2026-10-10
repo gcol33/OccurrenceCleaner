@@ -22,6 +22,16 @@
 - stated-at: @p:qs.reference; @p:cc.mapping; ?flag_occurrences (`land_scale`); ?test_sea; vignettes/tests.Rmd (sea); vignettes/reference-data.Rmd (land scale)
 - note: verified against CoordinateCleaner 3.0.1 `formals()` on 2026-10-10
 
+### settings-vs-args
+- detail: CoordinateCleaner's outlier and dataset functions take their options as arguments (`method`, `mltpl`, `tdi`, `min_occs`, `thinning`, `size_thresh`, `replicates`, ...); `flag_occurrences()` takes them as `settings = list(<test> = list(...))`, same names and defaults
+- home: @p:cc.mapping
+- stated-at: ?flag_occurrences (`settings`); the six grouped test help pages (Settings); @p:readme.grouped; @p:out.methods; @p:fossil.outliers
+
+### grouped-test-names
+- detail: `clean_fossils()` names "temprange" and "spatiotemp", here `age_range_outlier` and `spatiotemporal_outlier` (and `age_outlier` for `cf_age()`); `clean_dataset()` names "ddmm" and "periodicity", here `dataset_ddmm` and `dataset_rounded`; `clean_coordinates()` "outliers", here `outlier`
+- home: @p:cc.test-names
+- stated-at: @p:fossil.outliers
+
 ## Terms
 
 ### flag
@@ -90,12 +100,64 @@
 - as: returns the points a proximity test uses, with their attributes
 - defined: @p:gaz.points; ?reference_points
 
+### grouped-test
+- forms: grouped test; the outlier and dataset tests; group pass
+- as: a test that judges a record against the other records of its species, taxon or dataset, run in a pass over the whole input before the record tests
+- defined: @p:out.opener
+- glossed: @p:readme.grouped ("judge a record against the rest of its species or dataset")
+- note: NEWS uses "grouped tests"; the README says "the outlier and dataset tests"
+
+### settings-argument
+- forms: `settings`
+- as: the argument of `flag_occurrences()` holding per-test option lists for the grouped tests, defaults CoordinateCleaner's
+- defined: ?flag_occurrences (`settings`); @p:out.methods
+- glossed: @p:readme.grouped; @p:readme.box
+
+### dataset-key
+- forms: dataset key; `datasetKey`; `dataset` field of `occ_columns()`
+- as: the column naming the dataset a record belongs to, GBIF's identifier of the publishing dataset by default
+- defined: @p:out.datasets
+
+### aohi
+- forms: `aohi`; Artificial Hotspot Occurrence Inventory; AHOI; artificial hotspot
+- as: coordinates that recur most often in GBIF records (Park et al. 2023); the test flags records within 10 km of one
+- defined: @p:out.aohi; ?test_aohi
+- glossed: @p:readme.tests
+
+### range-test
+- forms: `range`; species range; range polygons
+- as: flags records outside every range polygon of their species; polygons supplied as `gazetteers = list(range = <sf>)`
+- defined: @p:gaz.ranges; ?test_range
+- other-senses: `age_range_outlier` (width of a fossil age range); CoordinateCleaner's `cf_range()`
+
 ### unit
 - forms: unit; input unit; resumable unit
 - as: one input file of a streamed table, flagged and written as a whole, skipped on rerun when done
 - defined: @p:readme.snapshot; @p:qs.disk
 
 ## Quantities
+
+### test-count
+- metric: tests in the layout: 28 (11 coordinate record tests, `range`, `aohi`, `outlier`, 2 dataset tests, 4 fossil tests, 8 GBIF field tests); 20 ported from CoordinateCleaner; layout_version 3
+- source: `flag_tests()`
+- stated-at: NEWS.md; @p:tests.opener (eleven and eight here, nine elsewhere); @p:gbif.flag ("nineteen tests in the first bits")
+- note: README and DESCRIPTION give no count
+
+### aohi-points
+- metric: 308 points in the shipped AHOI layer
+- source: data-raw/aohi.R on the Dryad deposit doi:10.5061/dryad.v41ns1s0p
+- stated-at: none in prose
+
+### outliers-simulation
+- metric: 961 records of four species; 3 of 4 far records flagged by the quantile fence, 4 plus 15 clean by MAD; herbarium loses 6 (3 outliers, 4 near AHOI points, one both)
+- source: the outliers article's own chunks (set.seed(11))
+- stated-at: @p:out.data; @p:out.outlier; @p:out.methods; @p:out.rule; @p:out.guidance
+- note: prose constants; they go stale if the simulation changes
+
+### fossil-outliers-simulation
+- metric: `age_range_outlier` flags all 40 period-dated records; `age_outlier` 8 (10 with seed 7); `spatiotemporal_outlier` 3
+- source: the fossil article's own chunks
+- stated-at: @p:fossil.outliers
 
 ### speed-df
 - metric: seconds to flag a data frame, `default_tests()`, own reference
@@ -138,10 +200,21 @@
 ## Defaults
 
 ### buffers
-- argument: flag_occurrences(buffers): capital 10 km, centroid 1 km, institution 100 m, gbif_headquarters 1 km, zero 0.5 degrees
+- argument: flag_occurrences(buffers): capital 10 km, centroid 1 km, institution 100 m, gbif_headquarters 1 km, zero 0.5 degrees (range and aohi under range-aohi-buffers)
 - home: ?flag_occurrences (Tests section)
 - stated-at: @p:readme.tests; @p:qs.buffers; @p:tests.proximity; @p:ref.buffers
 - note: all agree with `.default_buffers` in R/flag.R (checked 2026-10-10)
+
+### grouped-settings
+- argument: flag_occurrences(settings): outlier method "quantile", mltpl 5, tdi 1000 km, min_occs 7, raster from 10,000 records at 0.5 degrees; fossil outlier tests method "quantile", mltpl 5, size_thresh 7, replicates 5; dataset_ddmm min_span 2; dataset_rounded min_unique_ds_size 4
+- home: the Settings sections of ?test_outlier, ?test_age_outlier, ?test_spatiotemporal_outlier, ?test_age_range_outlier, ?test_dataset_ddmm, ?test_dataset_rounded
+- stated-at: @p:out.outlier; @p:out.methods; @p:out.large; @p:out.guidance; @p:fossil.outliers
+
+### range-aohi-buffers
+- argument: flag_occurrences(buffers): range 0 m, aohi 10 km
+- home: ?test_range, ?test_aohi
+- stated-at: @p:readme.tests (aohi 10 km); @p:out.aohi; @p:gaz.ranges (100 km example)
+- note: `@param buffers` in ?flag_occurrences names only capital, centroid, institution, gbif_headquarters and zero
 
 ### land-scale
 - argument: flag_occurrences(land_scale = 110)

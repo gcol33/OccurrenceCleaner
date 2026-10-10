@@ -9,8 +9,10 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     <doi:10.1111/2041-210X.13152>) tailored to large-scale species occurrence
     data. Flags common problems in occurrence records, such as coordinates at
     country centroids, capitals or biodiversity institutions, zero or equal
-    coordinates, records at sea or in the wrong country, and duplicates, with
-    the same tests and default buffers as 'CoordinateCleaner'. It also reads
+    coordinates, records at sea, in the wrong country or outside the species
+    range, duplicates, outliers within a species, and datasets with converted
+    or gridded coordinates, with the same tests and defaults as
+    'CoordinateCleaner'. It also reads
     the quality warnings GBIF attaches to each record, the basis of record and
     the establishment means. Records are flagged and kept, and users choose
     afterwards which flags to filter on. Data frames of a few million records

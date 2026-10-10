@@ -6,7 +6,7 @@
 [![Codecov test coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https://app.codecov.io/gh/gcol33/OccurrenceCleaner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates.
+OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea, in the wrong country or outside the species range; duplicates; records far from the rest of their species; and datasets whose coordinates were converted from degrees and minutes or published on a grid.
 
 It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.
 
@@ -14,7 +14,7 @@ Records are flagged and kept, and users choose afterwards which flags to filter 
 
 The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package.
 
-The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
+The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers and settings; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
 Data frames containing a few million records are flagged in seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
 
@@ -57,6 +57,15 @@ tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
 
 `tally_flags()` gives, per group, the number of records each test flags and the number each rule removes and keeps. Year and coordinate uncertainty stay raw columns and are cut at tally time with `bins`.
 
+## Outliers and dataset tests
+
+The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in `settings`, with CoordinateCleaner's defaults:
+
+```r
+flag_occurrences(occ, tests = c("invalid", "outlier", "dataset_ddmm", "dataset_rounded"),
+                 settings = list(outlier = list(method = "mad")))
+```
+
 ## A whole GBIF snapshot
 
 The same verb streams an on-disk table through [vectra](https://cran.r-project.org/package=vectra): a directory of Parquet parts (a GBIF snapshot), a `.vtr` file, a delimited file or any `vectra_node`. Each input file is one resumable unit, and the flags are written as `.vtr` parts next to the columns you keep for grouping:
@@ -79,15 +88,15 @@ Rerunning the same call after an interruption skips the input files already fini
 
 ## What's in the box
 
-- **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out.
+- **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out. `buffers` sets the proximity distances and `settings` the options of the outlier and dataset tests, both with CoordinateCleaner's defaults.
 - **`tally_flags()`**: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.
 - **`summary()`**, **`plot()`**: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.
 - **`has_flag()`**, **`flag_mask()`**: which records a rule removes, read from the `flags` column.
 - **`flag_tests()`**: which bit of `flags` holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
-- **`occ_columns()`**: which columns hold which field; Darwin Core defaults, case-insensitive.
+- **`occ_columns()`**: which columns hold which field (coordinates, species, country code, fossil ages, dataset key, GBIF fields); Darwin Core defaults, case-insensitive.
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
-- **`reference_points()`**: the points a proximity test uses, to inspect, filter or extend and pass back through `gazetteers`.
+- **`reference_points()`**: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through `gazetteers`.
 - **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a vectra table.
 
 ## Tests
@@ -105,7 +114,15 @@ Rerunning the same call after an interruption skips the input files already fini
 | `urban` | inside an urban area | `cc_urb` |
 | `country_mismatch` | outside the country given by the record's country code | `cc_coun` |
 | `duplicate` | same coordinates and species as an earlier record | `cc_dupl` |
+| `range` | outside every range polygon of its species (user-supplied ranges) | `cc_iucn` |
+| `aohi` | within 10 km of an artificial hotspot (Park et al. 2023) | `cc_aohi` |
+| `outlier` | far from the other records of its species | `cc_outl` |
+| `dataset_ddmm` | in a dataset whose coordinates look converted from degrees and minutes | `cd_ddmm` |
+| `dataset_rounded` | in a dataset whose coordinates lie on a regular grid | `cd_round` |
 | `age_equal` | fossil minimum age equal to or greater than the maximum age | `cf_equal` |
+| `age_outlier` | fossil age far from the ages of its taxon | `cf_age` |
+| `spatiotemporal_outlier` | fossil far from its taxon in space and time | `cf_outl` |
+| `age_range_outlier` | fossil age range unusually wide | `cf_range` |
 | `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
@@ -121,6 +138,7 @@ The gazetteers are rebuilt from the original public sources (Natural Earth, publ
 - [Choosing a cleaning rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.html)
 - [Large tables on disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
 - [The tests in detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html)
+- [Outliers and dataset tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.html)
 - [Cleaning fossil records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.html)
 - [Reference data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html)
 - [Using custom gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html)
