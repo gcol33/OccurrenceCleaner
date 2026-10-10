@@ -152,7 +152,6 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | equal                 |      20 |  0.88 |    0 |
 | capital               |      75 |  3.30 |    0 |
 | centroid              |       9 |  0.40 |    0 |
-| institution           |      20 |  0.88 |    0 |
 | gbif_headquarters     |      15 |  0.66 |    0 |
 | sea                   |      44 |  1.93 |    1 |
 | urban                 |      80 |  3.51 |   19 |
@@ -204,10 +203,7 @@ GBIF-headquarters records are flagged by `gbif_headquarters` and
 because the point lies just off the 1:50m Natural Earth coastline of
 Denmark that the country test uses, while the 1:110m land of the `sea`
 test still covers it. The zero coordinates fail `zero`, `equal`, `sea`
-and `country_mismatch`, and also `institution`: three GRSciColl
-institutions (in Coimbra, Bornova and Hsinchu) are registered with
-coordinates within a few hundred metres of (0, 0), so the institution
-gazetteer itself carries the zero-coordinate error.
+and `country_mismatch`.
 
 The negated longitudes show the limit of the spatial tests. Only 18 of
 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
@@ -260,26 +256,26 @@ combo <- vapply(flagged$flags, function(w)
 knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tests", "records"))
 ```
 
-| tests                                                           | records |
-|:----------------------------------------------------------------|--------:|
-| capital + urban                                                 |      51 |
-| duplicate                                                       |      42 |
-| urban                                                           |      19 |
-| country_mismatch + issue_coordinate                             |      16 |
-| issue_taxon + issue_rounded                                     |      15 |
-| zero + equal + institution + sea + country_mismatch + duplicate |      15 |
-| establishment_managed                                           |      14 |
-| sea + country_mismatch                                          |      14 |
-| basis_living                                                    |      13 |
-| capital + gbif_headquarters + country_mismatch + duplicate      |      10 |
-| capital + centroid + urban                                      |       9 |
-| sea + country_mismatch + issue_coordinate                       |       9 |
+| tests                                                      | records |
+|:-----------------------------------------------------------|--------:|
+| capital + urban                                            |      51 |
+| duplicate                                                  |      42 |
+| urban                                                      |      19 |
+| country_mismatch + issue_coordinate                        |      16 |
+| issue_taxon + issue_rounded                                |      15 |
+| zero + equal + sea + country_mismatch + duplicate          |      15 |
+| establishment_managed                                      |      14 |
+| sea + country_mismatch                                     |      14 |
+| basis_living                                               |      13 |
+| capital + gbif_headquarters + country_mismatch + duplicate |      10 |
+| capital + centroid + urban                                 |       9 |
+| sea + country_mismatch + issue_coordinate                  |       9 |
 
 The most common combination is `capital + urban`: a capital lies inside
 its own urban area, so in a rule that already holds `capital`, adding
 `urban` removes only the city records more than 10 km from the capital
-point. 15 of the 20 zero-coordinate records carry six tests at once: the
-five above plus `duplicate`, since they share their coordinates and
+point. 15 of the 20 zero-coordinate records carry five tests at once:
+the four above plus `duplicate`, since they share their coordinates and
 often their species. Records with a single flag (`duplicate`,
 `issue_rounded`, `establishment_managed`, `basis_living`) are the ones a
 rule keeps or loses depending on whether that one test is in it.

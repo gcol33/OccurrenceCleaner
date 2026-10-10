@@ -48,8 +48,8 @@ Initial release.
 
 - Own gazetteers rebuilt from Natural Earth (capitals, country and
   province centroids, land at 1:110m and 1:50m, urban areas, countries)
-  and GBIF GRSciColl (institutions), each pinned by version and SHA-256
-  in
+  and GBIF GRSciColl (institutions, without the five entries the `zero`
+  test flags), each pinned by version and SHA-256 in
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md);
   the 1:10m land layer is fetched on demand by
   [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).

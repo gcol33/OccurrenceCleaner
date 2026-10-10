@@ -14,7 +14,7 @@ Initial release.
 * `has_flag()`, `flag_mask()`, `flag_tests()`, `default_tests()`.
 
 ## Reference data
-* Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions), each pinned by version and SHA-256 in `reference_info()`; the 1:10m land layer is fetched on demand by `download_reference()`.
+* Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions, without the five entries the `zero` test flags), each pinned by version and SHA-256 in `reference_info()`; the 1:10m land layer is fetched on demand by `download_reference()`.
 * `reference = "CoordinateCleaner"` reads that package's tables at run time and reproduces its flags; the equivalence suite documents every difference.
 * `gazetteers` in `flag_occurrences()` replaces the reference layer of single tests with user points (data frame) or polygons (`sf`/`sfc`), as the `ref` arguments of CoordinateCleaner's functions; the layer's size and MD5 checksum are recorded in the reference label.
 * `reference_points()` returns the points of a proximity test with their attributes, to inspect, filter or extend.

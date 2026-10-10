@@ -279,7 +279,7 @@ Per error type:</p>
 <td align="left">zero</td>
 <td align="right">10</td>
 <td align="right">0</td>
-<td align="right">10</td>
+<td align="right">0</td>
 <td align="right">10</td>
 <td align="right">0</td>
 </tr>
@@ -289,10 +289,8 @@ Per error type:</p>
 <code>age_equal</code>, and only by it. The period-dated records are
 not: a range from 23 to 66 Ma is wide, but valid. The zero coordinates
 also fail <code>country_mismatch</code>, since (0, 0) is in the Gulf of
-Guinea, and <code>institution</code>, because three GRSciColl
-institutions are registered at coordinates within a few hundred metres
-of (0, 0). The museum records kept the country code of their locality,
-so most of them also fail <code>country_mismatch</code>; the 7 at the
+Guinea. The museum records kept the country code of their locality, so
+most of them also fail <code>country_mismatch</code>; the 7 at the
 London museum also lie within 1 km of the admin-1 label point of
 Kensington and Chelsea. The 10 clean records flagged by
 <code>country_mismatch</code> are real border cases: the German box

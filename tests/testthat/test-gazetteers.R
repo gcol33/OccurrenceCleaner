@@ -84,3 +84,9 @@ test_that("custom gazetteers give CoordinateCleaner's flags with the same ref", 
   expect_identical(flag_occurrences(y, tests = "sea", gazetteers = list(sea = land))$flag_sea,
                    cc(CoordinateCleaner::cc_sea, y, ref = land))
 })
+
+test_that("no shipped institution lies at coordinates the zero test flags", {
+  inst <- reference_points("institution")
+  f <- flag_occurrences(data.frame(decimalLongitude = inst$lon, decimalLatitude = inst$lat), tests = "zero")
+  expect_false(any(f$flag_zero))
+})

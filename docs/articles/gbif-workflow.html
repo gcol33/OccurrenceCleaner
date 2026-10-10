@@ -258,72 +258,66 @@ their percentage, and the records for which it is the only flag:</p>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">institution</td>
-<td align="right">20</td>
-<td align="right">0.88</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
 <td align="left">gbif_headquarters</td>
 <td align="right">15</td>
 <td align="right">0.66</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sea</td>
 <td align="right">44</td>
 <td align="right">1.93</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">urban</td>
 <td align="right">80</td>
 <td align="right">3.51</td>
 <td align="right">19</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">country_mismatch</td>
 <td align="right">79</td>
 <td align="right">3.47</td>
 <td align="right">5</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">duplicate</td>
 <td align="right">87</td>
 <td align="right">3.82</td>
 <td align="right">42</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">issue_coordinate</td>
 <td align="right">25</td>
 <td align="right">1.10</td>
 <td align="right">0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">issue_taxon</td>
 <td align="right">20</td>
 <td align="right">0.88</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">issue_rounded</td>
 <td align="right">20</td>
 <td align="right">0.88</td>
 <td align="right">0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">basis_living</td>
 <td align="right">20</td>
 <td align="right">0.88</td>
 <td align="right">13</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">establishment_managed</td>
 <td align="right">21</td>
 <td align="right">0.92</td>
 <td align="right">14</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">(any)</td>
 <td align="right">263</td>
 <td align="right">11.56</td>
@@ -527,10 +521,7 @@ and <code>capital</code> (Copenhagen is within 10 km), and by
 Natural Earth coastline of Denmark that the country test uses, while the
 1:110m land of the <code>sea</code> test still covers it. The zero
 coordinates fail <code>zero</code>, <code>equal</code>, <code>sea</code>
-and <code>country_mismatch</code>, and also <code>institution</code>:
-three GRSciColl institutions (in Coimbra, Bornova and Hsinchu) are
-registered with coordinates within a few hundred metres of (0, 0), so
-the institution gazetteer itself carries the zero-coordinate error.</p>
+and <code>country_mismatch</code>.</p>
 <p>The negated longitudes show the limit of the spatial tests. Only 18
 of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
@@ -2931,10 +2922,6 @@ flag word makes the combinations easy to count: each distinct value of
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">combo</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">12</span><span class="op">)</span>, col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tests"</span>, <span class="st">"records"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="88%">
-<col width="11%">
-</colgroup>
 <thead><tr class="header">
 <th align="left">tests</th>
 <th align="right">records</th>
@@ -2961,8 +2948,7 @@ flag word makes the combinations easy to count: each distinct value of
 <td align="right">15</td>
 </tr>
 <tr class="even">
-<td align="left">zero + equal + institution + sea + country_mismatch +
-duplicate</td>
+<td align="left">zero + equal + sea + country_mismatch + duplicate</td>
 <td align="right">15</td>
 </tr>
 <tr class="odd">
@@ -2996,7 +2982,7 @@ duplicate</td>
 capital lies inside its own urban area, so in a rule that already holds
 <code>capital</code>, adding <code>urban</code> removes only the city
 records more than 10 km from the capital point. 15 of the 20
-zero-coordinate records carry six tests at once: the five above plus
+zero-coordinate records carry five tests at once: the four above plus
 <code>duplicate</code>, since they share their coordinates and often
 their species. Records with a single flag (<code>duplicate</code>,
 <code>issue_rounded</code>, <code>establishment_managed</code>,
@@ -3105,9 +3091,9 @@ tests in the rule remove anyway:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwyODguMDA=)'>
-<rect x='149.04' y='202.41' width='33.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='149.04' y='185.46' width='56.23' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='149.04' y='168.51' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='149.04' y='202.41' width='0.00' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='149.04' y='185.46' width='33.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='149.04' y='168.51' width='56.23' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='151.56' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='134.61' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='117.66' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
@@ -3115,11 +3101,11 @@ tests in the rule remove anyway:</p>
 <rect x='149.04' y='83.76' width='164.94' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='66.82' width='281.14' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='49.87' width='296.14' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<text x='134.64' y='213.77' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
-<text x='134.64' y='196.82' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
-<text x='134.64' y='179.87' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
-<text x='134.64' y='162.92' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
-<text x='134.64' y='145.97' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
+<text x='134.64' y='213.77' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
+<text x='134.64' y='196.82' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
+<text x='134.64' y='179.87' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
+<text x='134.64' y='162.92' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
+<text x='134.64' y='145.97' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
 <text x='134.64' y='129.02' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_taxon</text>
 <text x='134.64' y='112.07' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_coordinate</text>
 <text x='134.64' y='95.13' text-anchor='end' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>sea</text>
@@ -3145,9 +3131,9 @@ tests in the rule remove anyway:</p>
 <rect x='149.04' y='83.76' width='3.75' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='66.82' width='191.18' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='49.87' width='18.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<text x='189.98' y='211.76' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.4</text>
-<text x='212.47' y='194.81' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.7</text>
-<text x='231.21' y='177.86' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.9</text>
+<text x='156.24' y='211.76' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text x='189.98' y='194.81' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.4</text>
+<text x='212.47' y='177.86' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.7</text>
 <text x='231.21' y='160.91' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.9</text>
 <text x='231.21' y='143.96' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.9</text>
 <text x='231.21' y='127.01' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.9</text>

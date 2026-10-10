@@ -129,7 +129,7 @@ summary(f)
 #>   all             equal 3120      40  1.28    0     0.00
 #>   all           capital 3120     160  5.13  124     3.97
 #>   all          centroid 3120      16  0.51    1     0.03
-#>   all       institution 3120      40  1.28    0     0.00
+#>   all       institution 3120       0  0.00    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
 #>   all               sea 3120     105  3.37   52     1.67
 #>   all         duplicate 3120     130  4.17   92     2.95
@@ -147,13 +147,13 @@ records. The row `(any)` is the rule itself, the records that carry at
 least one of its tests.
 
 A record can fail several tests at once. The 40 records at (0, 0) are
-flagged by `zero`, `equal` (\|0\| = \|0\|), `sea` and `institution`, so
-none of them is counted under `only`. The per-test shares therefore add
-up to more than the rule’s total, while the `only` shares add up to at
-most that total; the difference is the records removed for more than one
-reason. Both figures are needed to say why records are lost: `pct` is
-how often a problem occurs, `pct_only` is how much of the loss would
-disappear without that test.
+flagged by `zero`, `equal` (\|0\| = \|0\|) and `sea`, so none of them is
+counted under `only`. The per-test shares therefore add up to more than
+the rule’s total, while the `only` shares add up to at most that total;
+the difference is the records removed for more than one reason. Both
+figures are needed to say why records are lost: `pct` is how often a
+problem occurs, `pct_only` is how much of the loss would disappear
+without that test.
 
 The same numbers as a plot: the full bar is `pct`, the dark part
 `pct_only`.
@@ -196,10 +196,9 @@ plot(s, rule = "cc")
 
 ![](rules_files/figure-html/unnamed-chunk-9-1.svg)
 
-In this example every record the institution test flags is also flagged
-by `zero`: GBIF’s registry of scientific collections holds an entry
-geocoded about 11 m from (0, 0), so each zero-coordinate record also
-lies within 100 m of an institution. The capital test, by contrast, is
+Under `cc`, no record at (0, 0) is counted under `only`, since `zero`,
+`equal` and `sea` all flag it; dropping any one of the three from the
+rule keeps every such record removed. The capital test, by contrast, is
 the sole reason for most of its records.
 
 ### By group

@@ -58,7 +58,7 @@ inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
 #>              Herbarium                 Museum      UniversityCollege 
-#>                   2983                    683                    286 
+#>                   2982                    682                    284 
 #> OtherInstitutionalType            ZooAquarium        BotanicalGarden 
 #>                    152                    122                     87
 ```
@@ -81,7 +81,7 @@ use a wider buffer for them:
 
 herbaria <- inst[inst$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 2983
+#> [1] 2982
 near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -189,7 +189,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09); custom: institution 2983 points md5 7d490d60f19912d8df72119163656e18"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

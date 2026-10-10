@@ -253,10 +253,15 @@ points, admin-1 label points</td>
 terms of use say that “No permission is needed to use Natural Earth.”
 The institutions come from the bulk export of GBIF’s Global Registry of
 Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002
-institutions, of which 6,085 have coordinates. GRSciColl absorbed the
-Global Registry of Biodiversity Repositories (GRBio) in 2018 and is
-synchronised weekly with Index Herbariorum. GBIF publishes the registry
-through its open API and states no separate licence for it.</p>
+institutions, of which 6,085 have coordinates. The five of these that
+the <code>zero</code> test would flag are left out: four are registered
+within 0.14 degrees of (0, 0), although they are in Portugal, Nigeria,
+Turkey and Taiwan, and one has a longitude of exactly 0. Kept, they
+would mark every record at (0, 0) as lying at an institution as well.
+GRSciColl absorbed the Global Registry of Biodiversity Repositories
+(GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF
+publishes the registry through its open API and states no separate
+licence for it.</p>
 <p>The layers are rebuilt from the sources CoordinateCleaner itself
 draws on, by the scripts in <code>data-raw/</code> of the source
 repository; CoordinateCleaner’s code and data are GPL-3, and nothing is
@@ -302,7 +307,8 @@ Natural Earth 5.1.1)</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">6,085 (GRSciColl)</td>
+<td align="left">6,080 (GRSciColl, without the five at zero
+coordinates)</td>
 </tr>
 </tbody>
 </table>

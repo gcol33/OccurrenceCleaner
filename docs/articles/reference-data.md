@@ -59,10 +59,14 @@ All Natural Earth layers are in the public domain; the Natural Earth
 terms of use say that “No permission is needed to use Natural Earth.”
 The institutions come from the bulk export of GBIF’s Global Registry of
 Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002
-institutions, of which 6,085 have coordinates. GRSciColl absorbed the
-Global Registry of Biodiversity Repositories (GRBio) in 2018 and is
-synchronised weekly with Index Herbariorum. GBIF publishes the registry
-through its open API and states no separate licence for it.
+institutions, of which 6,085 have coordinates. The five of these that
+the `zero` test would flag are left out: four are registered within 0.14
+degrees of (0, 0), although they are in Portugal, Nigeria, Turkey and
+Taiwan, and one has a longitude of exactly 0. Kept, they would mark
+every record at (0, 0) as lying at an institution as well. GRSciColl
+absorbed the Global Registry of Biodiversity Repositories (GRBio) in
+2018 and is synchronised weekly with Index Herbariorum. GBIF publishes
+the registry through its open API and states no separate licence for it.
 
 The layers are rebuilt from the sources CoordinateCleaner itself draws
 on, by the scripts in `data-raw/` of the source repository;
@@ -80,7 +84,7 @@ same tables. Measured on 2026-10-09:
 | capitals | 225 (one per ISO3 code) | 243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals) |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and geo-locate | 516 (polygon centroid and label point per country, Natural Earth 5.1.1) |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,596 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 6,085 (GRSciColl) |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 6,080 (GRSciColl, without the five at zero coordinates) |
 
 - **Capitals.** 212 countries match by ISO3 code. The median distance
   between the two packages’ capital points for the same country is 0.92

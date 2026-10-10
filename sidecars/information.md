@@ -115,14 +115,19 @@
 - stated-at: @p:cc.agreement
 
 ### gbif-simulation
-- metric: counts from the seeded simulation in the GBIF workflow article (263 of 2,276 records flagged; ladder 119, +21, +20, +41, +62; 1,998 clean kept; 15 of 20 zero records with six tests)
+- metric: counts from the seeded simulation in the GBIF workflow article (263 of 2,276 records flagged; ladder 119, +21, +20, +41, +62; 1,998 clean kept; 15 of 20 zero records with five tests)
 - source: the article's own chunks (set.seed(42))
 - stated-at: @p:gbif.flag; @p:gbif.truth; @p:gbif.combos; @p:gbif.ladder; @p:gbif.cleaned
 - note: recomputed on committed HEAD 7b9d944 on 2026-10-10; all hard-coded values matched except the negated-record catch (18, not 17), now computed inline as `neg_caught`. The other values are prose constants and go stale if the simulation changes
 
 ### rules-simulation
-- metric: the 40 zero records and the institution overlap in the rules article
-- source: the article's own chunks (set.seed(42)); GRSciColl entry about 11 m from (0, 0)
+- metric: the 40 zero records, flagged by `zero`, `equal` and `sea`, so none counted under `only`, in the rules article
+- source: the article's own chunks (set.seed(42))
+
+### institution-zero-entries
+- metric: 5 GRSciColl institutions with zero coordinates dropped from the gazetteer (4 within 0.14 degrees of (0, 0), 1 at longitude exactly 0); 6,080 of 6,085 with coordinates shipped
+- source: data-raw/institutions.R on the 2026-10-09 export; decided 2026-10-10
+- stated-at: @p:ref.layers; @p:ref.vs-cc; ?test_institution
 - stated-at: @p:rules.per-test; @p:rules.compare
 
 ### buffer-band

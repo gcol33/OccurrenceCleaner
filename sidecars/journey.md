@@ -329,7 +329,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### rules.compare  [A3]  (section)
 - idea: three candidate rules
 - job: Compares three rules and shows which tests are the sole reason for removals.
-- leaves: named rules in `summary()`; the institution test overlaps `zero` here
+- leaves: named rules in `summary()`; records failing several tests count under no `only`
 
 ### rules.by-group  [A3]  (section)
 - idea: by kingdom
@@ -471,7 +471,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### ref.layers  [A5]  (section)
 - idea: sources, versions, licences
 - job: Lists each layer with source and version, which test reads it, and the licences.
-- leaves: Natural Earth public domain; GRSciColl counts and status; nothing copied from CoordinateCleaner
+- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; nothing copied from CoordinateCleaner
 
 ### ref.vs-cc  [A1 A5]  (section)
 - idea: same places, different tables

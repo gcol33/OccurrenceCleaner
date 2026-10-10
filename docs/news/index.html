@@ -89,7 +89,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="reference-data-0-1-0">Reference data<a class="anchor" aria-label="anchor" href="#reference-data-0-1-0"></a></h3>
-<ul><li>Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions), each pinned by version and SHA-256 in <code><a href="../reference/reference_info.html">reference_info()</a></code>; the 1:10m land layer is fetched on demand by <code><a href="../reference/download_reference.html">download_reference()</a></code>.</li>
+<ul><li>Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions, without the five entries the <code>zero</code> test flags), each pinned by version and SHA-256 in <code><a href="../reference/reference_info.html">reference_info()</a></code>; the 1:10m land layer is fetched on demand by <code><a href="../reference/download_reference.html">download_reference()</a></code>.</li>
 <li>
 <code>reference = "CoordinateCleaner"</code> reads that package’s tables at run time and reproduces its flags; the equivalence suite documents every difference.</li>
 <li>
