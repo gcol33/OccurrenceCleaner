@@ -21,6 +21,15 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height
 
 4. **Apply** the chosen rule, `has_flag()`.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ## Example
 
 ```{r setup, message = FALSE, warning = FALSE}

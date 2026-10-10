@@ -15,6 +15,15 @@ has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 
 Seven of the tests compare a record with reference data: points (capitals, country and province centroids, biodiversity institutions) and polygons (land, urban areas, countries). This article lists where each layer comes from, how the package's own gazetteers compare with CoordinateCleaner's, how much the choice of land scale changes the `sea` test, and how the reference version is recorded with the flags.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```

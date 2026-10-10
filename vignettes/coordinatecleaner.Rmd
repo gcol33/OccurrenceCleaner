@@ -15,6 +15,15 @@ has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE) &&
 
 OccurrenceCleaner runs the record tests of CoordinateCleaner (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the same definitions and default buffers, and writes the result as flags instead of filtering. This article maps each CoordinateCleaner function to its test here, runs both packages on the same records, lists every case where the flags differ and why, and names the CoordinateCleaner functions that have no counterpart. The chunks that call CoordinateCleaner run only when it is installed; it is a suggested package, not a dependency.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```

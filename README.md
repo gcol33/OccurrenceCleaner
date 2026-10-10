@@ -12,6 +12,17 @@ Records are flagged and kept, and users choose afterwards which flags to filter 
 
 The test suite checks that both packages return the same flags with the same default buffers. Data frames containing a few million records are flagged in seconds, and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
 
+## Installation
+
+```r
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
+## Flag a data frame
+
 ```r
 library(OccurrenceCleaner)
 
@@ -92,15 +103,6 @@ Rerunning the same call after an interruption skips the input files already fini
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly. The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions); `reference = "CoordinateCleaner"` reads that package's own tables instead and reproduces its flags. The documented differences, each enforced by a test, are in `?flag_occurrences`.
-
-## Installation
-
-```r
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler (Rtools on Windows).
 
 ## Documentation
 

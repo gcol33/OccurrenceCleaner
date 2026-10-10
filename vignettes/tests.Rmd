@@ -15,6 +15,15 @@ has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 
 This article goes through the nineteen tests one by one: what each computes, which fields it reads, where its edge lies, and how its result can be changed through an argument. The first eleven reproduce the record tests of CoordinateCleaner (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default buffers; the other eight read GBIF fields and are additions of this package.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```

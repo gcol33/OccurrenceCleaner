@@ -13,6 +13,15 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 OccurrenceCleaner flags errors in species occurrence records and keeps every record. Each test sets one bit in an integer flag word, so deciding which records to drop is a query over the flags, made after the pass and changed without rerunning it.
 
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ```{r setup}
 library(OccurrenceCleaner)
 ```
