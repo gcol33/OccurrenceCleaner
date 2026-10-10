@@ -9,9 +9,9 @@ buffers, up to the differences listed in the article Coming from
 CoordinateCleaner, and eight read GBIF fields and are additions of this
 package. The other nine tests of the layout are covered elsewhere: the
 four fossil tests in the fossil article, the geographic outlier and the
-two dataset tests in the article on outliers and dataset tests, and
-`range` and `aohi` in the article on custom gazetteers. Each test also
-has a help page of its own
+two dataset tests in the article on outliers and dataset tests, `range`
+in the article on custom gazetteers, and `aohi` in the article on
+outliers and dataset tests. Each test also has a help page of its own
 ([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
 …).

@@ -643,7 +643,7 @@ flags:</p>
 <code class="sourceCode R"><span><span class="va">theirs</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu">CoordinateCleaner</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal</a></span><span class="op">(</span><span class="va">fos</span>, value <span class="op">=</span> <span class="st">"flagged"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flag_age_equal</span>, <span class="va">theirs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>The outlier tests below are compared with <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>,
+<p>The outlier tests above are compared with <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>,
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code> in the package’s test
 suite: <code>age_range_outlier</code> gives identical flags, and the two
 tests that draw ages give identical flags when no age has to be

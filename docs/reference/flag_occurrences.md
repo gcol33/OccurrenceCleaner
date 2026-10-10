@@ -77,9 +77,10 @@ flag_occurrences(
 
 - buffers:
 
-  Named list overriding buffer distances in metres for `capital`,
-  `centroid`, `institution`, `gbif_headquarters`, or in degrees for
-  `zero`. Unnamed entries keep the defaults.
+  Named list overriding buffer distances in metres for `capital`
+  (10000), `centroid` (1000), `institution` (100), `gbif_headquarters`
+  (1000), `range` (0) and `aohi` (10000), or in degrees for `zero`
+  (0.5). Unnamed entries keep the defaults.
 
 - settings:
 

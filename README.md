@@ -66,6 +66,14 @@ flag_occurrences(occ, tests = c("invalid", "outlier", "dataset_ddmm", "dataset_r
                  settings = list(outlier = list(method = "mad")))
 ```
 
+Fossil records from the Paleobiology Database add an age test and the outlier tests of `clean_fossils()`, with the PBDB column names given once:
+
+```r
+flag_occurrences(pbdb, tests = c("invalid", "zero", "centroid", "institution", "age_equal",
+                                 "age_range_outlier", "spatiotemporal_outlier"),
+                 columns = occ_columns(lon = "lng", lat = "lat", species = "accepted_name"))
+```
+
 ## A whole GBIF snapshot
 
 The same verb streams an on-disk table through [vectra](https://cran.r-project.org/package=vectra): a directory of Parquet parts (a GBIF snapshot), a `.vtr` file, a delimited file or any `vectra_node`. Each input file is one resumable unit, and the flags are written as `.vtr` parts next to the columns you keep for grouping:

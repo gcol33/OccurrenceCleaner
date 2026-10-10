@@ -52,8 +52,9 @@ uses \code{seas_scale = 50}), 50, or 10 (downloaded on first use, see
 \code{\link[=download_reference]{download_reference()}}).}
 
 \item{buffers}{Named list overriding buffer distances in metres for
-\code{capital}, \code{centroid}, \code{institution}, \code{gbif_headquarters}, or in degrees
-for \code{zero}. Unnamed entries keep the defaults.}
+\code{capital} (10000), \code{centroid} (1000), \code{institution} (100),
+\code{gbif_headquarters} (1000), \code{range} (0) and \code{aohi} (10000), or in degrees
+for \code{zero} (0.5). Unnamed entries keep the defaults.}
 
 \item{settings}{Named list overriding the options of the grouped tests,
 one entry per test, each a named list; unnamed options keep their

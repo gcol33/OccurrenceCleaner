@@ -78,8 +78,9 @@
 #'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see
 #'   [download_reference()]).
 #' @param buffers Named list overriding buffer distances in metres for
-#'   `capital`, `centroid`, `institution`, `gbif_headquarters`, or in degrees
-#'   for `zero`. Unnamed entries keep the defaults.
+#'   `capital` (10000), `centroid` (1000), `institution` (100),
+#'   `gbif_headquarters` (1000), `range` (0) and `aohi` (10000), or in degrees
+#'   for `zero` (0.5). Unnamed entries keep the defaults.
 #' @param settings Named list overriding the options of the grouped tests,
 #'   one entry per test, each a named list; unnamed options keep their
 #'   defaults, which are CoordinateCleaner's. See [test_outlier],

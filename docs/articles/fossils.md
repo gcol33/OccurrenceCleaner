@@ -304,7 +304,7 @@ identical(f$flag_age_equal, theirs)
 #> [1] TRUE
 ```
 
-The outlier tests below are compared with
+The outlier tests above are compared with
 [`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html),
 [`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
 and

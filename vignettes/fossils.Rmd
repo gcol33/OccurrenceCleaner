@@ -177,7 +177,7 @@ theirs <- !CoordinateCleaner::cf_equal(fos, value = "flagged", verbose = FALSE)
 identical(f$flag_age_equal, theirs)
 ```
 
-The outlier tests below are compared with `cf_age()`, `cf_outl()` and `cf_range()` in the package's test suite: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
+The outlier tests above are compared with `cf_age()`, `cf_outl()` and `cf_range()` in the package's test suite: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
 
 ## Fossils in GBIF data
 
