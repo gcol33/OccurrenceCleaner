@@ -8,14 +8,31 @@ Initial release.
 
 - [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md):
   one verb for a data frame or an on-disk table (Parquet directory,
-  `.vtr`, delimited file, or any `vectra_node`). Twenty tests, one bit
-  each in an integer flag word; nothing is dropped.
+  `.vtr`, delimited file, or any `vectra_node`). Twenty-eight tests, one
+  bit each in an integer flag word; nothing is dropped.
 - Twelve tests reproduce CoordinateCleaner’s record tests with its
   default buffers (`invalid`, `zero`, `equal`, `capital`, `centroid`,
   `institution`, `gbif_headquarters`, `sea`, `urban`,
   `country_mismatch`, `duplicate`, and the fossil age test `age_equal`,
   as
   [`cf_equal()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html));
+  eight more are CoordinateCleaner’s grouped and reference tests:
+  `outlier`
+  ([`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)),
+  `age_outlier`
+  ([`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html)),
+  `spatiotemporal_outlier`
+  ([`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)),
+  `age_range_outlier`
+  ([`cf_range()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html)),
+  `dataset_ddmm`
+  ([`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html)),
+  `dataset_rounded`
+  ([`cd_round()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html)),
+  `range`
+  ([`cc_iucn()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_iucn.html),
+  with user range polygons) and `aohi`
+  ([`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html));
   eight read GBIF fields (`issue_coordinate`, `issue_taxon`,
   `issue_date`, `issue_rounded`, `basis_fossil`, `basis_living`,
   `establishment_introduced`, `establishment_managed`). Tests read from
@@ -26,6 +43,14 @@ Initial release.
   external library.
 - Streamed input is processed per file, written as `.vtr` parts with the
   kept columns, and resumable.
+- The grouped tests (`outlier`, the fossil outlier tests, the dataset
+  tests) run in a group pass over the whole input before the record
+  tests; on streamed input it reads every file, buckets small groups on
+  disk and keeps its result for a resumed run. Their options, with
+  CoordinateCleaner’s defaults, go in `settings`. `outlier` flags the
+  records of outlier cells on the raster approximation for large
+  species, where CoordinateCleaner 3.0.1 flags none; the fossil tests
+  seed their age draws per taxon.
 
 ### Rules and tallies
 
@@ -53,6 +78,9 @@ Initial release.
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md);
   the 1:10m land layer is fetched on demand by
   [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).
+- The Artificial Hotspot Occurrence Inventory (Park et al. 2023) is
+  built from its Dryad deposit (CC0) for the `aohi` test and returned by
+  `reference_points("aohi")`.
 - `reference = "CoordinateCleaner"` reads that package’s tables at run
   time and reproduces its flags; the equivalence suite documents every
   difference.

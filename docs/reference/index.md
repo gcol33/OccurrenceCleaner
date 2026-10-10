@@ -41,6 +41,22 @@
   : Tests: establishment means
 - [`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
   : Test: fossil age range
+- [`test_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md)
+  : Test: geographic outliers
+- [`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md)
+  : Test: fossil age outliers
+- [`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md)
+  : Test: fossil outliers in space and time
+- [`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md)
+  : Test: fossil age-range outliers
+- [`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md)
+  : Test: degree-minute conversion errors in a dataset
+- [`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md)
+  : Test: rasterised datasets
+- [`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md)
+  : Test: outside the species range
+- [`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
+  : Test: artificial hotspots
 
 ## Rules and tallies
 

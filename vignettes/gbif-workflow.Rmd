@@ -98,10 +98,10 @@ The `issue` column holds GBIF's issue names separated by `;`, which is how both 
 
 ## Flagging every test once
 
-Nineteen of the twenty tests can run here, because the table has coordinates, a species, a country code and the three GBIF fields; the twentieth, `age_equal`, needs fossil ages (see the fossil article). `occ_columns()` only needs to be told the identifier, since the other defaults match case-insensitively:
+The nineteen tests in the first bits of the layout can run here, because the table has coordinates, a species, a country code and the three GBIF fields. The others need fossil ages, a dataset key or species ranges, or compare records within a species; the articles on fossils, on outliers and dataset tests, and on custom gazetteers cover them. `occ_columns()` only needs to be told the identifier, since the other defaults match case-insensitively:
 
 ```{r flag}
-all_tests <- setdiff(flag_tests()$test, "age_equal")
+all_tests <- flag_tests()$test[flag_tests()$bit < 19]
 f <- flag_occurrences(occ, tests = all_tests, columns = occ_columns(id = "gbifid"))
 dim(f)
 attr(f, "occ_reference")

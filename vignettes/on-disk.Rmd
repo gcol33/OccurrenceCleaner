@@ -160,12 +160,13 @@ h$n
 
 ## A GBIF snapshot
 
-GBIF's Parquet snapshot (the `occurrence.parquet` directory) holds the Darwin Core terms in lower case, which the case-insensitive defaults of `occ_columns()` find. A pass over every test except the fossil age test, keeping the columns a loss analysis groups by:
+GBIF's Parquet snapshot (the `occurrence.parquet` directory) holds the Darwin Core terms in lower case, which the case-insensitive defaults of `occ_columns()` find. A pass over every test the snapshot supports, which is all but the fossil tests and the range test, keeping the columns a loss analysis groups by. The grouped tests (`outlier` and the two dataset tests, which read `datasetkey`) add a pass over all files before the record pass:
 
 ```{r snapshot, eval = FALSE}
 f <- flag_occurrences(
   "gbif_snapshot/occurrence.parquet",
-  tests = setdiff(flag_tests()$test, "age_equal"),
+  tests = setdiff(flag_tests()$test, c("age_equal", "age_outlier", "spatiotemporal_outlier",
+                                       "age_range_outlier", "range")),
   out = "flags",
   keep = c("kingdom", "phylum", "class", "year", "coordinateuncertaintyinmeters"),
   land_scale = 50)

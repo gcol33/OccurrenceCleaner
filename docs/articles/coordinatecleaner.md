@@ -1,14 +1,13 @@
 # Coming from CoordinateCleaner
 
-OccurrenceCleaner runs the record tests of CoordinateCleaner (Zizka et
+OccurrenceCleaner runs the tests of CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the same
-definitions and default buffers, and writes the result as flags instead
+definitions and default settings, and writes the result as flags instead
 of filtering. This article maps each CoordinateCleaner function to its
 test here, runs both packages on the same records, lists every case
-where the flags differ and why, and names the CoordinateCleaner
-functions that have no counterpart. The chunks that call
-CoordinateCleaner run only when it is installed; it is a suggested
-package, not a dependency.
+where the flags differ and why, and names the parts of CoordinateCleaner
+that have no counterpart. The chunks that call CoordinateCleaner run
+only when it is installed; it is a suggested package, not a dependency.
 
 ## Installation
 
@@ -41,8 +40,17 @@ library(OccurrenceCleaner)
 | cc_coun() | country_mismatch |
 | cc_dupl() | duplicate |
 | cf_equal() | age_equal |
-| clean_coordinates() | flag_occurrences(x, tests = …) |
+| cc_outl() | outlier |
+| cf_age() | age_outlier |
+| cf_outl() | spatiotemporal_outlier |
+| cf_range(method = “quantile” or “mad”) | age_range_outlier |
+| cd_ddmm() | dataset_ddmm |
+| cd_round() | dataset_rounded |
+| cc_iucn() | range |
+| cc_aohi() | aohi |
+| clean_coordinates(), clean_fossils(), clean_dataset() | flag_occurrences(x, tests = …) |
 | buffer arguments (capitals_rad, …) | buffers = list(capital = …) |
+| method, mltpl, size_thresh, replicates, … of the outlier and dataset tests | settings = list(outlier = list(method = …), …) |
 | ref arguments (cc_cap(ref = …), cc_sea(ref = …), …) | gazetteers = list(capital = …, sea = …) |
 | cf_range(method = “time”, max_range = …) | tally_flags(bins = …) on max_ma - min_ma |
 | additions (cc_dupl) | duplicate_by |
@@ -73,7 +81,12 @@ also choose tests by name, but the names differ:
 | seas | sea |
 | urban | urban |
 | zeros | zero |
+| outliers | outlier |
 | agesequal ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | age_equal |
+| spatiotemp ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | spatiotemporal_outlier |
+| temprange ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | age_range_outlier |
+| ddmm ([`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html)) | dataset_ddmm |
+| periodicity ([`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html)) | dataset_rounded |
 
 The check for missing or out-of-range coordinates has no name in
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
@@ -254,6 +267,63 @@ the `invalid` bit and no other spatial bit, so a rule that holds
 `invalid` removes it and a rule without `invalid` sees no spatial flag
 on it.
 
+### Outliers of large species
+
+[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
+tests species of 10,000 records or more, and every species with
+`thinning = TRUE`, on a raster approximation: it counts records per cell
+of a 0.5-degree grid, computes the distance statistics between cells,
+and selects the outlier cells. In CoordinateCleaner 3.0.1 the last step,
+which turns the outlier cells back into records, compares a data frame
+with the cell numbers as a whole and matches nothing, so that path never
+flags a record. Twenty records 1,000 km from the other 11,980 of their
+species show it:
+
+``` r
+
+set.seed(1)
+n <- 12000
+r <- data.frame(species = "a", decimalLongitude = c(runif(n - 20, 10, 20), runif(20, 120, 130)),
+                decimalLatitude = c(runif(n - 20, 40, 50), runif(20, -30, -20)))
+c(cc_flagged = sum(!CoordinateCleaner::cc_outl(r, value = "flagged", verbose = FALSE)),
+  oc_flagged = sum(flag_occurrences(r, tests = "outlier")$flag_outlier))
+#> cc_flagged oc_flagged 
+#>          0         20
+```
+
+`outlier` uses the same grid, weights and statistics and flags the
+records of the outlier cells. Below 10,000 records, where
+[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
+computes exact distances, the two give identical flags.
+
+### Random age draws
+
+[`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html)
+and
+[`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
+draw one age from each record’s range, repeat the test five times and
+keep the majority. CoordinateCleaner draws from the session’s random
+stream in the order of the input, so its flags change with the seed and
+the row order. `age_outlier` and `spatiotemporal_outlier` draw from a
+stream seeded per taxon
+(`settings = list(age_outlier = list(seed = ...))`) in an order fixed by
+the records’ content, so the same records give the same flags in any
+order and split into any files. Both follow the same distribution; when
+every age range has zero width nothing is drawn and the flags are
+identical.
+
+### Small datasets
+
+[`cd_round()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html)
+skips datasets with fewer than `min_unique_ds_size` distinct
+coordinates, but in version 3.0.1 an input holding such a dataset next
+to larger ones stops with an error when the per-dataset results are
+combined. `dataset_rounded` leaves the small dataset untested and tests
+the others. Records without a dataset key are not flagged by either
+dataset test;
+[`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html)
+flags them.
+
 ### Duplicates in streamed input
 
 On a data frame `duplicate` is evaluated over the whole table, as
@@ -304,30 +374,22 @@ repository.
 
 ## What has no counterpart
 
-CoordinateCleaner also has the functions below, which have no
-counterpart in OccurrenceCleaner 0.1.0. For them CoordinateCleaner
-remains the tool, and its result can be combined with the flags here by
-joining on a record identifier.
+Every test of CoordinateCleaner 3.0.1 has an equivalent here. What
+remains:
 
-| CoordinateCleaner function | what it does |
-|:---|:---|
-| cc_outl() | spatial outliers per species (distance or quantile methods) |
-| cc_iucn() | records outside a species’ range polygon |
-| cc_aohi() | records in an artificial hotspot occurrence inventory |
-| cd_ddmm(), cd_round() | dataset-level tests for degree-minute conversion errors and rasterised sampling |
-| clean_dataset() | runs the dataset-level tests |
-| cf_age(), cf_outl(), cf_range(method = “quantile” or “mad”) | fossil age and range outliers per taxon |
-| write_pyrate() | export to PyRate |
+| CoordinateCleaner | what it does | OccurrenceCleaner |
+|:---|:---|:---|
+| cc_outl(sampling_thresh = …) | ignores outliers in countries with few GBIF records, counted online with rgbif | not ported: the counts come from a live web query, so the flags would not be reproducible |
+| write_pyrate() | writes input files for PyRate | not ported: an export format, unrelated to flagging |
+| plot() | maps flagged records with ggplot2 | plot(f, type = “map”) on the flagged records |
+| is.spatialvalid() | checks the class of a clean_coordinates() result | the occ_flags class |
 
-[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
-compares each record with the other records of the same species, so its
-result depends on the whole species sample and changes when records are
-added or removed; the tests here are record tests whose flag depends
-only on the record itself and pinned reference data. The same holds for
-the per-taxon fossil tests.
-[`cf_equal()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html)
-is a record test and is ported as `age_equal`; the fossil article shows
-it and the age-range bins on a fossil table.
+The grouped tests (`outlier`, the three fossil outlier tests and the two
+dataset tests) compare a record with the other records of its species,
+taxon or dataset, so a record’s flag depends on the rest of the input:
+adding records of a species can change whether a record of it is an
+outlier. The article on outliers and dataset tests shows them on worked
+examples.
 
 ## References
 

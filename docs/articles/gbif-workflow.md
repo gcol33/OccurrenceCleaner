@@ -113,21 +113,23 @@ deliver them; a list column of character vectors works too.
 
 ## Flagging every test once
 
-Nineteen of the twenty tests can run here, because the table has
-coordinates, a species, a country code and the three GBIF fields; the
-twentieth, `age_equal`, needs fossil ages (see the fossil article).
+The nineteen tests in the first bits of the layout can run here, because
+the table has coordinates, a species, a country code and the three GBIF
+fields. The others need fossil ages, a dataset key or species ranges, or
+compare records within a species; the articles on fossils, on outliers
+and dataset tests, and on custom gazetteers cover them.
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 only needs to be told the identifier, since the other defaults match
 case-insensitively:
 
 ``` r
 
-all_tests <- setdiff(flag_tests()$test, "age_equal")
+all_tests <- flag_tests()$test[flag_tests()$bit < 19]
 f <- flag_occurrences(occ, tests = all_tests, columns = occ_columns(id = "gbifid"))
 dim(f)
 #> [1] 2276   32
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)"
 ```
 
 The result is the input with an integer `flags` column and one logical

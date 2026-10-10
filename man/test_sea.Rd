@@ -37,10 +37,15 @@ flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea
 
 Other tests:
 \code{\link{test_age_equal}},
+\code{\link{test_age_outlier}},
+\code{\link{test_age_range_outlier}},
+\code{\link{test_aohi}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},
 \code{\link{test_country_mismatch}},
+\code{\link{test_dataset_ddmm}},
+\code{\link{test_dataset_rounded}},
 \code{\link{test_duplicate}},
 \code{\link{test_equal}},
 \code{\link{test_establishment}},
@@ -48,6 +53,9 @@ Other tests:
 \code{\link{test_gbif_issue}},
 \code{\link{test_institution}},
 \code{\link{test_invalid}},
+\code{\link{test_outlier}},
+\code{\link{test_range}},
+\code{\link{test_spatiotemporal_outlier}},
 \code{\link{test_urban}},
 \code{\link{test_zero}}
 }

@@ -23,15 +23,16 @@ flag_tests <- function() {
   x
 }
 
-.layout_version <- 2L
+.layout_version <- 3L
 
 .flag_layout <- data.frame(
-  bit = 0:19,
+  bit = 0:27,
   test = c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters",
            "sea", "urban", "country_mismatch", "duplicate",
            "issue_coordinate", "issue_taxon", "issue_date", "issue_rounded",
            "basis_fossil", "basis_living", "establishment_introduced", "establishment_managed",
-           "age_equal"),
+           "age_equal", "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
+           "dataset_ddmm", "dataset_rounded", "range", "aohi"),
   definition = c(
     "coordinate missing, not numeric or outside [-180, 180] x [-90, 90]",
     "longitude or latitude exactly zero, or within 0.5 degrees of (0, 0)",
@@ -52,12 +53,23 @@ flag_tests <- function() {
     "basis of record is a living specimen",
     "establishment means is introduced, naturalised or invasive",
     "establishment means is managed or cultivated",
-    "minimum age equal to or greater than the maximum age"),
-  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8), "CoordinateCleaner"),
+    "minimum age equal to or greater than the maximum age",
+    "geographic outlier among the records of its species",
+    "age outlier among the records of its taxon",
+    "outlier in space and time among the records of its taxon",
+    "age range wider than that of the other records of its taxon",
+    "in a dataset with a degree-minute to decimal conversion error",
+    "in a dataset whose coordinates lie on a regular grid",
+    "outside the range polygons of its species",
+    "within 10 km of an Artificial Hotspot Occurrence Inventory point"),
+  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8), rep("CoordinateCleaner", 9)),
   equivalent = c("cc_val", "cc_zero", "cc_equ", "cc_cap", "cc_cen", "cc_inst", "cc_gbif", "cc_sea",
-                 "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8), "cf_equal"),
+                 "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8), "cf_equal",
+                 "cc_outl", "cf_age", "cf_outl", "cf_range", "cd_ddmm", "cd_round", "cc_iucn", "cc_aohi"),
   needs = c(rep("lon,lat", 9), "lon,lat,country", "lon,lat,species", rep("issue", 4), "basis",
-            "basis", "establishment", "establishment", "min_age,max_age"),
+            "basis", "establishment", "establishment", "min_age,max_age",
+            "lon,lat,species", "min_age,max_age,species", "lon,lat,min_age,max_age,species",
+            "min_age,max_age,species", "lon,lat,dataset", "lon,lat,dataset", "lon,lat,species", "lon,lat"),
   stringsAsFactors = FALSE
 )
 

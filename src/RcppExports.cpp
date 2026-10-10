@@ -64,8 +64,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_polygon_index
-SEXP cpp_polygon_index(NumericVector x, NumericVector y, IntegerVector ring_start, IntegerVector ring_feature, double cell);
-RcppExport SEXP _OccurrenceCleaner_cpp_polygon_index(SEXP xSEXP, SEXP ySEXP, SEXP ring_startSEXP, SEXP ring_featureSEXP, SEXP cellSEXP) {
+SEXP cpp_polygon_index(NumericVector x, NumericVector y, IntegerVector ring_start, IntegerVector ring_feature, double cell, NumericVector extent);
+RcppExport SEXP _OccurrenceCleaner_cpp_polygon_index(SEXP xSEXP, SEXP ySEXP, SEXP ring_startSEXP, SEXP ring_featureSEXP, SEXP cellSEXP, SEXP extentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,7 +74,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type ring_start(ring_startSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type ring_feature(ring_featureSEXP);
     Rcpp::traits::input_parameter< double >::type cell(cellSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_polygon_index(x, y, ring_start, ring_feature, cell));
+    Rcpp::traits::input_parameter< NumericVector >::type extent(extentSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_polygon_index(x, y, ring_start, ring_feature, cell, extent));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -91,6 +92,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_polygon_near
+LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m);
+RcppExport SEXP _OccurrenceCleaner_cpp_polygon_near(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP buffer_mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type index(indexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< double >::type buffer_m(buffer_mSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_polygon_near(index, lon, lat, buffer_m));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_polygon_info
 List cpp_polygon_info(SEXP index);
 RcppExport SEXP _OccurrenceCleaner_cpp_polygon_info(SEXP indexSEXP) {
@@ -102,15 +117,72 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_hash_strings
+IntegerVector cpp_hash_strings(CharacterVector x);
+RcppExport SEXP _OccurrenceCleaner_cpp_hash_strings(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_hash_strings(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_outlier_dist
+List cpp_outlier_dist(NumericVector lon, NumericVector lat);
+RcppExport SEXP _OccurrenceCleaner_cpp_outlier_dist(SEXP lonSEXP, SEXP latSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_outlier_dist(lon, lat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_cell_dist
+List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, bool weighted, double same_km);
+RcppExport SEXP _OccurrenceCleaner_cpp_cell_dist(SEXP cxSEXP, SEXP cySEXP, SEXP countSEXP, SEXP weightedSEXP, SEXP same_kmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type cx(cxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cy(cySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type count(countSEXP);
+    Rcpp::traits::input_parameter< bool >::type weighted(weightedSEXP);
+    Rcpp::traits::input_parameter< double >::type same_km(same_kmSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_cell_dist(cx, cy, count, weighted, same_km));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_spatiotemporal_mean
+NumericVector cpp_spatiotemporal_mean(NumericVector lon, NumericVector lat, NumericVector age, bool euclid);
+RcppExport SEXP _OccurrenceCleaner_cpp_spatiotemporal_mean(SEXP lonSEXP, SEXP latSEXP, SEXP ageSEXP, SEXP euclidSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type age(ageSEXP);
+    Rcpp::traits::input_parameter< bool >::type euclid(euclidSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_spatiotemporal_mean(lon, lat, age, euclid));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_OccurrenceCleaner_cpp_point_index", (DL_FUNC) &_OccurrenceCleaner_cpp_point_index, 2},
     {"_OccurrenceCleaner_cpp_point_within", (DL_FUNC) &_OccurrenceCleaner_cpp_point_within, 4},
     {"_OccurrenceCleaner_cpp_point_nearest", (DL_FUNC) &_OccurrenceCleaner_cpp_point_nearest, 3},
     {"_OccurrenceCleaner_cpp_geodesic_m", (DL_FUNC) &_OccurrenceCleaner_cpp_geodesic_m, 4},
-    {"_OccurrenceCleaner_cpp_polygon_index", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_index, 5},
+    {"_OccurrenceCleaner_cpp_polygon_index", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_index, 6},
     {"_OccurrenceCleaner_cpp_polygon_locate", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_locate, 3},
+    {"_OccurrenceCleaner_cpp_polygon_near", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_near, 4},
     {"_OccurrenceCleaner_cpp_polygon_info", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_info, 1},
+    {"_OccurrenceCleaner_cpp_hash_strings", (DL_FUNC) &_OccurrenceCleaner_cpp_hash_strings, 1},
+    {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 2},
+    {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 5},
+    {"_OccurrenceCleaner_cpp_spatiotemporal_mean", (DL_FUNC) &_OccurrenceCleaner_cpp_spatiotemporal_mean, 4},
     {NULL, NULL, 0}
 };
 

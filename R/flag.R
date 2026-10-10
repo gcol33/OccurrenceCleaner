@@ -5,6 +5,11 @@
 #' cleaning rule is a set of tests, applied afterwards with [has_flag()] or
 #' summarised with [tally_flags()].
 #'
+#' The grouped tests (`outlier`, the three fossil outlier tests and the two
+#' dataset tests) compare a record with the other records of its species,
+#' taxon or dataset; they run in a pass over the whole input before the record
+#' tests, which on streamed input reads every file once or twice more.
+#'
 #' The input is either a data frame, or an on-disk table streamed in chunks: a
 #' `vectra_node` (from `vectra::tbl_parquet()`, `vectra::tbl_csv()`,
 #' `vectra::tbl()`), a path to a Parquet file or directory of Parquet parts
@@ -36,6 +41,15 @@
 #'   Records without a code, or at sea, are flagged as in CoordinateCleaner.
 #' * `duplicate` on streamed input is evaluated within each input file (Parquet
 #'   part), not across the whole table.
+#' * `outlier` flags the records of outlier cells in the raster approximation
+#'   (species of 10,000 records or more, or `thinning = TRUE`); in
+#'   CoordinateCleaner 3.0.1 that path never flags a record.
+#' * `age_outlier` and `spatiotemporal_outlier` draw ages from a stream seeded
+#'   per taxon, so they agree with `cf_age()` and `cf_outl()` in distribution;
+#'   when every age range has zero width the flags are identical.
+#' * `dataset_rounded` leaves datasets below `min_unique_ds_size` untested,
+#'   where `cd_round()` stops with an error; the dataset tests do not flag
+#'   records without a dataset key.
 #' * With the default reference the gazetteers are rebuilt from the original
 #'   sources; `reference = "CoordinateCleaner"` uses that package's own tables,
 #'   and `gazetteers` replaces the layer of single tests, as the `ref`
@@ -66,6 +80,11 @@
 #' @param buffers Named list overriding buffer distances in metres for
 #'   `capital`, `centroid`, `institution`, `gbif_headquarters`, or in degrees
 #'   for `zero`. Unnamed entries keep the defaults.
+#' @param settings Named list overriding the options of the grouped tests,
+#'   one entry per test, each a named list; unnamed options keep their
+#'   defaults, which are CoordinateCleaner's. See [test_outlier],
+#'   [test_age_outlier], [test_spatiotemporal_outlier],
+#'   [test_age_range_outlier], [test_dataset_ddmm] and [test_dataset_rounded].
 #' @param duplicate_by Additional column names a duplicate must share (as
 #'   CoordinateCleaner's `additions`), for example an event date.
 #' @param duplicate_cell Cell size in degrees. When given, coordinates are
@@ -99,16 +118,19 @@
 flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              reference = c("natural_earth", "CoordinateCleaner"),
                              gazetteers = NULL, land_scale = 110, buffers = NULL,
-                             duplicate_by = NULL,
+                             settings = NULL, duplicate_by = NULL,
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
                              verbose = TRUE) {
   tests <- check_tests(tests)
   reference <- match.arg(reference)
   if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
-  custom <- prepare_gazetteers(gazetteers)
+  if ("range" %in% tests && is.null(gazetteers$range))
+    stop("the range test needs species range polygons: gazetteers = list(range = <sf>)")
+  custom <- prepare_gazetteers(gazetteers, columns)
   cfg <- list(tests = tests, columns = columns, reference = reference, land_scale = land_scale,
-              buffers = check_buffers(buffers), duplicate_by = duplicate_by,
+              buffers = check_buffers(buffers), settings = check_settings(settings),
+              duplicate_by = duplicate_by,
               duplicate_cell = duplicate_cell, custom = custom$index,
               layout_version = .layout_version,
               reference_label = reference_label(reference, land_scale, custom$label))
@@ -118,7 +140,7 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
 }
 
 .default_buffers <- list(capital = 10000, centroid = 1000, institution = 100,
-                         gbif_headquarters = 1000, zero = 0.5)
+                         gbif_headquarters = 1000, zero = 0.5, range = 0, aohi = 10000)
 
 check_buffers <- function(buffers) {
   b <- .default_buffers
@@ -136,8 +158,12 @@ check_buffers <- function(buffers) {
 
 # Flag a data frame in memory: the chunk function plus the attached columns.
 flag_df <- function(x, cfg) {
-  cols <- resolve_columns(cfg$columns, names(x), fields_for(cfg$tests))
+  cols <- resolve_test_columns(cfg$columns, names(x), cfg$tests)
   r <- flag_chunk(x, cfg, cols)
+  if (any(cfg$tests %in% .group_tests)) {
+    g <- group_pass(list(list(name = "data", open = function() x)), cfg, cols)
+    r$flags <- bitwOr(r$flags, group_bits(g, x, 1L, 1L, cols))
+  }
   x$flags <- r$flags
   for (t in cfg$tests) x[[paste0("flag_", t)]] <- has_flag(r$flags, t)
   attr(x, "occ_tests") <- cfg$tests
@@ -159,7 +185,7 @@ flag_chunk <- function(d, cfg, cols) {
   }
   spatial <- intersect(tests, c("invalid", "zero", "equal", "capital", "centroid", "institution",
                                 "gbif_headquarters", "sea", "urban", "country_mismatch",
-                                "duplicate"))
+                                "duplicate", "range", "aohi"))
   if (length(spatial)) {
     lon <- to_numeric(d[[cols$lon]])
     lat <- to_numeric(d[[cols$lat]])
@@ -173,7 +199,7 @@ flag_chunk <- function(d, cfg, cols) {
       set_bit("zero", ok & (lon == 0 | lat == 0 | sqrt(lon^2 + lat^2) <= r))
     }
     if ("equal" %in% tests) set_bit("equal", ok & abs(lon) == abs(lat))
-    for (t in intersect(tests, c("capital", "centroid", "institution", "gbif_headquarters"))) {
+    for (t in intersect(tests, c("capital", "centroid", "institution", "gbif_headquarters", "aohi"))) {
       idx <- cfg$custom[[t]] %||% point_index(t, cfg$reference)
       set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]]))
     }
@@ -197,6 +223,19 @@ flag_chunk <- function(d, cfg, cols) {
       match <- (!is.na(a3) & code == a3) | (!is.na(a2) & code == a2) | (!is.na(adm) & code == adm)
       match[is.na(match)] <- FALSE
       set_bit("country_mismatch", ok & !match)
+    }
+    if ("range" %in% tests) {
+      sp <- as.character(d[[cols$species]])
+      rg <- cfg$custom$range
+      hit <- logical(n)
+      for (k in intersect(unique(sp[ok]), names(rg))) {
+        i <- which(ok & sp == k)
+        inside <- cpp_polygon_locate(rg[[k]], lon_ok[i], lat_ok[i]) > 0L
+        if (cfg$buffers$range > 0 && any(!inside))
+          inside[!inside] <- cpp_polygon_near(rg[[k]], lon_ok[i][!inside], lat_ok[i][!inside], cfg$buffers$range)
+        hit[i] <- !inside
+      }
+      set_bit("range", hit)
     }
     if ("duplicate" %in% tests) {
       kx <- lon; ky <- lat

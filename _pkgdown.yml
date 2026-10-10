@@ -57,6 +57,14 @@ reference:
   - test_basis
   - test_establishment
   - test_age_equal
+  - test_outlier
+  - test_age_outlier
+  - test_spatiotemporal_outlier
+  - test_age_range_outlier
+  - test_dataset_ddmm
+  - test_dataset_rounded
+  - test_range
+  - test_aohi
 - title: Rules and tallies
   contents:
   - tally_flags
@@ -91,4 +99,5 @@ articles:
   - tests
   - reference-data
   - gazetteers
+  - outliers
   - coordinatecleaner

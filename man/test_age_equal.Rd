@@ -22,8 +22,9 @@ record year is.
 \section{CoordinateCleaner}{
  Equivalent to \code{cf_equal()}; identical flags.
 \code{cf_range(method = "time")} is a threshold on the range width, here a bin
-in \code{\link[=tally_flags]{tally_flags()}}; \code{cf_range()} and \code{cf_age()} with \code{method = "quantile"}
-or \code{"mad"} compare records of a taxon with each other and are not ported.
+in \code{\link[=tally_flags]{tally_flags()}}. The per-taxon tests \code{cf_age()}, \code{cf_outl()} and
+\code{cf_range()} with \code{method = "quantile"} or \code{"mad"} are \link{test_age_outlier},
+\link{test_spatiotemporal_outlier} and \link{test_age_range_outlier}.
 }
 
 \examples{
@@ -34,10 +35,15 @@ flag_occurrences(x, tests = "age_equal")$flag_age_equal
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_outlier}},
+\code{\link{test_age_range_outlier}},
+\code{\link{test_aohi}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},
 \code{\link{test_country_mismatch}},
+\code{\link{test_dataset_ddmm}},
+\code{\link{test_dataset_rounded}},
 \code{\link{test_duplicate}},
 \code{\link{test_equal}},
 \code{\link{test_establishment}},
@@ -45,7 +51,10 @@ Other tests:
 \code{\link{test_gbif_issue}},
 \code{\link{test_institution}},
 \code{\link{test_invalid}},
+\code{\link{test_outlier}},
+\code{\link{test_range}},
 \code{\link{test_sea}},
+\code{\link{test_spatiotemporal_outlier}},
 \code{\link{test_urban}},
 \code{\link{test_zero}}
 }

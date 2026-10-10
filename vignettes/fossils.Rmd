@@ -73,7 +73,7 @@ table(fos$truth)
 
 ## Flagging
 
-`occ_columns()` maps the PBDB names onto the fields the tests read. The tests are the record tests of CoordinateCleaner's `clean_fossils()`, whose defaults are `agesequal`, `centroids`, `equal`, `gbif`, `institutions`, `validity` and `zeros` plus two outlier tests; here `age_equal` is its `agesequal`, and the country check runs too because the table has country codes:
+`occ_columns()` maps the PBDB names onto the fields the tests read. The tests are the record tests of CoordinateCleaner's `clean_fossils()`, whose defaults are `agesequal`, `centroids`, `equal`, `gbif`, `institutions`, `validity` and `zeros` plus two outlier tests (`spatiotemp`, `temprange`) that the section on outliers below adds; here `age_equal` is its `agesequal`, and the country check runs too because the table has country codes:
 
 ```{r flag}
 cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name", country = "cc",
@@ -143,6 +143,31 @@ keep <- !has_flag(f$flags, tests) & f$age_range <= 15
 table(f$truth[keep])
 ```
 
+## Outliers within a taxon
+
+Three tests compare a record with the other records of its taxon, here the genus in `accepted_name`. `age_range_outlier` flags age ranges far wider than the taxon's others, the `temprange` test of `clean_fossils()`. `age_outlier` flags ages far from the taxon's others, and `spatiotemporal_outlier` records far from the others in space and time together, the `spatiotemp` test. The last two draw an age from each record's range, repeat the test five times and keep the majority; the draws are seeded per taxon, so the flags are the same on every run:
+
+```{r outliers}
+otests <- c("age_range_outlier", "age_outlier", "spatiotemporal_outlier")
+g <- flag_occurrences(fos, tests = otests, columns = cols)
+tab <- aggregate(as.data.frame(g)[paste0("flag_", otests)], by = list(truth = g$truth), FUN = sum)
+names(tab) <- c("truth", otests)
+knitr::kable(tab)
+```
+
+`age_range_outlier` flags all 40 period-dated records and no other. The two tests that draw ages flag fewer of them: an age drawn from 23 to 66 or 145 Ma lands among the genus's ages of 23 to 72 Ma in many draws, so `age_outlier` flags 8 of the 40 and `spatiotemporal_outlier` 3. None of the three flags a clean record. The museum records are not outliers in space here, because every genus in the simulated table occurs in all three regions.
+
+The options are set per test through `settings`, with CoordinateCleaner's defaults: `method` (`"quantile"` or `"mad"`), `mltpl` (5), `size_thresh` (7 records per taxon), `replicates` (5) and `seed`. A stricter fence for the range test and a different seed for the draws:
+
+```{r outlier-settings}
+g2 <- flag_occurrences(fos, tests = otests, columns = cols,
+                       settings = list(age_range_outlier = list(mltpl = 2),
+                                       age_outlier = list(seed = 7)))
+colSums(as.data.frame(g2)[paste0("flag_", otests)])
+```
+
+The range test flags the same 40 records with the stricter fence, since their ranges are many times wider than the genus's others. Another seed gives other draws: with seed 7, `age_outlier` flags 10 of the period-dated records instead of 8.
+
 ## Comparison with CoordinateCleaner
 
 `age_equal` and `cf_equal()` give identical flags:
@@ -152,7 +177,7 @@ theirs <- !CoordinateCleaner::cf_equal(fos, value = "flagged", verbose = FALSE)
 identical(f$flag_age_equal, theirs)
 ```
 
-`cf_age()`, `cf_outl()` and `cf_range()` with `method = "quantile"` or `"mad"` compare each record with the other records of its taxon, so their result depends on the whole taxon sample. They are not ported; the package's tests are record tests whose result depends only on the record and the pinned reference data.
+The outlier tests below are compared with `cf_age()`, `cf_outl()` and `cf_range()` in the package's test suite: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
 
 ## Fossils in GBIF data
 

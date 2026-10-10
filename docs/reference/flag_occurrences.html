@@ -49,6 +49,7 @@ summarised with tally_flags()."><script>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -91,6 +92,7 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 <span>  gazetteers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  land_scale <span class="op">=</span> <span class="fl">110</span>,</span>
 <span>  buffers <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  settings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  duplicate_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  duplicate_cell <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  out <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -151,6 +153,14 @@ uses <code>seas_scale = 50</code>), 50, or 10 (downloaded on first use, see
 for <code>zero</code>. Unnamed entries keep the defaults.</p></dd>
 
 
+<dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
+<dd><p>Named list overriding the options of the grouped tests,
+one entry per test, each a named list; unnamed options keep their
+defaults, which are CoordinateCleaner's. See <a href="test_outlier.html">test_outlier</a>,
+<a href="test_age_outlier.html">test_age_outlier</a>, <a href="test_spatiotemporal_outlier.html">test_spatiotemporal_outlier</a>,
+<a href="test_age_range_outlier.html">test_age_range_outlier</a>, <a href="test_dataset_ddmm.html">test_dataset_ddmm</a> and <a href="test_dataset_rounded.html">test_dataset_rounded</a>.</p></dd>
+
+
 <dt id="arg-duplicate-by">duplicate_by<a class="anchor" aria-label="anchor" href="#arg-duplicate-by"></a></dt>
 <dd><p>Additional column names a duplicate must share (as
 CoordinateCleaner's <code>additions</code>), for example an event date.</p></dd>
@@ -200,7 +210,11 @@ accepts; the parts are <code>.vtr</code> files holding the <code>id</code> and <
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The input is either a data frame, or an on-disk table streamed in chunks: a
+    <p>The grouped tests (<code>outlier</code>, the three fossil outlier tests and the two
+dataset tests) compare a record with the other records of its species,
+taxon or dataset; they run in a pass over the whole input before the record
+tests, which on streamed input reads every file once or twice more.</p>
+<p>The input is either a data frame, or an on-disk table streamed in chunks: a
 <code>vectra_node</code> (from <code><a href="https://gillescolling.com/vectra/reference/tbl_parquet.html" class="external-link">vectra::tbl_parquet()</a></code>, <code><a href="https://gillescolling.com/vectra/reference/tbl_csv.html" class="external-link">vectra::tbl_csv()</a></code>,
 <code><a href="https://gillescolling.com/vectra/reference/tbl.html" class="external-link">vectra::tbl()</a></code>), a path to a Parquet file or directory of Parquet parts
 (such as a GBIF snapshot), or a path to a <code>.vtr</code> or delimited text file. For
@@ -232,6 +246,15 @@ polygon the point falls in; CoordinateCleaner compares alpha-3 only.
 Records without a code, or at sea, are flagged as in CoordinateCleaner.</p></li>
 <li><p><code>duplicate</code> on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.</p></li>
+<li><p><code>outlier</code> flags the records of outlier cells in the raster approximation
+(species of 10,000 records or more, or <code>thinning = TRUE</code>); in
+CoordinateCleaner 3.0.1 that path never flags a record.</p></li>
+<li><p><code>age_outlier</code> and <code>spatiotemporal_outlier</code> draw ages from a stream seeded
+per taxon, so they agree with <code>cf_age()</code> and <code>cf_outl()</code> in distribution;
+when every age range has zero width the flags are identical.</p></li>
+<li><p><code>dataset_rounded</code> leaves datasets below <code>min_unique_ds_size</code> untested,
+where <code>cd_round()</code> stops with an error; the dataset tests do not flag
+records without a dataset key.</p></li>
 <li><p>With the default reference the gazetteers are rebuilt from the original
 sources; <code>reference = "CoordinateCleaner"</code> uses that package's own tables,
 and <code>gazetteers</code> replaces the layer of single tests, as the <code>ref</code>

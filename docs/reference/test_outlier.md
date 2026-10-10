@@ -1,0 +1,84 @@
+# Test: geographic outliers
+
+Flags records far from the other records of their species. For each
+record the haversine distances (km) to the species' other records are
+computed, leaving out zero distances (the record itself and records at
+the same point); a record is flagged when its mean distance lies above
+the upper fence of the species' mean distances: Q75 + `mltpl` x IQR
+(`method = "quantile"`) or median + `mltpl` x MAD (`"mad"`). With
+`method = "distance"` a record is flagged when its nearest other record
+is more than `tdi` km away. Species with fewer than `min_occs` distinct
+points are not tested.
+
+## Details
+
+Species with 10,000 records or more, and every species when
+`thinning = TRUE`, are tested on a raster approximation: records are
+counted on a grid of `thinning_res` degrees spanning all valid records
+(widened by two cells), distances are taken between cell centres, and
+the records of the outlier cells are flagged. Without thinning,
+distances are weighted by the product of the cell counts and a cell's
+distance to itself counts as 100 x `thinning_res` / 2 km, as in
+CoordinateCleaner.
+
+The test needs every record of a species, so it runs in a group pass
+over the whole input before the record tests; on streamed input that
+pass reads all files, and a species spread over several files is tested
+as one.
+
+## Fields
+
+`lon`, `lat`, `species`. Records with invalid coordinates are left out.
+
+## Settings
+
+`settings = list(outlier = list(...))` with `method` (`"quantile"`),
+`mltpl` (5), `tdi` (1000 km), `min_occs` (7), `thinning` (`FALSE`) and
+`thinning_res` (0.5 degrees).
+
+## CoordinateCleaner
+
+Equivalent to `cc_outl()`; identical flags for species below 10,000
+records. In CoordinateCleaner 3.0.1 the raster approximation computes
+the cell statistics but its mapping from outlier cells back to records
+returns none, so it never flags a record; here the records of the
+outlier cells are flagged. The sampling correction (`sampling_thresh`),
+which queries GBIF record counts online, is not ported.
+
+## See also
+
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
+[`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
+
+Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
+[`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
+[`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
+[`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md),
+[`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
+[`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
+[`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
+[`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),
+[`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md),
+[`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md),
+[`test_duplicate`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md),
+[`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
+[`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md),
+[`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
+[`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
+[`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
+[`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
+[`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md),
+[`test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
+[`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
+[`test_urban`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md),
+[`test_zero`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+
+## Examples
+
+``` r
+set.seed(1)
+x <- data.frame(species = "a", decimalLongitude = c(rnorm(50, 10, 1), 60),
+                decimalLatitude = c(rnorm(50, 50, 1), 10))
+which(flag_occurrences(x, tests = "outlier")$flag_outlier)
+```

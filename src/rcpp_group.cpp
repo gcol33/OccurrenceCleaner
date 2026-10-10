@@ -1,0 +1,156 @@
+// Kernels for the grouped tests: distances among the records of one species
+// or taxon, and a string hash for bucketing and per-group seeds.
+
+#include <Rcpp.h>
+
+#include <cmath>
+#include <cstdint>
+#include <limits>
+
+using namespace Rcpp;
+
+namespace {
+
+const double kDeg = 3.14159265358979323846 / 180.0;
+// Earth radius of the haversine distance, as in geosphere::distHaversine().
+const double kRadiusKm = 6378.137;
+
+// Haversine distance in km between points given in degrees.
+inline double haversine_km(double lon1, double lat1, double lon2, double lat2) {
+  const double p1 = lat1 * kDeg, p2 = lat2 * kDeg;
+  const double dlat = p2 - p1, dlon = (lon2 - lon1) * kDeg;
+  const double s1 = std::sin(dlat / 2), s2 = std::sin(dlon / 2);
+  double a = s1 * s1 + std::cos(p1) * std::cos(p2) * s2 * s2;
+  if (a > 1) a = 1;
+  return 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a)) * kRadiusKm;
+}
+
+}  // namespace
+
+// FNV-1a hash of each string's bytes, as a non-negative integer; NA stays NA.
+// [[Rcpp::export]]
+IntegerVector cpp_hash_strings(CharacterVector x) {
+  const R_xlen_t n = x.size();
+  IntegerVector out(n);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    if (CharacterVector::is_na(x[i])) {
+      out[i] = NA_INTEGER;
+      continue;
+    }
+    const char* s = CHAR(STRING_ELT(x, i));
+    std::uint32_t h = 2166136261u;
+    for (; *s; ++s) {
+      h ^= static_cast<unsigned char>(*s);
+      h *= 16777619u;
+    }
+    out[i] = static_cast<int>(h & 0x7fffffffu);
+  }
+  return out;
+}
+
+// For each point: the mean and the minimum of its haversine distances (km)
+// to the other points, leaving out zero distances (itself and points at the
+// same coordinates). A point with no non-zero distance gets NaN and Inf.
+// [[Rcpp::export]]
+List cpp_outlier_dist(NumericVector lon, NumericVector lat) {
+  const R_xlen_t n = lon.size();
+  if (lat.size() != n) stop("lon and lat differ in length");
+  NumericVector mean(n), mn(n);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    double s = 0, m = std::numeric_limits<double>::infinity();
+    R_xlen_t k = 0;
+    for (R_xlen_t j = 0; j < n; ++j) {
+      const double d = haversine_km(lon[i], lat[i], lon[j], lat[j]);
+      if (!(d > 0)) continue;
+      s += d;
+      ++k;
+      if (d < m) m = d;
+    }
+    mean[i] = k ? s / static_cast<double>(k) : R_NaN;
+    mn[i] = m;
+  }
+  return List::create(_["mean"] = mean, _["min"] = mn);
+}
+
+// Cell statistics of the raster approximation: cells with centre (cx, cy)
+// holding count records. Weighted: the distance between two cells is
+// multiplied by the product of their counts and rounded to whole km, a cell's
+// distance to itself counts as same_km, and the statistic is the weighted
+// mean; min is the smallest weighted, rounded value. Unweighted: the plain
+// mean and minimum over the other cells.
+// [[Rcpp::export]]
+List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, bool weighted,
+                   double same_km) {
+  const R_xlen_t n = cx.size();
+  NumericVector mean(n), mn(n);
+  for (R_xlen_t a = 0; a < n; ++a) {
+    double s = 0, w = 0, m = std::numeric_limits<double>::infinity();
+    for (R_xlen_t b = 0; b < n; ++b) {
+      double d = (a == b) ? 0.0 : haversine_km(cx[a], cy[a], cx[b], cy[b]);
+      if (weighted) {
+        if (d == 0) d = same_km;
+        const double wab = count[a] * count[b];
+        const double v = std::nearbyint(d * wab);
+        s += v;
+        w += wab;
+        if (v < m) m = v;
+      } else {
+        if (!(d > 0)) continue;
+        s += d;
+        w += 1;
+        if (d < m) m = d;
+      }
+    }
+    mean[a] = w > 0 ? s / w : R_NaN;
+    mn[a] = m;
+  }
+  return List::create(_["mean"] = mean, _["min"] = mn);
+}
+
+// Spatio-temporal distance of the fossil outlier test. For each pair: the
+// geographic distance (haversine km, or Euclidean degrees when euclid) plus
+// the absolute difference of the sampled ages rescaled so that the largest
+// age difference equals the largest geographic distance, rounded to whole
+// units. Each point gets the mean over all points, itself included; pairs
+// with a missing coordinate are left out, missing ages count as zero.
+// [[Rcpp::export]]
+NumericVector cpp_spatiotemporal_mean(NumericVector lon, NumericVector lat, NumericVector age,
+                                      bool euclid) {
+  const R_xlen_t n = lon.size();
+  if (lat.size() != n || age.size() != n) stop("inputs differ in length");
+  auto geo = [&](R_xlen_t i, R_xlen_t j) -> double {
+    if (ISNAN(lon[i]) || ISNAN(lat[i]) || ISNAN(lon[j]) || ISNAN(lat[j])) return NA_REAL;
+    if (euclid) {
+      const double dx = lon[i] - lon[j], dy = lat[i] - lat[j];
+      return std::sqrt(dx * dx + dy * dy);
+    }
+    return haversine_km(lon[i], lat[i], lon[j], lat[j]);
+  };
+  double max_geo = R_NegInf, max_age = R_NegInf;
+  for (R_xlen_t i = 0; i < n; ++i) {
+    for (R_xlen_t j = 0; j < n; ++j) {
+      const double g = geo(i, j);
+      if (!ISNAN(g) && g > max_geo) max_geo = g;
+      if (!ISNAN(age[i]) && !ISNAN(age[j])) {
+        const double t = std::fabs(age[i] - age[j]);
+        if (t > max_age) max_age = t;
+      }
+    }
+  }
+  const double scale = max_geo / max_age;
+  NumericVector out(n);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    double s = 0;
+    R_xlen_t k = 0;
+    for (R_xlen_t j = 0; j < n; ++j) {
+      const double g = geo(i, j);
+      if (ISNAN(g)) continue;
+      double t = (ISNAN(age[i]) || ISNAN(age[j])) ? 0.0 : std::fabs(age[i] - age[j]) * scale;
+      if (ISNAN(t)) t = 0;
+      s += std::nearbyint(t + g);
+      ++k;
+    }
+    out[i] = k ? s / static_cast<double>(k) : R_NaN;
+  }
+  return out;
+}

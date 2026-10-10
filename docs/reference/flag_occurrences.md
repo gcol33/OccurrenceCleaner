@@ -18,6 +18,7 @@ flag_occurrences(
   gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
+  settings = NULL,
   duplicate_by = NULL,
   duplicate_cell = NULL,
   out = NULL,
@@ -80,6 +81,19 @@ flag_occurrences(
   `centroid`, `institution`, `gbif_headquarters`, or in degrees for
   `zero`. Unnamed entries keep the defaults.
 
+- settings:
+
+  Named list overriding the options of the grouped tests, one entry per
+  test, each a named list; unnamed options keep their defaults, which
+  are CoordinateCleaner's. See
+  [test_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),
+  [test_age_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
+  [test_spatiotemporal_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
+  [test_age_range_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
+  [test_dataset_ddmm](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md)
+  and
+  [test_dataset_rounded](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md).
+
 - duplicate_by:
 
   Additional column names a duplicate must share (as CoordinateCleaner's
@@ -135,6 +149,12 @@ and `flags`, readable with
 
 ## Details
 
+The grouped tests (`outlier`, the three fossil outlier tests and the two
+dataset tests) compare a record with the other records of its species,
+taxon or dataset; they run in a pass over the whole input before the
+record tests, which on streamed input reads every file once or twice
+more.
+
 The input is either a data frame, or an on-disk table streamed in
 chunks: a `vectra_node` (from
 [`vectra::tbl_parquet()`](https://gillescolling.com/vectra/reference/tbl_parquet.html),
@@ -177,6 +197,20 @@ package tests:
 
 - `duplicate` on streamed input is evaluated within each input file
   (Parquet part), not across the whole table.
+
+- `outlier` flags the records of outlier cells in the raster
+  approximation (species of 10,000 records or more, or
+  `thinning = TRUE`); in CoordinateCleaner 3.0.1 that path never flags a
+  record.
+
+- `age_outlier` and `spatiotemporal_outlier` draw ages from a stream
+  seeded per taxon, so they agree with `cf_age()` and `cf_outl()` in
+  distribution; when every age range has zero width the flags are
+  identical.
+
+- `dataset_rounded` leaves datasets below `min_unique_ds_size` untested,
+  where `cd_round()` stops with an error; the dataset tests do not flag
+  records without a dataset key.
 
 - With the default reference the gazetteers are rebuilt from the
   original sources; `reference = "CoordinateCleaner"` uses that

@@ -60,6 +60,7 @@
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -100,10 +101,11 @@
 
     
     
-<p>Seven tests compare records with reference data: four with points
-(capitals, centroids, institutions, the GBIF headquarters) and three
-with polygons (land, urban areas, countries). The package ships its own
-pinned layers for all of them, and
+<p>Nine tests compare records with reference data: five with points
+(capitals, centroids, institutions, the GBIF headquarters, artificial
+hotspots) and four with polygons (land, urban areas, countries, species
+ranges). The package ships its own pinned layers for all but the species
+ranges, which only a user can supply, and
 <code>reference = "CoordinateCleaner"</code> swaps in
 CoordinateCleaner’s. The <code>gazetteers</code> argument of
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> replaces the layer of single tests with
@@ -225,6 +227,34 @@ either:</p>
 which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.</p>
+<p>The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
+the <code>aohi</code> test marks each point as a real observation site
+(<code>determination = TRUE</code>, for example a birding reserve) or an
+artificial aggregate of records (<code>FALSE</code>, for example a
+georeferencing default). A study that keeps records from popular sites
+can flag only the aggregates:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ah</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"aohi"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ah</span><span class="op">$</span><span class="va">taxon</span>, <span class="va">ah</span><span class="op">$</span><span class="va">determination</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           </span></span>
+<span><span class="co">#&gt;            FALSE TRUE</span></span>
+<span><span class="co">#&gt;   Aves        10   41</span></span>
+<span><span class="co">#&gt;   Insecta     36   15</span></span>
+<span><span class="co">#&gt;   Mammalia    33   19</span></span>
+<span><span class="co">#&gt;   Plantae    152    2</span></span>
+<span><span class="va">artificial</span> <span class="op">&lt;-</span> <span class="va">ah</span><span class="op">[</span><span class="op">!</span><span class="va">ah</span><span class="op">$</span><span class="va">determination</span>, <span class="op">]</span></span>
+<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">lon</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.02</span>, decimalLatitude <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">lat</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>point <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">notes</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, site <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">determination</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span>
+<span>           all <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">v</span>, tests <span class="op">=</span> <span class="st">"aohi"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_aohi</span>,</span>
+<span>           aggregates <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">v</span>, tests <span class="op">=</span> <span class="st">"aohi"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aohi <span class="op">=</span> <span class="va">artificial</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_aohi</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                           point site  all aggregates</span></span>
+<span><span class="co">#&gt; 1                  birding site TRUE TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 2 birding site/center of island TRUE TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 3                  birding site TRUE TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 4   birding site/center of park TRUE TRUE      FALSE</span></span></code></pre></div>
+<p>The four records lie about 2 km from the first four bird hotspots,
+all of them birding sites, so the full inventory flags them and the
+aggregates-only table does not.</p>
 </div>
 <div class="section level2">
 <h2 id="polygon-layers">Polygon layers<a class="anchor" aria-label="anchor" href="#polygon-layers"></a>
@@ -234,7 +264,7 @@ POLYGON or MULTIPOLYGON geometries in longitude and latitude
 (EPSG:4326). For <code>sea</code>, the polygons are the land: a record
 outside every polygon is flagged. That makes <code>sea</code> with a
 custom layer a test for “outside the study area”:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">area</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.5</span>, <span class="fl">46.4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">17.2</span>, <span class="fl">46.4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">17.2</span>, <span class="fl">49.0</span><span class="op">)</span>,</span>
 <span>                                             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.5</span>, <span class="fl">49.0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9.5</span>, <span class="fl">46.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">11.40</span>, <span class="fl">8.54</span>, <span class="fl">19.04</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">47.26</span>, <span class="fl">47.37</span>, <span class="fl">47.50</span><span class="op">)</span><span class="op">)</span></span>
@@ -249,7 +279,7 @@ the columns <code>iso_a2</code>, <code>iso_a3</code>,
 <code>adm0_a3</code> or <code>code</code> (in any case) is read, and the
 record’s code is matched against all of them. Two territories with their
 own codes:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">terr</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span></span>
 <span>  code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"XA"</span>, <span class="st">"XB"</span><span class="op">)</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -262,15 +292,50 @@ own codes:</p>
 both territories, so both are flagged.</p>
 </div>
 <div class="section level2">
+<h2 id="species-ranges">Species ranges<a class="anchor" aria-label="anchor" href="#species-ranges"></a>
+</h2>
+<p>The <code>range</code> test flags records outside the range polygons
+of their species, such as IUCN range maps. The layer is an
+<code>sf</code> object with one or more polygons per species and a
+species column, named like the record’s species column or
+<code>species</code>, <code>binomial</code> or <code>sci_name</code>.
+Each species gets an index of its own polygons, so overlapping ranges of
+different species do not interfere; species without a polygon are not
+tested:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ranges</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span></span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Lacerta viridis"</span><span class="op">)</span>,</span>
+<span>  geometry <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">36</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">36</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">36</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                        <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                        <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">52</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">52</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                        crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Lacerta viridis"</span>, <span class="st">"Lacerta viridis"</span>, <span class="st">"Rana arvalis"</span><span class="op">)</span>,</span>
+<span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">45</span>, <span class="op">-</span><span class="fl">20</span>, <span class="fl">15</span>, <span class="fl">15</span>, <span class="fl">100</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">45</span>, <span class="fl">55</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">r</span>, outside <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">r</span>, tests <span class="op">=</span> <span class="st">"range"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="va">ranges</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_range</span>,</span>
+<span>           outside_100km <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">r</span>, tests <span class="op">=</span> <span class="st">"range"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="va">ranges</span><span class="op">)</span>,</span>
+<span>                                            buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_range</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           species decimalLongitude decimalLatitude outside outside_100km</span></span>
+<span><span class="co">#&gt; 1       Bufo bufo               10              50   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 2       Bufo bufo               45              50   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 3       Bufo bufo              -20              50    TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 4 Lacerta viridis               15              45   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 5 Lacerta viridis               15              55    TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 6    Rana arvalis              100              10   FALSE         FALSE</span></span></code></pre></div>
+<p>The toad at 45 E lies in the second of its two polygons and is kept;
+the one at 20 W lies in the Atlantic, outside both. The lizard at 55 N
+is 3 degrees north of its range and stays flagged with a 100 km buffer.
+<em>Rana arvalis</em> has no polygon and is not tested.</p>
+</div>
+<div class="section level2">
 <h2 id="recording-the-layer">Recording the layer<a class="anchor" aria-label="anchor" href="#recording-the-layer"></a>
 </h2>
 <p>A custom layer is indexed once per call, and its size and an MD5
 checksum of its coordinates are written into the reference label of the
 output:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a
@@ -282,8 +347,8 @@ two gazetteers.</p>
 </h2>
 <table class="table">
 <colgroup>
-<col width="41%">
-<col width="58%">
+<col width="35%">
+<col width="64%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -314,6 +379,15 @@ two gazetteers.</p>
 <td align="left">cc_coun(ref = …, ref_col = …)</td>
 <td align="left">gazetteers = list(country_mismatch = polygons)</td>
 </tr>
+<tr class="odd">
+<td align="left">cc_iucn(range = …)</td>
+<td align="left">gazetteers = list(range = polygons)</td>
+</tr>
+<tr class="even">
+<td align="left">cc_aohi(taxa = …)</td>
+<td align="left">gazetteers = list(aohi = subset of
+reference_points(“aohi”))</td>
+</tr>
 </tbody>
 </table>
 <p>CoordinateCleaner’s point references need its own column names
@@ -325,7 +399,7 @@ are found by name in any of the common spellings. Its
 the same reference points and polygons the two packages give the same
 flags, up to the buffer-polygon band described in the article Coming
 from CoordinateCleaner; the package tests check this for
-<code>institution</code> and <code>sea</code>.</p>
+<code>institution</code>, <code>sea</code> and <code>range</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -1,11 +1,13 @@
 # Reference data
 
-Seven of the tests compare a record with reference data: points
-(capitals, country and province centroids, biodiversity institutions)
-and polygons (land, urban areas, countries). This article lists where
-each layer comes from, how the package’s own gazetteers compare with
-CoordinateCleaner’s, how much the choice of land scale changes the `sea`
-test, and how the reference version is recorded with the flags.
+Eight of the tests compare a record with reference data from a shipped
+layer: points (capitals, country and province centroids, biodiversity
+institutions, artificial hotspots) and polygons (land, urban areas,
+countries). The ninth, `range`, needs species range polygons, which the
+user supplies (see the article on custom gazetteers). This article lists
+where each layer comes from, how the package’s own gazetteers compare
+with CoordinateCleaner’s, how much the choice of land scale changes the
+`sea` test, and how the reference version is recorded with the flags.
 
 ## Installation
 
@@ -41,6 +43,7 @@ knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 | admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
+| aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | birds_20221010.csv, insects_20221010.csv, mammals_20221010.csv, plants_20221010.csv | 2022-10-10 | 2026-10-10 |
 
 Each row also holds the download URL, the SHA-256 checksum of the source
 file and the licence. The tests read these layers:
@@ -51,6 +54,7 @@ file and the licence. The tests read these layers:
 | centroid | Natural Earth admin-0 country centroids and label points, admin-1 label points |
 | institution | GBIF GRSciColl institutions with coordinates |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
+| aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
 | sea | Natural Earth land at 1:110m (default), 1:50m or 1:10m |
 | urban | Natural Earth urban areas 1:50m |
 | country_mismatch | Natural Earth admin-0 countries 1:50m |
@@ -67,6 +71,18 @@ every record at (0, 0) as lying at an institution as well. GRSciColl
 absorbed the Global Registry of Biodiversity Repositories (GRBio) in
 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes
 the registry through its open API and states no separate licence for it.
+
+The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie,
+Thammavong, Tulaiha and Feng ([2023](https://doi.org/10.1111/jbi.14543))
+lists the coordinates that recur most often in GBIF records of plants,
+birds, insects and mammals, with the reason each recurs: 154 plant, 51
+bird, 51 insect and 52 mammal points. It is built from the authors’
+deposit on Dryad
+([doi:10.5061/dryad.v41ns1s0p](https://doi.org/10.5061/dryad.v41ns1s0p)),
+released under CC0, and keeps 308 points with coordinates.
+CoordinateCleaner’s bundled `aohi` table has 309; the two share 303
+points, and the others differ in a few bird points and one plant
+coordinate (42.26 N there, 42.20 N in the deposit).
 
 The layers are rebuilt from the sources CoordinateCleaner itself draws
 on, by the scripts in `data-raw/` of the source repository;
@@ -231,9 +247,9 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)"
+#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)"
 attr(f, "occ_layout_version")
-#> [1] 2
+#> [1] 3
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed CoordinateCleaner

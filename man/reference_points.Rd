@@ -5,13 +5,13 @@
 \title{Reference points of a proximity test}
 \usage{
 reference_points(
-  test = c("capital", "centroid", "institution", "gbif_headquarters"),
+  test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi"),
   reference = c("natural_earth", "CoordinateCleaner")
 )
 }
 \arguments{
 \item{test}{One of \code{"capital"}, \code{"centroid"}, \code{"institution"},
-\code{"gbif_headquarters"}.}
+\code{"gbif_headquarters"}, \code{"aohi"}.}
 
 \item{reference}{\code{"natural_earth"} (the package's own gazetteers) or
 \code{"CoordinateCleaner"} (that package's tables, which must be installed).}
@@ -21,13 +21,18 @@ A data frame with columns \code{lon} and \code{lat} and, for the package's
 own gazetteers, the attributes of each point: \code{name}, \code{country},
 \code{adm0_a3}, \code{iso_a2}, \code{class} for capitals; \code{name}, \code{adm0_a3}, \code{code},
 \code{type}, \code{method} for centroids; \code{key}, \code{code}, \code{name}, \code{country}, \code{city},
-\code{type}, \code{active}, \code{master_source} for institutions (GRSciColl). For
+\code{type}, \code{active}, \code{master_source} for institutions (GRSciColl); \code{id},
+\code{taxon} (the group the hotspot was found in: Aves, Insecta, Mammalia,
+Plantae), \code{frequency} (records at the point), \code{category},
+\code{determination} (TRUE for a real observation site, FALSE for an
+artificial aggregate of records) and \code{notes} for the inventory. For
 \code{reference = "CoordinateCleaner"} the columns are \code{lon} and \code{lat} only.
 }
 \description{
 Returns the points a proximity test measures distance to: capitals,
-country and province centroids, biodiversity institutions, or the GBIF
-headquarters. The table can be inspected, filtered or extended and passed
+country and province centroids, biodiversity institutions, the GBIF
+headquarters, or the points of the Artificial Hotspot Occurrence Inventory
+(Park et al. 2023). The table can be inspected, filtered or extended and passed
 back through the \code{gazetteers} argument of \code{\link[=flag_occurrences]{flag_occurrences()}}.
 }
 \examples{

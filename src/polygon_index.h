@@ -12,19 +12,30 @@ namespace occ {
 // cell. A point in a cell without edges takes the cell's feature; a point in
 // a cell with edges is resolved exactly by counting the edges crossed on the
 // straight segment from the cell centre to the point. Even-odd parity, so
-// holes are rings of the same feature.
+// holes are rings of the same feature. The grid covers the extent given at
+// construction (the whole globe by default); points outside it are in no
+// feature.
 class PolygonIndex {
  public:
   // x, y: ring vertices, concatenated. ring_start: offset of each ring's
   // first vertex plus a final entry equal to x.size(). ring_feature: feature
-  // id (>= 0) of each ring. cell: grid cell size in degrees.
+  // id (>= 0) of each ring. cell: grid cell size in degrees. xmin..ymax:
+  // extent of the grid, which must contain every vertex.
   PolygonIndex(const std::vector<double>& x, const std::vector<double>& y,
                const std::vector<std::size_t>& ring_start,
-               const std::vector<int>& ring_feature, double cell);
+               const std::vector<int>& ring_feature, double cell,
+               double xmin = -180.0, double xmax = 180.0, double ymin = -90.0,
+               double ymax = 90.0);
 
   // Feature containing (lon, lat), or -1 if none. A point on an edge belongs
   // to that edge's feature.
   int locate(double lon, double lat) const;
+
+  // TRUE if some edge lies within buffer_m metres (WGS84 geodesic) of
+  // (lon, lat). The closest point of each candidate edge is found in a local
+  // equirectangular projection around the point and its distance measured on
+  // the ellipsoid.
+  bool near_edge(double lon, double lat, double buffer_m) const;
 
   double cell() const { return cell_; }
   std::size_t n_edges() const { return ex0_.size(); }
@@ -32,11 +43,14 @@ class PolygonIndex {
 
  private:
   std::size_t cell_index(std::size_t i, std::size_t j) const { return j * nx_ + i; }
+  std::size_t col(double lon) const;
+  std::size_t row(double lat) const;
   void centre(std::size_t i, std::size_t j, double& cx, double& cy) const;
   void build_cells();
   void build_parity();
 
   double cell_;
+  double x0_, x1_, y0_, y1_;
   std::size_t nx_, ny_;
   int n_features_;
   // Edges.

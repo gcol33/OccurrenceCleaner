@@ -60,6 +60,7 @@
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -362,6 +363,60 @@ invasive</td>
 age</td>
 <td align="left">cf_equal</td>
 </tr>
+<tr class="odd">
+<td align="right">20</td>
+<td align="left">outlier</td>
+<td align="left">geographic outlier among the records of its
+species</td>
+<td align="left">cc_outl</td>
+</tr>
+<tr class="even">
+<td align="right">21</td>
+<td align="left">age_outlier</td>
+<td align="left">age outlier among the records of its taxon</td>
+<td align="left">cf_age</td>
+</tr>
+<tr class="odd">
+<td align="right">22</td>
+<td align="left">spatiotemporal_outlier</td>
+<td align="left">outlier in space and time among the records of its
+taxon</td>
+<td align="left">cf_outl</td>
+</tr>
+<tr class="even">
+<td align="right">23</td>
+<td align="left">age_range_outlier</td>
+<td align="left">age range wider than that of the other records of its
+taxon</td>
+<td align="left">cf_range</td>
+</tr>
+<tr class="odd">
+<td align="right">24</td>
+<td align="left">dataset_ddmm</td>
+<td align="left">in a dataset with a degree-minute to decimal conversion
+error</td>
+<td align="left">cd_ddmm</td>
+</tr>
+<tr class="even">
+<td align="right">25</td>
+<td align="left">dataset_rounded</td>
+<td align="left">in a dataset whose coordinates lie on a regular
+grid</td>
+<td align="left">cd_round</td>
+</tr>
+<tr class="odd">
+<td align="right">26</td>
+<td align="left">range</td>
+<td align="left">outside the range polygons of its species</td>
+<td align="left">cc_iucn</td>
+</tr>
+<tr class="even">
+<td align="right">27</td>
+<td align="left">aohi</td>
+<td align="left">within 10 km of an Artificial Hotspot Occurrence
+Inventory point</td>
+<td align="left">cc_aohi</td>
+</tr>
 </tbody>
 </table>
 <p>The tests with an <code>equivalent</code> are CoordinateCleaner’s
@@ -528,6 +583,12 @@ scientific collections, each pinned to a version and checksum:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/reference_info.html">reference_info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"source"</span>, <span class="st">"version"</span>, <span class="st">"retrieved"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="13%">
+<col width="62%">
+<col width="11%">
+<col width="11%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">layer</th>
 <th align="left">source</th>
@@ -589,6 +650,12 @@ scientific collections, each pinned to a version and checksum:</p>
 <td align="left">2026-10-09</td>
 <td align="left">2026-10-09</td>
 </tr>
+<tr class="even">
+<td align="left">aohi</td>
+<td align="left">Park et al. 2023, AHOI (Dryad <a href="doi:10.5061/dryad.v41ns1s0p" class="uri">doi:10.5061/dryad.v41ns1s0p</a>)</td>
+<td align="left">2022-10-10</td>
+<td align="left">2026-10-10</td>
+</tr>
 </tbody>
 </table>
 <p><code>reference = "CoordinateCleaner"</code> uses that package’s own
@@ -619,10 +686,10 @@ grouping, and a rerun skips finished units.</p>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 5,000 records in 2 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpglwfNU\flags1dcd024256336</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpcBYvfo\flags18efc1bc729b7</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate</span></span>
-<span><span class="co">#&gt;   layout:    v2</span></span>
-<span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)</span></span>
+<span><span class="co">#&gt;   layout:    v3</span></span>
+<span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)</span></span>
 <span><span class="co">#&gt;   keep:      kingdom, year</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                 rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>

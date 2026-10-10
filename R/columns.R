@@ -16,6 +16,8 @@
 #' @param establishment Establishment means (`establishmentMeans`).
 #' @param min_age,max_age Minimum and maximum age of a fossil record, in
 #'   million years, as the Paleobiology Database's `min_ma` and `max_ma`.
+#' @param dataset Dataset the record belongs to, for the dataset-level tests
+#'   (`datasetKey` in GBIF data).
 #' @param id Record identifier, copied into on-disk flag output when present.
 #' @return A named list of column names with class `occ_columns`.
 #' @examples
@@ -24,10 +26,10 @@
 occ_columns <- function(lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
                         country = "countryCode", issue = "issue", basis = "basisOfRecord",
                         establishment = "establishmentMeans", min_age = "min_ma", max_age = "max_ma",
-                        id = "gbifID") {
+                        dataset = "datasetKey", id = "gbifID") {
   cols <- list(lon = lon, lat = lat, species = species, country = country, issue = issue,
                basis = basis, establishment = establishment, min_age = min_age,
-               max_age = max_age, id = id)
+               max_age = max_age, dataset = dataset, id = id)
   for (nm in names(cols)) {
     v <- cols[[nm]]
     if (!is.character(v) || length(v) != 1L || is.na(v) || !nzchar(v))
@@ -54,6 +56,15 @@ resolve_columns <- function(columns, available, fields, optional = character()) 
     out[[f]] <- hit
   }
   out
+}
+
+# Columns for a set of tests: every field the tests need, plus coordinates
+# when present for the taxon tests (their uniq_loc option and the
+# spatio-temporal test read them).
+resolve_test_columns <- function(columns, available, tests) {
+  optional <- if (any(tests %in% .taxon_tests)) c("lon", "lat", "id") else character()
+  fields <- unique(c(fields_for(tests), optional))
+  resolve_columns(columns, available, fields, optional = setdiff(optional, fields_for(tests)))
 }
 
 # Fields needed by a set of tests.

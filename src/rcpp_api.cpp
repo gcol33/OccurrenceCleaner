@@ -86,7 +86,9 @@ NumericVector cpp_geodesic_m(NumericVector lon1, NumericVector lat1, NumericVect
 // ring plus a final entry equal to length(x); ring_feature is 1-based.
 // [[Rcpp::export]]
 SEXP cpp_polygon_index(NumericVector x, NumericVector y, IntegerVector ring_start,
-                       IntegerVector ring_feature, double cell) {
+                       IntegerVector ring_feature, double cell,
+                       NumericVector extent = NumericVector::create(-180, 180, -90, 90)) {
+  if (extent.size() != 4) stop("extent must be c(xmin, xmax, ymin, ymax)");
   if (x.size() != y.size()) stop("x and y differ in length");
   if (ring_start.size() != ring_feature.size() + 1)
     stop("ring_start must have one more entry than ring_feature");
@@ -102,7 +104,8 @@ SEXP cpp_polygon_index(NumericVector x, NumericVector y, IntegerVector ring_star
     if (ring_feature[i] < 1) stop("ring_feature must be >= 1");
     rf[i] = ring_feature[i] - 1;
   }
-  XPtr<occ::PolygonIndex> p(new occ::PolygonIndex(vx, vy, rs, rf, cell), true);
+  XPtr<occ::PolygonIndex> p(
+      new occ::PolygonIndex(vx, vy, rs, rf, cell, extent[0], extent[1], extent[2], extent[3]), true);
   return p;
 }
 
@@ -117,6 +120,21 @@ IntegerVector cpp_polygon_locate(SEXP index, NumericVector lon, NumericVector la
     const double x = lon[i], y = lat[i];
     if (!std::isfinite(x) || !std::isfinite(y)) continue;
     out[i] = poly->locate(x, y) + 1;
+  }
+  return out;
+}
+
+// TRUE where some polygon edge lies within buffer_m metres of the point.
+// [[Rcpp::export]]
+LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m) {
+  XPtr<occ::PolygonIndex> poly(index);
+  const R_xlen_t n = lon.size();
+  if (lat.size() != n) stop("lon and lat differ in length");
+  LogicalVector out(n, FALSE);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    const double x = lon[i], y = lat[i];
+    if (!std::isfinite(x) || !std::isfinite(y)) continue;
+    out[i] = poly->near_edge(x, y, buffer_m);
   }
   return out;
 }

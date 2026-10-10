@@ -1,10 +1,12 @@
 # Using custom gazetteers
 
-Seven tests compare records with reference data: four with points
-(capitals, centroids, institutions, the GBIF headquarters) and three
-with polygons (land, urban areas, countries). The package ships its own
-pinned layers for all of them, and `reference = "CoordinateCleaner"`
-swaps in CoordinateCleaner’s. The `gazetteers` argument of
+Nine tests compare records with reference data: five with points
+(capitals, centroids, institutions, the GBIF headquarters, artificial
+hotspots) and four with polygons (land, urban areas, countries, species
+ranges). The package ships its own pinned layers for all but the species
+ranges, which only a user can supply, and
+`reference = "CoordinateCleaner"` swaps in CoordinateCleaner’s. The
+`gazetteers` argument of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 replaces the layer of single tests with a user’s own, as the `ref`
 arguments of CoordinateCleaner’s `cc_*()` functions do. This article
@@ -138,6 +140,39 @@ which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.
 
+The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
+the `aohi` test marks each point as a real observation site
+(`determination = TRUE`, for example a birding reserve) or an artificial
+aggregate of records (`FALSE`, for example a georeferencing default). A
+study that keeps records from popular sites can flag only the
+aggregates:
+
+``` r
+
+ah <- reference_points("aohi")
+table(ah$taxon, ah$determination)
+#>           
+#>            FALSE TRUE
+#>   Aves        10   41
+#>   Insecta     36   15
+#>   Mammalia    33   19
+#>   Plantae    152    2
+artificial <- ah[!ah$determination, ]
+v <- data.frame(decimalLongitude = ah$lon[1:4] + 0.02, decimalLatitude = ah$lat[1:4])
+data.frame(point = ah$notes[1:4], site = ah$determination[1:4],
+           all = flag_occurrences(v, tests = "aohi")$flag_aohi,
+           aggregates = flag_occurrences(v, tests = "aohi", gazetteers = list(aohi = artificial))$flag_aohi)
+#>                           point site  all aggregates
+#> 1                  birding site TRUE TRUE      FALSE
+#> 2 birding site/center of island TRUE TRUE      FALSE
+#> 3                  birding site TRUE TRUE      FALSE
+#> 4   birding site/center of park TRUE TRUE      FALSE
+```
+
+The four records lie about 2 km from the first four bird hotspots, all
+of them birding sites, so the full inventory flags them and the
+aggregates-only table does not.
+
 ## Polygon layers
 
 Polygon layers are `sf` or `sfc` objects of POLYGON or MULTIPOLYGON
@@ -179,6 +214,43 @@ flag_occurrences(w, tests = "country_mismatch", gazetteers = list(country_mismat
 The third record is in territory XB with code XA, the fourth outside
 both territories, so both are flagged.
 
+## Species ranges
+
+The `range` test flags records outside the range polygons of their
+species, such as IUCN range maps. The layer is an `sf` object with one
+or more polygons per species and a species column, named like the
+record’s species column or `species`, `binomial` or `sci_name`. Each
+species gets an index of its own polygons, so overlapping ranges of
+different species do not interfere; species without a polygon are not
+tested:
+
+``` r
+
+ranges <- sf::st_sf(
+  species = c("Bufo bufo", "Bufo bufo", "Lacerta viridis"),
+  geometry = sf::st_sfc(sf::st_polygon(list(rbind(c(-10, 36), c(30, 36), c(30, 60), c(-10, 60), c(-10, 36)))),
+                        sf::st_polygon(list(rbind(c(30, 40), c(60, 40), c(60, 60), c(30, 60), c(30, 40)))),
+                        sf::st_polygon(list(rbind(c(5, 40), c(30, 40), c(30, 52), c(5, 52), c(5, 40)))),
+                        crs = 4326))
+r <- data.frame(species = c("Bufo bufo", "Bufo bufo", "Bufo bufo", "Lacerta viridis", "Lacerta viridis", "Rana arvalis"),
+                decimalLongitude = c(10, 45, -20, 15, 15, 100), decimalLatitude = c(50, 50, 50, 45, 55, 10))
+data.frame(r, outside = flag_occurrences(r, tests = "range", gazetteers = list(range = ranges))$flag_range,
+           outside_100km = flag_occurrences(r, tests = "range", gazetteers = list(range = ranges),
+                                            buffers = list(range = 100000))$flag_range)
+#>           species decimalLongitude decimalLatitude outside outside_100km
+#> 1       Bufo bufo               10              50   FALSE         FALSE
+#> 2       Bufo bufo               45              50   FALSE         FALSE
+#> 3       Bufo bufo              -20              50    TRUE          TRUE
+#> 4 Lacerta viridis               15              45   FALSE         FALSE
+#> 5 Lacerta viridis               15              55    TRUE          TRUE
+#> 6    Rana arvalis              100              10   FALSE         FALSE
+```
+
+The toad at 45 E lies in the second of its two polygons and is kept; the
+one at 20 W lies in the Atlantic, outside both. The lizard at 55 N is 3
+degrees north of its range and stays flagged with a 100 km buffer. *Rana
+arvalis* has no polygon and is not tested.
+
 ## Recording the layer
 
 A custom layer is indexed once per call, and its size and an MD5
@@ -189,7 +261,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"
 ```
 
 The checksum identifies the exact table, so two analyses that report the
@@ -208,6 +280,8 @@ two gazetteers.
 | cc_sea(ref = …) | gazetteers = list(sea = polygons) |
 | cc_urb(ref = …) | gazetteers = list(urban = polygons) |
 | cc_coun(ref = …, ref_col = …) | gazetteers = list(country_mismatch = polygons) |
+| cc_iucn(range = …) | gazetteers = list(range = polygons) |
+| cc_aohi(taxa = …) | gazetteers = list(aohi = subset of reference_points(“aohi”)) |
 
 CoordinateCleaner’s point references need its own column names
 (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude
@@ -218,4 +292,4 @@ reads one code column chosen with `ref_col`; here every code column
 present is matched. With the same reference points and polygons the two
 packages give the same flags, up to the buffer-polygon band described in
 the article Coming from CoordinateCleaner; the package tests check this
-for `institution` and `sea`.
+for `institution`, `sea` and `range`.

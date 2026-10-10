@@ -14,6 +14,7 @@ occ_columns(
   establishment = "establishmentMeans",
   min_age = "min_ma",
   max_age = "max_ma",
+  dataset = "datasetKey",
   id = "gbifID"
 )
 }
@@ -35,6 +36,9 @@ a list column of character vectors.}
 
 \item{min_age, max_age}{Minimum and maximum age of a fossil record, in
 million years, as the Paleobiology Database's \code{min_ma} and \code{max_ma}.}
+
+\item{dataset}{Dataset the record belongs to, for the dataset-level tests
+(\code{datasetKey} in GBIF data).}
 
 \item{id}{Record identifier, copied into on-disk flag output when present.}
 }

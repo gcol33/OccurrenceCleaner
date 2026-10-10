@@ -60,6 +60,7 @@
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -203,18 +204,20 @@ vectors works too.</p>
 <div class="section level2">
 <h2 id="flagging-every-test-once">Flagging every test once<a class="anchor" aria-label="anchor" href="#flagging-every-test-once"></a>
 </h2>
-<p>Nineteen of the twenty tests can run here, because the table has
-coordinates, a species, a country code and the three GBIF fields; the
-twentieth, <code>age_equal</code>, needs fossil ages (see the fossil
-article). <code><a href="../reference/occ_columns.html">occ_columns()</a></code> only needs to be told the
-identifier, since the other defaults match case-insensitively:</p>
+<p>The nineteen tests in the first bits of the layout can run here,
+because the table has coordinates, a species, a country code and the
+three GBIF fields. The others need fossil ages, a dataset key or species
+ranges, or compare records within a species; the articles on fossils, on
+outliers and dataset tests, and on custom gazetteers cover them.
+<code><a href="../reference/occ_columns.html">occ_columns()</a></code> only needs to be told the identifier, since
+the other defaults match case-insensitively:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span>, <span class="st">"age_equal"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">all_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span><span class="op">[</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">bit</span> <span class="op">&lt;</span> <span class="fl">19</span><span class="op">]</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, tests <span class="op">=</span> <span class="va">all_tests</span>, columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2276   32</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)"</span></span></code></pre></div>
 <p>The result is the input with an integer <code>flags</code> column and
 one logical column per test. The <code>occ_reference</code> attribute
 records which gazetteer versions produced the flags; it is worth storing

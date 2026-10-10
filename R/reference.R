@@ -79,31 +79,37 @@ sha256_file <- function(path) {
 #' Reference points of a proximity test
 #'
 #' Returns the points a proximity test measures distance to: capitals,
-#' country and province centroids, biodiversity institutions, or the GBIF
-#' headquarters. The table can be inspected, filtered or extended and passed
+#' country and province centroids, biodiversity institutions, the GBIF
+#' headquarters, or the points of the Artificial Hotspot Occurrence Inventory
+#' (Park et al. 2023). The table can be inspected, filtered or extended and passed
 #' back through the `gazetteers` argument of [flag_occurrences()].
 #'
 #' @param test One of `"capital"`, `"centroid"`, `"institution"`,
-#'   `"gbif_headquarters"`.
+#'   `"gbif_headquarters"`, `"aohi"`.
 #' @param reference `"natural_earth"` (the package's own gazetteers) or
 #'   `"CoordinateCleaner"` (that package's tables, which must be installed).
 #' @return A data frame with columns `lon` and `lat` and, for the package's
 #'   own gazetteers, the attributes of each point: `name`, `country`,
 #'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
 #'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
-#'   `type`, `active`, `master_source` for institutions (GRSciColl). For
+#'   `type`, `active`, `master_source` for institutions (GRSciColl); `id`,
+#'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
+#'   Plantae), `frequency` (records at the point), `category`,
+#'   `determination` (TRUE for a real observation site, FALSE for an
+#'   artificial aggregate of records) and `notes` for the inventory. For
 #'   `reference = "CoordinateCleaner"` the columns are `lon` and `lat` only.
 #' @examples
 #' head(reference_points("capital"))
 #' table(reference_points("centroid")$type)
 #' @export
-reference_points <- function(test = c("capital", "centroid", "institution", "gbif_headquarters"),
+reference_points <- function(test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi"),
                              reference = c("natural_earth", "CoordinateCleaner")) {
   test <- match.arg(test)
   reference <- match.arg(reference)
   if (test == "gbif_headquarters") return(data.frame(lon = 12.58, lat = 55.67))
   if (reference == "natural_earth") {
-    return(switch(test, capital = ref_capitals, centroid = ref_centroids, institution = ref_institutions))
+    return(switch(test, capital = ref_capitals, centroid = ref_centroids, institution = ref_institutions,
+                  aohi = ref_aohi))
   }
   need_coordinatecleaner()
   cr <- get_cc_data("countryref")
@@ -119,6 +125,10 @@ reference_points <- function(test = c("capital", "centroid", "institution", "gbi
     institution = {
       d <- get_cc_data("institutions")
       d <- d[!is.na(d$decimalLongitude) & !is.na(d$decimalLatitude), ]
+      data.frame(lon = d$decimalLongitude, lat = d$decimalLatitude)
+    },
+    aohi = {
+      d <- as.data.frame(get_cc_data("aohi"))
       data.frame(lon = d$decimalLongitude, lat = d$decimalLatitude)
     })
 }
@@ -215,12 +225,12 @@ get_cc_data <- function(name) {
 
 # ---- user-supplied gazetteers --------------------------------------------------
 
-.point_tests <- c("capital", "centroid", "institution", "gbif_headquarters")
-.polygon_tests <- c("sea", "urban", "country_mismatch")
+.point_tests <- c("capital", "centroid", "institution", "gbif_headquarters", "aohi")
+.polygon_tests <- c("sea", "urban", "country_mismatch", "range")
 
 # Index each user layer once: list(index = per-test index, label = text for
 # the reference label, or NULL when none is given).
-prepare_gazetteers <- function(gazetteers) {
+prepare_gazetteers <- function(gazetteers, columns = occ_columns()) {
   if (is.null(gazetteers)) return(list(index = list(), label = NULL))
   if (!is.list(gazetteers) || inherits(gazetteers, c("data.frame", "sf", "sfc")) ||
       is.null(names(gazetteers)) || any(!nzchar(names(gazetteers))))
@@ -235,6 +245,10 @@ prepare_gazetteers <- function(gazetteers) {
       p <- gazetteer_points(g, t)
       index[[t]] <- cpp_point_index(p$lon, p$lat)
       label <- c(label, sprintf("%s %d points md5 %s", t, length(p$lon), checksum(p)))
+    } else if (t == "range") {
+      r <- gazetteer_ranges(g, columns$species)
+      index[[t]] <- r$index
+      label <- c(label, sprintf("range %d species md5 %s", length(r$index), r$md5))
     } else {
       layer <- gazetteer_polygons(g, t)
       cell <- min(2, max(0.1, sqrt(64800 / length(layer$x))))
@@ -310,6 +324,34 @@ gazetteer_codes <- function(d) {
   f$iso_a3[fill3] <- generic[fill3]
   f$iso_a2[fill2] <- generic[fill2]
   f
+}
+
+# Range polygons: one small polygon index per species, each covering only the
+# bounding box of that species' polygons. The species column is the record
+# species column's name, `species`, `binomial` or `sci_name` (any case).
+gazetteer_ranges <- function(g, species_col) {
+  if (!inherits(g, "sf")) stop("`gazetteers$range` must be an sf object with a species column")
+  geom <- g[[attr(g, "sf_column")]]
+  d <- as.data.frame(g)
+  i <- match(tolower(c(species_col, "species", "binomial", "sci_name")), tolower(names(d)))
+  i <- i[!is.na(i)][1]
+  if (is.na(i)) stop("`gazetteers$range` needs a species column (", species_col, ", species, binomial or sci_name)")
+  sp <- as.character(d[[i]])
+  layer <- gazetteer_polygons(geom, "range")
+  index <- list()
+  for (k in unique(sp[!is.na(sp)])) {
+    feats <- which(sp == k)
+    rings <- which(layer$ring_feature %in% feats)
+    if (!length(rings)) next
+    v <- unlist(lapply(rings, function(r) seq.int(layer$ring_start[r] + 1L, layer$ring_start[r + 1L])))
+    x <- layer$x[v] / 1e7; y <- layer$y[v] / 1e7
+    len <- layer$ring_start[rings + 1L] - layer$ring_start[rings]
+    starts <- c(0L, cumsum(len))
+    ext <- c(min(x), max(x), min(y), max(y))
+    cell <- max(0.01, min(2, sqrt((ext[2] - ext[1] + 1e-9) * (ext[4] - ext[3] + 1e-9) / max(1, length(x)))))
+    index[[k]] <- cpp_polygon_index(x, y, as.integer(starts), rep(1L, length(rings)), cell, ext)
+  }
+  list(index = index, md5 = checksum(list(sp, layer[c("x", "y", "ring_start", "ring_feature")])))
 }
 
 checksum <- function(obj) {

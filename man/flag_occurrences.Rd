@@ -12,6 +12,7 @@ flag_occurrences(
   gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
+  settings = NULL,
   duplicate_by = NULL,
   duplicate_cell = NULL,
   out = NULL,
@@ -54,6 +55,12 @@ uses \code{seas_scale = 50}), 50, or 10 (downloaded on first use, see
 \code{capital}, \code{centroid}, \code{institution}, \code{gbif_headquarters}, or in degrees
 for \code{zero}. Unnamed entries keep the defaults.}
 
+\item{settings}{Named list overriding the options of the grouped tests,
+one entry per test, each a named list; unnamed options keep their
+defaults, which are CoordinateCleaner's. See \link{test_outlier},
+\link{test_age_outlier}, \link{test_spatiotemporal_outlier},
+\link{test_age_range_outlier}, \link{test_dataset_ddmm} and \link{test_dataset_rounded}.}
+
 \item{duplicate_by}{Additional column names a duplicate must share (as
 CoordinateCleaner's \code{additions}), for example an event date.}
 
@@ -93,6 +100,11 @@ cleaning rule is a set of tests, applied afterwards with \code{\link[=has_flag]{
 summarised with \code{\link[=tally_flags]{tally_flags()}}.
 }
 \details{
+The grouped tests (\code{outlier}, the three fossil outlier tests and the two
+dataset tests) compare a record with the other records of its species,
+taxon or dataset; they run in a pass over the whole input before the record
+tests, which on streamed input reads every file once or twice more.
+
 The input is either a data frame, or an on-disk table streamed in chunks: a
 \code{vectra_node} (from \code{vectra::tbl_parquet()}, \code{vectra::tbl_csv()},
 \code{vectra::tbl()}), a path to a Parquet file or directory of Parquet parts
@@ -126,6 +138,15 @@ polygon the point falls in; CoordinateCleaner compares alpha-3 only.
 Records without a code, or at sea, are flagged as in CoordinateCleaner.
 \item \code{duplicate} on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.
+\item \code{outlier} flags the records of outlier cells in the raster approximation
+(species of 10,000 records or more, or \code{thinning = TRUE}); in
+CoordinateCleaner 3.0.1 that path never flags a record.
+\item \code{age_outlier} and \code{spatiotemporal_outlier} draw ages from a stream seeded
+per taxon, so they agree with \code{cf_age()} and \code{cf_outl()} in distribution;
+when every age range has zero width the flags are identical.
+\item \code{dataset_rounded} leaves datasets below \code{min_unique_ds_size} untested,
+where \code{cd_round()} stops with an error; the dataset tests do not flag
+records without a dataset key.
 \item With the default reference the gazetteers are rebuilt from the original
 sources; \code{reference = "CoordinateCleaner"} uses that package's own tables,
 and \code{gazetteers} replaces the layer of single tests, as the \code{ref}

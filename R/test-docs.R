@@ -330,12 +330,278 @@ NULL
 #'   [occ_columns()]).
 #' @section CoordinateCleaner: Equivalent to `cf_equal()`; identical flags.
 #'   `cf_range(method = "time")` is a threshold on the range width, here a bin
-#'   in [tally_flags()]; `cf_range()` and `cf_age()` with `method = "quantile"`
-#'   or `"mad"` compare records of a taxon with each other and are not ported.
+#'   in [tally_flags()]. The per-taxon tests `cf_age()`, `cf_outl()` and
+#'   `cf_range()` with `method = "quantile"` or `"mad"` are [test_age_outlier],
+#'   [test_spatiotemporal_outlier] and [test_age_range_outlier].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
 #' x <- data.frame(min_ma = c(10, 20, 30), max_ma = c(20, 20, 25))
 #' flag_occurrences(x, tests = "age_equal")$flag_age_equal
 #' @name test_age_equal
+NULL
+
+#' Test: geographic outliers
+#'
+#' Flags records far from the other records of their species. For each record
+#' the haversine distances (km) to the species' other records are computed,
+#' leaving out zero distances (the record itself and records at the same
+#' point); a record is flagged when its mean distance lies above the upper
+#' fence of the species' mean distances: Q75 + `mltpl` x IQR (`method =
+#' "quantile"`) or median + `mltpl` x MAD (`"mad"`). With `method =
+#' "distance"` a record is flagged when its nearest other record is more than
+#' `tdi` km away. Species with fewer than `min_occs` distinct points are not
+#' tested.
+#'
+#' Species with 10,000 records or more, and every species when `thinning =
+#' TRUE`, are tested on a raster approximation: records are counted on a grid
+#' of `thinning_res` degrees spanning all valid records (widened by two cells),
+#' distances are taken between cell centres, and the records of the outlier
+#' cells are flagged. Without thinning, distances are weighted by the product
+#' of the cell counts and a cell's distance to itself counts as 100 x
+#' `thinning_res` / 2 km, as in CoordinateCleaner.
+#'
+#' The test needs every record of a species, so it runs in a group pass over
+#' the whole input before the record tests; on streamed input that pass reads
+#' all files, and a species spread over several files is tested as one.
+#'
+#' @section Fields: `lon`, `lat`, `species`. Records with invalid coordinates
+#'   are left out.
+#' @section Settings: `settings = list(outlier = list(...))` with `method`
+#'   (`"quantile"`), `mltpl` (5), `tdi` (1000 km), `min_occs` (7), `thinning`
+#'   (`FALSE`) and `thinning_res` (0.5 degrees).
+#' @section CoordinateCleaner: Equivalent to `cc_outl()`; identical flags for
+#'   species below 10,000 records. In CoordinateCleaner 3.0.1 the raster
+#'   approximation computes the cell statistics but its mapping from outlier
+#'   cells back to records returns none, so it never flags a record; here the
+#'   records of the outlier cells are flagged. The sampling correction
+#'   (`sampling_thresh`), which queries GBIF record counts online, is not
+#'   ported.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' set.seed(1)
+#' x <- data.frame(species = "a", decimalLongitude = c(rnorm(50, 10, 1), 60),
+#'                 decimalLatitude = c(rnorm(50, 50, 1), 10))
+#' which(flag_occurrences(x, tests = "outlier")$flag_outlier)
+#' @name test_outlier
+NULL
+
+#' Test: fossil age outliers
+#'
+#' Flags fossil records whose age is far from the ages of the other records of
+#' their taxon. One age is drawn uniformly from each record's range (the
+#' minimum age when the range has zero width), each record gets its mean
+#' absolute age difference to all records of the taxon, and records above the
+#' upper fence (Q75 + `mltpl` x IQR, or median + `mltpl` x MAD) are outliers.
+#' The draw is repeated `replicates` times and a record is flagged when it is
+#' an outlier in more than `1 - flag_thresh` of them. Taxa with fewer than
+#' `size_thresh` records are not tested.
+#'
+#' The draws are seeded per taxon from `seed` and the taxon name, and taken in
+#' an order fixed by the records' ages, coordinates and identifier, so the
+#' flags are reproducible and do not depend on the order or the splitting of
+#' the input. The caller's random-number stream is left unchanged.
+#'
+#' @section Fields: `min_age`, `max_age`, `species` (the taxon), and `lon`,
+#'   `lat` for `uniq_loc`.
+#' @section Settings: `settings = list(age_outlier = list(...))` with `method`
+#'   (`"quantile"`), `mltpl` (5), `size_thresh` (7), `replicates` (5),
+#'   `flag_thresh` (0.5), `uniq_loc` (`FALSE`: when `TRUE`, records sharing
+#'   taxon, coordinates rounded to 0.1 degrees and ages are tested once) and
+#'   `seed` (1).
+#' @section CoordinateCleaner: Equivalent to `cf_age()` at taxon level;
+#'   identical flags when no age has to be drawn (every range of zero width).
+#'   Otherwise both draw ages at random and the flags agree in distribution,
+#'   not record by record: CoordinateCleaner draws from the session's random
+#'   stream in input order.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' x <- data.frame(accepted_name = "A", min_ma = c(rep(20, 20), 90), max_ma = c(rep(22, 20), 92))
+#' flag_occurrences(x, tests = "age_outlier",
+#'                  columns = occ_columns(species = "accepted_name"))$flag_age_outlier
+#' @name test_age_outlier
+NULL
+
+#' Test: fossil outliers in space and time
+#'
+#' Flags fossil records that are far from the other records of their taxon in
+#' space and time together. Ages are drawn as in [test_age_outlier]; for each
+#' pair of records the age difference is rescaled so that the largest age
+#' difference equals the largest geographic distance, added to the haversine
+#' distance in km between coordinates rounded to 0.1 degrees (Euclidean
+#' degrees for taxa of 10,000 records or more) and rounded; each record's mean
+#' over all records of its taxon is compared with the upper fence. Replicates,
+#' majority and seeding are as in [test_age_outlier].
+#'
+#' @section Fields: `lon`, `lat`, `min_age`, `max_age`, `species`.
+#' @section Settings: `settings = list(spatiotemporal_outlier = list(...))`
+#'   with the same options and defaults as `age_outlier`.
+#' @section CoordinateCleaner: Equivalent to `cf_outl()` at taxon level, the
+#'   `spatiotemp` test of `clean_fossils()`; identical flags when every range
+#'   has zero width, agreement in distribution otherwise.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' set.seed(1)
+#' x <- data.frame(accepted_name = "A", lng = c(runif(20, 0, 5), 120), lat = c(runif(20, 40, 45), -30),
+#'                 min_ma = 20, max_ma = 20)
+#' cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name")
+#' flag_occurrences(x, tests = "spatiotemporal_outlier", columns = cols)$flag_spatiotemporal_outlier
+#' @name test_spatiotemporal_outlier
+NULL
+
+#' Test: fossil age-range outliers
+#'
+#' Flags fossil records whose age range (`max_age - min_age`) lies above the
+#' upper fence of the ranges of the other records of their taxon (Q75 +
+#' `mltpl` x IQR, or median + `mltpl` x MAD). A record dated only to a long
+#' period among records dated to stages is the typical case. With `level =
+#' "all"` the fence is taken over the whole input instead of per taxon, as in
+#' CoordinateCleaner's dataset-level `cf_range(taxon = "")`. A fixed limit in
+#' million years needs no test: the range stays a raw column and is cut in
+#' [tally_flags()].
+#'
+#' @section Fields: `min_age`, `max_age`, `species`.
+#' @section Settings: `settings = list(age_range_outlier = list(...))` with
+#'   `method` (`"quantile"`), `mltpl` (5), `size_thresh` (7), `uniq_loc`
+#'   (`FALSE`) and `level` (`"taxon"`).
+#' @section CoordinateCleaner: Equivalent to `cf_range()` with `method =
+#'   "quantile"` or `"mad"`; identical flags. With `uniq_loc = TRUE`,
+#'   CoordinateCleaner also flags records of other taxa that happen to share a
+#'   flagged range width; here the flag goes to the records with the same
+#'   taxon, coordinates and ages.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()], [test_age_equal]
+#' @examples
+#' x <- data.frame(accepted_name = "A", min_ma = 20, max_ma = c(rep(21, 20), 60))
+#' flag_occurrences(x, tests = "age_range_outlier",
+#'                  columns = occ_columns(species = "accepted_name"))$flag_age_range_outlier
+#' @name test_age_range_outlier
+NULL
+
+#' Test: degree-minute conversion errors in a dataset
+#'
+#' Flags every record of a dataset whose coordinates look converted from
+#' degrees and minutes as if they were decimal degrees, which leaves no decimal
+#' part above .59. The decimal parts of each dataset's distinct coordinates are
+#' placed on a `mat_size` x `mat_size` grid; a binomial test compares the share
+#' of filled cells with both decimals below .6 with its expected share, and
+#' the dataset fails when the excess is significant (p < `pvalue`) and larger
+#' than `diff` times the expected share. Datasets spanning less than
+#' `min_span` degrees in longitude or latitude are not tested.
+#'
+#' @section Fields: `lon`, `lat`, `dataset` (`datasetKey` by default).
+#' @section Settings: `settings = list(dataset_ddmm = list(...))` with
+#'   `pvalue` (0.025), `diff` (1), `mat_size` (1000) and `min_span` (2).
+#' @section CoordinateCleaner: Equivalent to `cd_ddmm()`; identical flags.
+#'   Records without a dataset key are not flagged here; `cd_ddmm()` flags
+#'   them.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' set.seed(2)
+#' ddmm <- function(n) floor(runif(n, 0, 20)) + sample(0:59, n, TRUE) / 100
+#' x <- data.frame(datasetKey = rep(c("ok", "ddmm"), each = 300),
+#'                 decimalLongitude = c(runif(300, 0, 20), ddmm(300)),
+#'                 decimalLatitude = c(runif(300, 0, 20), ddmm(300)))
+#' tapply(flag_occurrences(x, tests = "dataset_ddmm")$flag_dataset_ddmm, x$datasetKey, all)
+#' @name test_dataset_ddmm
+NULL
+
+#' Test: rasterised datasets
+#'
+#' Flags every record of a dataset whose coordinates lie on a regular grid, as
+#' when records were collected or published per grid cell. For each axis the
+#' absolute coordinates are binned into about 3000 classes, the
+#' autocorrelation of the bin counts is computed, and its outliers (values
+#' above Q75 + `T1` x IQR in sliding windows) are located; regularly spaced
+#' outliers, at a common distance between `reg_dist_min` and `reg_dist_max`
+#' degrees found at least `reg_out_thresh` times, mark the axis as periodic.
+#' A dataset fails when both axes are periodic (`axis = "both"`) or the chosen
+#' one is. Datasets with fewer than `min_unique_ds_size` distinct coordinates
+#' are not tested.
+#'
+#' @section Fields: `lon`, `lat`, `dataset`.
+#' @section Settings: `settings = list(dataset_rounded = list(...))` with
+#'   `T1` (7), `reg_out_thresh` (2), `reg_dist_min` (0.1), `reg_dist_max` (2),
+#'   `min_unique_ds_size` (4) and `axis` (`"both"`).
+#' @section CoordinateCleaner: Equivalent to `cd_round()`; identical flags. In
+#'   CoordinateCleaner 3.0.1 an input with several datasets of which one is
+#'   below `min_unique_ds_size` stops with an error; here that dataset is not
+#'   tested. Records without a dataset key are not flagged.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' set.seed(2)
+#' x <- data.frame(datasetKey = rep(c("ok", "grid"), each = 400),
+#'                 decimalLongitude = c(runif(400, 0, 20), round(runif(400, 0, 20) * 2) / 2 + 0.01),
+#'                 decimalLatitude = c(runif(400, 0, 20), round(runif(400, 30, 50) * 2) / 2 + 0.01))
+#' tapply(flag_occurrences(x, tests = "dataset_rounded")$flag_dataset_rounded, x$datasetKey, all)
+#' @name test_dataset_rounded
+NULL
+
+#' Test: outside the species range
+#'
+#' Flags records that fall outside every range polygon of their species, for
+#' example an IUCN range map. The polygons come from `gazetteers = list(range =
+#' <sf>)`: an `sf` object with a species column (named like the record's
+#' species column, `species`, `binomial` or `sci_name`). Species without a
+#' polygon are not tested. With `buffers = list(range = m)`, records within
+#' `m` metres of a polygon edge count as inside.
+#'
+#' @section Fields: `lon`, `lat`, `species`.
+#' @section Buffer: `buffers = list(range = 0)`, in metres. The distance to an
+#'   edge is measured on the ellipsoid from the closest point of the edge in a
+#'   local equirectangular projection.
+#' @section Custom gazetteer: required; there is no shipped range layer.
+#' @section CoordinateCleaner: Equivalent to `cc_iucn()`; identical flags
+#'   without a buffer. With a buffer CoordinateCleaner buffers the polygons
+#'   with terra, so records very close to the buffer edge may differ.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' if (requireNamespace("sf", quietly = TRUE)) {
+#'   rg <- sf::st_sf(species = "a", geometry = sf::st_sfc(sf::st_polygon(list(
+#'     rbind(c(0, 40), c(20, 40), c(20, 55), c(0, 55), c(0, 40)))), crs = 4326))
+#'   x <- data.frame(species = c("a", "a", "b"), decimalLongitude = c(10, 30, 30),
+#'                   decimalLatitude = 50)
+#'   flag_occurrences(x, tests = "range", gazetteers = list(range = rg))$flag_range
+#' }
+#' @name test_range
+NULL
+
+#' Test: artificial hotspots
+#'
+#' Flags records within 10 km of a point of the Artificial Hotspot Occurrence
+#' Inventory (AHOI; Park et al. 2023): the coordinates that recur most often in
+#' GBIF plant, bird, insect and mammal records, each with the reason it
+#' recurs (a georeferencing default, a gazetteer centroid, a popular
+#' observation site). WGS84 geodesic distance, closed ball.
+#'
+#' The shipped inventory is built from the original deposit (Dryad,
+#' doi:10.5061/dryad.v41ns1s0p, CC0); [reference_points()] returns it with the
+#' taxon group, the record count at each point and whether the point marks a
+#' real observation site (`determination`), so it can be filtered and passed
+#' back through `gazetteers`.
+#'
+#' @section Fields: `lon`, `lat`.
+#' @section Buffer: `buffers = list(aohi = 10000)`, in metres.
+#' @section Custom gazetteer: `gazetteers = list(aohi = points)`, a data frame
+#'   of longitude and latitude; see [flag_occurrences()].
+#' @section CoordinateCleaner: Equivalent to `cc_aohi()` with its default four
+#'   taxa; with `reference = "CoordinateCleaner"` its bundled table is used.
+#'   Its 72-gon buffer edge lies within 9.5 m of the 10 km circle. Its table
+#'   differs from the Dryad deposit at a few points.
+#' @references Park, D. S., Xie, Y., Thammavong, H. T., Tulaiha, R. and Feng,
+#'   X. (2023). Artificial Hotspot Occurrence Inventory (AHOI). Journal of
+#'   Biogeography 50:441-449. \doi{10.1111/jbi.14543}
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()], [reference_points()]
+#' @examples
+#' a <- reference_points("aohi")
+#' x <- data.frame(decimalLongitude = a$lon[1] + 0.01, decimalLatitude = a$lat[1])
+#' flag_occurrences(x, tests = "aohi")$flag_aohi
+#' @name test_aohi
 NULL

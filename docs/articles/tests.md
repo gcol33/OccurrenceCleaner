@@ -1,14 +1,17 @@
 # The tests in detail
 
-This article goes through the twenty tests one by one: what each
-computes, which fields it reads, where its edge lies, and how its result
-can be changed through an argument. Twelve are the record tests of
-CoordinateCleaner (Zizka et
+This article goes through the record tests that read coordinates and
+GBIF fields: what each computes, which fields it reads, where its edge
+lies, and how its result can be changed through an argument. Eleven are
+the record tests of CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
 buffers, up to the differences listed in the article Coming from
-CoordinateCleaner; the other eight read GBIF fields and are additions of
-this package. The fossil age test is described in the fossil article.
-Each test also has a help page of its own
+CoordinateCleaner, and eight read GBIF fields and are additions of this
+package. The other nine tests of the layout are covered elsewhere: the
+four fossil tests in the fossil article, the geographic outlier and the
+two dataset tests in the article on outliers and dataset tests, and
+`range` and `aohi` in the article on custom gazetteers. Each test also
+has a help page of its own
 ([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
 …).
@@ -40,33 +43,41 @@ counterpart:
 knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
 ```
 
-| bit | test                     | needs           | source            | equivalent |
-|----:|:-------------------------|:----------------|:------------------|:-----------|
-|   0 | invalid                  | lon,lat         | CoordinateCleaner | cc_val     |
-|   1 | zero                     | lon,lat         | CoordinateCleaner | cc_zero    |
-|   2 | equal                    | lon,lat         | CoordinateCleaner | cc_equ     |
-|   3 | capital                  | lon,lat         | CoordinateCleaner | cc_cap     |
-|   4 | centroid                 | lon,lat         | CoordinateCleaner | cc_cen     |
-|   5 | institution              | lon,lat         | CoordinateCleaner | cc_inst    |
-|   6 | gbif_headquarters        | lon,lat         | CoordinateCleaner | cc_gbif    |
-|   7 | sea                      | lon,lat         | CoordinateCleaner | cc_sea     |
-|   8 | urban                    | lon,lat         | CoordinateCleaner | cc_urb     |
-|   9 | country_mismatch         | lon,lat,country | CoordinateCleaner | cc_coun    |
-|  10 | duplicate                | lon,lat,species | CoordinateCleaner | cc_dupl    |
-|  11 | issue_coordinate         | issue           | OccurrenceCleaner | NA         |
-|  12 | issue_taxon              | issue           | OccurrenceCleaner | NA         |
-|  13 | issue_date               | issue           | OccurrenceCleaner | NA         |
-|  14 | issue_rounded            | issue           | OccurrenceCleaner | NA         |
-|  15 | basis_fossil             | basis           | OccurrenceCleaner | NA         |
-|  16 | basis_living             | basis           | OccurrenceCleaner | NA         |
-|  17 | establishment_introduced | establishment   | OccurrenceCleaner | NA         |
-|  18 | establishment_managed    | establishment   | OccurrenceCleaner | NA         |
-|  19 | age_equal                | min_age,max_age | CoordinateCleaner | cf_equal   |
+| bit | test | needs | source | equivalent |
+|---:|:---|:---|:---|:---|
+| 0 | invalid | lon,lat | CoordinateCleaner | cc_val |
+| 1 | zero | lon,lat | CoordinateCleaner | cc_zero |
+| 2 | equal | lon,lat | CoordinateCleaner | cc_equ |
+| 3 | capital | lon,lat | CoordinateCleaner | cc_cap |
+| 4 | centroid | lon,lat | CoordinateCleaner | cc_cen |
+| 5 | institution | lon,lat | CoordinateCleaner | cc_inst |
+| 6 | gbif_headquarters | lon,lat | CoordinateCleaner | cc_gbif |
+| 7 | sea | lon,lat | CoordinateCleaner | cc_sea |
+| 8 | urban | lon,lat | CoordinateCleaner | cc_urb |
+| 9 | country_mismatch | lon,lat,country | CoordinateCleaner | cc_coun |
+| 10 | duplicate | lon,lat,species | CoordinateCleaner | cc_dupl |
+| 11 | issue_coordinate | issue | OccurrenceCleaner | NA |
+| 12 | issue_taxon | issue | OccurrenceCleaner | NA |
+| 13 | issue_date | issue | OccurrenceCleaner | NA |
+| 14 | issue_rounded | issue | OccurrenceCleaner | NA |
+| 15 | basis_fossil | basis | OccurrenceCleaner | NA |
+| 16 | basis_living | basis | OccurrenceCleaner | NA |
+| 17 | establishment_introduced | establishment | OccurrenceCleaner | NA |
+| 18 | establishment_managed | establishment | OccurrenceCleaner | NA |
+| 19 | age_equal | min_age,max_age | CoordinateCleaner | cf_equal |
+| 20 | outlier | lon,lat,species | CoordinateCleaner | cc_outl |
+| 21 | age_outlier | min_age,max_age,species | CoordinateCleaner | cf_age |
+| 22 | spatiotemporal_outlier | lon,lat,min_age,max_age,species | CoordinateCleaner | cf_outl |
+| 23 | age_range_outlier | min_age,max_age,species | CoordinateCleaner | cf_range |
+| 24 | dataset_ddmm | lon,lat,dataset | CoordinateCleaner | cd_ddmm |
+| 25 | dataset_rounded | lon,lat,dataset | CoordinateCleaner | cd_round |
+| 26 | range | lon,lat,species | CoordinateCleaner | cc_iucn |
+| 27 | aohi | lon,lat | CoordinateCleaner | cc_aohi |
 
 ``` r
 
 attr(flag_tests(), "layout_version")
-#> [1] 2
+#> [1] 3
 ```
 
 A record’s flag word is the sum of `2^bit` over the tests it fails, so a

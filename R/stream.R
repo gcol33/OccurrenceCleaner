@@ -39,9 +39,28 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
         !identical(old$reference, cfg$reference_label))
       stop("`out` holds flags produced with different tests, layout or reference; use a new directory")
   }
+  group <- NULL
+  if (any(cfg$tests %in% .group_tests)) {
+    gpath <- file.path(out, "group_result.rds")
+    if (resume && file.exists(gpath)) {
+      group <- readRDS(gpath)
+    } else {
+      first <- units[[1]]$open()
+      cols0 <- resolve_test_columns(cfg$columns, names(vectra::collect(vectra::slice_head(first, n = 1))), cfg$tests)
+      if (verbose) message("group tests: reading all units")
+      t0 <- Sys.time()
+      gdir <- file.path(out, ".group")
+      unlink(gdir, recursive = TRUE)
+      group <- group_pass(units, cfg, cols0, store_dir = gdir)
+      unlink(gdir, recursive = TRUE)
+      saveRDS(group, gpath)
+      if (verbose) message("group tests: done [", format(round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)), " s]")
+    }
+  }
   total <- 0
   parts <- character()
-  for (u in units) {
+  for (ui in seq_along(units)) {
+    u <- units[[ui]]
     done_marker <- file.path(out, paste0(u$name, ".done"))
     if (resume && file.exists(done_marker)) {
       info <- readRDS(done_marker)
@@ -55,12 +74,13 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
     node <- u$open()
     acc <- vectra::collect_chunked(node, function(acc, chunk) {
       if (is.null(acc$cols)) {
-        acc$cols <- resolve_columns(cfg$columns, names(chunk), fields_for(cfg$tests))
+        acc$cols <- resolve_test_columns(cfg$columns, names(chunk), cfg$tests)
         acc$id <- resolve_columns(cfg$columns, names(chunk), "id", optional = "id")$id
         missing <- setdiff(keep, names(chunk))
         if (length(missing)) stop("`keep` column(s) not in the input: ", paste(missing, collapse = ", "))
       }
       r <- flag_chunk(chunk, cfg, acc$cols)
+      if (!is.null(group)) r$flags <- bitwOr(r$flags, group_bits(group, chunk, ui, acc$n + 1L, acc$cols))
       o <- chunk[, c(acc$id, keep), drop = FALSE]
       o$flags <- r$flags
       acc$buf[[length(acc$buf) + 1L]] <- o

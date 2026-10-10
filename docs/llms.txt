@@ -290,6 +290,22 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
   : Tests: establishment means
 - [`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
   : Test: fossil age range
+- [`test_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md)
+  : Test: geographic outliers
+- [`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md)
+  : Test: fossil age outliers
+- [`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md)
+  : Test: fossil outliers in space and time
+- [`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md)
+  : Test: fossil age-range outliers
+- [`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md)
+  : Test: degree-minute conversion errors in a dataset
+- [`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md)
+  : Test: rasterised datasets
+- [`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md)
+  : Test: outside the species range
+- [`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
+  : Test: artificial hotspots
 
 ## Rules and tallies
 
@@ -354,5 +370,7 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
   data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md):
 - [Using custom
   gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md):
+- [Outliers and dataset
+  tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.md):
 - [Coming from
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md):

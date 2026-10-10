@@ -60,6 +60,7 @@
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -179,7 +180,7 @@ reference, the columns and the package version:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tests"</span>, <span class="st">"layout_version"</span>, <span class="st">"reference"</span>, <span class="st">"keep"</span>, <span class="st">"n"</span>, <span class="st">"units"</span>, <span class="st">"package_version"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 7</span></span>
 <span><span class="co">#&gt;  $ tests          : chr [1:9] "invalid" "zero" "equal" "capital" ...</span></span>
-<span><span class="co">#&gt;  $ layout_version : int 2</span></span>
+<span><span class="co">#&gt;  $ layout_version : int 3</span></span>
 <span><span class="co">#&gt;  $ reference      : chr "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, plac"| __truncated__</span></span>
 <span><span class="co">#&gt;  $ keep           : chr [1:2] "kingdom" "year"</span></span>
 <span><span class="co">#&gt;  $ n              : num 9000</span></span>
@@ -423,12 +424,16 @@ filter down into the scan:</p>
 <p>GBIF’s Parquet snapshot (the <code>occurrence.parquet</code>
 directory) holds the Darwin Core terms in lower case, which the
 case-insensitive defaults of <code><a href="../reference/occ_columns.html">occ_columns()</a></code> find. A pass
-over every test except the fossil age test, keeping the columns a loss
-analysis groups by:</p>
+over every test the snapshot supports, which is all but the fossil tests
+and the range test, keeping the columns a loss analysis groups by. The
+grouped tests (<code>outlier</code> and the two dataset tests, which
+read <code>datasetkey</code>) add a pass over all files before the
+record pass:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span></span>
 <span>  <span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
-<span>  tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span>, <span class="st">"age_equal"</span><span class="op">)</span>,</span>
+<span>  tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_equal"</span>, <span class="st">"age_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span>,</span>
+<span>                                       <span class="st">"age_range_outlier"</span>, <span class="st">"range"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"flags"</span>,</span>
 <span>  keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"phylum"</span>, <span class="st">"class"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span>,</span>
 <span>  land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>

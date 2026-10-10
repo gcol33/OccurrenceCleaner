@@ -89,6 +89,14 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 | 17 | establishment_introduced | establishment means is introduced, naturalised or invasive | NA |
 | 18 | establishment_managed | establishment means is managed or cultivated | NA |
 | 19 | age_equal | minimum age equal to or greater than the maximum age | cf_equal |
+| 20 | outlier | geographic outlier among the records of its species | cc_outl |
+| 21 | age_outlier | age outlier among the records of its taxon | cf_age |
+| 22 | spatiotemporal_outlier | outlier in space and time among the records of its taxon | cf_outl |
+| 23 | age_range_outlier | age range wider than that of the other records of its taxon | cf_range |
+| 24 | dataset_ddmm | in a dataset with a degree-minute to decimal conversion error | cd_ddmm |
+| 25 | dataset_rounded | in a dataset whose coordinates lie on a regular grid | cd_round |
+| 26 | range | outside the range polygons of its species | cc_iucn |
+| 27 | aohi | within 10 km of an Artificial Hotspot Occurrence Inventory point | cc_aohi |
 
 The tests with an `equivalent` are CoordinateCleaner’s record tests with
 its default buffers, up to the differences listed in the article Coming
@@ -175,17 +183,18 @@ scientific collections, each pinned to a version and checksum:
 knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 ```
 
-| layer        | source         | version    | retrieved  |
-|:-------------|:---------------|:-----------|:-----------|
-| land_110     | Natural Earth  | 4.1.0      | 2026-10-09 |
-| land_50      | Natural Earth  | 4.1.0      | 2026-10-09 |
-| land_10      | Natural Earth  | 5.1.1      | 2026-10-09 |
-| countries_50 | Natural Earth  | 5.1.1      | 2026-10-09 |
-| urban_50     | Natural Earth  | 4.1.0      | 2026-10-09 |
-| places_10    | Natural Earth  | 5.1.2      | 2026-10-09 |
-| admin0_10    | Natural Earth  | 5.1.1      | 2026-10-09 |
-| admin1_10    | Natural Earth  | 5.1.1      | 2026-10-09 |
+| layer | source | version | retrieved |
+|:---|:---|:---|:---|
+| land_110 | Natural Earth | 4.1.0 | 2026-10-09 |
+| land_50 | Natural Earth | 4.1.0 | 2026-10-09 |
+| land_10 | Natural Earth | 5.1.1 | 2026-10-09 |
+| countries_50 | Natural Earth | 5.1.1 | 2026-10-09 |
+| urban_50 | Natural Earth | 4.1.0 | 2026-10-09 |
+| places_10 | Natural Earth | 5.1.2 | 2026-10-09 |
+| admin0_10 | Natural Earth | 5.1.1 | 2026-10-09 |
+| admin1_10 | Natural Earth | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
+| aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | 2022-10-10 | 2026-10-10 |
 
 `reference = "CoordinateCleaner"` uses that package’s own tables
 instead, which gives its flags up to the same differences
@@ -217,10 +226,10 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpglwfNU\flags1dcd024256336
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpcBYvfo\flags18efc1bc729b7
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
-#>   layout:    v2
-#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)
+#>   layout:    v3
+#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
                  rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",

@@ -60,6 +60,7 @@
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
+    <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -182,9 +183,10 @@ tests read. The tests are the record tests of CoordinateCleaner’s
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>, whose defaults are <code>agesequal</code>,
 <code>centroids</code>, <code>equal</code>, <code>gbif</code>,
 <code>institutions</code>, <code>validity</code> and <code>zeros</code>
-plus two outlier tests; here <code>age_equal</code> is its
-<code>agesequal</code>, and the country check runs too because the table
-has country codes:</p>
+plus two outlier tests (<code>spatiotemp</code>, <code>temprange</code>)
+that the section on outliers below adds; here <code>age_equal</code> is
+its <code>agesequal</code>, and the country check runs too because the
+table has country codes:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lng"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"accepted_name"</span>, country <span class="op">=</span> <span class="st">"cc"</span>,</span>
 <span>                    id <span class="op">=</span> <span class="st">"occurrence_no"</span><span class="op">)</span></span>
@@ -529,20 +531,123 @@ rule with a cut on the raw column:</p>
 <span><span class="co">#&gt;            10          1350</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="outliers-within-a-taxon">Outliers within a taxon<a class="anchor" aria-label="anchor" href="#outliers-within-a-taxon"></a>
+</h2>
+<p>Three tests compare a record with the other records of its taxon,
+here the genus in <code>accepted_name</code>.
+<code>age_range_outlier</code> flags age ranges far wider than the
+taxon’s others, the <code>temprange</code> test of
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>. <code>age_outlier</code> flags ages far
+from the taxon’s others, and <code>spatiotemporal_outlier</code> records
+far from the others in space and time together, the
+<code>spatiotemp</code> test. The last two draw an age from each
+record’s range, repeat the test five times and keep the majority; the
+draws are seeded per taxon, so the flags are the same on every run:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">otests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_range_outlier"</span>, <span class="st">"age_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span><span class="op">)</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">fos</span>, tests <span class="op">=</span> <span class="va">otests</span>, columns <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"flag_"</span>, <span class="va">otests</span><span class="op">)</span><span class="op">]</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>truth <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tab</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"truth"</span>, <span class="va">otests</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tab</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">truth</th>
+<th align="right">age_range_outlier</th>
+<th align="right">age_outlier</th>
+<th align="right">spatiotemporal_outlier</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">age_copied</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">age_period</td>
+<td align="right">40</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">age_swapped</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">centroid</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">centroid_near</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">clean</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">museum</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">zero</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><code>age_range_outlier</code> flags all 40 period-dated records and
+no other. The two tests that draw ages flag fewer of them: an age drawn
+from 23 to 66 or 145 Ma lands among the genus’s ages of 23 to 72 Ma in
+many draws, so <code>age_outlier</code> flags 8 of the 40 and
+<code>spatiotemporal_outlier</code> 3. None of the three flags a clean
+record. The museum records are not outliers in space here, because every
+genus in the simulated table occurs in all three regions.</p>
+<p>The options are set per test through <code>settings</code>, with
+CoordinateCleaner’s defaults: <code>method</code>
+(<code>"quantile"</code> or <code>"mad"</code>), <code>mltpl</code> (5),
+<code>size_thresh</code> (7 records per taxon), <code>replicates</code>
+(5) and <code>seed</code>. A stricter fence for the range test and a
+different seed for the draws:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">fos</span>, tests <span class="op">=</span> <span class="va">otests</span>, columns <span class="op">=</span> <span class="va">cols</span>,</span>
+<span>                       settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age_range_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mltpl <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                                       age_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"flag_"</span>, <span class="va">otests</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      flag_age_range_outlier            flag_age_outlier </span></span>
+<span><span class="co">#&gt;                          40                          10 </span></span>
+<span><span class="co">#&gt; flag_spatiotemporal_outlier </span></span>
+<span><span class="co">#&gt;                           3</span></span></code></pre></div>
+<p>The range test flags the same 40 records with the stricter fence,
+since their ranges are many times wider than the genus’s others. Another
+seed gives other draws: with seed 7, <code>age_outlier</code> flags 10
+of the period-dated records instead of 8.</p>
+</div>
+<div class="section level2">
 <h2 id="comparison-with-coordinatecleaner">Comparison with CoordinateCleaner<a class="anchor" aria-label="anchor" href="#comparison-with-coordinatecleaner"></a>
 </h2>
 <p><code>age_equal</code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal()</a></code> give identical
 flags:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">theirs</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu">CoordinateCleaner</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal</a></span><span class="op">(</span><span class="va">fos</span>, value <span class="op">=</span> <span class="st">"flagged"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flag_age_equal</span>, <span class="va">theirs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code> and
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code> with <code>method = "quantile"</code> or
-<code>"mad"</code> compare each record with the other records of its
-taxon, so their result depends on the whole taxon sample. They are not
-ported; the package’s tests are record tests whose result depends only
-on the record and the pinned reference data.</p>
+<p>The outlier tests below are compared with <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>,
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code> in the package’s test
+suite: <code>age_range_outlier</code> gives identical flags, and the two
+tests that draw ages give identical flags when no age has to be
+drawn.</p>
 </div>
 <div class="section level2">
 <h2 id="fossils-in-gbif-data">Fossils in GBIF data<a class="anchor" aria-label="anchor" href="#fossils-in-gbif-data"></a>
@@ -552,7 +657,7 @@ on the record and the pinned reference data.</p>
 PBDB-style age fields. <code>basis_fossil</code> flags them, so a study
 of living distributions drops them and a palaeontological one keeps only
 them:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>basisOfRecord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="st">"FOSSIL_SPECIMEN"</span>, <span class="st">"PRESERVED_SPECIMEN"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">11.2</span>, <span class="fl">14.5</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">50.1</span>, <span class="fl">47.1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">g</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_basis_fossil</span></span>

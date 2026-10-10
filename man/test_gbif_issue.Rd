@@ -44,17 +44,25 @@ f[, c("flag_issue_coordinate", "flag_issue_taxon", "flag_issue_rounded")]
 
 Other tests:
 \code{\link{test_age_equal}},
+\code{\link{test_age_outlier}},
+\code{\link{test_age_range_outlier}},
+\code{\link{test_aohi}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},
 \code{\link{test_country_mismatch}},
+\code{\link{test_dataset_ddmm}},
+\code{\link{test_dataset_rounded}},
 \code{\link{test_duplicate}},
 \code{\link{test_equal}},
 \code{\link{test_establishment}},
 \code{\link{test_gbif_headquarters}},
 \code{\link{test_institution}},
 \code{\link{test_invalid}},
+\code{\link{test_outlier}},
+\code{\link{test_range}},
 \code{\link{test_sea}},
+\code{\link{test_spatiotemporal_outlier}},
 \code{\link{test_urban}},
 \code{\link{test_zero}}
 }

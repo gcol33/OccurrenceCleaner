@@ -13,7 +13,7 @@ has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Seven of the tests compare a record with reference data: points (capitals, country and province centroids, biodiversity institutions) and polygons (land, urban areas, countries). This article lists where each layer comes from, how the package's own gazetteers compare with CoordinateCleaner's, how much the choice of land scale changes the `sea` test, and how the reference version is recorded with the flags.
+Eight of the tests compare a record with reference data from a shipped layer: points (capitals, country and province centroids, biodiversity institutions, artificial hotspots) and polygons (land, urban areas, countries). The ninth, `range`, needs species range polygons, which the user supplies (see the article on custom gazetteers). This article lists where each layer comes from, how the package's own gazetteers compare with CoordinateCleaner's, how much the choice of land scale changes the `sea` test, and how the reference version is recorded with the flags.
 
 ## Installation
 
@@ -39,11 +39,12 @@ Each row also holds the download URL, the SHA-256 checksum of the source file an
 
 ```{r layer-use, echo = FALSE}
 knitr::kable(data.frame(
-  test = c("capital", "centroid", "institution", "gbif_headquarters", "sea", "urban", "country_mismatch"),
+  test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi", "sea", "urban", "country_mismatch"),
   `reference data` = c("Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories",
                        "Natural Earth admin-0 country centroids and label points, admin-1 label points",
                        "GBIF GRSciColl institutions with coordinates",
                        "one fixed point, 12.58 E, 55.67 N",
+                       "Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points",
                        "Natural Earth land at 1:110m (default), 1:50m or 1:10m",
                        "Natural Earth urban areas 1:50m",
                        "Natural Earth admin-0 countries 1:50m"),
@@ -51,6 +52,8 @@ knitr::kable(data.frame(
 ```
 
 All Natural Earth layers are in the public domain; the Natural Earth terms of use say that "No permission is needed to use Natural Earth." The institutions come from the bulk export of GBIF's Global Registry of Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which 6,085 have coordinates. The five of these that the `zero` test would flag are left out: four are registered within 0.14 degrees of (0, 0), although they are in Portugal, Nigeria, Turkey and Taiwan, and one has a longitude of exactly 0. Kept, they would mark every record at (0, 0) as lying at an institution as well. GRSciColl absorbed the Global Registry of Biodiversity Repositories (GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes the registry through its open API and states no separate licence for it.
+
+The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie, Thammavong, Tulaiha and Feng ([2023](https://doi.org/10.1111/jbi.14543)) lists the coordinates that recur most often in GBIF records of plants, birds, insects and mammals, with the reason each recurs: 154 plant, 51 bird, 51 insect and 52 mammal points. It is built from the authors' deposit on Dryad ([doi:10.5061/dryad.v41ns1s0p](https://doi.org/10.5061/dryad.v41ns1s0p)), released under CC0, and keeps 308 points with coordinates. CoordinateCleaner's bundled `aohi` table has 309; the two share 303 points, and the others differ in a few bird points and one plant coordinate (42.26 N there, 42.20 N in the deposit).
 
 The layers are rebuilt from the sources CoordinateCleaner itself draws on, by the scripts in `data-raw/` of the source repository; CoordinateCleaner's code and data are GPL-3, and nothing is copied from them.
 

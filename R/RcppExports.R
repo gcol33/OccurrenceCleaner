@@ -17,15 +17,35 @@ cpp_geodesic_m <- function(lon1, lat1, lon2, lat2) {
     .Call(`_OccurrenceCleaner_cpp_geodesic_m`, lon1, lat1, lon2, lat2)
 }
 
-cpp_polygon_index <- function(x, y, ring_start, ring_feature, cell) {
-    .Call(`_OccurrenceCleaner_cpp_polygon_index`, x, y, ring_start, ring_feature, cell)
+cpp_polygon_index <- function(x, y, ring_start, ring_feature, cell, extent = as.numeric( c(-180, 180, -90, 90))) {
+    .Call(`_OccurrenceCleaner_cpp_polygon_index`, x, y, ring_start, ring_feature, cell, extent)
 }
 
 cpp_polygon_locate <- function(index, lon, lat) {
     .Call(`_OccurrenceCleaner_cpp_polygon_locate`, index, lon, lat)
 }
 
+cpp_polygon_near <- function(index, lon, lat, buffer_m) {
+    .Call(`_OccurrenceCleaner_cpp_polygon_near`, index, lon, lat, buffer_m)
+}
+
 cpp_polygon_info <- function(index) {
     .Call(`_OccurrenceCleaner_cpp_polygon_info`, index)
+}
+
+cpp_hash_strings <- function(x) {
+    .Call(`_OccurrenceCleaner_cpp_hash_strings`, x)
+}
+
+cpp_outlier_dist <- function(lon, lat) {
+    .Call(`_OccurrenceCleaner_cpp_outlier_dist`, lon, lat)
+}
+
+cpp_cell_dist <- function(cx, cy, count, weighted, same_km) {
+    .Call(`_OccurrenceCleaner_cpp_cell_dist`, cx, cy, count, weighted, same_km)
+}
+
+cpp_spatiotemporal_mean <- function(lon, lat, age, euclid) {
+    .Call(`_OccurrenceCleaner_cpp_spatiotemporal_mean`, lon, lat, age, euclid)
 }
 

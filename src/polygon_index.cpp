@@ -4,15 +4,17 @@
 #include <cmath>
 #include <utility>
 
+#include "geodesic.h"
+
 namespace occ {
 
 namespace {
-const double kXmin = -180.0, kXmax = 180.0, kYmin = -90.0, kYmax = 90.0;
 // Offsets, as fractions of a cell, that place the reference point away from
 // the exact centre so it does not coincide with vertices placed on round
 // coordinates. Irrational-looking so that no gazetteer vertex lands on it.
 const double kJitterX = 0.0137391128;
 const double kJitterY = 0.0092718453;
+const double kDeg = 3.14159265358979323846 / 180.0;
 
 inline double orient(double ax, double ay, double bx, double by, double cx, double cy) {
   return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
@@ -30,10 +32,11 @@ inline std::size_t clamp_index(double v, double origin, double cell, std::size_t
 
 PolygonIndex::PolygonIndex(const std::vector<double>& x, const std::vector<double>& y,
                            const std::vector<std::size_t>& ring_start,
-                           const std::vector<int>& ring_feature, double cell)
-    : cell_(cell), n_features_(0) {
-  nx_ = static_cast<std::size_t>(std::ceil((kXmax - kXmin) / cell_));
-  ny_ = static_cast<std::size_t>(std::ceil((kYmax - kYmin) / cell_));
+                           const std::vector<int>& ring_feature, double cell,
+                           double xmin, double xmax, double ymin, double ymax)
+    : cell_(cell), x0_(xmin), x1_(xmax), y0_(ymin), y1_(ymax), n_features_(0) {
+  nx_ = std::max<std::size_t>(1, static_cast<std::size_t>(std::ceil((x1_ - x0_) / cell_)));
+  ny_ = std::max<std::size_t>(1, static_cast<std::size_t>(std::ceil((y1_ - y0_) / cell_)));
   for (std::size_t r = 0; r + 1 < ring_start.size(); ++r) {
     const std::size_t lo = ring_start[r], hi = ring_start[r + 1];
     if (hi - lo < 2) continue;
@@ -53,9 +56,12 @@ PolygonIndex::PolygonIndex(const std::vector<double>& x, const std::vector<doubl
 }
 
 void PolygonIndex::centre(std::size_t i, std::size_t j, double& cx, double& cy) const {
-  cx = kXmin + (static_cast<double>(i) + 0.5 + kJitterX) * cell_;
-  cy = kYmin + (static_cast<double>(j) + 0.5 + kJitterY) * cell_;
+  cx = x0_ + (static_cast<double>(i) + 0.5 + kJitterX) * cell_;
+  cy = y0_ + (static_cast<double>(j) + 0.5 + kJitterY) * cell_;
 }
+
+std::size_t PolygonIndex::col(double lon) const { return clamp_index(lon, x0_, cell_, nx_); }
+std::size_t PolygonIndex::row(double lat) const { return clamp_index(lat, y0_, cell_, ny_); }
 
 void PolygonIndex::build_cells() {
   const std::size_t ncell = nx_ * ny_;
@@ -63,10 +69,10 @@ void PolygonIndex::build_cells() {
   const std::size_t ne = ex0_.size();
   std::vector<std::size_t> i0(ne), i1(ne), j0(ne), j1(ne);
   for (std::size_t e = 0; e < ne; ++e) {
-    i0[e] = clamp_index(std::min(ex0_[e], ex1_[e]), kXmin, cell_, nx_);
-    i1[e] = clamp_index(std::max(ex0_[e], ex1_[e]), kXmin, cell_, nx_);
-    j0[e] = clamp_index(std::min(ey0_[e], ey1_[e]), kYmin, cell_, ny_);
-    j1[e] = clamp_index(std::max(ey0_[e], ey1_[e]), kYmin, cell_, ny_);
+    i0[e] = col(std::min(ex0_[e], ex1_[e]));
+    i1[e] = col(std::max(ex0_[e], ex1_[e]));
+    j0[e] = row(std::min(ey0_[e], ey1_[e]));
+    j1[e] = row(std::max(ey0_[e], ey1_[e]));
     for (std::size_t j = j0[e]; j <= j1[e]; ++j)
       for (std::size_t i = i0[e]; i <= i1[e]; ++i) ++count[cell_index(i, j)];
   }
@@ -84,8 +90,8 @@ void PolygonIndex::build_parity() {
   // Edges bucketed by the grid rows their y-range touches.
   std::vector<std::vector<std::size_t> > rows(ny_);
   for (std::size_t e = 0; e < ex0_.size(); ++e) {
-    const std::size_t j0 = clamp_index(std::min(ey0_[e], ey1_[e]), kYmin, cell_, ny_);
-    const std::size_t j1 = clamp_index(std::max(ey0_[e], ey1_[e]), kYmin, cell_, ny_);
+    const std::size_t j0 = row(std::min(ey0_[e], ey1_[e]));
+    const std::size_t j1 = row(std::max(ey0_[e], ey1_[e]));
     for (std::size_t j = j0; j <= j1; ++j) rows[j].push_back(e);
   }
   std::vector<std::pair<double, int> > crossings;
@@ -134,9 +140,9 @@ std::size_t PolygonIndex::n_boundary_cells() const {
 }
 
 int PolygonIndex::locate(double lon, double lat) const {
-  if (!(lon >= kXmin && lon <= kXmax && lat >= kYmin && lat <= kYmax)) return -1;
-  const std::size_t i = clamp_index(lon, kXmin, cell_, nx_);
-  const std::size_t j = clamp_index(lat, kYmin, cell_, ny_);
+  if (!(lon >= x0_ && lon <= x1_ && lat >= y0_ && lat <= y1_)) return -1;
+  const std::size_t i = col(lon);
+  const std::size_t j = row(lat);
   const std::size_t c = cell_index(i, j);
   const std::size_t lo = cell_offset_[c], hi = cell_offset_[c + 1];
   int feat = cell_feature_[c];
@@ -215,6 +221,37 @@ int PolygonIndex::locate(double lon, double lat) const {
   if (entered >= 0) return entered;
   if (feat >= 0 && !centre_out) return feat;
   return -1;
+}
+
+bool PolygonIndex::near_edge(double lon, double lat, double buffer_m) const {
+  if (!(buffer_m > 0) || ex0_.empty()) return false;
+  // One degree of latitude is at least 110.5 km; widen the window by 1 %.
+  const double dlat = buffer_m / 110500.0 * 1.01;
+  const double coslat = std::cos(std::min(89.9, std::fabs(lat) + dlat) * kDeg);
+  const double dlon = std::min(360.0, dlat / std::max(coslat, 1e-6));
+  if (lon + dlon < x0_ || lon - dlon > x1_ || lat + dlat < y0_ || lat - dlat > y1_) return false;
+  const std::size_t i0 = col(lon - dlon), i1 = col(lon + dlon);
+  const std::size_t j0 = row(lat - dlat), j1 = row(lat + dlat);
+  const double kx = std::cos(lat * kDeg);
+  for (std::size_t j = j0; j <= j1; ++j) {
+    for (std::size_t i = i0; i <= i1; ++i) {
+      const std::size_t c = cell_index(i, j);
+      for (std::size_t k = cell_offset_[c]; k < cell_offset_[c + 1]; ++k) {
+        const std::size_t e = cell_edges_[k];
+        const double ax = (ex0_[e] - lon) * kx, ay = ey0_[e] - lat;
+        const double bx = (ex1_[e] - lon) * kx, by = ey1_[e] - lat;
+        const double vx = bx - ax, vy = by - ay;
+        const double len2 = vx * vx + vy * vy;
+        double t = len2 > 0 ? -(ax * vx + ay * vy) / len2 : 0.0;
+        t = std::max(0.0, std::min(1.0, t));
+        const double px = ex0_[e] + t * (ex1_[e] - ex0_[e]);
+        const double py = ey0_[e] + t * (ey1_[e] - ey0_[e]);
+        const double d = geodesic_m(lon, lat, px, py);
+        if (d <= buffer_m) return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace occ
