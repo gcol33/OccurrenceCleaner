@@ -198,6 +198,7 @@ knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 | institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
 | institutions_wikidata | Wikidata | 2026-10-10 | 2026-10-10 |
 | institutions_geonames | GeoNames | 2026-10-10 | 2026-10-10 |
+| institutions_bgci | BGCI GardenSearch | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera | 2026-10-06 | 2026-10-10 |
 
@@ -231,10 +232,10 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpQdLtcG\flags1b88033c04b0e
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmpk5uxMD\flags10e7039221a8b
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v4
-#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
+#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
                  rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",

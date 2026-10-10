@@ -7,7 +7,7 @@
 #' package uses its own gazetteers built in `data-raw/`: capitals, country and
 #' province centroids, land, urban areas and country polygons from Natural Earth
 #' (public domain), and biodiversity institutions from GBIF's Global Registry of
-#' Scientific Collections (GRSciColl). With `reference = "CoordinateCleaner"` the
+#' Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With `reference = "CoordinateCleaner"` the
 #' point gazetteers are read from the user's CoordinateCleaner installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
 #' rnaturalearth exactly as that package does, which gives its flags up to the
@@ -93,7 +93,8 @@ sha256_file <- function(path) {
 #'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
 #'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
 #'   `type`, `active`, `master_source`, `source` for institutions (`source`
-#'   is GRSciColl or Wikidata, `key` the GRSciColl key or Wikidata item); `id`,
+#'   is GRSciColl, Wikidata, GeoNames or BGCI, `key` the GRSciColl key, Wikidata
+#'   item, or the GeoNames or BGCI id with its prefix); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
 #'   Plantae), `frequency` (records at the point), `category`,
 #'   `determination` (TRUE for a real observation site, FALSE for an

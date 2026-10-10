@@ -518,7 +518,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### ref.vs-cc  [A1 A5]  (section)
 - idea: same places, different tables
-- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: BGCI not redistributable, Wikidata gardens instead with measured coverage; Wikipedia and GeoNames rows rebuilt from their sources), and shows the capital difference in flags.
+- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: BGCI gardens with BGCI's own coordinates where CoordinateCleaner geocoded them, with measured coverage; Wikipedia and GeoNames rows rebuilt from their sources), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.land-scale  [A1 A5]  (section)
@@ -661,7 +661,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### gaz.points  [A5]  (section)
 - idea: reference_points returns a test's points
 - job: Shows the shipped capital and institution points with their attributes.
-- leaves: `reference_points()`; institution `source` (GRSciColl or Wikidata), `type` and `master_source`
+- leaves: `reference_points()`; institution `source` (GRSciColl, Wikidata, BGCI or GeoNames), `type` and `master_source`
 
 ### gaz.filtered  [A5]  (section)
 - idea: herbaria only, wider buffer
@@ -670,8 +670,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### gaz.extended  [A1 A5]  (section)
 - idea: union of both capital tables
-- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, and the shipped institutions with CoordinateCleaner's (BGCI gardens, which cannot be shipped).
-- leaves: other point sets fit the same way; BGCI gardens added at run time from CoordinateCleaner's table
+- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, and the shipped institutions with CoordinateCleaner's (its own geocoding of gardens and museums).
+- leaves: other point sets fit the same way; CoordinateCleaner's geocoded institutions added at run time
 
 ### gaz.polygons  [A5]  (section)
 - idea: sf polygons for sea, urban, country_mismatch

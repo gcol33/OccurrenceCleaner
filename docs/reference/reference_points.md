@@ -36,9 +36,10 @@ gazetteers, the attributes of each point: `name`, `country`, `adm0_a3`,
 `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`, `type`,
 `method` for centroids; `key`, `code`, `name`, `country`, `city`,
 `type`, `active`, `master_source`, `source` for institutions (`source`
-is GRSciColl or Wikidata, `key` the GRSciColl key or Wikidata item);
-`id`, `taxon` (the group the hotspot was found in: Aves, Insecta,
-Mammalia, Plantae), `frequency` (records at the point), `category`,
+is GRSciColl, Wikidata, GeoNames or BGCI, `key` the GRSciColl key,
+Wikidata item, or the GeoNames or BGCI id with its prefix); `id`,
+`taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
+Plantae), `frequency` (records at the point), `category`,
 `determination` (TRUE for a real observation site, FALSE for an
 artificial aggregate of records) and `notes` for the inventory. For
 `reference = "CoordinateCleaner"` the columns are `lon` and `lat` only.

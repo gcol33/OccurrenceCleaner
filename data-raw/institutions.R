@@ -1,5 +1,6 @@
 # Build the biodiversity-institution gazetteer from GBIF's Global Registry of
-# Scientific Collections (GRSciColl) and from Wikidata. GRSciColl bulk export
+# Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch.
+# GRSciColl bulk export
 # https://api.gbif.org/v1/grscicoll/institution/export?format=TSV
 #
 # GRSciColl is synchronised weekly with Index Herbariorum (masterSourceType
@@ -141,7 +142,42 @@ geonames <- data.frame(key = paste0("geonames:", gn$V1), code = NA_character_, n
                        city = NA_character_, type = unname(gn_ids[gn$V1]), active = NA, master_source = NA_character_,
                        lon = as.numeric(gn$V6), lat = as.numeric(gn$V5), source = "GeoNames",
                        stringsAsFactors = FALSE)
-institutions <- rbind(institutions, wikidata, geonames)
+
+# Botanic Gardens Conservation International (BGCI) GardenSearch: the garden
+# map at https://tools.bgci.org/map.php, requested for all countries, lists
+# every garden as "id;name;address 1;address 2;city;region;postcode;country;
+# latitude;longitude" (3,765 gardens on 2026-10-10). The country select of the same page maps BGCI's
+# country names to ISO 3166 alpha-2 codes. Terms of use:
+# https://www.bgci.org/terms-and-conditions/
+bgci_retrieved <- "2026-10-10"
+bgci_url <- "https://tools.bgci.org/map.php"
+bgci_file <- file.path(cache, "bgci_map_all.html")
+if (!file.exists(bgci_file)) {
+  h <- curl::new_handle(useragent = ua, postfields = "mode=&ftrCountry=All")
+  curl::curl_download(bgci_url, bgci_file, handle = h)
+}
+bg_lines <- readLines(bgci_file, warn = FALSE, encoding = "UTF-8")
+bg_rows <- sub("^\\s*_arrCountryList\\[[0-9]+\\]=\\('(.*)'\\);\\s*$", "\\1",
+               grep("^\\s*_arrCountryList\\[[0-9]+\\]=\\('", bg_lines, value = TRUE))
+bg <- read.table(text = bg_rows, sep = ";", quote = "", comment.char = "", fill = TRUE, col.names =
+                   c("id", "name", "address1", "address2", "city", "region", "postcode", "country", "lat", "lon"),
+                 colClasses = "character", na.strings = "", encoding = "UTF-8")
+# The list writes apostrophes as "+" to keep them out of the JavaScript quotes.
+bg[] <- lapply(bg, function(v) gsub("+", "'", v, fixed = TRUE))
+bg_opts <- regmatches(bg_lines, regexpr("<option value='[A-Z]{2}' *>[^<]+", bg_lines))
+bg_iso <- setNames(sub("^<option value='([A-Z]{2})'.*$", "\\1", bg_opts), trimws(sub("^[^>]*>", "", bg_opts)))
+bg$iso2 <- unname(bg_iso[bg$country])
+bg_lon <- suppressWarnings(as.numeric(bg$lon))
+bg_lat <- suppressWarnings(as.numeric(bg$lat))
+bg_valid <- is.finite(bg_lon) & is.finite(bg_lat) & abs(bg_lon) <= 180 & abs(bg_lat) <= 90
+bg_zero <- bg_valid & (bg_lon == 0 | bg_lat == 0 | sqrt(bg_lon^2 + bg_lat^2) <= 0.5)
+bg_keep <- bg_valid & !bg_zero
+bgci <- data.frame(key = paste0("bgci:", bg$id[bg_keep]), code = NA_character_, name = bg$name[bg_keep],
+                   country = bg$iso2[bg_keep], city = bg$city[bg_keep], type = "BotanicalGarden", active = NA,
+                   master_source = NA_character_, lon = bg_lon[bg_keep], lat = bg_lat[bg_keep], source = "BGCI",
+                   stringsAsFactors = FALSE)
+
+institutions <- rbind(institutions, wikidata, geonames, bgci)
 institutions <- institutions[order(institutions$country, institutions$name), ]
 rownames(institutions) <- NULL
 
@@ -161,7 +197,11 @@ meta <- rbind(
              file = paste(basename(gn_files), collapse = ", "), version = wd_retrieved,
              url = "https://download.geonames.org/export/dump/",
              sha256 = paste(vapply(gn_files, sha256, character(1)), collapse = ", "), retrieved = wd_retrieved,
-             licence = "CC BY 4.0", stringsAsFactors = FALSE))
+             licence = "CC BY 4.0", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_bgci", source = "BGCI GardenSearch", file = basename(bgci_file),
+             version = bgci_retrieved, url = paste0(bgci_url, " (ftrCountry=All)"), sha256 = sha256(bgci_file),
+             retrieved = bgci_retrieved, licence = "BGCI terms, https://www.bgci.org/terms-and-conditions/",
+             stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
@@ -169,6 +209,9 @@ print(d[zero, c("code", "name", "country", "longitude", "latitude")])
 cat("Wikidata points:", sum(earth), "on Earth, dropped as zero coordinates:", sum(wd_zero), "- kept:",
     nrow(wikidata), "- Wikipedia list items with coordinates:", n_wplist, "\n")
 print(geonames)
+cat("BGCI gardens:", nrow(bg), "- with coordinates:", sum(bg_valid), "- dropped as zero coordinates:",
+    sum(bg_zero), "- kept:", nrow(bgci), "- country names without ISO code:",
+    paste(unique(bg$country[bg_keep & is.na(bg$iso2)]), collapse = ", "), "\n")
 print(table(institutions$source, institutions$type, useNA = "ifany"))
 print(table(institutions$master_source))
 cat("xz size KB:", file.size(file.path(cache, "institutions.rds")) / 1024, "\n")

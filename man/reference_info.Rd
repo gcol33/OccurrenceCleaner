@@ -19,7 +19,7 @@ With \code{reference = "natural_earth"} (the default of \code{\link[=flag_occurr
 package uses its own gazetteers built in \verb{data-raw/}: capitals, country and
 province centroids, land, urban areas and country polygons from Natural Earth
 (public domain), and biodiversity institutions from GBIF's Global Registry of
-Scientific Collections (GRSciColl). With \code{reference = "CoordinateCleaner"} the
+Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With \code{reference = "CoordinateCleaner"} the
 point gazetteers are read from the user's CoordinateCleaner installation
 (\code{countryref}, \code{institutions}) and the polygon layers are downloaded through
 rnaturalearth exactly as that package does, which gives its flags up to the

@@ -43,7 +43,8 @@ changing a test or a gazetteer.
 - **Own reference data** is built in `data-raw/` from the original public sources that
   CoordinateCleaner itself draws on: Natural Earth (public domain) for land, countries,
   admin-1 units, populated places/capitals and urban areas; the institution gazetteer from
-  GBIF's GRSciColl bulk export (licence not yet confirmed, see `dev_notes/reference_data.md`).
+  GBIF's GRSciColl bulk export, Wikidata, GeoNames and BGCI GardenSearch (terms per source in
+  `dev_notes/reference_data.md`).
 - **Imports**: `vectra (>= 0.13.0)` (CRAN, the user's own C11 columnar engine;
   `tbl_parquet()` and `collect_chunked()` for streaming, `write_vtr()` for the flag parts) and
   `Rcpp` (kd-tree, geodesic and point-in-polygon core). Check the recursive footprint before

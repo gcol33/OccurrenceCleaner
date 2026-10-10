@@ -207,10 +207,10 @@
 - stated-at: @p:rules.per-test; @p:rules.compare
 
 ### institutions-wikidata
-- metric: 7,613 Wikidata points (3,319 BotanicalGarden, 1,531 Museum, 2,618 ZooAquarium, 107 Herbarium, 38 UniversityCollege) from 8,659 rows, incl. 318 items of Wikipedia's list of natural history museums; 3 GeoNames places; 13,696 institution points shipped in all
-- metric: coverage of CoordinateCleaner's BGCI rows by the shipped points: 36 % within 100 m, 80 % within 1 km, 91 % within 5 km
+- metric: 7,613 Wikidata points (3,319 BotanicalGarden, 1,531 Museum, 2,618 ZooAquarium, 107 Herbarium, 38 UniversityCollege) from 8,659 rows, incl. 318 items of Wikipedia's list of natural history museums; 3 GeoNames places; 3,652 BGCI gardens (3,765 listed, 3,653 with coordinates, 1 at zero); 17,348 institution points shipped in all
+- metric: CoordinateCleaner geocoded 641 of its 712 BGCI gardens itself; coverage of its BGCI rows by the shipped points: 46 % within 100 m, 87 % within 1 km, 96 % within 5 km
 - source: data-raw/institutions.R, queried 2026-10-10; dev_notes/reference_data.md
-- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (BGCI terms, union)
+- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine

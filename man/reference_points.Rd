@@ -22,7 +22,8 @@ own gazetteers, the attributes of each point: \code{name}, \code{country},
 \code{adm0_a3}, \code{iso_a2}, \code{class} for capitals; \code{name}, \code{adm0_a3}, \code{code},
 \code{type}, \code{method} for centroids; \code{key}, \code{code}, \code{name}, \code{country}, \code{city},
 \code{type}, \code{active}, \code{master_source}, \code{source} for institutions (\code{source}
-is GRSciColl or Wikidata, \code{key} the GRSciColl key or Wikidata item); \code{id},
+is GRSciColl, Wikidata, GeoNames or BGCI, \code{key} the GRSciColl key, Wikidata
+item, or the GeoNames or BGCI id with its prefix); \code{id},
 \code{taxon} (the group the hotspot was found in: Aves, Insecta, Mammalia,
 Plantae), \code{frequency} (records at the point), \code{category},
 \code{determination} (TRUE for a real observation site, FALSE for an

@@ -63,7 +63,7 @@ the flags can be joined back to the full records later:
 out <- file.path(tempdir(), "flags")
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
-#> occurrence-1: 3000 rows in 1 part(s) [0 s]
+#> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
 f$n
