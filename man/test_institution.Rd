@@ -7,14 +7,18 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often georeferenced
-to the institution. The default gazetteer holds 17,348 points: the 6,080
+to the institution. The default gazetteer holds 17,842 points: the 6,080
 institutions with coordinates in GBIF's Global Registry of Scientific
 Collections (GRSciColl), less five whose coordinates the \code{zero} test flags
 (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding
-errors); 7,613 points from Wikidata (CC0), retrieved 2026-10-10: every
+errors); 7,643 points from Wikidata (CC0), retrieved 2026-10-10: every
 botanical garden, natural history museum, zoo, aquarium and herbarium with
-coordinates, and the institutions of Wikipedia's list of natural history
-museums; the three GeoNames places (CC BY 4.0) of CoordinateCleaner's
+coordinates, and the museums of Wikipedia's list of natural history
+museums that have their own Wikidata coordinates; 464 further museums of
+that list placed at the place the list gives for them, by its Wikidata
+coordinates or the GeoNames populated place of that name (\code{source}
+"Wikipedia", \code{master_source} says which); the three GeoNames places
+(CC BY 4.0) of CoordinateCleaner's
 table; and 3,652 gardens of Botanic Gardens Conservation International
 (BGCI) GardenSearch, retrieved 2026-10-10, used under the BGCI terms
 (https://www.bgci.org/terms-and-conditions/). The \code{source} column of
@@ -33,7 +37,9 @@ table; and 3,652 gardens of Botanic Gardens Conservation International
 edge lies within 0.31 m of the 100 m circle. Its \code{institutions} table
 (9,773 points with coordinates) geocodes most of its 712 BGCI gardens
 and many of its Wikipedia museums itself, so its points can lie apart
-from the source coordinates used here. \code{reference = "CoordinateCleaner"}
+from the source coordinates used here. For 92 percent of the 345
+Wikipedia museums it placed by hand a point of the default gazetteer lies
+within 5 km, for 47 percent within 100 m. \code{reference = "CoordinateCleaner"}
 uses that table, and
 \code{rbind()} of \code{\link[=reference_points]{reference_points()}} under both references, passed as
 \code{gazetteers = list(institution = ...)}, flags records near either.

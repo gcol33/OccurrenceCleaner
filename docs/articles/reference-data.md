@@ -43,7 +43,8 @@ knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 | admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
-| institutions_wikidata | Wikidata | wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv, wikidata_Q43501_v2.csv, wikidata_Q181916_v2.csv, wikidata_Q2281788_v2.csv, wikidata_wplist_Q1000123.csv, wikidata_wplist_Q1479527.csv, wikidata_wplist_Q2044.csv, wikidata_wplist_Q322160.csv, wikidata_wplist_Q472.csv, wikidata_wplist_Q72.csv | 2026-10-10 | 2026-10-10 |
+| institutions_wikidata | Wikidata | wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv, wikidata_Q43501_v2.csv, wikidata_Q181916_v2.csv, wikidata_Q2281788_v2.csv, wikidata_wplist_coords_Q1000123.csv, wikidata_wplist_coords_Q12258.csv, wikidata_wplist_coords_Q1519.csv, wikidata_wplist_coords_Q18125.csv, wikidata_wplist_coords_Q212289.csv, wikidata_wplist_coords_Q279373.csv, wikidata_wplist_coords_Q3376.csv, wikidata_wplist_coords_Q42053.csv, wikidata_wplist_coords_Q5387.csv, wikidata_wplist_coords_Q68829.csv, wikidata_wplist_coords_Q82500.csv | 2026-10-10 | 2026-10-10 |
+| institutions_wikipedia | Wikipedia, List of natural history museums | wikipedia_natural_history_museums_wikitext.json, wikipedia_natural_history_museums_titles.csv, geonames_countryInfo.txt, geonames_admin1CodesASCII.txt, geonames_cities500.zip | revision 1376233148 | 2026-10-10 |
 | institutions_geonames | GeoNames | geonames_MC.zip, geonames_PT.zip, geonames_IT.zip | 2026-10-10 | 2026-10-10 |
 | institutions_bgci | BGCI GardenSearch | bgci_map_all.html | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | birds_20221010.csv, insects_20221010.csv, mammals_20221010.csv, plants_20221010.csv | 2022-10-10 | 2026-10-10 |
@@ -56,7 +57,7 @@ file and the licence. The tests read these layers:
 |:---|:---|
 | capital | Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories |
 | centroid | Natural Earth admin-0 country centroids and label points, admin-1 label points |
-| institution | GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, and BGCI gardens, with coordinates |
+| institution | GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, museums of Wikipedia’s list of natural history museums, and BGCI gardens, with coordinates |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
 | sea | Natural Earth land at 1:110m (default), 1:50m or 1:10m |
@@ -80,13 +81,17 @@ the registry through its open API and states no separate licence for it.
 The institutions are completed from Wikidata, released under CC0,
 queried on 2026-10-10: every item that is a botanical garden, natural
 history museum, zoo, public aquarium or herbarium, or of a subclass of
-one, and has a coordinate location, and the museums, zoos, gardens,
-research institutes and universities linked from Wikipedia’s “List of
-natural history museums”, the list CoordinateCleaner’s Wikipedia rows
-come from, with their Wikidata coordinates. After duplicate items are
-dropped these are 7,613 points (3,319 botanical gardens, 1,531 museums,
-2,618 zoos and aquaria, 107 herbaria, 38 universities), none at zero
-coordinates. The three places CoordinateCleaner’s table takes from
+one, and has a coordinate location, and the museums of Wikipedia’s “List
+of natural history museums”, the list CoordinateCleaner’s Wikipedia rows
+come from, that have an article with Wikidata coordinates. After
+duplicate items are dropped these are 7,643 points (3,319 botanical
+gardens, 1,599 museums, 2,618 zoos and aquaria, 107 herbaria), none at
+zero coordinates. The other museums of the list (revision 1376233148,
+text under CC BY-SA 4.0) are placed where the list says they are: at the
+Wikidata coordinates of the place the entry links, such as the town or
+the university, or at the GeoNames populated place (CC BY 4.0) of the
+town it names. That gives 464 more points; 45 entries name no town and
+are left out. The three places CoordinateCleaner’s table takes from
 GeoNames are taken from the GeoNames country files (CC BY 4.0). The
 botanic gardens of Botanic Gardens Conservation International (BGCI)
 come from its GardenSearch map (<https://tools.bgci.org/map.php>, all
@@ -135,7 +140,7 @@ same tables. Measured on 2026-10-09:
 | capitals | 225 (one per ISO3 code) | 243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals) |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and geo-locate | 516 (polygon centroid and label point per country, Natural Earth 5.1.1) |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,596 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 17,348 (6,080 GRSciColl, without the five at zero coordinates, 7,613 Wikidata, 3,652 BGCI, 3 GeoNames) |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 17,842 (6,080 GRSciColl, without the five at zero coordinates, 7,643 Wikidata, 464 Wikipedia, 3,652 BGCI, 3 GeoNames) |
 
 - **Capitals.** 212 countries match by ISO3 code. The median distance
   between the two packages’ capital points for the same country is 0.92
@@ -166,9 +171,15 @@ same tables. Measured on 2026-10-09:
   100 m buffer, since the sources mark different spots of a garden’s
   grounds. The Wikipedia rows are rebuilt from the same Wikipedia list
   with Wikidata coordinates, and the GeoNames rows from GeoNames.
-  CoordinateCleaner geocoded many of its Wikipedia rows itself, to 1 km,
-  so those points can lie up to a kilometre from the Wikidata coordinate
-  of the same museum. GRSciColl has also added institutions since
+  CoordinateCleaner geocoded 398 of its Wikipedia rows by hand, to 1 km;
+  the package places the same museums from the list itself, by the
+  museum’s Wikidata coordinates or by the town or university the list
+  names. For 92 % of the 345 hand-placed rows with coordinates a shipped
+  point lies within 5 km and for 78 % within 1 km (79 % and 67 % without
+  the town-placed museums). Most of the rest are placed differently by
+  CoordinateCleaner: every Iranian university museum, for example, sits
+  at one point in Isfahan there, and the Museo Marino of Boca del Río,
+  Veracruz, in Venezuela. GRSciColl has also added institutions since
   CoordinateCleaner’s table was compiled. With CoordinateCleaner
   installed, its table can be added at run time (see the article on
   custom gazetteers).
@@ -293,7 +304,7 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia revision 1376233148, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 attr(f, "occ_layout_version")
 #> [1] 4
 ```
@@ -308,7 +319,7 @@ one output directory never mixes flags from two references.
 
 - `reference = "natural_earth"` (the default) needs no other package,
   has a version and checksum for every layer, and uses current Natural
-  Earth, GRSciColl, Wikidata and BGCI data.
+  Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
 - `reference = "CoordinateCleaner"` gives CoordinateCleaner’s flags up
   to the differences listed in the article Coming from

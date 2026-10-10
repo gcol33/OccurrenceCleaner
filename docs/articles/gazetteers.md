@@ -61,20 +61,22 @@ table(caps$class)
 inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
-#>        BotanicalGarden              Herbarium            ZooAquarium 
-#>                   7059                   3089                   2741 
-#>                 Museum      UniversityCollege OtherInstitutionalType 
-#>                   2214                    322                    152
+#>        BotanicalGarden              Herbarium                 Museum 
+#>                   7059                   3089                   2746 
+#>            ZooAquarium      UniversityCollege OtherInstitutionalType 
+#>                   2741                    284                    152
 ```
 
 The institution table joins the GBIF registry of scientific collections
 (GRSciColl), the botanical gardens, natural history museums, zoos,
-aquaria and herbaria of Wikidata, the gardens of Botanic Gardens
-Conservation International (BGCI) and three GeoNames places: `source`
-says which registry each point comes from, `type` what kind of
-institution it is, and `master_source`, for GRSciColl entries, where
-GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the
-GBIF registry).
+aquaria and herbaria of Wikidata, the museums of Wikipedia’s list of
+natural history museums, the gardens of Botanic Gardens Conservation
+International (BGCI) and three GeoNames places: `source` says which
+registry each point comes from, `type` what kind of institution it is,
+and `master_source`, for GRSciColl entries, where GBIF took the entry
+from (Index Herbariorum, GRSciColl itself, or the GBIF registry), and
+for the Wikipedia museums that the list places only by town, where the
+town’s coordinates come from.
 
 ## A filtered point gazetteer
 
@@ -98,13 +100,13 @@ f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution 
                            gazetteers = list(institution = herbaria))
 data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
-#>                                      near      type  all herbaria_only
-#> 1           Andorra Research + Innovation Herbarium TRUE          TRUE
-#> 2                          UAE University Herbarium TRUE          TRUE
-#> 3                        Kabul University Herbarium TRUE          TRUE
-#> 4                                    <NA>    Museum TRUE         FALSE
-#> 5        Natural History Museum Abu Dhabi    Museum TRUE         FALSE
-#> 6 Natural Sciences Museum Sabiha Kasimati    Museum TRUE         FALSE
+#>                               near      type  all herbaria_only
+#> 1    Andorra Research + Innovation Herbarium TRUE          TRUE
+#> 2                   UAE University Herbarium TRUE          TRUE
+#> 3                 Kabul University Herbarium TRUE          TRUE
+#> 4                             <NA>    Museum TRUE         FALSE
+#> 5 Natural History Museum Abu Dhabi    Museum TRUE         FALSE
+#> 6   Sharjah Natural History Museum    Museum TRUE         FALSE
 ```
 
 Each record lies about 0.005 degrees (a few hundred metres) east of an
@@ -148,7 +150,7 @@ installed, the union adds them to the shipped points at run time:
 
 inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
 nrow(inst_both)
-#> [1] 27121
+#> [1] 27615
 ```
 
 `gazetteers = list(institution = inst_both)` then flags records near an
@@ -304,7 +306,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia revision 1376233148, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

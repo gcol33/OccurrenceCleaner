@@ -1,5 +1,6 @@
 # Build the biodiversity-institution gazetteer from GBIF's Global Registry of
-# Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch.
+# Scientific Collections (GRSciColl), Wikidata, Wikipedia's list of natural
+# history museums, GeoNames and BGCI GardenSearch.
 # GRSciColl bulk export
 # https://api.gbif.org/v1/grscicoll/institution/export?format=TSV
 #
@@ -43,11 +44,14 @@ n_grscicoll <- nrow(institutions)
 # each under the query service time limit.
 #
 # CoordinateCleaner's Wikipedia rows are the museums of Wikipedia's "List of
-# natural history museums". The same list is read here through the Wikipedia
-# API, and each linked article's Wikidata item that is a museum (Q33506), zoo,
-# botanical garden, research institute (Q31855) or university (Q3918) is kept
-# with its Wikidata coordinates, so the list decides which institutions and
-# Wikidata (CC0) gives where they are.
+# natural history museums". Each entry of the list reads "name, place, ..."
+# under its country heading. An entry whose name links an article is placed at
+# the Wikidata coordinates of that article's item. Otherwise it is placed at
+# the first place it links that has Wikidata coordinates and is not a country
+# or first-level unit (by the place's GeoNames id), or at the GeoNames
+# populated place of that name in the country. A first-level unit is replaced
+# by its seat when the seat carries the same name, and an entry naming no
+# place by a populated place named at the start or end of the museum's name.
 wd_retrieved <- "2026-10-10"
 ua <- "OccurrenceCleaner data-raw (https://github.com/gcol33/OccurrenceCleaner)"
 wd_endpoint <- "https://query.wikidata.org/sparql"
@@ -59,8 +63,8 @@ wd_fetch <- function(query, f) {
   if (!file.exists(f))
     download.file(paste0(wd_endpoint, "?query=", utils::URLencode(query, reserved = TRUE)), f, mode = "wb",
                   quiet = TRUE, headers = c(Accept = "text/csv", `User-Agent` = ua))
-  x <- read.csv(f, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8")
-  x$cls <- sub("^http://www.wikidata.org/entity/", "", x$cls)
+  x <- read.csv(f, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8", colClasses = "character")
+  x[] <- lapply(x, function(v) sub("^http://www.wikidata.org/entity/", "", v))
   x
 }
 wd_classes <- c(Q167346 = "BotanicalGarden", Q1970365 = "Museum", Q43501 = "ZooAquarium",
@@ -75,39 +79,173 @@ for (q in names(wd_classes)) {
   wd_files <- c(wd_files, f)
 }
 
-wp_title <- "List_of_natural_history_museums"
-wp_file <- file.path(cache, "wikipedia_natural_history_museums_items.txt")
-if (!file.exists(wp_file)) {
-  items <- character(); cont <- ""
-  repeat {
-    f <- tempfile()
-    download.file(paste0("https://en.wikipedia.org/w/api.php?action=query&format=json&titles=", wp_title,
-                         "&generator=links&gplnamespace=0&gpllimit=max&prop=pageprops&ppprop=wikibase_item", cont),
-                  f, quiet = TRUE, headers = c(`User-Agent` = ua))
-    d <- jsonlite::fromJSON(f, simplifyVector = FALSE)
-    items <- c(items, unlist(lapply(d$query$pages, function(p) p$pageprops$wikibase_item)))
-    if (is.null(d$continue)) break
-    cont <- paste0("&gplcontinue=", utils::URLencode(d$continue$gplcontinue, reserved = TRUE),
-                   "&continue=", utils::URLencode(d$continue$continue, reserved = TRUE))
-  }
-  writeLines(sort(unique(items)), wp_file)
+gn_dump <- "https://download.geonames.org/export/dump/"
+gn_get <- function(name) {
+  f <- file.path(cache, paste0("geonames_", name))
+  if (!file.exists(f)) download.file(paste0(gn_dump, name), f, mode = "wb", quiet = TRUE)
+  f
 }
-wp_items <- readLines(wp_file)
-wp_classes <- c(Q33506 = "Museum", Q43501 = "ZooAquarium", Q167346 = "BotanicalGarden",
-                Q31855 = "OtherTypeResearchInstitutionBiorepository", Q3918 = "UniversityCollege")
-wp <- NULL
-for (b in split(wp_items, ceiling(seq_along(wp_items) / 200))) {
-  f <- file.path(cache, sprintf("wikidata_wplist_%s.csv", b[1]))
-  values <- paste0("VALUES ?item { ", paste0("wd:", b, collapse = " "), " } VALUES ?cls { ",
-                   paste0("wd:", names(wp_classes), collapse = " "), " }")
-  wp <- rbind(wp, wd_fetch(sprintf(wd_select, values), f))
+gn_read <- function(con) read.delim(con, header = FALSE, quote = "", comment.char = "", na.strings = "",
+                                    colClasses = "character", encoding = "UTF-8")
+gn_country <- read.delim(gn_get("countryInfo.txt"), header = FALSE, quote = "", comment.char = "#",
+                         na.strings = "", colClasses = "character", encoding = "UTF-8")
+gn_admin1 <- gn_read(gn_get("admin1CodesASCII.txt"))
+gn_cities <- gn_read(unz(gn_get("cities500.zip"), "cities500.txt"))
+wp_gn_files <- file.path(cache, paste0("geonames_", c("countryInfo.txt", "admin1CodesASCII.txt", "cities500.zip")))
+
+ascii_key <- function(x) trimws(tolower(gsub("[^A-Za-z0-9]+", " ", iconv(x, "UTF-8", "ASCII//TRANSLIT", sub = ""))))
+gn_alt <- strsplit(ifelse(is.na(gn_cities$V4), "", gn_cities$V4), ",", fixed = TRUE)
+gn_row <- c(seq_len(nrow(gn_cities)), seq_len(nrow(gn_cities)), rep(seq_len(nrow(gn_cities)), lengths(gn_alt)))
+gn_index <- data.frame(key = paste(gn_cities$V9[gn_row],
+                                   ascii_key(c(gn_cities$V2, gn_cities$V3, unlist(gn_alt)))), row = gn_row)
+gn_index <- gn_index[order(gn_index$key, -as.numeric(gn_cities$V15[gn_index$row])), ]
+gn_index <- gn_index[!duplicated(gn_index$key), ]
+populated_place <- function(text, iso2, seat = FALSE) {
+  j <- gn_index$row[match(paste(iso2, ascii_key(text)), gn_index$key)]
+  if (is.na(j) || (seat && !gn_cities$V8[j] %in% c("PPLC", "PPLA"))) return(NULL)
+  c(as.numeric(gn_cities$V6[j]), as.numeric(gn_cities$V5[j]))
+}
+country_iso2 <- c(setNames(gn_country$V1, gn_country$V5), `Czech Republic` = "CZ", Macedonia = "MK",
+                  `The Netherlands` = "NL", Palestine = "PS", `Canary Islands` = "ES")
+
+wp_title <- "List_of_natural_history_museums"
+wp_file <- file.path(cache, "wikipedia_natural_history_museums_wikitext.json")
+if (!file.exists(wp_file))
+  download.file(paste0("https://en.wikipedia.org/w/api.php?action=parse&format=json&formatversion=2&page=",
+                       wp_title, "&prop=wikitext|revid"), wp_file, quiet = TRUE, headers = c(`User-Agent` = ua))
+wp_page <- jsonlite::fromJSON(wp_file)$parse
+wp_lines <- strsplit(wp_page$wikitext, "\n", fixed = TRUE)[[1]]
+wp_clean <- function(s) {
+  s <- gsub("\\{\\{lang\\|[^|{}]*\\|([^{}]*)\\}\\}", "\\1", s, perl = TRUE)
+  s <- gsub("<ref[^>]*/>", "", s, perl = TRUE)
+  s <- gsub("<ref[^>]*>.*?</ref>", "", s, perl = TRUE)
+  s <- sub("<ref.*$", "", s, perl = TRUE)
+  repeat { t <- gsub("\\{\\{[^{}]*\\}\\}", "", s, perl = TRUE); if (identical(t, s)) break; s <- t }
+  gsub("'{2,}", "", gsub("<[^>]+>", "", s, perl = TRUE), perl = TRUE)
+}
+wp_links <- function(s) {
+  if (!length(s)) return(character())
+  l <- regmatches(s, gregexpr("\\[\\[[^]]*\\]\\]", s, perl = TRUE))[[1]]
+  sub("#.*$", "", sub("\\|.*$", "", gsub("^\\[\\[|\\]\\]$", "", l)))
+}
+wp_text <- function(s) {
+  s <- gsub("\\[\\[[^]|]*\\|([^]]*)\\]\\]", "\\1", s, perl = TRUE)
+  trimws(gsub("\\s+", " ", gsub("\\[\\[([^]]*)\\]\\]", "\\1", s, perl = TRUE)))
+}
+wp_split <- function(s) {
+  m <- gregexpr("\\[\\[[^]]*\\]\\]", s, perl = TRUE)
+  regmatches(s, m) <- lapply(regmatches(s, m), function(x) gsub(",", "\001", x, fixed = TRUE))
+  seg <- trimws(gsub("\001", ",", strsplit(s, ",", fixed = TRUE)[[1]], fixed = TRUE))
+  seg[nzchar(seg)]
+}
+wpl <- list(); heading <- NA_character_; parent <- NULL
+for (i in seq_along(wp_lines)) {
+  ln <- wp_lines[i]
+  if (grepl("^===[^=]", ln)) { heading <- trimws(gsub("=", "", ln)); next }
+  if (grepl("^==[^=]", ln)) { heading <- NA_character_; next }
+  if (!grepl("^\\*", ln) || is.na(heading)) next
+  seg <- wp_split(wp_clean(sub("^\\*+\\s*", "", ln)))
+  if (!length(seg)) next
+  article <- if (startsWith(seg[1], "[[")) wp_links(seg[1])[1] else
+    wp_links(regmatches(seg[1], regexpr("\\(\\[\\[[^]]*\\]\\]\\)", seg[1], perl = TRUE)))[1]
+  e <- list(line = i, iso2 = unname(country_iso2[heading]), name = wp_text(gsub("\\([^()]*\\)", "", seg[1])),
+            article = article, places = seg[-1])
+  if (startsWith(ln, "**") && !length(e$places) && !is.null(parent))
+    e$places <- c(if (!is.na(parent$article)) paste0("[[", parent$article, "]]"), parent$places)
+  if (!startsWith(ln, "**")) parent <- e
+  wpl[[length(wpl) + 1]] <- e
+}
+stopifnot(!anyNA(vapply(wpl, function(e) e$iso2, character(1))))
+
+wp_titles <- unique(c(vapply(wpl, function(e) e$article, character(1)),
+                      unlist(lapply(wpl, function(e) unlist(lapply(e$places, wp_links))))))
+wp_titles <- wp_titles[!is.na(wp_titles) & nzchar(wp_titles)]
+wp_items_file <- file.path(cache, "wikipedia_natural_history_museums_titles.csv")
+if (!file.exists(wp_items_file)) {
+  lang <- ifelse(grepl("^:[a-z-]+:", wp_titles), sub("^:([a-z-]+):.*$", "\\1", wp_titles), "en")
+  bare <- sub("^:[a-z-]+:", "", wp_titles)
+  out <- NULL
+  for (lg in unique(lang)) for (b in split(unique(bare[lang == lg]), ceiling(seq_along(unique(bare[lang == lg])) / 50))) {
+    f <- tempfile()
+    download.file(paste0("https://", lg, ".wikipedia.org/w/api.php?action=query&format=json&redirects=1",
+                         "&prop=pageprops&ppprop=wikibase_item&titles=",
+                         utils::URLencode(paste(b, collapse = "|"), reserved = TRUE)),
+                  f, quiet = TRUE, headers = c(`User-Agent` = ua))
+    q <- jsonlite::fromJSON(f, simplifyVector = FALSE)$query
+    to <- setNames(b, b)
+    for (n in q$normalized) to[to == n$from] <- n$to
+    for (r in q$redirects) to[to == r$from] <- r$to
+    pg <- setNames(vapply(q$pages, function(p) if (is.null(p$pageprops$wikibase_item)) NA_character_
+                          else p$pageprops$wikibase_item, character(1)),
+                   vapply(q$pages, function(p) p$title, character(1)))
+    out <- rbind(out, data.frame(title = if (lg == "en") b else paste0(":", lg, ":", b), item = unname(pg[to])))
+  }
+  write.csv(out, wp_items_file, row.names = FALSE, fileEncoding = "UTF-8")
+}
+wp_items <- read.csv(wp_items_file, stringsAsFactors = FALSE, encoding = "UTF-8")
+wp_item <- setNames(wp_items$item, wp_items$title)
+wp_q <- sort(unique(na.omit(wp_items$item)))
+wp_coord <- NULL
+for (b in split(wp_q, ceiling(seq_along(wp_q) / 100))) {
+  f <- file.path(cache, sprintf("wikidata_wplist_coords_%s.csv", b[1]))
+  wp_coord <- rbind(wp_coord, wd_fetch(paste0("SELECT ?item ?coord ?gn WHERE { VALUES ?item { ",
+                                              paste0("wd:", b, collapse = " "), " } ?item p:P625/ps:P625 ?coord . ",
+                                              "OPTIONAL { ?item wdt:P1566 ?gn } }"), f))
   wd_files <- c(wd_files, f)
 }
-wp$type <- unname(wp_classes[wp$cls])
-wp <- wp[order(match(wp$cls, names(wp_classes))), ]
-wp <- wp[!duplicated(wp$item), ]
-n_wplist <- length(unique(wp$item))
-wd <- rbind(wd, wp)
+wp_coord <- wp_coord[grepl("^Point\\(", wp_coord$coord), ]
+wp_coarse <- tapply(wp_coord$gn %in% c(gn_country$V17, gn_admin1$V4), wp_coord$item, any) &
+  !tapply(wp_coord$gn %in% gn_cities$V1, wp_coord$item, any)
+wp_coord <- wp_coord[!duplicated(wp_coord$item), ]
+wp_point <- function(q) {
+  j <- match(q, wp_coord$item)
+  if (is.na(j)) NULL else as.numeric(strsplit(sub("^Point\\(([^ ]+) ([^)]+)\\)$", "\\1 \\2", wp_coord$coord[j]), " ")[[1]])
+}
+
+wp_located <- do.call(rbind, lapply(wpl, function(e) {
+  xy <- NULL; how <- NA_character_; place <- NA_character_
+  q <- if (is.na(e$article)) NA_character_ else unname(wp_item[e$article])
+  if (!is.na(q)) { xy <- wp_point(q); if (!is.null(xy)) how <- "museum" }
+  if (is.null(xy)) for (p in e$places) {
+    pq <- unname(wp_item[wp_links(p)])
+    if (length(pq) && all(!is.na(pq) & wp_coarse[pq] %in% TRUE)) {
+      xy <- populated_place(wp_text(p), e$iso2, seat = TRUE)
+      if (!is.null(xy)) { how <- "GeoNames populated place"; place <- wp_text(p); break }
+      next
+    }
+    for (pp in pq[!is.na(pq) & !wp_coarse[pq] %in% TRUE]) {
+      xy <- wp_point(pp)
+      if (!is.null(xy)) { how <- "Wikidata linked place"; place <- wp_text(p); break }
+    }
+    if (!is.null(xy)) break
+    txt <- sub("^(located )?(at|in) (the )?", "", wp_text(gsub("\\([^()]*\\)", "", p)))
+    xy <- populated_place(txt, e$iso2)
+    if (!is.null(xy)) { how <- "GeoNames populated place"; place <- txt; break }
+  }
+  if (is.null(xy) && !length(e$places)) {
+    w <- strsplit(e$name, "[ ,]+")[[1]]
+    for (k in 3:1) for (g in unique(list(w[seq_len(min(k, length(w)))], w[max(1, length(w) - k + 1):length(w)]))) {
+      if (is.null(xy) && grepl("^[[:upper:]]", g[1]) && grepl("^[[:upper:]]", g[length(g)])) {
+        xy <- populated_place(paste(g, collapse = " "), e$iso2)
+        if (!is.null(xy)) { how <- "GeoNames populated place"; place <- paste(g, collapse = " ") }
+      }
+    }
+  }
+  data.frame(line = e$line, name = e$name, iso2 = e$iso2, item = q, how = how, place = place,
+             lon = if (is.null(xy)) NA_real_ else xy[1], lat = if (is.null(xy)) NA_real_ else xy[2])
+}))
+wp_museum <- wp_located[wp_located$how %in% "museum" & !wp_located$item %in% wd$item, ]
+wd <- rbind(wd, data.frame(item = wp_museum$item, label = wp_museum$name,
+                           coord = sprintf("Point(%s %s)", wp_museum$lon, wp_museum$lat), iso2 = wp_museum$iso2,
+                           cls = NA_character_, type = "Museum"))
+wp_placed <- wp_located[!is.na(wp_located$how) & wp_located$how != "museum", ]
+wp_zero <- wp_placed$lon == 0 | wp_placed$lat == 0 | sqrt(wp_placed$lon^2 + wp_placed$lat^2) <= 0.5
+wp_placed <- wp_placed[!wp_zero, ]
+wp_placed <- wp_placed[!duplicated(wp_placed[, c("name", "lon", "lat")]), ]
+wikipedia <- data.frame(key = paste0("wikipedia:", wp_page$revid, ":", wp_placed$line), code = NA_character_,
+                        name = wp_placed$name, country = wp_placed$iso2, city = wp_placed$place, type = "Museum",
+                        active = NA, master_source = wp_placed$how, lon = wp_placed$lon, lat = wp_placed$lat,
+                        source = "Wikipedia", stringsAsFactors = FALSE)
 earth <- grepl("^Point\\(", wd$coord)
 xy <- do.call(rbind, strsplit(sub("^Point\\(([^ ]+) ([^)]+)\\)$", "\\1 \\2", wd$coord[earth]), " ", fixed = TRUE))
 wd <- wd[earth, ]
@@ -129,12 +267,9 @@ gn_ids <- c(`10280522` = "ZooAquarium", `10125927` = "BotanicalGarden", `1037577
 gn_files <- character()
 gn <- NULL
 for (cc in c("MC", "PT", "IT")) {
-  z <- file.path(cache, paste0("geonames_", cc, ".zip"))
-  if (!file.exists(z)) download.file(paste0("https://download.geonames.org/export/dump/", cc, ".zip"), z,
-                                     mode = "wb", quiet = TRUE)
+  z <- gn_get(paste0(cc, ".zip"))
   gn_files <- c(gn_files, z)
-  x <- read.delim(unz(z, paste0(cc, ".txt")), header = FALSE, quote = "", comment.char = "", na.strings = "",
-                  colClasses = "character", encoding = "UTF-8")
+  x <- gn_read(unz(z, paste0(cc, ".txt")))
   gn <- rbind(gn, x[x$V1 %in% names(gn_ids), c(1, 2, 5, 6, 9)])
 }
 stopifnot(nrow(gn) == length(gn_ids))
@@ -177,7 +312,7 @@ bgci <- data.frame(key = paste0("bgci:", bg$id[bg_keep]), code = NA_character_, 
                    master_source = NA_character_, lon = bg_lon[bg_keep], lat = bg_lat[bg_keep], source = "BGCI",
                    stringsAsFactors = FALSE)
 
-institutions <- rbind(institutions, wikidata, geonames, bgci)
+institutions <- rbind(institutions, wikidata, wikipedia, geonames, bgci)
 institutions <- institutions[order(institutions$country, institutions$name), ]
 rownames(institutions) <- NULL
 
@@ -193,6 +328,13 @@ meta <- rbind(
              file = paste(basename(wd_files), collapse = ", "), version = wd_retrieved, url = wd_endpoint,
              sha256 = paste(vapply(wd_files, sha256, character(1)), collapse = ", "), retrieved = wd_retrieved,
              licence = "CC0 1.0", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_wikipedia", source = "Wikipedia, List of natural history museums",
+             file = paste(basename(c(wp_file, wp_items_file, wp_gn_files)), collapse = ", "),
+             version = paste0("revision ", wp_page$revid), url = paste0("https://en.wikipedia.org/wiki/", wp_title),
+             sha256 = paste(vapply(c(wp_file, wp_items_file, wp_gn_files), sha256, character(1)), collapse = ", "),
+             retrieved = wd_retrieved,
+             licence = "list CC BY-SA 4.0; places from Wikidata (CC0 1.0) and GeoNames (CC BY 4.0)",
+             stringsAsFactors = FALSE),
   data.frame(layer = "institutions_geonames", source = "GeoNames",
              file = paste(basename(gn_files), collapse = ", "), version = wd_retrieved,
              url = "https://download.geonames.org/export/dump/",
@@ -207,7 +349,11 @@ cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dr
     sum(zero), "- kept:", n_grscicoll, "\n")
 print(d[zero, c("code", "name", "country", "longitude", "latitude")])
 cat("Wikidata points:", sum(earth), "on Earth, dropped as zero coordinates:", sum(wd_zero), "- kept:",
-    nrow(wikidata), "- Wikipedia list items with coordinates:", n_wplist, "\n")
+    nrow(wikidata), "\n")
+cat("Wikipedia list entries:", nrow(wp_located), "- located by:\n")
+print(table(wp_located$how, useNA = "ifany"))
+cat("Wikipedia rows placed by linked place or GeoNames:", nrow(wikipedia), "- dropped as zero coordinates:",
+    sum(wp_zero), "\n")
 print(geonames)
 cat("BGCI gardens:", nrow(bg), "- with coordinates:", sum(bg_valid), "- dropped as zero coordinates:",
     sum(bg_zero), "- kept:", nrow(bgci), "- country names without ISO code:",
