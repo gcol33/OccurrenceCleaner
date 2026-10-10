@@ -7,7 +7,7 @@ Authors@R:
            comment = c(ORCID = "0000-0003-3070-6066"))
 Description: Flags common errors in species occurrence records, such as
     coordinates at country centroids, capitals or biodiversity institutions,
-    zero or swapped coordinates, records at sea, and duplicates. Each record
+    zero or equal coordinates, records at sea, and duplicates. Each record
     receives one flag per test and nothing is dropped, so any cleaning rule is
     a query over the flags. Proximity tests run as nearest-neighbour queries in
     C++, and records can be streamed from on-disk tables, so a whole GBIF

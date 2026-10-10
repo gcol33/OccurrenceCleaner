@@ -8,7 +8,7 @@
 
 **The CoordinateCleaner record tests, computed as nearest-neighbour and point-in-polygon queries in C++, streamed from disk.**
 
-OccurrenceCleaner flags the usual errors in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions, zeros and swapped axes, records at sea or in the wrong country, duplicates, and the GBIF issue, basis-of-record and establishment fields. Every test writes one bit per record and nothing is dropped, so a cleaning rule is a query over the flags chosen afterwards. The tests and default buffers are those of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), checked record by record against it in the test suite; the difference is that a data frame of a few million records is flagged in seconds, and a GBIF snapshot of billions of records is streamed from Parquet in chunks.
+Point it at a data frame of occurrence records or at a GBIF snapshot on disk, and it flags the usual errors: coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea or in the wrong country, duplicates, and the GBIF issue, basis-of-record and establishment fields. Every test writes one bit per record and nothing is dropped, so a cleaning rule is a query over the flags, chosen afterwards. The tests and default buffers are those of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), checked record by record against it in the test suite. The default tests flag ten million records in about 18 seconds on one core, and a snapshot of billions streams from Parquet in chunks.
 
 ```r
 library(OccurrenceCleaner)
@@ -21,9 +21,9 @@ flag_occurrences(x)
 
 The result is `x` with an integer `flags` column and one logical `flag_<test>` column per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.
 
-## Flagged, not dropped
+## Several rules from one pass
 
-CoordinateCleaner's `clean_coordinates()` returns a cleaned table, one rule applied. OccurrenceCleaner returns every record with its flags, so several rules are compared on the same pass:
+A rule is a set of tests. `has_flag()` marks the records a rule removes, and `tally_flags()` compares several rules on the same flags:
 
 ```r
 f <- flag_occurrences(x, tests = c("val", "zero", "equ", "cap", "cen", "inst", "gbif", "sea"))
@@ -54,7 +54,7 @@ tally_flags(f, by = "kingdom",
             rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
 ```
 
-An interrupted run is restarted with the same call; finished parts are skipped.
+Rerunning the same call after an interruption skips the input files already finished.
 
 ## What's in the box
 
