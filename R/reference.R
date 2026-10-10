@@ -92,12 +92,13 @@ sha256_file <- function(path) {
 #'   own gazetteers, the attributes of each point: `name`, `country`,
 #'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
 #'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
-#'   `type`, `active`, `master_source`, `source` for institutions (`source`
-#'   is GRSciColl, Wikidata, Wikipedia, GeoNames or BGCI, `key` the GRSciColl
-#'   key, Wikidata item, the Wikipedia list revision and line, or the
-#'   GeoNames or BGCI id with its prefix; for Wikipedia rows `city` is the
-#'   place they are located by and `master_source` where its coordinates come
-#'   from); `id`,
+#'   `type`, `active`, `master_source`, `source`, `extension` for
+#'   institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames or
+#'   BGCI, `key` the GRSciColl key, Wikidata item, the Wikipedia list
+#'   language, revision and line, or the GeoNames or BGCI id with its prefix;
+#'   for Wikipedia rows `city` is the place they are located by and
+#'   `master_source` where its coordinates come from; `extension` is TRUE for
+#'   points from sources CoordinateCleaner's table does not draw on); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
 #'   Plantae), `frequency` (records at the point), `category`,
 #'   `determination` (TRUE for a real observation site, FALSE for an

@@ -197,7 +197,7 @@ knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 | admin1_10 | Natural Earth | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
 | institutions_wikidata | Wikidata | 2026-10-10 | 2026-10-10 |
-| institutions_wikipedia | Wikipedia, List of natural history museums | revision 1376233148 | 2026-10-10 |
+| institutions_wikipedia | Wikipedia, lists of natural history museums | en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115 | 2026-10-11 |
 | institutions_geonames | GeoNames | 2026-10-10 | 2026-10-10 |
 | institutions_bgci | BGCI GardenSearch | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | 2022-10-10 | 2026-10-10 |
@@ -233,10 +233,10 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpQRcrY5\flags1add441607737
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpQPf4Wq\flags1c3ac1e593be2
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v4
-#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia revision 1376233148, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
+#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
                  rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",

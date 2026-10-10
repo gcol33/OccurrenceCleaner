@@ -129,7 +129,7 @@ f <- flag_occurrences(occ, tests = all_tests, columns = occ_columns(id = "gbifid
 dim(f)
 #> [1] 2276   32
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia revision 1376233148, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 The result is the input with an integer `flags` column and one logical
@@ -154,6 +154,7 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | equal                 |      20 |  0.88 |    0 |
 | capital               |      75 |  3.30 |    0 |
 | centroid              |       9 |  0.40 |    0 |
+| institution           |       2 |  0.09 |    1 |
 | gbif_headquarters     |      15 |  0.66 |    0 |
 | sea                   |      44 |  1.93 |    1 |
 | urban                 |      80 |  3.51 |   19 |
@@ -164,7 +165,7 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | issue_rounded         |      20 |  0.88 |    0 |
 | basis_living          |      20 |  0.88 |   13 |
 | establishment_managed |      21 |  0.92 |   14 |
-| (any)                 |     263 | 11.56 |      |
+| (any)                 |     264 | 11.60 |      |
 
 The `(any)` row is the rule as a whole: 263 of the 2,276 records carry
 at least one flag. The `only` column is the number of records a rule
@@ -260,7 +261,7 @@ knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tes
 
 | tests                                                      | records |
 |:-----------------------------------------------------------|--------:|
-| capital + urban                                            |      51 |
+| capital + urban                                            |      50 |
 | duplicate                                                  |      42 |
 | urban                                                      |      19 |
 | country_mismatch + issue_coordinate                        |      16 |
@@ -315,7 +316,7 @@ knitr::kable(t_all[, c("n", paste0("removed_", names(rules)))])
 
 | n | removed_cc | removed_cc_country | removed_cc_gbif | removed_wild | removed_strict |
 |---:|---:|---:|---:|---:|---:|
-| 2276 | 119 | 140 | 160 | 201 | 263 |
+| 2276 | 120 | 141 | 161 | 202 | 264 |
 
 The ladder removes 119 records under `cc` and 263 under `strict`. The
 country check adds 21, the GBIF warnings 20, the living and cultivated
@@ -351,7 +352,7 @@ knitr::kable(t_k[, c("kingdom", "n", paste0("share_", names(rules)))])
 |:---------|----:|---------:|-----------------:|--------------:|-----------:|-------------:|
 | Animalia | 897 |    0.057 |            0.067 |         0.079 |      0.104 |        0.124 |
 | Fungi    | 461 |    0.028 |            0.035 |         0.043 |      0.063 |        0.095 |
-| Plantae  | 918 |    0.060 |            0.070 |         0.075 |      0.086 |        0.118 |
+| Plantae  | 918 |    0.061 |            0.071 |         0.076 |      0.087 |        0.119 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
 
@@ -389,7 +390,7 @@ knitr::kable(t_y[, c("year_bin", "n", "flagged_capital", "removed_cc_country", "
 |:----------|----:|----------------:|-------------------:|------:|
 | \<1900    | 267 |              31 |                 37 | 0.139 |
 | 1900-1950 | 605 |              34 |                 52 | 0.086 |
-| 1950-2000 | 846 |               7 |                 33 | 0.039 |
+| 1950-2000 | 846 |               7 |                 34 | 0.040 |
 | \>=2000   | 558 |               3 |                 18 | 0.032 |
 
 The rule removes 13.9 % of the records before 1900 and 3.2 % of those
@@ -409,7 +410,7 @@ knitr::kable(t_u[, c("coordinateuncertaintyinmeters_bin", "n", "removed_cc_count
 | \<100                             | 775 |                 59 |             716 |
 | 100-1000                          | 370 |                 23 |             347 |
 | \>=1000                           | 736 |                 36 |             700 |
-| missing                           | 395 |                 22 |             373 |
+| missing                           | 395 |                 23 |             372 |
 
 A threshold on uncertainty is then a filter on the raw column next to
 the rule, for example keeping records with a stated uncertainty of at
@@ -434,11 +435,11 @@ tighten the rule without rerunning anything:
 
 clean <- f[!has_flag(f$flags, rules$wild), ]
 nrow(clean)
-#> [1] 2075
+#> [1] 2074
 table(clean$truth)
 #> 
 #>     clean duplicate   negated   rounded 
-#>      1998        40         7        30
+#>      1998        40         7        29
 ```
 
 The `wild` rule keeps 1,998 of the 2,000 clean records and removes every

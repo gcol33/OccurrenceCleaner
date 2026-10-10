@@ -61,22 +61,27 @@ table(caps$class)
 inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
-#>        BotanicalGarden              Herbarium                 Museum 
-#>                   7059                   3089                   2746 
+#>        BotanicalGarden                 Museum              Herbarium 
+#>                   7003                   3218                   3085 
 #>            ZooAquarium      UniversityCollege OtherInstitutionalType 
-#>                   2741                    284                    152
+#>                   2732                    284                    152
 ```
 
 The institution table joins the GBIF registry of scientific collections
 (GRSciColl), the botanical gardens, natural history museums, zoos,
-aquaria and herbaria of Wikidata, the museums of Wikipedia’s list of
-natural history museums, the gardens of Botanic Gardens Conservation
-International (BGCI) and three GeoNames places: `source` says which
-registry each point comes from, `type` what kind of institution it is,
-and `master_source`, for GRSciColl entries, where GBIF took the entry
-from (Index Herbariorum, GRSciColl itself, or the GBIF registry), and
-for the Wikipedia museums that the list places only by town, where the
-town’s coordinates come from.
+aquaria and herbaria of Wikidata, the museums of Wikipedia’s lists of
+natural history museums (the English list and six other language
+editions), the gardens of Botanic Gardens Conservation International
+(BGCI) and three GeoNames places: `source` says which registry each
+point comes from, `type` what kind of institution it is, and
+`master_source`, for GRSciColl entries, where GBIF took the entry from
+(Index Herbariorum, GRSciColl itself, or the GBIF registry), and for the
+Wikipedia museums that the list places only by town, where the town’s
+coordinates come from. `extension` is `TRUE` for the points from sources
+CoordinateCleaner’s own table does not draw on (Wikidata beyond the
+museums of the English list, and the other language editions); the rows
+with `extension` `FALSE`, passed as the institution gazetteer, restrict
+the test to CoordinateCleaner’s sources.
 
 ## A filtered point gazetteer
 
@@ -91,7 +96,7 @@ use a wider buffer for them:
 
 herbaria <- inst[inst$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 3089
+#> [1] 3085
 near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -150,7 +155,7 @@ installed, the union adds them to the shipped points at run time:
 
 inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
 nrow(inst_both)
-#> [1] 27615
+#> [1] 28018
 ```
 
 `gazetteers = list(institution = inst_both)` then flags records near an
@@ -306,7 +311,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia revision 1376233148, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

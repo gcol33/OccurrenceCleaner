@@ -83,13 +83,15 @@ Initial release.
 - Own gazetteers rebuilt from Natural Earth (capitals, country and
   province centroids, land at 1:110m and 1:50m, urban areas, countries)
   GBIF GRSciColl, Wikidata, GeoNames and BGCI (institutions: 6,080
-  GRSciColl entries without the five the `zero` test flags; 7,643
+  GRSciColl entries without the five the `zero` test flags; 7,810
   Wikidata botanical gardens, natural history museums, zoos, aquaria and
-  herbaria; 464 museums of Wikipedia’s list of natural history museums
-  placed by the town or institution the list names; the three GeoNames
-  places of CoordinateCleaner’s table; 3,652 gardens of BGCI
-  GardenSearch with BGCI’s own coordinates), each pinned by version and
-  SHA-256 in
+  herbaria; 700 museums of Wikipedia’s lists of natural history museums
+  (English and six other language editions) placed by the town or
+  institution the list names; the three GeoNames places of
+  CoordinateCleaner’s table; 3,652 gardens of BGCI GardenSearch with
+  BGCI’s own coordinates; column `extension` marks the 7,665 points from
+  sources CoordinateCleaner’s table does not draw on), each pinned by
+  version and SHA-256 in
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md);
   the 1:10m land layer is fetched on demand by
   [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).

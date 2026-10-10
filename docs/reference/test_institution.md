@@ -3,15 +3,17 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often
-georeferenced to the institution. The default gazetteer holds 17,842
+georeferenced to the institution. The default gazetteer holds 18,245
 points: the 6,080 institutions with coordinates in GBIF's Global
 Registry of Scientific Collections (GRSciColl), less five whose
 coordinates the `zero` test flags (they lie near (0, 0) or have a
-longitude of exactly 0, and are geocoding errors); 7,643 points from
+longitude of exactly 0, and are geocoding errors); 7,810 points from
 Wikidata (CC0), retrieved 2026-10-10: every botanical garden, natural
-history museum, zoo, aquarium and herbarium with coordinates, and the
-museums of Wikipedia's list of natural history museums that have their
-own Wikidata coordinates; 464 further museums of that list placed at the
+history museum, zoo, aquarium and herbarium with coordinates, every
+museum whose subject is a natural-history field, and the museums of
+Wikipedia's lists of natural history museums (English, Arabic, Dutch,
+Esperanto, French, German and Portuguese editions) that have their own
+Wikidata coordinates; 700 further museums of those lists placed at the
 place the list gives for them, by its Wikidata coordinates or the
 GeoNames populated place of that name (`source` "Wikipedia",
 `master_source` says which); the three GeoNames places (CC BY 4.0) of
@@ -21,6 +23,17 @@ used under the BGCI terms (https://www.bgci.org/terms-and-conditions/).
 The `source` column of
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
 tells them apart.
+
+## Details
+
+The column `extension` marks the 7,665 points from sources
+CoordinateCleaner's table does not draw on: Wikidata beyond the museums
+of the English list, and the lists of the other language editions. The
+other 10,580 points come from the registries CoordinateCleaner's table
+is compiled from (GRSciColl, which absorbed GRBio and mirrors Index
+Herbariorum, the English list, GeoNames and BGCI). Passing the points
+with `extension` FALSE as `gazetteers = list(institution = ...)`
+restricts the test to those sources (see the examples).
 
 ## Fields
 
@@ -37,9 +50,10 @@ the 100 m circle. Its `institutions` table (9,773 points with
 coordinates) geocodes most of its 712 BGCI gardens and many of its
 Wikipedia museums itself, so its points can lie apart from the source
 coordinates used here. For 92 percent of the 345 Wikipedia museums it
-placed by hand a point of the default gazetteer lies within 5 km, for 47
-percent within 100 m. `reference = "CoordinateCleaner"` uses that table,
-and [`rbind()`](https://rdrr.io/r/base/cbind.html) of
+placed by hand a point of the default gazetteer lies within 5 km, for 52
+percent within 100 m (91 and 46 percent for the points with `extension`
+FALSE). `reference = "CoordinateCleaner"` uses that table, and
+[`rbind()`](https://rdrr.io/r/base/cbind.html) of
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
 under both references, passed as `gazetteers = list(institution = ...)`,
 flags records near either.
@@ -86,4 +100,7 @@ Other tests:
 ``` r
 x <- data.frame(decimalLongitude = c(16.3598, 15), decimalLatitude = c(48.2052, 47))
 flag_occurrences(x, tests = "institution")$flag_institution
+g <- reference_points("institution")
+flag_occurrences(x, tests = "institution",
+                 gazetteers = list(institution = g[!g$extension, ]))$flag_institution
 ```

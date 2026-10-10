@@ -113,12 +113,13 @@ back through the <code>gazetteers</code> argument of <code><a href="flag_occurre
 own gazetteers, the attributes of each point: <code>name</code>, <code>country</code>,
 <code>adm0_a3</code>, <code>iso_a2</code>, <code>class</code> for capitals; <code>name</code>, <code>adm0_a3</code>, <code>code</code>,
 <code>type</code>, <code>method</code> for centroids; <code>key</code>, <code>code</code>, <code>name</code>, <code>country</code>, <code>city</code>,
-<code>type</code>, <code>active</code>, <code>master_source</code>, <code>source</code> for institutions (<code>source</code>
-is GRSciColl, Wikidata, Wikipedia, GeoNames or BGCI, <code>key</code> the GRSciColl
-key, Wikidata item, the Wikipedia list revision and line, or the
-GeoNames or BGCI id with its prefix; for Wikipedia rows <code>city</code> is the
-place they are located by and <code>master_source</code> where its coordinates come
-from); <code>id</code>,
+<code>type</code>, <code>active</code>, <code>master_source</code>, <code>source</code>, <code>extension</code> for
+institutions (<code>source</code> is GRSciColl, Wikidata, Wikipedia, GeoNames or
+BGCI, <code>key</code> the GRSciColl key, Wikidata item, the Wikipedia list
+language, revision and line, or the GeoNames or BGCI id with its prefix;
+for Wikipedia rows <code>city</code> is the place they are located by and
+<code>master_source</code> where its coordinates come from; <code>extension</code> is TRUE for
+points from sources CoordinateCleaner's table does not draw on); <code>id</code>,
 <code>taxon</code> (the group the hotspot was found in: Aves, Insecta, Mammalia,
 Plantae), <code>frequency</code> (records at the point), <code>category</code>,
 <code>determination</code> (TRUE for a real observation site, FALSE for an
