@@ -68,8 +68,10 @@
 #' @param resume Skip input units whose output already exists.
 #' @param verbose Report progress for streamed input.
 #' @return For a data frame: `x` with an integer column `flags` and one logical
-#'   column `flag_<test>` per test, and attributes `occ_tests`,
-#'   `occ_layout_version` and `occ_reference`. For streamed input: an object of
+#'   column `flag_<test>` per test, class `occ_flags` added in front, and
+#'   attributes `occ_tests`, `occ_layout_version`, `occ_reference` and
+#'   `occ_columns`. [summary()][summary.occ_flags] reports the share of records
+#'   each test flags, [plot()][plot.occ_flags] draws it or maps the records. For streamed input: an object of
 #'   class `occ_flagged` describing the output directory, which [tally_flags()]
 #'   accepts; the parts are `.vtr` files holding the `id` and `keep` columns and
 #'   `flags`, readable with `vectra::tbl()`.
@@ -124,6 +126,8 @@ flag_df <- function(x, cfg) {
   attr(x, "occ_tests") <- cfg$tests
   attr(x, "occ_layout_version") <- cfg$layout_version
   attr(x, "occ_reference") <- cfg$reference_label
+  attr(x, "occ_columns") <- cfg$columns
+  class(x) <- c("occ_flags", setdiff(class(x), "occ_flags"))
   x
 }
 

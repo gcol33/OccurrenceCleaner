@@ -18,10 +18,14 @@
 #'   the left, missing values labelled `"missing"`) and added to `by`.
 #' @param tests Tests to count individually. Default: those recorded with the
 #'   flags, or every test with a set bit.
-#' @return A data frame with the `by` columns, `n` (records), `n_valid`
-#'   (records without the `invalid` flag, when `invalid` was run), one column
-#'   `flagged_<test>` per test, and per rule `removed_<rule>` and `kept_<rule>`.
-#'   The attribute `occ_rules` holds the rules.
+#' @return A data frame of class `occ_tally` with the `by` columns, `n`
+#'   (records), `n_valid` (records without the `invalid` flag, when `invalid`
+#'   was run), one column `flagged_<test>` per test, per rule `removed_<rule>`
+#'   and `kept_<rule>`, and per rule and test of the rule `only_<rule>_<test>`:
+#'   the records that test is the sole reason the rule removes. The attribute
+#'   `occ_rules` holds the rules and `occ_by` the grouping columns.
+#'   [summary()][summary.occ_tally] turns the counts into percentages and
+#'   [plot()][plot.occ_tally] draws them.
 #' @examples
 #' x <- data.frame(species = c("a", "a", "b", "c"), kingdom = c("P", "P", "A", "A"),
 #'                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
@@ -33,7 +37,7 @@
 tally_flags <- function(x, by = NULL, rules = NULL, bins = NULL, tests = NULL) {
   if (is.data.frame(x)) {
     if (!"flags" %in% names(x)) stop("`x` has no `flags` column; run flag_occurrences() first")
-    tests <- tests %||% attr(x, "occ_tests") %||% tests_present(x$flags)
+    tests <- tests %||% flagged_tests(x)
     rules <- check_rules(rules, tests)
     return(finish_tally(tally_chunk(x, by, rules, bins, tests), by, bins, rules))
   }
@@ -55,6 +59,15 @@ tally_flags <- function(x, by = NULL, rules = NULL, bins = NULL, tests = NULL) {
 
 tests_present <- function(flags) {
   .test_names[vapply(.test_names, function(t) any(has_flag(flags, t), na.rm = TRUE), logical(1))]
+}
+
+# Tests run on a flagged data frame: the recorded attribute, else the
+# flag_<test> columns (row subsets drop the attribute), else the set bits.
+flagged_tests <- function(x) {
+  if (!is.null(attr(x, "occ_tests"))) return(attr(x, "occ_tests"))
+  cols <- intersect(paste0("flag_", .test_names), names(x))
+  if (length(cols)) return(sub("^flag_", "", cols))
+  tests_present(x$flags)
 }
 
 check_rules <- function(rules, tests) {
@@ -107,6 +120,9 @@ tally_chunk <- function(d, by, rules, bins, tests) {
   for (r in names(rules)) {
     rem <- has_flag(f, rules[[r]])
     counts[[paste0("removed_", r)]] <- tabulate(g[rem], nbins = nlevels(g))
+    in_rule <- bitwAnd(f, flag_mask(rules[[r]]))
+    for (t in rules[[r]])
+      counts[[only_column(r, t)]] <- tabulate(g[!is.na(in_rule) & in_rule == flag_mask(t)], nbins = nlevels(g))
   }
   out <- if (length(keys)) {
     first <- !duplicated(g)
@@ -120,7 +136,7 @@ tally_chunk <- function(d, by, rules, bins, tests) {
 merge_tally <- function(a, b) {
   if (is.null(a)) return(b)
   both <- rbind(a, b)
-  cnt <- intersect(names(both), c("n", "n_valid", grep("^(flagged|removed)_", names(both), value = TRUE)))
+  cnt <- intersect(names(both), c("n", "n_valid", grep("^(flagged|removed|only)_", names(both), value = TRUE)))
   key_cols <- setdiff(names(both), cnt)
   if (!length(key_cols)) return(as.data.frame(lapply(both, sum)))
   g <- interaction(both[key_cols], drop = TRUE, lex.order = TRUE)
@@ -148,5 +164,9 @@ finish_tally <- function(t, by, bins, rules) {
   }
   rownames(t) <- NULL
   attr(t, "occ_rules") <- rules
+  attr(t, "occ_by") <- key_cols
+  class(t) <- c("occ_tally", "data.frame")
   t
 }
+
+only_column <- function(rule, test) paste0("only_", rule, "_", test)

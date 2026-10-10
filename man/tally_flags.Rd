@@ -26,10 +26,14 @@ the left, missing values labelled \code{"missing"}) and added to \code{by}.}
 flags, or every test with a set bit.}
 }
 \value{
-A data frame with the \code{by} columns, \code{n} (records), \code{n_valid}
-(records without the \code{invalid} flag, when \code{invalid} was run), one column
-\verb{flagged_<test>} per test, and per rule \verb{removed_<rule>} and \verb{kept_<rule>}.
-The attribute \code{occ_rules} holds the rules.
+A data frame of class \code{occ_tally} with the \code{by} columns, \code{n}
+(records), \code{n_valid} (records without the \code{invalid} flag, when \code{invalid}
+was run), one column \verb{flagged_<test>} per test, per rule \verb{removed_<rule>}
+and \verb{kept_<rule>}, and per rule and test of the rule \verb{only_<rule>_<test>}:
+the records that test is the sole reason the rule removes. The attribute
+\code{occ_rules} holds the rules and \code{occ_by} the grouping columns.
+\link[=summary.occ_tally]{summary()} turns the counts into percentages and
+\link[=plot.occ_tally]{plot()} draws them.
 }
 \description{
 Counts, per group, how many records each test flags and how many a cleaning

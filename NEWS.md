@@ -9,7 +9,8 @@ Initial release.
 * Streamed input is processed per file, written as `.vtr` parts with the kept columns, and resumable.
 
 ## Rules and tallies
-* `tally_flags()`: loss tables by grouping columns, with numeric bins and named rules, over a data frame or the on-disk output.
+* `tally_flags()`: loss tables by grouping columns, with numeric bins and named rules, over a data frame or the on-disk output. Per rule it also counts the records each test is the sole reason for.
+* `summary()` on flagged records, on-disk output or a tally gives the percentage of records each test and rule removes, with the sole-reason share; `plot()` draws it as bars or, by group, as a grid, and maps kept and removed records with `type = "map"`.
 * `has_flag()`, `flag_mask()`, `flag_tests()`, `default_tests()`.
 
 ## Reference data

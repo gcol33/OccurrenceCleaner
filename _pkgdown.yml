@@ -43,6 +43,8 @@ reference:
 - title: Rules and tallies
   contents:
   - tally_flags
+  - summary.occ_flags
+  - plot.occ_summary
   - flag_mask
   - has_flag
   - flag_tests

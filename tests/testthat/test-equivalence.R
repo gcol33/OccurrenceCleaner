@@ -3,8 +3,9 @@
 # mismatch must be one of the documented differences (see ?flag_occurrences):
 #
 #  * proximity tests: CoordinateCleaner buffers are inscribed polygons (72
-#    vertices for capital/centroid/gbif_headquarters, 40 for institution), so it may miss records between
-#    r*cos(pi/n) and r from the reference point; it never flags more.
+#    vertices for capital/centroid/gbif_headquarters, 40 for institution), so
+#    it may miss records between r*cos(pi/n) and r from the reference point;
+#    it never flags more.
 #  * zero: CoordinateCleaner 3.0.1 applies 0.5 m instead of 0.5 degrees.
 
 skip_if_not_installed("CoordinateCleaner")

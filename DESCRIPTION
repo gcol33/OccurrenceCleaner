@@ -22,6 +22,8 @@ BugReports: https://github.com/gcol33/OccurrenceCleaner/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    graphics,
+    grDevices,
     Rcpp,
     tools,
     utils,

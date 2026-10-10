@@ -64,8 +64,10 @@ end of each input unit.}
 }
 \value{
 For a data frame: \code{x} with an integer column \code{flags} and one logical
-column \verb{flag_<test>} per test, and attributes \code{occ_tests},
-\code{occ_layout_version} and \code{occ_reference}. For streamed input: an object of
+column \verb{flag_<test>} per test, class \code{occ_flags} added in front, and
+attributes \code{occ_tests}, \code{occ_layout_version}, \code{occ_reference} and
+\code{occ_columns}. \link[=summary.occ_flags]{summary()} reports the share of records
+each test flags, \link[=plot.occ_flags]{plot()} draws it or maps the records. For streamed input: an object of
 class \code{occ_flagged} describing the output directory, which \code{\link[=tally_flags]{tally_flags()}}
 accepts; the parts are \code{.vtr} files holding the \code{id} and \code{keep} columns and
 \code{flags}, readable with \code{vectra::tbl()}.

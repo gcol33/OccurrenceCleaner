@@ -64,6 +64,7 @@ Rerunning the same call after an interruption skips the input files already fini
 
 - **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out.
 - **`tally_flags()`**: flags to a loss table by any grouping columns, with bins and named rules.
+- **`summary()`**, **`plot()`**: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.
 - **`has_flag()`**, **`flag_mask()`**: a rule as a bit mask over the flag word.
 - **`flag_tests()`**: the versioned flag layout: bit, test, definition, source, CoordinateCleaner equivalent.
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
