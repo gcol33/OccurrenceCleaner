@@ -19,4 +19,6 @@ Initial release.
 * The Artificial Hotspot Occurrence Inventory (Park et al. 2023) is built from its Dryad deposit (CC0) for the `aohi` test and returned by `reference_points("aohi")`.
 * `reference = "CoordinateCleaner"` reads that package's tables at run time and reproduces its flags; the equivalence suite documents every difference.
 * `gazetteers` in `flag_occurrences()` replaces the reference layer of single tests with user points (data frame) or polygons (`sf`/`sfc`), as the `ref` arguments of CoordinateCleaner's functions; the layer's size and MD5 checksum are recorded in the reference label.
+* `export_pyrate()` writes fossil records as PyRate input files, the layout of CoordinateCleaner's `write_pyrate()`.
+* The outlier test's sampling correction (`settings$outlier$sampling_thresh`) reads records per country from `gazetteers = list(sampling = ...)` instead of querying GBIF at run time.
 * `reference_points()` returns the points of a proximity test with their attributes, to inspect, filter or extend.

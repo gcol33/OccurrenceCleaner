@@ -179,6 +179,19 @@ identical(f$flag_age_equal, theirs)
 
 The outlier tests above are compared with `cf_age()`, `cf_outl()` and `cf_range()` in the package's test suite: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
 
+## Export to PyRate
+
+PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. `export_pyrate()` writes the records kept by a rule in its input format, with one array of ages per taxon, an extra age of 0 for extant taxa, and replicates of ages drawn from each record's range:
+
+```{r pyrate}
+kept <- as.data.frame(f)[!has_flag(f$flags, tests) & f$age_range <= 15, ]
+paths <- export_pyrate(kept, file.path(tempdir(), "paleogene"), status = "extinct",
+                       columns = cols, replicates = 3, seed = 1)
+cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
+```
+
+The draws are seeded, so the same call writes the same file; `random = FALSE` uses the midpoints of the ranges instead. CoordinateCleaner's `write_pyrate()` writes the same layout; the package tests compare the two files.
+
 ## Fossils in GBIF data
 
 GBIF holds fossil specimens alongside modern records, marked by `basisOfRecord = "FOSSIL_SPECIMEN"`, usually without PBDB-style age fields. `basis_fossil` flags them, so a study of living distributions drops them and a palaeontological one keeps only them:

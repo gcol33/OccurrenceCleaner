@@ -72,7 +72,9 @@
 #'   land, and for `country_mismatch` the features need at least one code
 #'   column (`iso_a2`, `iso_a3`, `adm0_a3` or `code`, any case). Each layer is
 #'   indexed once per call, and its size and MD5 checksum are recorded in the
-#'   reference label of the output.
+#'   reference label of the output. `range` takes species range polygons (see
+#'   [test_range]) and `sampling` a table of records per country for the
+#'   sampling correction of [test_outlier].
 #' @param land_scale Natural Earth scale of the land layer for `sea`: 110
 #'   (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()`
 #'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see

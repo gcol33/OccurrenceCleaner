@@ -35,7 +35,8 @@ m <- data.frame(
   CoordinateCleaner = c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()", "cc_inst()",
                         "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()", "cf_equal()",
                         "cc_outl()", "cf_age()", "cf_outl()", "cf_range(method = \"quantile\" or \"mad\")",
-                        "cd_ddmm()", "cd_round()", "cc_iucn()", "cc_aohi()",
+                        "cd_ddmm()", "cd_round()", "cc_iucn()", "cc_aohi()", "write_pyrate()",
+                        "cc_outl(sampling_thresh = ...)",
                         "clean_coordinates(), clean_fossils(), clean_dataset()",
                         "buffer arguments (capitals_rad, ...)",
                         "method, mltpl, size_thresh, replicates, ... of the outlier and dataset tests",
@@ -46,7 +47,8 @@ m <- data.frame(
   OccurrenceCleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
                         "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate", "age_equal",
                         "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
-                        "dataset_ddmm", "dataset_rounded", "range", "aohi",
+                        "dataset_ddmm", "dataset_rounded", "range", "aohi", "export_pyrate()",
+                        "settings = list(outlier = list(sampling_thresh = ...)) with gazetteers = list(sampling = ...)",
                         "flag_occurrences(x, tests = ...)",
                         "buffers = list(capital = ...)",
                         "settings = list(outlier = list(method = ...), ...)",
@@ -231,24 +233,28 @@ knitr::kable(b, col.names = c("test", "OccurrenceCleaner, 1e6", "CoordinateClean
 
 At ten million records the capital test takes 1.8 s here and 242 s in CoordinateCleaner, the centroid test 2.2 s and 246 s. The equal and duplicate tests are plain vector operations in both packages and take about the same time. Beyond memory, an on-disk table is streamed in chunks (see the on-disk article), so the input size is bounded by disk space only. The benchmark script is `bench/benchmark.R` in the source repository.
 
-## What has no counterpart
+## Functions around the tests
 
-Every test of CoordinateCleaner 3.0.1 has an equivalent here. What remains:
+Every function of CoordinateCleaner 3.0.1 has a counterpart here. Besides the tests:
 
 ```{r not-ported, echo = FALSE}
 knitr::kable(data.frame(
   CoordinateCleaner = c("cc_outl(sampling_thresh = ...)", "write_pyrate()", "plot(<spatialvalid>)",
-                        "is.spatialvalid()"),
-  `what it does` = c("ignores outliers in countries with few GBIF records, counted online with rgbif",
-                     "writes input files for PyRate",
-                     "maps flagged records with ggplot2",
+                        "summary(<spatialvalid>)", "is.spatialvalid()"),
+  `what it does` = c("keeps outliers only in well-sampled countries, with record counts queried online",
+                     "writes fossil occurrences as PyRate input files",
+                     "maps flagged records",
+                     "counts flagged records per test",
                      "checks the class of a clean_coordinates() result"),
-  OccurrenceCleaner = c("not ported: the counts come from a live web query, so the flags would not be reproducible",
-                        "not ported: an export format, unrelated to flagging",
-                        "plot(f, type = \"map\") on the flagged records",
+  OccurrenceCleaner = c("the same rule, with the record counts given as a table (gazetteers = list(sampling = ...))",
+                        "export_pyrate(), the same file layout",
+                        "plot(f, type = \"map\")",
+                        "summary(f)",
                         "the occ_flags class"),
   check.names = FALSE), row.names = FALSE)
 ```
+
+`cc_outl()` queries GBIF for each country's record count at run time, so its result changes as GBIF grows; here the counts are part of the call and recorded in the reference label. `export_pyrate()` takes the name it has to leave `write_pyrate()` reachable when both packages are attached.
 
 The grouped tests (`outlier`, the three fossil outlier tests and the two dataset tests) compare a record with the other records of its species, taxon or dataset, so a record's flag depends on the rest of the input: adding records of a species can change whether a record of it is an outlier. The article on outliers and dataset tests shows them on worked examples.
 

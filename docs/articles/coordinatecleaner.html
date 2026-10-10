@@ -125,8 +125,8 @@ package, not a dependency.</p>
 </h2>
 <table class="table">
 <colgroup>
-<col width="60%">
-<col width="39%">
+<col width="45%">
+<col width="54%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -212,6 +212,15 @@ package, not a dependency.</p>
 <tr class="even">
 <td align="left">cc_aohi()</td>
 <td align="left">aohi</td>
+</tr>
+<tr class="odd">
+<td align="left">write_pyrate()</td>
+<td align="left">export_pyrate()</td>
+</tr>
+<tr class="even">
+<td align="left">cc_outl(sampling_thresh = …)</td>
+<td align="left">settings = list(outlier = list(sampling_thresh = …))
+with gazetteers = list(sampling = …)</td>
 </tr>
 <tr class="odd">
 <td align="left">clean_coordinates(), clean_fossils(),
@@ -728,15 +737,15 @@ space only. The benchmark script is <code>bench/benchmark.R</code> in
 the source repository.</p>
 </div>
 <div class="section level2">
-<h2 id="what-has-no-counterpart">What has no counterpart<a class="anchor" aria-label="anchor" href="#what-has-no-counterpart"></a>
+<h2 id="functions-around-the-tests">Functions around the tests<a class="anchor" aria-label="anchor" href="#functions-around-the-tests"></a>
 </h2>
-<p>Every test of CoordinateCleaner 3.0.1 has an equivalent here. What
-remains:</p>
+<p>Every function of CoordinateCleaner 3.0.1 has a counterpart here.
+Besides the tests:</p>
 <table class="table">
 <colgroup>
 <col width="15%">
 <col width="39%">
-<col width="45%">
+<col width="44%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -746,30 +755,41 @@ remains:</p>
 <tbody>
 <tr class="odd">
 <td align="left">cc_outl(sampling_thresh = …)</td>
-<td align="left">ignores outliers in countries with few GBIF records,
-counted online with rgbif</td>
-<td align="left">not ported: the counts come from a live web query, so
-the flags would not be reproducible</td>
+<td align="left">keeps outliers only in well-sampled countries, with
+record counts queried online</td>
+<td align="left">the same rule, with the record counts given as a table
+(gazetteers = list(sampling = …))</td>
 </tr>
 <tr class="even">
 <td align="left">write_pyrate()</td>
-<td align="left">writes input files for PyRate</td>
-<td align="left">not ported: an export format, unrelated to
-flagging</td>
+<td align="left">writes fossil occurrences as PyRate input files</td>
+<td align="left">export_pyrate(), the same file layout</td>
 </tr>
 <tr class="odd">
 <td align="left">plot(<spatialvalid>)</spatialvalid>
 </td>
-<td align="left">maps flagged records with ggplot2</td>
-<td align="left">plot(f, type = “map”) on the flagged records</td>
+<td align="left">maps flagged records</td>
+<td align="left">plot(f, type = “map”)</td>
 </tr>
 <tr class="even">
+<td align="left">summary(<spatialvalid>)</spatialvalid>
+</td>
+<td align="left">counts flagged records per test</td>
+<td align="left">summary(f)</td>
+</tr>
+<tr class="odd">
 <td align="left">is.spatialvalid()</td>
 <td align="left">checks the class of a clean_coordinates() result</td>
 <td align="left">the occ_flags class</td>
 </tr>
 </tbody>
 </table>
+<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code> queries GBIF for each country’s record count
+at run time, so its result changes as GBIF grows; here the counts are
+part of the call and recorded in the reference label.
+<code><a href="../reference/export_pyrate.html">export_pyrate()</a></code> takes the name it has to leave
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> reachable when both packages are
+attached.</p>
 <p>The grouped tests (<code>outlier</code>, the three fossil outlier
 tests and the two dataset tests) compare a record with the other records
 of its species, taxon or dataset, so a record’s flag depends on the rest

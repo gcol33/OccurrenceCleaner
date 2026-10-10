@@ -83,6 +83,11 @@
   [`flagged_table()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)
   : Read flag output written by flag_occurrences()
 
+## Export
+
+- [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
+  : Export fossil records as PyRate input
+
 ## Reference data
 
 - [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)

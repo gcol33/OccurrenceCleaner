@@ -235,13 +235,16 @@ prepare_gazetteers <- function(gazetteers, columns = occ_columns()) {
   if (!is.list(gazetteers) || inherits(gazetteers, c("data.frame", "sf", "sfc")) ||
       is.null(names(gazetteers)) || any(!nzchar(names(gazetteers))))
     stop("`gazetteers` must be a named list of reference layers, one per test")
-  bad <- setdiff(names(gazetteers), c(.point_tests, .polygon_tests))
+  bad <- setdiff(names(gazetteers), c(.point_tests, .polygon_tests, "sampling"))
   if (length(bad)) stop("`gazetteers` has no reference layer for test(s): ", paste(bad, collapse = ", "))
   index <- list()
   label <- character()
   for (t in names(gazetteers)) {
     g <- gazetteers[[t]]
-    if (t %in% .point_tests) {
+    if (t == "sampling") {
+      index$sampling <- gazetteer_sampling(g)
+      label <- c(label, sprintf("sampling %d countries md5 %s", nrow(index$sampling), checksum(index$sampling)))
+    } else if (t %in% .point_tests) {
       p <- gazetteer_points(g, t)
       index[[t]] <- cpp_point_index(p$lon, p$lat)
       label <- c(label, sprintf("%s %d points md5 %s", t, length(p$lon), checksum(p)))
@@ -352,6 +355,20 @@ gazetteer_ranges <- function(g, species_col) {
     index[[k]] <- cpp_polygon_index(x, y, as.integer(starts), rep(1L, length(rings)), cell, ext)
   }
   list(index = index, md5 = checksum(list(sp, layer[c("x", "y", "ring_start", "ring_feature")])))
+}
+
+# Records per country for the outlier sampling correction: a data frame with
+# an ISO alpha-2 country column (country, iso_a2 or code) and a record count
+# (records, count or n).
+gazetteer_sampling <- function(g) {
+  if (!is.data.frame(g)) stop("`gazetteers$sampling` must be a data frame of records per country")
+  nm <- tolower(names(g))
+  ci <- match(c("country", "iso_a2", "code"), nm); ci <- ci[!is.na(ci)][1]
+  ri <- match(c("records", "count", "n"), nm); ri <- ri[!is.na(ri)][1]
+  if (is.na(ci) || is.na(ri)) stop("`gazetteers$sampling` needs a country column and a records column")
+  out <- data.frame(country = toupper(trimws(as.character(g[[ci]]))), records = to_numeric(g[[ri]]),
+                    stringsAsFactors = FALSE)
+  out[!is.na(out$country) & is.finite(out$records) & out$records > 0, , drop = FALSE]
 }
 
 checksum <- function(obj) {

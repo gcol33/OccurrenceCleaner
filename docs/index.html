@@ -97,7 +97,7 @@
 <p>It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.</p>
 <p>Records are flagged and kept, and users choose afterwards which flags to filter on.</p>
 <p>The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning is not part of the package.</p>
-<p>The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers and settings; the few deliberate differences are listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
+<p>The tests are reimplemented with CoordinateCleaner’s definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
 <p>Data frames containing a few million records are flagged in seconds (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed">timings</a>), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -189,6 +189,8 @@
 <strong><code><a href="reference/reference_points.html">reference_points()</a></code></strong>: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through <code>gazetteers</code>.</li>
 <li>
 <strong><code><a href="reference/read_flagged.html">read_flagged()</a></code></strong>, <strong><code><a href="reference/read_flagged.html">flagged_table()</a></code></strong>: open on-disk flag output as a vectra table.</li>
+<li>
+<strong><code><a href="reference/export_pyrate.html">export_pyrate()</a></code></strong>: write fossil records as PyRate input files.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -360,6 +362,11 @@
 <p><a href="https://buymeacoffee.com/gcol33" class="external-link"><img src="https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&amp;logoColor=black" alt="Buy Me A Coffee"></a></p>
 </div>
 <div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>The tests, their default buffers and the options of the outlier and dataset tests come from CoordinateCleaner by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the gazetteers here are rebuilt from the public sources it draws on.</p>
+</div>
+<div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
 <p>MIT. CoordinateCleaner (GPL-3) is a suggested package used by the equivalence tests and by <code>reference = "CoordinateCleaner"</code>; none of its code or data is bundled.</p>
@@ -373,7 +380,16 @@
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/OccurrenceCleaner}</span></span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
-<p>Please also cite the tests’ origin: Zizka A, Silvestro D, Andermann T, et al. (2019) CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. <em>Methods in Ecology and Evolution</em> 10:744-751. <a href="doi:10.1111/2041-210X.13152" class="uri">doi:10.1111/2041-210X.13152</a></p>
+<p>The tests and their defaults follow CoordinateCleaner; please cite it as well:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="va">@article</span>{<span class="ot">CoordinateCleaner</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">author</span> = {Zizka, Alexander and Silvestro, Daniele and Andermann, Tobias and Azevedo, Josue and Duarte Ritter, Camila and Edler, Daniel and Farooq, Harith and Herdean, Andrei and Ariza, Maria and Scharn, Ruud and Svantesson, Sten and Wengstrom, Niklas and Zizka, Vera and Antonelli, Alexandre},</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="dt">title</span> = {CoordinateCleaner: Standardized cleaning of occurrence records from biological collection databases},</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="dt">journal</span> = {Methods in Ecology and Evolution},</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="dt">year</span> = {2019},</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="dt">volume</span> = {10},</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="dt">pages</span> = {744--751},</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="dt">doi</span> = {10.1111/2041-210X.13152}</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

@@ -650,6 +650,30 @@ tests that draw ages give identical flags when no age has to be
 drawn.</p>
 </div>
 <div class="section level2">
+<h2 id="export-to-pyrate">Export to PyRate<a class="anchor" aria-label="anchor" href="#export-to-pyrate"></a>
+</h2>
+<p>PyRate (Silvestro et al. <a href="https://doi.org/10.1093/sysbio/syu006" class="external-link">2014</a>) estimates
+speciation and extinction rates from fossil occurrences.
+<code><a href="../reference/export_pyrate.html">export_pyrate()</a></code> writes the records kept by a rule in its
+input format, with one array of ages per taxon, an extra age of 0 for
+extant taxa, and replicates of ages drawn from each record’s range:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">tests</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">f</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span>, <span class="op">]</span></span>
+<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/export_pyrate.html">export_pyrate</a></span><span class="op">(</span><span class="va">kept</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"paleogene"</span><span class="op">)</span>, status <span class="op">=</span> <span class="st">"extinct"</span>,</span>
+<span>                       columns <span class="op">=</span> <span class="va">cols</span>, replicates <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">paths</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="fl">1</span>, <span class="fl">90</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; #!/usr/bin/env python</span></span>
+<span><span class="co">#&gt; from numpy import * </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data_1=[array([53.381952,41.28198,33.032813,35.118199,56.426308,55.005381,53.722718,26.580</span></span>
+<span><span class="co">#&gt; array([66.140041,41.879909,51.366948,38.879484,49.442001,24.181531,58.023977,42.168362,32.</span></span>
+<span><span class="co">#&gt; array([37.124169,57.990481,44.077925,54.277809,31.238536,25.023071,55.587483,58.441157,30.</span></span></code></pre></div>
+<p>The draws are seeded, so the same call writes the same file;
+<code>random = FALSE</code> uses the midpoints of the ranges instead.
+CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> writes the same layout;
+the package tests compare the two files.</p>
+</div>
+<div class="section level2">
 <h2 id="fossils-in-gbif-data">Fossils in GBIF data<a class="anchor" aria-label="anchor" href="#fossils-in-gbif-data"></a>
 </h2>
 <p>GBIF holds fossil specimens alongside modern records, marked by
@@ -657,7 +681,7 @@ drawn.</p>
 PBDB-style age fields. <code>basis_fossil</code> flags them, so a study
 of living distributions drops them and a palaeontological one keeps only
 them:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>basisOfRecord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="st">"FOSSIL_SPECIMEN"</span>, <span class="st">"PRESERVED_SPECIMEN"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">11.2</span>, <span class="fl">14.5</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">50.1</span>, <span class="fl">47.1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">g</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_basis_fossil</span></span>

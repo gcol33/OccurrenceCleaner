@@ -13,7 +13,7 @@
 
 .default_settings <- list(
   outlier = list(method = "quantile", mltpl = 5, tdi = 1000, min_occs = 7, thinning = FALSE,
-                 thinning_res = 0.5),
+                 thinning_res = 0.5, sampling_thresh = 0),
   age_outlier = list(method = "quantile", mltpl = 5, size_thresh = 7, replicates = 5,
                      flag_thresh = 0.5, uniq_loc = FALSE, seed = 1L),
   spatiotemporal_outlier = list(method = "quantile", mltpl = 5, size_thresh = 7, replicates = 5,
@@ -455,6 +455,7 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
     }
   }
   if (length(want_ds)) res$datasets <- ds_decide(ds, want_ds, s)
+  if (want_outlier && so$sampling_thresh > 0) res$sampling <- sampling_keep(cfg)
   if (length(hits)) {
     h <- do.call(rbind, hits)
     key <- paste(h$unit, h$row)
@@ -468,6 +469,42 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
 # Records of a taxon in an order fixed by their content (ages, coordinates,
 # identifier), so the random age draws do not depend on the input order.
 canonical_order <- function(g) order(g$lo, g$hi, g$lon, g$lat, g$id, g$unit, g$row)
+
+# Sampling correction of the outlier test: outliers are kept only in countries
+# whose record density (records per 100 km2, from the user's table of
+# records per country) lies above the sampling_thresh quantile of the
+# densities of all countries in the table.
+sampling_keep <- function(cfg) {
+  tab <- cfg$custom$sampling
+  if (is.null(tab))
+    stop("the outlier sampling correction needs records per country: gazetteers = list(sampling = <data frame>)")
+  layer <- polygon_layer("country_mismatch", cfg$reference, 110)
+  area <- country_areas_km2(layer)
+  dens <- log(tab$records / (area[match(tab$country, names(area))] / 100))
+  ok <- is.finite(dens)
+  if (!any(ok)) stop("no country of the sampling table matches a country polygon (ISO alpha-2 codes)")
+  thresh <- stats::quantile(dens[ok], cfg$settings$outlier$sampling_thresh, names = FALSE)
+  list(keep = tab$country[ok][dens[ok] > thresh], reference = cfg$reference)
+}
+
+# Area in km2 of each country polygon, by ISO alpha-2 code, on the sphere of
+# the WGS84 authalic radius. Rings are signed by orientation, so holes
+# subtract from the shells that contain them.
+country_areas_km2 <- function(layer) {
+  r <- 6371.0072
+  x <- layer$x / 1e7 * pi / 180
+  y <- layer$y / 1e7 * pi / 180
+  ring_area <- vapply(seq_along(layer$ring_feature), function(k) {
+    i <- seq.int(layer$ring_start[k] + 1L, layer$ring_start[k + 1L])
+    l <- x[i]; p <- y[i]
+    j <- c(i[-1], i[1]) - i[1] + 1L
+    sum((l[j] - l) * (2 + sin(p) + sin(p[j]))) * r^2 / 2
+  }, 0)
+  feat <- abs(tapply(ring_area, layer$ring_feature, sum))
+  code <- layer$features$iso_a2[as.integer(names(feat))]
+  ok <- !is.na(code)
+  tapply(as.numeric(feat)[ok], code[ok], sum)
+}
 
 valid_coords <- function(lon, lat) {
   is.finite(lon) & is.finite(lat) & lon >= -180 & lon <= 180 & lat >= -90 & lat <= 90
@@ -550,6 +587,16 @@ group_bits <- function(res, chunk, u, first, cols) {
       cid <- grid_cell(res$grid, lon[cand], lat[cand])
       hit <- vapply(seq_along(cand), function(i) cid[i] %in% res$raster[[sp[cand[i]]]], logical(1))
       bits[cand[hit]] <- bitwOr(bits[cand[hit]], flag_mask("outlier"))
+    }
+  }
+  if (!is.null(res$sampling)) {
+    o <- which(has_flag(bits, "outlier"))
+    if (length(o)) {
+      p <- polygon_index("country_mismatch", res$sampling$reference, 110)
+      f <- cpp_polygon_locate(p$index, to_numeric(chunk[[cols$lon]])[o], to_numeric(chunk[[cols$lat]])[o])
+      cc <- p$features$iso_a2[ifelse(f > 0L, f, NA_integer_)]
+      drop <- o[is.na(cc) | !cc %in% res$sampling$keep]
+      bits[drop] <- bitwAnd(bits[drop], bitwNot(flag_mask("outlier")))
     }
   }
   for (t in names(res$datasets)) {

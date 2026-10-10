@@ -77,6 +77,9 @@ reference:
   contents:
   - read_flagged
   - flagged_table
+- title: Export
+  contents:
+  - export_pyrate
 - title: Reference data
   contents:
   - reference_info

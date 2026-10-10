@@ -14,7 +14,7 @@ Records are flagged and kept, and users choose afterwards which flags to filter 
 
 The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package.
 
-The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers and settings; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
+The tests are reimplemented with CoordinateCleaner's definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
 Data frames containing a few million records are flagged in seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
 
@@ -106,6 +106,7 @@ Rerunning the same call after an interruption skips the input files already fini
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
 - **`reference_points()`**: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through `gazetteers`.
 - **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a vectra table.
+- **`export_pyrate()`**: write fossil records as PyRate input files.
 
 ## Tests
 
@@ -163,6 +164,10 @@ If this package saved you some time, buying me a coffee is a nice way to say tha
 
 [![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
 
+## Acknowledgements
+
+The tests, their default buffers and the options of the outlier and dataset tests come from CoordinateCleaner by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the gazetteers here are rebuilt from the public sources it draws on.
+
 ## License
 
 MIT. CoordinateCleaner (GPL-3) is a suggested package used by the equivalence tests and by `reference = "CoordinateCleaner"`; none of its code or data is bundled.
@@ -178,4 +183,16 @@ MIT. CoordinateCleaner (GPL-3) is a suggested package used by the equivalence te
 }
 ```
 
-Please also cite the tests' origin: Zizka A, Silvestro D, Andermann T, et al. (2019) CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. *Methods in Ecology and Evolution* 10:744-751. doi:10.1111/2041-210X.13152
+The tests and their defaults follow CoordinateCleaner; please cite it as well:
+
+```bibtex
+@article{CoordinateCleaner,
+  author = {Zizka, Alexander and Silvestro, Daniele and Andermann, Tobias and Azevedo, Josue and Duarte Ritter, Camila and Edler, Daniel and Farooq, Harith and Herdean, Andrei and Ariza, Maria and Scharn, Ruud and Svantesson, Sten and Wengstrom, Niklas and Zizka, Vera and Antonelli, Alexandre},
+  title = {CoordinateCleaner: Standardized cleaning of occurrence records from biological collection databases},
+  journal = {Methods in Ecology and Evolution},
+  year = {2019},
+  volume = {10},
+  pages = {744--751},
+  doi = {10.1111/2041-210X.13152}
+}
+```

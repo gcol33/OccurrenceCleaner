@@ -113,7 +113,18 @@ are left out.</p>
     <h2 id="settings">Settings<a class="anchor" aria-label="anchor" href="#settings"></a></h2>
     <p><code>settings = list(outlier = list(...))</code> with <code>method</code>
 (<code>"quantile"</code>), <code>mltpl</code> (5), <code>tdi</code> (1000 km), <code>min_occs</code> (7), <code>thinning</code>
-(<code>FALSE</code>) and <code>thinning_res</code> (0.5 degrees).</p>
+(<code>FALSE</code>), <code>thinning_res</code> (0.5 degrees) and <code>sampling_thresh</code> (0).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="sampling-correction">Sampling correction<a class="anchor" aria-label="anchor" href="#sampling-correction"></a></h2>
+    <p>With <code>sampling_thresh</code> above 0, an outlier
+stays flagged only in a country whose record density (log records per
+100 km2) lies above that quantile of the densities of all countries, so
+that isolated records in poorly sampled countries are kept. The records
+per country come from <code>gazetteers = list(sampling = &lt;data frame&gt;)</code>, with
+an ISO alpha-2 <code>country</code> column and a <code>records</code> column, for example from
+<code><a href="https://docs.ropensci.org/rgbif/reference/occ_count.html" class="external-link">rgbif::occ_count()</a></code> or a tally of the input itself; country areas are
+computed from the country polygons of the reference.</p>
     </div>
     <div class="section level2">
     <h2 id="coordinatecleaner">CoordinateCleaner<a class="anchor" aria-label="anchor" href="#coordinatecleaner"></a></h2>
@@ -121,9 +132,9 @@ are left out.</p>
 species below 10,000 records. In CoordinateCleaner 3.0.1 the raster
 approximation computes the cell statistics but its mapping from outlier
 cells back to records returns none, so it never flags a record; here the
-records of the outlier cells are flagged. The sampling correction
-(<code>sampling_thresh</code>), which queries GBIF record counts online, is not
-ported.</p>
+records of the outlier cells are flagged. CoordinateCleaner's sampling
+correction queries GBIF record counts online at run time; here the counts
+are a table given with the call, so the flags can be reproduced.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

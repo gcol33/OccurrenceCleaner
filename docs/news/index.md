@@ -90,6 +90,14 @@ Initial release.
   frame) or polygons (`sf`/`sfc`), as the `ref` arguments of
   CoordinateCleaner’s functions; the layer’s size and MD5 checksum are
   recorded in the reference label.
+- [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
+  writes fossil records as PyRate input files, the layout of
+  CoordinateCleaner’s
+  [`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html).
+- The outlier test’s sampling correction
+  (`settings$outlier$sampling_thresh`) reads records per country from
+  `gazetteers = list(sampling = ...)` instead of querying GBIF at run
+  time.
 - [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
   returns the points of a proximity test with their attributes, to
   inspect, filter or extend.

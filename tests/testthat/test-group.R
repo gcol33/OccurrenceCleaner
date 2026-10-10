@@ -199,3 +199,24 @@ test_that("settings are validated", {
   expect_error(flag_occurrences(x, tests = "outlier", settings = list(outlier = list(method = "x"))), "must be one of")
   expect_error(flag_occurrences(x, tests = "outlier", settings = list(outlier = list(mltpl = "a"))), "single number")
 })
+
+test_that("the sampling correction keeps outliers only in well-sampled countries", {
+  set.seed(1)
+  x <- rbind(data.frame(species = "a", decimalLongitude = rnorm(200, 10, 1), decimalLatitude = rnorm(200, 50, 1)),
+             data.frame(species = "a", decimalLongitude = c(2.35, 37.6), decimalLatitude = c(48.86, 55.75)))
+  expect_identical(which(flag_occurrences(x, tests = "outlier")$flag_outlier), 201:202)
+  tab <- data.frame(country = c("FR", "RU", "DE", "AT"), records = c(5e7, 1e5, 6e7, 1e7))
+  f <- flag_occurrences(x, tests = "outlier", gazetteers = list(sampling = tab),
+                        settings = list(outlier = list(sampling_thresh = 0.25)))
+  expect_identical(which(f$flag_outlier), 201L)
+  expect_match(attr(f, "occ_reference"), "sampling 4 countries")
+  expect_error(flag_occurrences(x, tests = "outlier", settings = list(outlier = list(sampling_thresh = 0.25))),
+               "records per country")
+})
+
+test_that("country areas are close to the surveyed areas", {
+  a <- OccurrenceCleaner:::country_areas_km2(OccurrenceCleaner:::polygon_layer("country_mismatch", "natural_earth", 110))
+  expect_equal(unname(a["AT"]), 83879, tolerance = 0.01)
+  expect_equal(unname(a["DE"]), 357022, tolerance = 0.01)
+  expect_lt(unname(a["ZA"]), 1221037 * 1.01)
+})

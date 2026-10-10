@@ -98,6 +98,9 @@
 <li>
 <code>gazetteers</code> in <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> replaces the reference layer of single tests with user points (data frame) or polygons (<code>sf</code>/<code>sfc</code>), as the <code>ref</code> arguments of CoordinateCleaner’s functions; the layer’s size and MD5 checksum are recorded in the reference label.</li>
 <li>
+<code><a href="../reference/export_pyrate.html">export_pyrate()</a></code> writes fossil records as PyRate input files, the layout of CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code>.</li>
+<li>The outlier test’s sampling correction (<code>settings$outlier$sampling_thresh</code>) reads records per country from <code>gazetteers = list(sampling = ...)</code> instead of querying GBIF at run time.</li>
+<li>
 <code><a href="../reference/reference_points.html">reference_points()</a></code> returns the points of a proximity test with their attributes, to inspect, filter or extend.</li>
 </ul></div>
 </div>

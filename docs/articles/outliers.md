@@ -141,6 +141,33 @@ plot(f, type = "map", rules = list(outlier = "outlier"))
 
 ![](outliers_files/figure-html/map-1.svg)
 
+CoordinateCleaner’s sampling correction leaves outliers unflagged in
+countries with few records, where an isolated record is more likely a
+real but poorly documented population than an error. It needs the number
+of records per country; with that table, `sampling_thresh` keeps an
+outlier flagged only in countries whose record density lies above that
+quantile of all countries’ densities:
+
+``` r
+
+counts <- data.frame(country = c("US", "AU", "FR", "RU", "AT", "DE", "IT", "CH", "SI"),
+                     records = c(4e8, 1.2e8, 1e8, 6e6, 2.5e7, 1.8e8, 5e7, 4e7, 6e6))
+fs <- flag_occurrences(x, tests = c("invalid", "outlier"), gazetteers = list(sampling = counts),
+                       settings = list(outlier = list(sampling_thresh = 0.25)))
+x[fs$flag_outlier != f$flag_outlier, c("species", "decimalLongitude", "decimalLatitude")]
+#>          species decimalLongitude decimalLatitude
+#> 957 Erica carnea            -74.0            40.7
+#> 958 Erica carnea            151.2           -33.9
+#> 961   Pinus mugo             37.6            55.8
+```
+
+Russia, Australia and the United States have the three lowest densities
+in this table, at or below its 25 % quantile, so the outlier flags on
+the records in Moscow, Sydney and New York are lifted. The counts here
+are illustrative. Real ones come from `rgbif::occ_count(country = ...)`
+for each country, or from a tally of the input itself; the table is
+recorded in the reference label by size and checksum.
+
 ## Species with many records
 
 For a species with 10,000 records or more the pairwise distances are

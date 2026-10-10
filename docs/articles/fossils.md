@@ -313,6 +313,35 @@ in the package’s test suite: `age_range_outlier` gives identical flags,
 and the two tests that draw ages give identical flags when no age has to
 be drawn.
 
+## Export to PyRate
+
+PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006))
+estimates speciation and extinction rates from fossil occurrences.
+[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
+writes the records kept by a rule in its input format, with one array of
+ages per taxon, an extra age of 0 for extant taxa, and replicates of
+ages drawn from each record’s range:
+
+``` r
+
+kept <- as.data.frame(f)[!has_flag(f$flags, tests) & f$age_range <= 15, ]
+paths <- export_pyrate(kept, file.path(tempdir(), "paleogene"), status = "extinct",
+                       columns = cols, replicates = 3, seed = 1)
+cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
+#> #!/usr/bin/env python
+#> from numpy import * 
+#> 
+#> data_1=[array([53.381952,41.28198,33.032813,35.118199,56.426308,55.005381,53.722718,26.580
+#> array([66.140041,41.879909,51.366948,38.879484,49.442001,24.181531,58.023977,42.168362,32.
+#> array([37.124169,57.990481,44.077925,54.277809,31.238536,25.023071,55.587483,58.441157,30.
+```
+
+The draws are seeded, so the same call writes the same file;
+`random = FALSE` uses the midpoints of the ranges instead.
+CoordinateCleaner’s
+[`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html)
+writes the same layout; the package tests compare the two files.
+
 ## Fossils in GBIF data
 
 GBIF holds fossil specimens alongside modern records, marked by

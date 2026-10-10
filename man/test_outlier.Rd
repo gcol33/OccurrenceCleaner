@@ -32,7 +32,18 @@ are left out.
 \section{Settings}{
  \code{settings = list(outlier = list(...))} with \code{method}
 (\code{"quantile"}), \code{mltpl} (5), \code{tdi} (1000 km), \code{min_occs} (7), \code{thinning}
-(\code{FALSE}) and \code{thinning_res} (0.5 degrees).
+(\code{FALSE}), \code{thinning_res} (0.5 degrees) and \code{sampling_thresh} (0).
+}
+
+\section{Sampling correction}{
+ With \code{sampling_thresh} above 0, an outlier
+stays flagged only in a country whose record density (log records per
+100 km2) lies above that quantile of the densities of all countries, so
+that isolated records in poorly sampled countries are kept. The records
+per country come from \verb{gazetteers = list(sampling = <data frame>)}, with
+an ISO alpha-2 \code{country} column and a \code{records} column, for example from
+\code{rgbif::occ_count()} or a tally of the input itself; country areas are
+computed from the country polygons of the reference.
 }
 
 \section{CoordinateCleaner}{
@@ -40,9 +51,9 @@ are left out.
 species below 10,000 records. In CoordinateCleaner 3.0.1 the raster
 approximation computes the cell statistics but its mapping from outlier
 cells back to records returns none, so it never flags a record; here the
-records of the outlier cells are flagged. The sampling correction
-(\code{sampling_thresh}), which queries GBIF record counts online, is not
-ported.
+records of the outlier cells are flagged. CoordinateCleaner's sampling
+correction queries GBIF record counts online at run time; here the counts
+are a table given with the call, so the flags can be reproduced.
 }
 
 \examples{

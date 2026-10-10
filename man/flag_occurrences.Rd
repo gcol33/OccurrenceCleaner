@@ -44,7 +44,9 @@ MULTIPOLYGON geometries in longitude and latitude; for \code{sea} they are the
 land, and for \code{country_mismatch} the features need at least one code
 column (\code{iso_a2}, \code{iso_a3}, \code{adm0_a3} or \code{code}, any case). Each layer is
 indexed once per call, and its size and MD5 checksum are recorded in the
-reference label of the output.}
+reference label of the output. \code{range} takes species range polygons (see
+\link{test_range}) and \code{sampling} a table of records per country for the
+sampling correction of \link{test_outlier}.}
 
 \item{land_scale}{Natural Earth scale of the land layer for \code{sea}: 110
 (the default of CoordinateCleaner's \code{cc_sea()}; its \code{clean_coordinates()}

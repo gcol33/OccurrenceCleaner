@@ -66,7 +66,12 @@ flag_occurrences(
   are the land, and for `country_mismatch` the features need at least
   one code column (`iso_a2`, `iso_a3`, `adm0_a3` or `code`, any case).
   Each layer is indexed once per call, and its size and MD5 checksum are
-  recorded in the reference label of the output.
+  recorded in the reference label of the output. `range` takes species
+  range polygons (see
+  [test_range](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md))
+  and `sampling` a table of records per country for the sampling
+  correction of
+  [test_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md).
 
 - land_scale:
 

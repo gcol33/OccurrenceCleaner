@@ -48,6 +48,8 @@ library(OccurrenceCleaner)
 | cd_round() | dataset_rounded |
 | cc_iucn() | range |
 | cc_aohi() | aohi |
+| write_pyrate() | export_pyrate() |
+| cc_outl(sampling_thresh = …) | settings = list(outlier = list(sampling_thresh = …)) with gazetteers = list(sampling = …) |
 | clean_coordinates(), clean_fossils(), clean_dataset() | flag_occurrences(x, tests = …) |
 | buffer arguments (capitals_rad, …) | buffers = list(capital = …) |
 | method, mltpl, size_thresh, replicates, … of the outlier and dataset tests | settings = list(outlier = list(method = …), …) |
@@ -372,17 +374,27 @@ chunks (see the on-disk article), so the input size is bounded by disk
 space only. The benchmark script is `bench/benchmark.R` in the source
 repository.
 
-## What has no counterpart
+## Functions around the tests
 
-Every test of CoordinateCleaner 3.0.1 has an equivalent here. What
-remains:
+Every function of CoordinateCleaner 3.0.1 has a counterpart here.
+Besides the tests:
 
 | CoordinateCleaner | what it does | OccurrenceCleaner |
 |:---|:---|:---|
-| cc_outl(sampling_thresh = …) | ignores outliers in countries with few GBIF records, counted online with rgbif | not ported: the counts come from a live web query, so the flags would not be reproducible |
-| write_pyrate() | writes input files for PyRate | not ported: an export format, unrelated to flagging |
-| plot() | maps flagged records with ggplot2 | plot(f, type = “map”) on the flagged records |
+| cc_outl(sampling_thresh = …) | keeps outliers only in well-sampled countries, with record counts queried online | the same rule, with the record counts given as a table (gazetteers = list(sampling = …)) |
+| write_pyrate() | writes fossil occurrences as PyRate input files | export_pyrate(), the same file layout |
+| plot() | maps flagged records | plot(f, type = “map”) |
+| summary() | counts flagged records per test | summary(f) |
 | is.spatialvalid() | checks the class of a clean_coordinates() result | the occ_flags class |
+
+[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
+queries GBIF for each country’s record count at run time, so its result
+changes as GBIF grows; here the counts are part of the call and recorded
+in the reference label.
+[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
+takes the name it has to leave
+[`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html)
+reachable when both packages are attached.
 
 The grouped tests (`outlier`, the three fossil outlier tests and the two
 dataset tests) compare a record with the other records of its species,
