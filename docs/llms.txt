@@ -8,21 +8,22 @@ coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**The CoordinateCleaner record tests, computed as nearest-neighbour and
-point-in-polygon queries in C++, streamed from disk.**
+OccurrenceCleaner flags common problems in species occurrence records.
+These include coordinates at country centroids, capitals or biodiversity
+institutions; zero or equal coordinates; records at sea or in the wrong
+country; and duplicates. It also checks the GBIF issue, basis-of-record
+and establishment fields.
 
-OccurrenceCleaner flags the usual errors in species occurrence records:
-coordinates at country centroids, capitals or biodiversity institutions,
-zeros and swapped axes, records at sea or in the wrong country,
-duplicates, and the GBIF issue, basis-of-record and establishment
-fields. Every test writes one bit per record and nothing is dropped, so
-a cleaning rule is a query over the flags chosen afterwards. The tests
-and default buffers are those of
+Each test stores its result as one bit per record. No records are
+removed: users decide afterwards which flags to use for filtering.
+
+The tests and default buffers follow
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. 2019), checked record by record against it in the test
-suite; the difference is that a data frame of a few million records is
-flagged in seconds, and a GBIF snapshot of billions of records is
-streamed from Parquet in chunks.
+(Zizka et al. 2019), and the test suite compares the two packages record
+by record. The difference is speed and scale: OccurrenceCleaner flags
+data frames containing a few million records in seconds and processes
+GBIF snapshots containing billions of records by reading Parquet files
+in chunks.
 
 ``` r
 
@@ -39,11 +40,13 @@ The result is `x` with an integer `flags` column and one logical
 GBIF headquarters and 10 km of Copenhagen, the second is a zero
 coordinate at sea, the third is in Vienna, a capital.
 
-## Flagged, not dropped
+## Several rules from one pass
 
-CoordinateCleaner’s `clean_coordinates()` returns a cleaned table, one
-rule applied. OccurrenceCleaner returns every record with its flags, so
-several rules are compared on the same pass:
+A rule is a set of tests.
+[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
+marks the records a rule removes, and
+[`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
+compares several rules on the same flags:
 
 ``` r
 
@@ -83,8 +86,8 @@ tally_flags(f, by = "kingdom",
             rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
 ```
 
-An interrupted run is restarted with the same call; finished parts are
-skipped.
+Rerunning the same call after an interruption skips the input files
+already finished.
 
 ## What’s in the box
 
@@ -180,16 +183,6 @@ Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeaco
 MIT. CoordinateCleaner (GPL-3) is a suggested package used by the
 equivalence tests and by `reference = "CoordinateCleaner"`; none of its
 code or data is bundled.
-
-Bundled reference data: Natural Earth layers (public domain,
-naturalearthdata.com) and the institution gazetteer from GBIF’s Global
-Registry of Scientific Collections (GRSciColl), exported from
-`https://api.gbif.org/v1/grscicoll/institution/export` on 2026-10-09.
-GBIF states no separate licence for GRSciColl records; under its data
-user agreement, GBIF seeks to make data it develops “freely and openly
-available, with the least possible restrictions on reuse”. Source,
-version and checksum of every layer are listed by
-[`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md).
 
 ## Citation
 
