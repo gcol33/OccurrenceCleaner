@@ -12,6 +12,8 @@ It also reads three fields GBIF fills for each record: the quality warnings GBIF
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
+The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package.
+
 The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
 Data frames containing a few million records are flagged in seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.

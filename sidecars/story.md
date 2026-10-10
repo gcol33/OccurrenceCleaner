@@ -80,4 +80,4 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - help pages: reference
 
 ## Open
-- Whether the README needs a sentence placing the package in the workflow (after a GBIF download, before analysis), as CoordinateCleaner's landing page does.
+- Journey entries for the tests, rules, on-disk, gbif-workflow and reference-data articles.

@@ -1,6 +1,6 @@
 # Journey: OccurrenceCleaner
 
-Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries are matched by order and first words. Entries for tests, rules, on-disk, gbif-workflow and reference-data are pending: those vignettes were being written in another session on 2026-10-10 and are not mapped until they settle.
+Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries are matched by order and first words. Entries for tests, rules, on-disk, gbif-workflow and reference-data are pending: those vignettes were written in another session on 2026-10-10 and are mapped in a later pass.
 
 ## DESCRIPTION
 
@@ -28,26 +28,40 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: seconds; billions by chunks
 - job: Gives the scale: millions in seconds in memory, snapshots by streaming Parquet.
 - leaves: both ends of the size range are covered
-- warning: format: the line "afterwards which flags to filter on. Data frames of a few million records are flagged in" is over 80 characters (R Packages 2e); rewrap
 
 ## README
 
-### readme.claim  [A1 A2 A4]
-- idea: extension of CC · what is flagged · GBIF fields
-- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists what it flags, coordinates and GBIF fields.
+### readme.claim  [A1 A2]
+- idea: extension of CC · what is flagged
+- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists the coordinate problems it flags.
 - leaves: the parent, the purpose and the list of problems
-- warning: crowded: three ideas in one paragraph (relation, coordinate tests, the three GBIF fields); the GBIF fields could be their own sentence group or move to the test table, which lists them again
+
+### readme.gbif  [A4]
+- idea: GBIF fields
+- job: Adds the three GBIF fields the package reads.
+- leaves: issue warnings, basis of record, establishment means; details in the test table
 
 ### readme.flags  [A3]
 - idea: flagged and kept
 - job: States that records are kept and the filter is chosen afterwards.
 - leaves: the package never removes a record
 
-### readme.equivalence  [A1 A2]
-- idea: same flags · scale numbers
-- job: Says the test suite checks both packages return the same flags, then gives the scale.
-- leaves: equivalence is tested, and how large an input is practical
-- warning: crowded: A1 (equivalence) and A2 (scale) share one paragraph with no link between them
+### readme.input  [A2]
+- idea: what goes in; what is out of scope
+- job: Places the package in the workflow by naming its inputs and the one neighbouring task it leaves out.
+- leaves: a GBIF download, a snapshot or any Darwin Core table works; names are cleaned elsewhere
+
+### readme.equivalence  [A1]
+- idea: same flags, tested
+- job: Says the test suite checks both packages return the same flags and points to the deliberate differences.
+- leaves: equivalence is tested, and where the exceptions are listed
+
+### readme.scale  [A2]
+- idea: seconds; billions by chunks
+- job: Gives the practical input size, with a link to the timings.
+- leaves: how large an input is practical, and where the numbers come from
+
+### readme.install  (section)
 
 ### readme.example  [A3]  (code)
 - idea: smallest call
@@ -57,7 +71,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.example-result  [A1 A3]
 - idea: what each record trips
 - job: Explains the returned columns and why each of the three records is flagged.
-- leaves: the `flags` and `flag_<test>` columns, and that one record can trip several tests
+- leaves: the `flag_<test>` columns and the `flags` column, one bit per test; one record can trip several tests
 
 ### readme.rules  [A3]  (section)
 - idea: several rules, one pass
@@ -73,22 +87,26 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: exported functions
 - job: Lists each exported function by what it does.
 - leaves: the verb map
-- warning: undefined: "flag word", "bit mask" and "loss table" are used here and defined nowhere in the README
 
 ### readme.tests  [A1 A4]  (table)
 - idea: tests, definitions, sources
 - job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
 - leaves: the test names and their origin
 
-### readme.method  [A1 A5]
-- idea: how tests are computed · gazetteers
-- job: Says how proximity and polygon tests are computed, where the gazetteers come from, and where the differences are documented.
-- leaves: the method in one paragraph and the pointer to the documented differences
-- warning: crowded: computation method and reference data in one paragraph
+### readme.method  [A1]
+- idea: how tests are computed
+- job: Says how proximity and polygon tests are computed.
+- leaves: kd-tree and geodesic distance; grid-indexed point-in-polygon
 
-### readme.install  (section)
+### readme.reference  [A1 A5]
+- idea: pinned gazetteers; CC tables
+- job: Says where the gazetteers come from and that CoordinateCleaner's tables give its flags up to the documented differences.
+- leaves: own gazetteers are pinned; `reference = "CoordinateCleaner"`; where the differences are listed
+
 ### readme.docs  (section)
-- warning: routing: only Quick Start and Reference are listed; the six articles, including "Coming from CoordinateCleaner", are not routed from the README
+- idea: routing
+- job: Links every article and the reference index by title.
+- leaves: where each topic lives
 
 ### readme.support  (section)
 ### readme.license  (section)
@@ -97,17 +115,18 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ## ?OccurrenceCleaner
 
 ### pkg.overview  [A1 A3]
-- idea: flags, rule afterwards, CC buffers, verb map
-- job: Says what the package does inside R and points to the three main functions.
+- idea: extension of CC; flags, rule afterwards; verb map
+- job: States the relation, that records are kept and the rule chosen afterwards, and points to the three main functions.
 - leaves: the verb map
-- warning: relation-drift: "The tests and their default buffers follow CoordinateCleaner" instead of the relation phrase
+
 ## Quick start
 
-### qs.opener  [A3]
-- idea: flag, keep, query
-- job: States that records are kept and the drop decision is a query over the flags.
-- leaves: the flag word and the idea of choosing afterwards
-- warning: relation-missing: the Get Started opener does not mention CoordinateCleaner, which the overview of every entry point carries
+### qs.opener  [A1 A3]
+- idea: extension of CC; flag, keep, query
+- job: States the relation and that the drop decision is a query over the flags.
+- leaves: the parent package, the flag word, and the idea of choosing afterwards
+
+### qs.install  (section)
 
 ### qs.input
 - idea: required columns
@@ -123,9 +142,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### qs.tests  [A1 A4]  (table)
 ### qs.tests-note  [A1 A4]
 - idea: eleven CC tests, then GBIF fields
-- job: Says which tests come from CoordinateCleaner and which read GBIF fields.
+- job: Says which tests come from CoordinateCleaner, up to the documented differences, and which read GBIF fields.
 - leaves: the split between equivalent tests and additions
-- warning: overreach: "reproduce CoordinateCleaner's record tests" without "up to the documented differences"; ?flag_occurrences and the comparison article both qualify it
 
 ### qs.rules  [A3]  (section)
 - idea: rules as queries; tally
@@ -144,10 +162,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### qs.reference  [A5]
 - idea: pinned gazetteers; CC tables; land scale
-- job: Shows where the gazetteers come from and the alternative.
-- leaves: `reference_info()`, `reference = "CoordinateCleaner"`, `land_scale`
-- warning: overreach: "which reproduces its flags" without "up to the documented differences"
-- warning: relation: "scale 110 (CoordinateCleaner's default)" is `cc_sea()`'s default; `clean_coordinates()` defaults to `seas_scale = 50`
+- job: Shows where the gazetteers come from, the CoordinateCleaner alternative and the land scales.
+- leaves: `reference_info()`, `reference = "CoordinateCleaner"`, `land_scale` and which CoordinateCleaner default it matches
 
 ### qs.disk  [A2]  (section)
 - idea: stream a table
@@ -166,16 +182,22 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: States the relation and lists what the article covers.
 - leaves: the article's scope; CoordinateCleaner is only suggested
 
+### cc.install  (section)
+
 ### cc.mapping  [A1]  (table)
 - idea: function to test map
 - job: Maps each CoordinateCleaner function and argument to its counterpart here.
-- leaves: the name map
-- warning: relation-gap: `clean_coordinates()`'s plural test names ("capitals", "centroids", "seas", "zeros", "institutions", "duplicates") and their singular counterparts are not in the table; the side-by-side code shows them only implicitly
+- leaves: the name map, including the two land-scale defaults
 
 ### cc.no-cc-names  [A1]
 - idea: one verb, no cc_* names
 - job: Explains that tests are chosen by name and no `cc_*` function is masked.
 - leaves: both packages can be attached together
+
+### cc.test-names  [A1]  (table)
+- idea: plural to singular test names; validity
+- job: Maps `clean_coordinates()` test names to the names here and says how validity differs.
+- leaves: the `tests` vocabulary of both packages; invalid records do not stop a run here
 
 ### cc.pipe  [A1 A3]  (section)
 - idea: filter-as-you-go vs flag and subset
@@ -205,7 +227,6 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: kd-tree vs polygons; timings
 - job: Explains why proximity tests are faster and gives timings with machine and versions.
 - leaves: the speed ratio per test and the benchmark script
-- warning: placement: the README routes nowhere to this table, though it is the only source of the README's "few million records in seconds"
 
 ### cc.no-counterpart  [A1]  (section)
 - idea: what stays in CoordinateCleaner
@@ -213,7 +234,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - leaves: when to keep using CoordinateCleaner
 
 ## tests
-TODO: pending (being written 2026-10-10).
+TODO: pending.
 
 ## rules
 TODO: pending.
