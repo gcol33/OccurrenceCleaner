@@ -23,11 +23,10 @@ record (fossil or living specimens), and the establishment means
 Records are flagged and kept, and users choose afterwards which flags to
 filter on.
 
-The tests and default buffers follow CoordinateCleaner, and the test
-suite checks that both packages return the same flags. The difference is
-speed and scale: OccurrenceCleaner flags data frames containing a few
-million records in seconds and processes GBIF snapshots containing
-billions of records by reading Parquet files in chunks.
+The test suite checks that both packages return the same flags with the
+same default buffers. Data frames containing a few million records are
+flagged in seconds, and GBIF snapshots containing billions of records
+are processed by reading Parquet files in chunks.
 
 ``` r
 
