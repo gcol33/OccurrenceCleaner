@@ -124,6 +124,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Links every article and the reference index by title.
 - leaves: where each topic lives
 
+### readme.contributing  (section)
+- idea: how to contribute
+- job: Points to the CONTRIBUTING page on the site.
+- leaves: where bug reports and changes go
+
 ### readme.support  (section)
 
 ### readme.acknowledgements  [A1]  (section)
