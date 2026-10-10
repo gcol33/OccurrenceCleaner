@@ -61,6 +61,12 @@
 - defined: @p:qs.tests-note
 - note: every "reproduce" now carries "up to the documented differences", except `buffers = list(zero = 0)`, which reproduces 3.0.1 exactly
 
+### gbif-headquarters
+- forms: GBIF headquarters; `gbif_headquarters`
+- as: the GBIF office in Copenhagen (12.58 E, 55.67 N), a default location some records receive
+- defined: @p:tests.proximity
+- avoid: GBIF secretariat
+
 ### unit
 - forms: unit; input unit; resumable unit
 - as: one input file of a streamed table, flagged and written as a whole, skipped on rerun when done
@@ -72,7 +78,7 @@
 - metric: seconds to flag a data frame, `default_tests()`, own reference
 - population: 1e6 and 1e7 synthetic records, 10 % near capitals
 - source: dev_notes/benchmark.md (run 2026-10-09 on worky, AMD Ryzen 7 5700G, 64 GB, R 4.6.1, OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1); bench/benchmark.R; table at @p:cc.speed
-- stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.scale (same, linked to @p:cc.speed); @p:cc.speed
+- stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.scale (same, linked to @p:cc.speed); @p:cc.speed; @p:gbif.guidance (1.9 s at 1e6); @p:disk.snapshot (17.8 s at 1e7)
 - note: vignette table matches dev_notes/benchmark.md (checked 2026-10-10)
 
 ### speed-ratio
@@ -85,6 +91,17 @@
 - source: dev_notes/benchmark.md; dev_notes/equivalence.md; computed live at @p:cc.agreement
 - stated-at: @p:cc.agreement
 
+### gbif-simulation
+- metric: counts from the seeded simulation in the GBIF workflow article (263 of 2,276 records flagged; ladder 119, +21, +20, +41, +62; 1,998 clean kept; 15 of 20 zero records with six tests)
+- source: the article's own chunks (set.seed(42))
+- stated-at: @p:gbif.flag; @p:gbif.truth; @p:gbif.combos; @p:gbif.ladder; @p:gbif.cleaned
+- note: recomputed on committed HEAD 7b9d944 on 2026-10-10; all hard-coded values matched except the negated-record catch (18, not 17), now computed inline as `neg_caught`. The other values are prose constants and go stale if the simulation changes
+
+### rules-simulation
+- metric: the 40 zero records and the institution overlap in the rules article
+- source: the article's own chunks (set.seed(42)); GRSciColl entry about 11 m from (0, 0)
+- stated-at: @p:rules.per-test; @p:rules.compare
+
 ### buffer-band
 - metric: share of a buffer radius inside CoordinateCleaner's inscribed polygon (99.9 % at 72 vertices, 99.7 % at 40)
 - source: r cos(pi/n), @p:cc.buffer-circles
@@ -95,8 +112,8 @@
 ### buffers
 - argument: flag_occurrences(buffers): capital 10 km, centroid 1 km, institution 100 m, gbif_headquarters 1 km, zero 0.5 degrees
 - home: ?flag_occurrences (Tests section)
-- stated-at: @p:readme.tests; @p:qs.buffers
-- note: all three agree with `.default_buffers` in R/flag.R (checked 2026-10-10)
+- stated-at: @p:readme.tests; @p:qs.buffers; @p:tests.proximity; @p:ref.buffers
+- note: all agree with `.default_buffers` in R/flag.R (checked 2026-10-10)
 
 ### land-scale
 - argument: flag_occurrences(land_scale = 110)

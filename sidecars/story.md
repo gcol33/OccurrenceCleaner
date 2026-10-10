@@ -80,4 +80,4 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - help pages: reference
 
 ## Open
-- Journey entries for the tests, rules, on-disk, gbif-workflow and reference-data articles.
+None.

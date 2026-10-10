@@ -89,7 +89,7 @@ With `zero = 0` only exact zeros are flagged, which is what CoordinateCleaner 3.
 
 ## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
 
-These four flag records within a fixed distance of a reference point: 10 km of a country capital, 1 km of a country or province centroid, 100 m of a biodiversity institution, and 1 km of the GBIF secretariat in Copenhagen (12.58 E, 55.67 N). Records end up at such points when a collector, a database or a georeferencing tool assigns the coordinates of the place that holds or names the specimen instead of where it was found.
+These four flag records within a fixed distance of a reference point: 10 km of a country capital, 1 km of a country or province centroid, 100 m of a biodiversity institution, and 1 km of the GBIF headquarters in Copenhagen (12.58 E, 55.67 N). Records end up at such points when a collector, a database or a georeferencing tool assigns the coordinates of the place that holds or names the specimen instead of where it was found.
 
 The distance is the geodesic distance on the WGS84 ellipsoid, and the buffer is closed: a record at exactly the buffer distance is flagged. Candidates are found with a kd-tree on the unit sphere, and each candidate is decided with the Vincenty inverse formula. The GBIF headquarters, a single fixed point, show the edge directly. Points due north of it at 990 m to 1,010 m:
 

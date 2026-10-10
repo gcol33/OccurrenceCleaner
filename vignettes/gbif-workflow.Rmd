@@ -130,7 +130,11 @@ knitr::kable(tab)
 
 Most error types trip more than one test. All 25 swapped records fail `country_mismatch` and carry GBIF's own `PRESUMED_SWAPPED_COORDINATE` warning (`issue_coordinate`); 9 of them also land at sea. The 15 GBIF-headquarters records are flagged by `gbif_headquarters` and `capital` (Copenhagen is within 10 km), and by `country_mismatch`, because the point lies just off the 1:50m Natural Earth coastline of Denmark that the country test uses, while the 1:110m land of the `sea` test still covers it. The zero coordinates fail `zero`, `equal`, `sea` and `country_mismatch`, and also `institution`: three GRSciColl institutions (in Coimbra, Bornova and Hsinchu) are registered with coordinates within a few hundred metres of (0, 0), so the institution gazetteer itself carries the zero-coordinate error.
 
-The negated longitudes show the limit of the spatial tests. Only 17 of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in western France, on land and in the right country, and no record test can tell it from a correct one. None of the 30 records entered at whole degrees is caught: a whole-degree point in Austria is still in Austria, and GBIF's `COORDINATE_ROUNDED` warning does not mark them, since it records that GBIF itself rounded a coordinate to five decimals. Low precision of this kind is read from `coordinateuncertaintyinmeters` when the source states it; these 30 records state none.
+```{r truth-counts, include = FALSE}
+neg_caught <- sum(rowSums(as.data.frame(f[f$truth == "negated", paste0("flag_", show)])) > 0)
+```
+
+The negated longitudes show the limit of the spatial tests. Only `r neg_caught` of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in western France, on land and in the right country, and no record test can tell it from a correct one. None of the 30 records entered at whole degrees is caught: a whole-degree point in Austria is still in Austria, and GBIF's `COORDINATE_ROUNDED` warning does not mark them, since it records that GBIF itself rounded a coordinate to five decimals. Low precision of this kind is read from `coordinateuncertaintyinmeters` when the source states it; these 30 records state none.
 
 Of the 2,000 clean records, 1,998 carry no flag in these columns. The other two lie at 13.0 E, 47.6 to 47.7 N, inside the Austrian box but across the border in Bavaria, so `country_mismatch` is right about them. The duplicates among the injected groups (7 cultivated, 7 living, 10 at the GBIF headquarters) arise because those records copy the coordinates of existing records and sometimes draw the same species.
 
@@ -156,7 +160,7 @@ combo <- vapply(flagged$flags, function(w)
 knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tests", "records"))
 ```
 
-The most common combination is `capital + urban`: a capital lies inside its own urban area, so in a rule that already holds `capital`, adding `urban` removes only the city records more than 10 km from the capital point. The 15 zero-coordinate records carry six tests at once. Records with a single flag (`duplicate`, `issue_rounded`, `establishment_managed`, `basis_living`) are the ones a rule keeps or loses depending on whether that one test is in it.
+The most common combination is `capital + urban`: a capital lies inside its own urban area, so in a rule that already holds `capital`, adding `urban` removes only the city records more than 10 km from the capital point. 15 of the 20 zero-coordinate records carry six tests at once: the five above plus `duplicate`, since they share their coordinates and often their species. Records with a single flag (`duplicate`, `issue_rounded`, `establishment_managed`, `basis_living`) are the ones a rule keeps or loses depending on whether that one test is in it.
 
 ## Comparing cleaning rules
 
@@ -254,7 +258,7 @@ The `wild` rule keeps 1,998 of the 2,000 clean records and removes every injecte
 
 ## Practical guidance
 
-- **Run every test that the columns allow, once.** The pass over the records is the expensive step; rules are a bit-mask query afterwards. On worky (Ryzen 7 5700G) the nine default tests took 1.9 s for one million records in memory (`dev_notes/benchmark.md`), so there is little reason to run fewer tests than the data support.
+- **Run every test that the columns allow, once.** The pass over the records is the expensive step; rules are a bit-mask query afterwards. On an AMD Ryzen 7 5700G the nine default tests took 1.9 s for one million records in memory (see the timings in [Coming from CoordinateCleaner](coordinatecleaner.html#speed)), so there is little reason to run fewer tests than the data support.
 
 - **`country_mismatch` needs a country code and flags records without one.** A record with no code, or one that falls at sea, is flagged, as in CoordinateCleaner. In a GBIF table where many records lack `countrycode`, that test alone can flag a large share; the tally per test shows it before it goes into a rule.
 

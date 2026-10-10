@@ -1,6 +1,6 @@
 # Journey: OccurrenceCleaner
 
-Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries are matched by order and first words. Entries for tests, rules, on-disk, gbif-workflow and reference-data are pending: those vignettes were written in another session on 2026-10-10 and are mapped in a later pass.
+Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries are matched by order and first words. Articles are mapped per section where a section develops one point; the opener of each is its own entry.
 
 ## DESCRIPTION
 
@@ -233,17 +233,262 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Lists the CoordinateCleaner functions with no counterpart and why `cc_outl()` is not a record test.
 - leaves: when to keep using CoordinateCleaner
 
-## tests
-TODO: pending.
+## The tests in detail (explanation, A4 home)
 
-## rules
-TODO: pending.
+### tests.opener  [A1 A4]
+- idea: nineteen tests; eleven from CC; per-test help
+- job: Says what the article covers per test and which tests come from CoordinateCleaner.
+- leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
 
-## on-disk
-TODO: pending.
+### tests.install  (section)
 
-## gbif-workflow
-TODO: pending.
+### tests.flag-word  [A3]  (section)
+- idea: one bit per test; layout version; default tests
+- job: Defines the flag word, shows a mask and says why the layout is versioned.
+- leaves: `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `default_tests()`
 
-## reference-data
-TODO: pending.
+### tests.invalid  [A1]  (section)
+- idea: invalid gets no other spatial flag
+- job: Defines invalid coordinates and shows that such records get no other spatial flag.
+- leaves: text coercion, boundary values valid, the difference from CoordinateCleaner
+
+### tests.zero-equal  [A1]  (section)
+- idea: planar 0.5 degree disc; equal; zero buffer
+- job: Defines `zero` and `equal`, shows the disc edge and how `buffers = list(zero = 0)` gives CoordinateCleaner 3.0.1's behaviour.
+- leaves: the zero radius is in degrees
+
+### tests.proximity  [A1]  (section)
+- idea: four reference-point tests; geodesic closed ball; buffer sweep
+- job: Defines the four proximity tests, shows the 1 km edge to 0.1 m, and how the flagged share grows with the capital buffer.
+- leaves: closed geodesic buffers; the inscribed-polygon band is the only difference; the capital buffer matters most
+
+### tests.sea  [A1 A5]  (section)
+- idea: land polygons at three scales
+- job: Defines `sea` and shows that the land scale decides coastal records.
+- leaves: `land_scale`, which CoordinateCleaner default each scale matches
+
+### tests.urban  [A1]  (section)
+- idea: urban polygons; not a default
+- job: Defines `urban` and why it is off by default.
+- leaves: an urban record outside the capital buffer is still urban
+
+### tests.country  [A1]  (section)
+- idea: three code systems; missing codes flagged
+- job: Defines `country_mismatch`, its three code systems, and that missing codes are flagged.
+- leaves: GBIF alpha-2 works; check the tally before putting it in a rule
+
+### tests.duplicate  [A1 A2]  (section)
+- idea: first kept; duplicate_by; duplicate_cell
+- job: Defines `duplicate` and the two arguments that change what counts as the same record.
+- leaves: removing flagged records leaves one per key; a taxon key avoids spelling splits
+
+### tests.issues  [A4]  (section)
+- idea: four issue groups; rounding is precision
+- job: Defines the four issue tests by the GBIF issue names they hold and why rounding is separate.
+- leaves: the group table; precision belongs to `coordinateUncertaintyInMeters`
+
+### tests.basis-establishment  [A4]  (section)
+- idea: fossil, living, introduced, managed
+- job: Defines the four field-read tests and that their use depends on the question.
+- leaves: the choice is made in the rule
+
+### tests.columns  (section)
+- idea: only needed fields; missing field errors
+- job: Shows renaming columns and that a missing field stops with an error.
+- leaves: `occ_columns()`; no test is skipped silently
+
+## Choosing a cleaning rule (how-to, A3 home)
+
+### rules.opener  [A3]
+- idea: flag once; four steps
+- job: States the approach and lists the four steps the article follows.
+- leaves: flag, measure, break down, apply
+
+### rules.install  (section)
+
+### rules.example-data  [A3]  (section)
+- idea: simulated European records with planted errors
+- job: Builds records on land with GBIF fields, then plants capital, zero, sea and duplicate errors.
+- leaves: an input with known errors
+
+### rules.flag-once  [A3]
+- idea: defaults plus issue and fossil tests
+- job: Flags the records once with the tests the article uses.
+- leaves: the `occ_flags` object `summary()` and `plot()` dispatch on
+
+### rules.per-test  [A3]  (section)
+- idea: pct and only
+- job: Explains `flagged`, `pct` and `only`, and why per-test shares add up to more than the rule.
+- leaves: how often a problem occurs vs how much loss a test alone causes
+
+### rules.compare  [A3]  (section)
+- idea: three candidate rules
+- job: Compares three rules and shows which tests are the sole reason for removals.
+- leaves: named rules in `summary()`; the institution test overlaps `zero` here
+
+### rules.by-group  [A3]  (section)
+- idea: by kingdom
+- job: Splits the shares by group and draws the grid.
+- leaves: `by` in `summary()` and `plot()`
+
+### rules.bins  [A3]  (section)
+- idea: year and uncertainty cut at tally time
+- job: Bins year and uncertainty at tally time and says when to keep the tally rather than the summary.
+- leaves: `bins`; `<column>_bin`; missing values get their own class
+
+### rules.map  [A3]  (section)
+- idea: map of removed records
+- job: Maps the records a rule removes.
+- leaves: `plot(type = "map")`
+
+### rules.apply  [A3]  (section)
+- idea: complement of has_flag
+- job: Applies the chosen rule and shows a raw-column cut beside it.
+- leaves: the cleaned table; no re-flagging for another rule
+
+### rules.math  [A3]  (section)
+- idea: bit arithmetic of the counts
+- job: Gives the three bit conditions behind every count.
+- leaves: the bit mask of a rule; one pass per group
+
+## Large tables on disk (how-to, A2 home)
+
+### disk.opener  [A2]
+- idea: snapshot too big for memory; what the article covers
+- job: States why streaming is needed and lists the article's topics.
+- leaves: inputs accepted, output beside kept columns
+
+### disk.install  (section)
+
+### disk.input  [A2]  (section)
+- idea: three parts stand in for a snapshot
+- job: Builds a three-file input with GBIF's lower-case names.
+- leaves: the accepted input types
+
+### disk.flag  [A2]  (section)
+- idea: out, keep, id; units, parts, markers
+- job: Flags into an output directory and explains units, part files, markers and the metadata file.
+- leaves: memory is bounded by chunk size and `part_rows`
+
+### disk.resume  [A2]  (section)
+- idea: rerun skips done units; config mismatch stops
+- job: Shows resuming after an interruption and that a different configuration cannot write into the same directory.
+- leaves: `.done` markers; `resume = FALSE`; one directory, one configuration
+
+### disk.tally  [A2 A3]  (section)
+- idea: tally streams parts
+- job: Tallies straight from disk and shows the error for a column not kept.
+- leaves: grouping columns must be kept at flag time
+
+### disk.read  [A2]  (section)
+- idea: flagged_table, collect, join on id
+- job: Reads the flags as a vectra table and joins them back to the records.
+- leaves: `flagged_table()`, lazy queries, the identifier join
+
+### disk.duplicates  [A1 A2]  (section)
+- idea: duplicates within a unit only
+- job: Shows that duplicates are found within each input file and how to get whole-table duplicates.
+- leaves: split by species, or run `duplicate` on the collected taxa
+
+### disk.node  [A2]  (section)
+- idea: a vectra node is one unit
+- job: Flags a filtered subset without writing it out.
+- leaves: filter pushdown
+
+### disk.snapshot  [A2]  (section)
+- idea: the real snapshot call; speed; restartable
+- job: Gives the call for a GBIF snapshot and what the benchmark does and does not cover.
+- leaves: in-memory timing; streaming adds I/O not measured
+
+## Cleaning GBIF data (how-to, end to end)
+
+### gbif.opener  [A3]
+- idea: whole workflow on simulated GBIF data
+- job: States the workflow and why the data are simulated.
+- leaves: every error is labelled, so catches can be checked
+
+### gbif.install  (section)
+
+### gbif.data  [A3 A4]  (section)
+- idea: clean records plus 236 labelled errors
+- job: Builds 2,000 clean records with GBIF columns, then adds labelled errors of nine kinds and 40 copies.
+- leaves: the `truth` column; the `issue` format
+
+### gbif.flag  [A3 A5]  (section)
+- idea: all tests once; reference stamp; per-test summary
+- job: Flags every test once and shows the per-test shares and the reference stamp.
+- leaves: `occ_reference` to store with any cleaned table
+
+### gbif.truth  [A1 A4]
+- idea: which test catches which error
+- job: Cross-tabulates truth against tests and explains the catches, the misses and the two flagged clean records.
+- leaves: negated and whole-degree records are beyond any record test; GBIF warnings catch swaps on land
+
+### gbif.map  [A3]  (section)
+- idea: where flagged records are
+- job: Maps the records the spatial rule removes.
+- leaves: the clusters by error type
+
+### gbif.combos  [A3]  (section)
+- idea: test combinations
+- job: Counts test combinations from distinct flag words and explains the most common.
+- leaves: overlap decides what an extra test adds
+
+### gbif.ladder  [A3]  (section)
+- idea: five rules, loose to strict
+- job: Compares five rules and gives what each step adds, overall and by kingdom.
+- leaves: the rule ladder; sole-reason bars
+
+### gbif.age-precision  [A3]  (section)
+- idea: year and uncertainty bins; a threshold beside the rule
+- job: Shows where a rule removes most by period and precision and applies an uncertainty cut next to it.
+- leaves: thresholds stay outside flagging
+
+### gbif.cleaned  [A3]  (section)
+- idea: the wild rule result
+- job: Applies one rule and checks the result against the truth.
+- leaves: what the rule keeps and which errors remain
+
+### gbif.guidance  [A1 A2 A3 A4]  (section)
+- idea: six practical rules
+- job: Turns the article's findings into six recommendations.
+- leaves: run all tests once; know the country, sea, duplicate and issue caveats; no thresholds at flag time
+
+## Reference data (explanation, A5 home)
+
+### ref.opener  [A5]
+- idea: seven tests use reference data; what the article covers
+- job: Names the reference layers and lists the article's topics.
+- leaves: points vs polygons
+
+### ref.install  (section)
+
+### ref.layers  [A5]  (section)
+- idea: sources, versions, licences
+- job: Lists each layer with source and version, which test reads it, and the licences.
+- leaves: Natural Earth public domain; GRSciColl counts and status; nothing copied from CoordinateCleaner
+
+### ref.vs-cc  [A1 A5]  (section)
+- idea: same places, different tables
+- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer, and shows the capital difference in flags.
+- leaves: where the two references flag different records and why
+
+### ref.land-scale  [A1 A5]  (section)
+- idea: 1:110m vs 1:50m on the Danish coast
+- job: Measures where the two land scales disagree and how to get 1:10m.
+- leaves: the scale matters for coastal and island taxa; the download is checksummed
+
+### ref.buffers  [A1]  (section)
+- idea: default buffers; units
+- job: States the default buffers and shows a smaller capital buffer.
+- leaves: zero in degrees, others in metres
+
+### ref.stamp  [A5]  (section)
+- idea: reference recorded with the flags
+- job: Shows the reference and layout stamps on a flagged table and on disk.
+- leaves: one directory never mixes references
+
+### ref.choose  [A1 A5]  (section)
+- idea: which reference to use
+- job: Says when to use each reference.
+- leaves: own gazetteers by default; CoordinateCleaner's to compare with published work
