@@ -12,9 +12,8 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     coordinates, records at sea or in the wrong country, and duplicates, with
     the same tests and default buffers as 'CoordinateCleaner'. It also reads
     the quality warnings GBIF attaches to each record, the basis of record and
-    the establishment means. Each test stores its result as one bit per record
-    and no records are removed, so users decide afterwards which flags to use
-    for filtering. Data frames of a few million records are flagged in
+    the establishment means. Records are flagged and kept, and users choose
+    afterwards which flags to filter on. Data frames of a few million records are flagged in
     seconds, and GBIF snapshots of billions of records are processed by
     reading Parquet files in chunks.
 License: MIT + file LICENSE
