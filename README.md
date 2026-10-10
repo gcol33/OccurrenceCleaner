@@ -116,8 +116,6 @@ If this package saved you some time, buying me a coffee is a nice way to say tha
 
 MIT. CoordinateCleaner (GPL-3) is a suggested package used by the equivalence tests and by `reference = "CoordinateCleaner"`; none of its code or data is bundled.
 
-Bundled reference data: Natural Earth layers (public domain, naturalearthdata.com) and the institution gazetteer from GBIF's Global Registry of Scientific Collections (GRSciColl), exported from `https://api.gbif.org/v1/grscicoll/institution/export` on 2026-10-09. GBIF states no separate licence for GRSciColl records; under its data user agreement, GBIF seeks to make data it develops "freely and openly available, with the least possible restrictions on reuse". Source, version and checksum of every layer are listed by `reference_info()`.
-
 ## Citation
 
 ```bibtex
