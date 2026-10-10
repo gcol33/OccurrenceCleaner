@@ -18,6 +18,11 @@
 #'   million years, as the Paleobiology Database's `min_ma` and `max_ma`.
 #' @param dataset Dataset the record belongs to, for the dataset-level tests
 #'   (`datasetKey` in GBIF data).
+#' @param genus Genus of the record, for the habitat tests `sea_nonmarine` and
+#'   `land_marine`. The first word is taken, so a binomial species column
+#'   (`occ_columns(genus = "species")`) works as well as a genus column.
+#' @param kingdom Kingdom of the record, read by the habitat tests when the
+#'   column is present, to tell apart genus names used in two kingdoms.
 #' @param id Record identifier, copied into on-disk flag output when present.
 #' @return A named list of column names with class `occ_columns`.
 #' @examples
@@ -26,10 +31,11 @@
 occ_columns <- function(lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
                         country = "countryCode", issue = "issue", basis = "basisOfRecord",
                         establishment = "establishmentMeans", min_age = "min_ma", max_age = "max_ma",
-                        dataset = "datasetKey", id = "gbifID") {
+                        dataset = "datasetKey", genus = "genus", kingdom = "kingdom",
+                        id = "gbifID") {
   cols <- list(lon = lon, lat = lat, species = species, country = country, issue = issue,
                basis = basis, establishment = establishment, min_age = min_age,
-               max_age = max_age, dataset = dataset, id = id)
+               max_age = max_age, dataset = dataset, genus = genus, kingdom = kingdom, id = id)
   for (nm in names(cols)) {
     v <- cols[[nm]]
     if (!is.character(v) || length(v) != 1L || is.na(v) || !nzchar(v))
@@ -60,9 +66,11 @@ resolve_columns <- function(columns, available, fields, optional = character()) 
 
 # Columns for a set of tests: every field the tests need, plus coordinates
 # when present for the taxon tests (their uniq_loc option and the
-# spatio-temporal test read them).
+# spatio-temporal test read them) and the kingdom when present for the
+# habitat tests.
 resolve_test_columns <- function(columns, available, tests) {
-  optional <- if (any(tests %in% .taxon_tests)) c("lon", "lat", "id") else character()
+  optional <- c(if (any(tests %in% .taxon_tests)) c("lon", "lat", "id"),
+                if (any(tests %in% .habitat_tests)) "kingdom")
   fields <- unique(c(fields_for(tests), optional))
   resolve_columns(columns, available, fields, optional = setdiff(optional, fields_for(tests)))
 }

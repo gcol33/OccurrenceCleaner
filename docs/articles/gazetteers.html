@@ -104,15 +104,16 @@
 <p>Nine tests compare records with reference data: five with points
 (capitals, centroids, institutions, the GBIF headquarters, artificial
 hotspots) and four with polygons (land, urban areas, countries, species
-ranges). The package ships its own pinned layers for all but the species
-ranges, which only a user can supply, and
+ranges); the two habitat tests read the land together with a table of
+genus habitats. The package ships its own pinned layers for all but the
+species ranges, which only a user can supply, and
 <code>reference = "CoordinateCleaner"</code> swaps in
 CoordinateCleaner’s. The <code>gazetteers</code> argument of
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> replaces the layer of single tests with
 a user’s own, as the <code>ref</code> arguments of CoordinateCleaner’s
 <code>cc_*()</code> functions do. This article filters and extends the
-shipped point tables, builds polygon layers with sf, and shows how a
-custom layer is recorded with the flags.</p>
+shipped point tables, builds polygon layers with sf, replaces the genus
+habitats, and shows how a custom layer is recorded with the flags.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -153,14 +154,17 @@ test with their attributes:</p>
 <span><span class="va">inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;              Herbarium                 Museum      UniversityCollege </span></span>
-<span><span class="co">#&gt;                   2982                    682                    284 </span></span>
-<span><span class="co">#&gt; OtherInstitutionalType            ZooAquarium        BotanicalGarden </span></span>
-<span><span class="co">#&gt;                    152                    122                     87</span></span></code></pre></div>
-<p>The institution table is the GBIF registry of scientific collections
-(GRSciColl): <code>type</code> says what kind of institution each is,
-and <code>master_source</code> where GBIF took the entry from (Index
-Herbariorum, GRSciColl itself, or the GBIF registry).</p>
+<span><span class="co">#&gt;        BotanicalGarden              Herbarium            ZooAquarium </span></span>
+<span><span class="co">#&gt;                   3406                   3089                   2740 </span></span>
+<span><span class="co">#&gt;                 Museum      UniversityCollege OtherInstitutionalType </span></span>
+<span><span class="co">#&gt;                   2073                    284                    152</span></span></code></pre></div>
+<p>The institution table joins the GBIF registry of scientific
+collections (GRSciColl) and the botanical gardens, natural history
+museums, zoos, aquaria and herbaria of Wikidata: <code>source</code>
+says which of the two each point comes from, <code>type</code> what kind
+of institution it is, and <code>master_source</code>, for GRSciColl
+entries, where GBIF took the entry from (Index Herbariorum, GRSciColl
+itself, or the GBIF registry).</p>
 </div>
 <div class="section level2">
 <h2 id="a-filtered-point-gazetteer">A filtered point gazetteer<a class="anchor" aria-label="anchor" href="#a-filtered-point-gazetteer"></a>
@@ -175,7 +179,7 @@ in a plant table, and use a wider buffer for them:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">herbaria</span> <span class="op">&lt;-</span> <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Herbarium"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2982</span></span>
+<span><span class="co">#&gt; [1] 3089</span></span>
 <span><span class="va">near</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span>, <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Museum"</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Quercus robur"</span>, decimalLongitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lon</span> <span class="op">+</span> <span class="fl">0.005</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
@@ -184,20 +188,13 @@ in a plant table, and use a wider buffer for them:</p>
 <span>                           gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>near <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">name</span>, type <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">type</span>, all <span class="op">=</span> <span class="va">f_all</span><span class="op">$</span><span class="va">flag_institution</span>,</span>
 <span>           herbaria_only <span class="op">=</span> <span class="va">f_herb</span><span class="op">$</span><span class="va">flag_institution</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                         near      type  all</span></span>
-<span><span class="co">#&gt; 1                              Andorra Research + Innovation Herbarium TRUE</span></span>
-<span><span class="co">#&gt; 2                                             UAE University Herbarium TRUE</span></span>
-<span><span class="co">#&gt; 3                                           Kabul University Herbarium TRUE</span></span>
-<span><span class="co">#&gt; 4                         Museu Nacional de História Natural    Museum TRUE</span></span>
-<span><span class="co">#&gt; 5 Museo Argentino de Ciencias Naturales Bernardino Rivadavia    Museum TRUE</span></span>
-<span><span class="co">#&gt; 6                              Burgenländisches Landesmuseum    Museum TRUE</span></span>
-<span><span class="co">#&gt;   herbaria_only</span></span>
-<span><span class="co">#&gt; 1          TRUE</span></span>
-<span><span class="co">#&gt; 2          TRUE</span></span>
-<span><span class="co">#&gt; 3          TRUE</span></span>
-<span><span class="co">#&gt; 4         FALSE</span></span>
-<span><span class="co">#&gt; 5         FALSE</span></span>
-<span><span class="co">#&gt; 6         FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt;                                      near      type  all herbaria_only</span></span>
+<span><span class="co">#&gt; 1           Andorra Research + Innovation Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 2                          UAE University Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 3                        Kabul University Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 4                                    &lt;NA&gt;    Museum TRUE         FALSE</span></span>
+<span><span class="co">#&gt; 5        Natural History Museum Abu Dhabi    Museum TRUE         FALSE</span></span>
+<span><span class="co">#&gt; 6 Natural Sciences Museum Sabiha Kasimati    Museum TRUE         FALSE</span></span></code></pre></div>
 <p>Each record lies about 0.005 degrees (a few hundred metres) east of
 an institution: three herbaria, then three museums. The full table flags
 all six at a 1 km buffer; the herbarium table flags only 3, the records
@@ -327,15 +324,42 @@ is 3 degrees north of its range and stays flagged with a 100 km buffer.
 <em>Rana arvalis</em> has no polygon and is not tested.</p>
 </div>
 <div class="section level2">
+<h2 id="a-genus-habitat-table">A genus habitat table<a class="anchor" aria-label="anchor" href="#a-genus-habitat-table"></a>
+</h2>
+<p>The habitat tests <code>sea_nonmarine</code> and
+<code>land_marine</code> look up the record’s genus in
+<code><a href="../reference/reference_habitat.html">reference_habitat()</a></code>, built from the Interim Register of
+Marine and Nonmarine Genera. A table with a <code>genus</code> column, a
+logical <code>marine</code> column (<code>TRUE</code> only marine,
+<code>FALSE</code> not marine) and optionally a <code>kingdom</code>
+column replaces it, for example to class a genus the register leaves
+open:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_habitat.html">reference_habitat</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">h</span><span class="op">[</span><span class="va">h</span><span class="op">$</span><span class="va">genus</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Larus"</span>, <span class="st">"Zostera"</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt; [1] kingdom genus   marine </span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span>
+<span><span class="va">mine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">h</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="st">"Plantae"</span>, genus <span class="op">=</span> <span class="st">"Zostera"</span>, marine <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="st">"Plantae"</span>, genus <span class="op">=</span> <span class="st">"Zostera"</span>, decimalLongitude <span class="op">=</span> <span class="fl">16.37</span>, decimalLatitude <span class="op">=</span> <span class="fl">48.21</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"land_marine"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_land_marine</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"land_marine"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>habitat <span class="op">=</span> <span class="va">mine</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_land_marine</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>The register marks seagrass (<em>Zostera</em>) as marine but leaves
+its freshwater and terrestrial flags empty, so the shipped table does
+not class it and its records are not tested; classed as only marine, a
+record of it in Vienna is flagged.</p>
+</div>
+<div class="section level2">
 <h2 id="recording-the-layer">Recording the layer<a class="anchor" aria-label="anchor" href="#recording-the-layer"></a>
 </h2>
 <p>A custom layer is indexed once per call, and its size and an MD5
 checksum of its coordinates are written into the reference label of the
 output:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a
@@ -387,6 +411,10 @@ two gazetteers.</p>
 <td align="left">cc_aohi(taxa = …)</td>
 <td align="left">gazetteers = list(aohi = subset of
 reference_points(“aohi”))</td>
+</tr>
+<tr class="odd">
+<td align="left">(none)</td>
+<td align="left">gazetteers = list(habitat = genera)</td>
 </tr>
 </tbody>
 </table>

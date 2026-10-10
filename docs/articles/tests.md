@@ -6,7 +6,8 @@ lies, and how its result can be changed through an argument. Eleven are
 the record tests of CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
 buffers, up to the differences listed in the article Coming from
-CoordinateCleaner, and eight read GBIF fields and are additions of this
+CoordinateCleaner, eight read GBIF fields, and two compare the land test
+with the habitat of the record’s genus; these ten are additions of this
 package. The other nine tests of the layout are covered elsewhere: the
 four fossil tests in the fossil article, the geographic outlier and the
 two dataset tests in the article on outliers and dataset tests, `range`
@@ -73,11 +74,13 @@ knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
 | 25 | dataset_rounded | lon,lat,dataset | CoordinateCleaner | cd_round |
 | 26 | range | lon,lat,species | CoordinateCleaner | cc_iucn |
 | 27 | aohi | lon,lat | CoordinateCleaner | cc_aohi |
+| 28 | sea_nonmarine | lon,lat,genus | OccurrenceCleaner | NA |
+| 29 | land_marine | lon,lat,genus | OccurrenceCleaner | NA |
 
 ``` r
 
 attr(flag_tests(), "layout_version")
-#> [1] 3
+#> [1] 4
 ```
 
 A record’s flag word is the sum of `2^bit` over the tests it fails, so a
@@ -303,6 +306,44 @@ The 1:10m layer is downloaded once on first use
 and cached. The reference-data article measures how many coastal records
 change between scales.
 
+## Habitat at sea and on land: `sea_nonmarine`, `land_marine`
+
+`sea` flags every record off the land, whales and corals included.
+`sea_nonmarine` flags only the records off the land whose genus does not
+live in the sea, and `land_marine` the records on land whose genus lives
+only in the sea. The habitats come from the Interim Register of Marine
+and Nonmarine Genera (IRMNG; Rees 2026), and
+[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
+lists the genera with the rule that classes them. Genera that IRMNG
+gives both habitats or no flags, such as gulls, seals or mangroves, are
+not tested. The genus is the first word of the `genus` column, so
+`occ_columns(genus = "species")` reads it from a binomial, and a
+`kingdom` column, when present, tells apart genus names used in two
+kingdoms (*Asterias* is a starfish and a plant genus):
+
+``` r
+
+x <- data.frame(kingdom = c("Plantae", "Animalia", "Animalia", "Animalia"),
+                genus = c("Quercus", "Asterias", "Asterias", "Larus"),
+                decimalLongitude = c(-30, 16.37, -30, -30), decimalLatitude = c(40, 48.21, 40, 40))
+f <- flag_occurrences(x, tests = c("sea", "sea_nonmarine", "land_marine"))
+f[, c("genus", "flag_sea", "flag_sea_nonmarine", "flag_land_marine")]
+#>      genus flag_sea flag_sea_nonmarine flag_land_marine
+#> 1  Quercus     TRUE               TRUE            FALSE
+#> 2 Asterias    FALSE              FALSE             TRUE
+#> 3 Asterias     TRUE              FALSE            FALSE
+#> 4    Larus     TRUE              FALSE            FALSE
+```
+
+The oak in the Atlantic fails both `sea` and `sea_nonmarine`; the
+starfish in Vienna fails `land_marine`; the starfish and the gull in the
+Atlantic fail only `sea`. The land is the layer of `sea`, so
+`land_scale` moves coastal records here too, and
+`buffers = list(sea_nonmarine = m, land_marine = m)` leaves records
+within `m` metres of the coast untested. Fossils of a living marine
+genus lie on land as well; `basis_fossil` in the same rule keeps them
+apart.
+
 ## Urban areas: `urban`
 
 `urban` flags records inside the Natural Earth 1:50m urban-area
@@ -501,6 +542,10 @@ A test whose field is missing stops with an error that names the column,
 so a misspelt column never silently skips a test.
 
 ## References
+
+Rees T (compiler) (2026). The Interim Register of Marine and Nonmarine
+Genera. Available from <https://www.irmng.org> at VLIZ. Darwin Core
+archive of 2026-10-06, CC BY 4.0.
 
 Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D,
 Farooq H, Herdean A, Ariza M, Scharn R, Svanteson S, Wengström N, Zizka

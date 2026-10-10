@@ -68,24 +68,31 @@ flag_occurrences(
   Each layer is indexed once per call, and its size and MD5 checksum are
   recorded in the reference label of the output. `range` takes species
   range polygons (see
-  [test_range](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md))
-  and `sampling` a table of records per country for the sampling
-  correction of
-  [test_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md).
+  [test_range](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md)),
+  `sampling` a table of records per country for the sampling correction
+  of
+  [test_outlier](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),
+  and `habitat` a table of genus habitats for
+  [test_habitat](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
+  (see
+  [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)).
+  The land layer given for `sea` is also the land of the habitat tests.
 
 - land_scale:
 
-  Natural Earth scale of the land layer for `sea`: 110 (the default of
-  CoordinateCleaner's `cc_sea()`; its `clean_coordinates()` uses
-  `seas_scale = 50`), 50, or 10 (downloaded on first use, see
+  Natural Earth scale of the land layer for `sea` and the habitat tests:
+  110 (the default of CoordinateCleaner's `cc_sea()`; its
+  `clean_coordinates()` uses `seas_scale = 50`), 50, or 10 (downloaded
+  on first use, see
   [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)).
 
 - buffers:
 
   Named list overriding buffer distances in metres for `capital`
   (10000), `centroid` (1000), `institution` (100), `gbif_headquarters`
-  (1000), `range` (0) and `aohi` (10000), or in degrees for `zero`
-  (0.5). Unnamed entries keep the defaults.
+  (1000), `range` (0), `aohi` (10000), `sea_nonmarine` (0) and
+  `land_marine` (0), or in degrees for `zero` (0.5). Unnamed entries
+  keep the defaults.
 
 - settings:
 

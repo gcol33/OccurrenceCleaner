@@ -106,7 +106,8 @@ GBIF fields: what each computes, which fields it reads, where its edge
 lies, and how its result can be changed through an argument. Eleven are
 the record tests of CoordinateCleaner (Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with its
 default buffers, up to the differences listed in the article Coming from
-CoordinateCleaner, and eight read GBIF fields and are additions of this
+CoordinateCleaner, eight read GBIF fields, and two compare the land test
+with the habitat of the record’s genus; these ten are additions of this
 package. The other nine tests of the layout are covered elsewhere: the
 four fossil tests in the fossil article, the geographic outlier and the
 two dataset tests in the article on outliers and dataset tests,
@@ -344,11 +345,25 @@ counterpart:</p>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_aohi</td>
 </tr>
+<tr class="odd">
+<td align="right">28</td>
+<td align="left">sea_nonmarine</td>
+<td align="left">lon,lat,genus</td>
+<td align="left">OccurrenceCleaner</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">29</td>
+<td align="left">land_marine</td>
+<td align="left">lon,lat,genus</td>
+<td align="left">OccurrenceCleaner</td>
+<td align="left">NA</td>
+</tr>
 </tbody>
 </table>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"layout_version"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>A record’s flag word is the sum of <code>2^bit</code> over the tests
 it fails, so a word of 10 (<code>2^1 + 2^3</code>) means
 <code>zero</code> and <code>capital</code>. <code><a href="../reference/flag_mask.html">flag_mask()</a></code>
@@ -615,6 +630,44 @@ headquarters in Copenhagen are on land at 1:110m and in the sea at
 article measures how many coastal records change between scales.</p>
 </div>
 <div class="section level2">
+<h2 id="habitat-at-sea-and-on-land-sea_nonmarine-land_marine">Habitat at sea and on land: <code>sea_nonmarine</code>,
+<code>land_marine</code><a class="anchor" aria-label="anchor" href="#habitat-at-sea-and-on-land-sea_nonmarine-land_marine"></a>
+</h2>
+<p><code>sea</code> flags every record off the land, whales and corals
+included. <code>sea_nonmarine</code> flags only the records off the land
+whose genus does not live in the sea, and <code>land_marine</code> the
+records on land whose genus lives only in the sea. The habitats come
+from the Interim Register of Marine and Nonmarine Genera (IRMNG; Rees
+2026), and <code><a href="../reference/reference_habitat.html">reference_habitat()</a></code> lists the genera with the
+rule that classes them. Genera that IRMNG gives both habitats or no
+flags, such as gulls, seals or mangroves, are not tested. The genus is
+the first word of the <code>genus</code> column, so
+<code>occ_columns(genus = "species")</code> reads it from a binomial,
+and a <code>kingdom</code> column, when present, tells apart genus names
+used in two kingdoms (<em>Asterias</em> is a starfish and a plant
+genus):</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Plantae"</span>, <span class="st">"Animalia"</span>, <span class="st">"Animalia"</span>, <span class="st">"Animalia"</span><span class="op">)</span>,</span>
+<span>                genus <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus"</span>, <span class="st">"Asterias"</span>, <span class="st">"Asterias"</span>, <span class="st">"Larus"</span><span class="op">)</span>,</span>
+<span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">48.21</span>, <span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sea"</span>, <span class="st">"sea_nonmarine"</span>, <span class="st">"land_marine"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"genus"</span>, <span class="st">"flag_sea"</span>, <span class="st">"flag_sea_nonmarine"</span>, <span class="st">"flag_land_marine"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;      genus flag_sea flag_sea_nonmarine flag_land_marine</span></span>
+<span><span class="co">#&gt; 1  Quercus     TRUE               TRUE            FALSE</span></span>
+<span><span class="co">#&gt; 2 Asterias    FALSE              FALSE             TRUE</span></span>
+<span><span class="co">#&gt; 3 Asterias     TRUE              FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 4    Larus     TRUE              FALSE            FALSE</span></span></code></pre></div>
+<p>The oak in the Atlantic fails both <code>sea</code> and
+<code>sea_nonmarine</code>; the starfish in Vienna fails
+<code>land_marine</code>; the starfish and the gull in the Atlantic fail
+only <code>sea</code>. The land is the layer of <code>sea</code>, so
+<code>land_scale</code> moves coastal records here too, and
+<code>buffers = list(sea_nonmarine = m, land_marine = m)</code> leaves
+records within <code>m</code> metres of the coast untested. Fossils of a
+living marine genus lie on land as well; <code>basis_fossil</code> in
+the same rule keeps them apart.</p>
+</div>
+<div class="section level2">
 <h2 id="urban-areas-urban">Urban areas: <code>urban</code><a class="anchor" aria-label="anchor" href="#urban-areas-urban"></a>
 </h2>
 <p><code>urban</code> flags records inside the Natural Earth 1:50m
@@ -622,7 +675,7 @@ urban-area polygons. It is not in <code><a href="../reference/default_tests.html
 CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>, because records in
 cities are often correct; it is useful as a separate column, for example
 to remove garden and street-tree records of plants:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.51</span>, <span class="fl">15.3</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.25</span>, <span class="fl">47.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"urban"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decimalLongitude"</span>, <span class="st">"decimalLatitude"</span>,</span>
@@ -646,7 +699,7 @@ ISO alpha-2 code (as GBIF’s <code>countryCode</code> gives it), its ISO
 alpha-3 code (as CoordinateCleaner expects), and Natural Earth’s own
 <code>ADM0_A3</code> code, which is filled where ISO has none. Matching
 is case-insensitive and ignores surrounding spaces:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">40</span><span class="op">)</span>,</span>
 <span>                countryCode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AT"</span>, <span class="st">"AUT"</span>, <span class="st">" at "</span>, <span class="st">"DE"</span>, <span class="cn">NA</span>, <span class="st">"PT"</span><span class="op">)</span><span class="op">)</span></span>
@@ -673,7 +726,7 @@ goes into a rule. The column is named through
 longitude, latitude and species as an earlier record in the input. The
 first occurrence is kept unflagged, so removing the flagged records
 leaves one record per distinct key:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"a"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.3701</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fl">48.21</span>,</span>
@@ -687,7 +740,7 @@ CoordinateCleaner’s <code>additions</code>, so repeat visits on
 different dates are kept apart. <code>duplicate_cell</code> bins
 coordinates to a grid of that size in degrees first, so records in the
 same cell count as duplicates:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"duplicate"</span>, duplicate_by <span class="op">=</span> <span class="st">"eventDate"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_duplicate</span></span>
 <span><span class="co">#&gt; [1] FALSE  TRUE FALSE FALSE FALSE</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"duplicate"</span>, duplicate_cell <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">$</span><span class="va">flag_duplicate</span></span>
@@ -709,7 +762,7 @@ tests group them: georeferencing problems, taxon matching, dates, and
 rounded coordinates. The <code>issue</code> column can be a string of
 names separated by <code>;</code> (or <code>,</code>, <code>|</code>,
 space) or a list column of character vectors; case does not matter:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>issue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COORDINATE_ROUNDED;GEODETIC_DATUM_ASSUMED_WGS84"</span>,</span>
 <span>                          <span class="st">"TAXON_MATCH_FUZZY"</span>, <span class="st">"recorded_date_unlikely"</span>, <span class="st">""</span>, <span class="cn">NA</span>,</span>
 <span>                          <span class="st">"PRESUMED_SWAPPED_COORDINATE;COUNTRY_COORDINATE_MISMATCH"</span><span class="op">)</span><span class="op">)</span></span>
@@ -788,7 +841,7 @@ population at the recorded place. <code>establishment_introduced</code>
 flags <code>establishmentMeans</code> of introduced, naturalised or
 invasive, and <code>establishment_managed</code> flags managed or
 cultivated individuals:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>basisOfRecord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="st">"LIVING_SPECIMEN"</span>, <span class="st">"FOSSIL_SPECIMEN"</span>, <span class="st">"PRESERVED_SPECIMEN"</span><span class="op">)</span>,</span>
 <span>                establishmentMeans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"MANAGED"</span>, <span class="st">"NATIVE"</span>, <span class="st">"Naturalised"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basis_fossil"</span>, <span class="st">"basis_living"</span>, <span class="st">"establishment_introduced"</span>,</span>
@@ -815,7 +868,7 @@ them. The flag is there so the choice is made in the rule.</p>
 only those fields have to exist. <code><a href="../reference/occ_columns.html">occ_columns()</a></code> names them;
 the defaults are Darwin Core terms, matched exactly first and then
 case-insensitively:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxon <span class="op">=</span> <span class="st">"a"</span>, X <span class="op">=</span> <span class="fl">16.37</span>, Y <span class="op">=</span> <span class="fl">48.21</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
 <span>                 columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"X"</span>, lat <span class="op">=</span> <span class="st">"Y"</span>, species <span class="op">=</span> <span class="st">"taxon"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flags</span></span>
@@ -826,6 +879,9 @@ column, so a misspelt column never silently skips a test.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<p>Rees T (compiler) (2026). The Interim Register of Marine and
+Nonmarine Genera. Available from <a href="https://www.irmng.org" class="external-link uri">https://www.irmng.org</a> at VLIZ. Darwin Core archive of
+2026-10-06, CC BY 4.0.</p>
 <p>Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler
 D, Farooq H, Herdean A, Ariza M, Scharn R, Svanteson S, Wengström N,
 Zizka V, Antonelli A (2019). CoordinateCleaner: standardized cleaning of

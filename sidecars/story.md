@@ -11,7 +11,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - phrase: an extension of CoordinateCleaner tailored to large-scale occurrence data
 - interop: `as_spatialvalid()` writes the flags as CoordinateCleaner's `spatialvalid` object, compared column by column in tests/testthat/test-spatialvalid.R; `.github/workflows/cc-devel.yaml` runs the test suite against CoordinateCleaner's GitHub version
 - same: test definitions and defaults of all twenty CoordinateCleaner tests: eleven coordinate record tests, `range` (`cc_iucn`), `aohi` (`cc_aohi`), the geographic outlier test (`cc_outl`), two dataset tests (`cd_ddmm`, `cd_round`) and four fossil tests (`cf_equal`, `cf_age`, `cf_outl`, `cf_range`); verified by `tests/testthat/test-equivalence.R` and `tests/testthat/test-group.R`, which run CoordinateCleaner on sampled records
-- differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments and one `settings` list for the outlier and dataset options; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, outliers of large species, random age draws, small datasets, streamed duplicates); additions (GBIF issue, basis of record, establishment means)
+- differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments and one `settings` list for the outlier and dataset options; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, outliers of large species, random age draws, small datasets, streamed duplicates); additions (GBIF issue, basis of record, establishment means, the habitat tests `sea_nonmarine` and `land_marine`)
 - status: every CoordinateCleaner 3.0.1 function has a counterpart; `cc_outl(sampling_thresh)` takes the per-country record counts as a table (`gazetteers = list(sampling = ...)`) instead of a live rgbif query; `write_pyrate()` is `export_pyrate()`, renamed so both can be attached
 - home: vignettes/coordinatecleaner.Rmd ("Coming from CoordinateCleaner")
 
@@ -67,9 +67,19 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - answer: Every gazetteer is rebuilt from its public source, pinned by version and checksum, and recorded in the flag output; `reference = "CoordinateCleaner"` uses that package's tables instead, and `gazetteers` replaces the layer of single tests with the user's own points or polygons, recorded by size and checksum.
 - payoff: A flag table can be traced to the exact reference data that produced it, years later.
 - evidence: ?reference_info; ?reference_points; vignettes/reference-data.Rmd; vignettes/gazetteers.Rmd; tests/testthat/test-gazetteers.R; dev_notes/reference_data.md; data-raw/aohi.R (AHOI from Dryad, CC0)
+- evidence (sources): data-raw/institutions.R (GRSciColl and Wikidata, CC0); data-raw/habitat.R (IRMNG, CC BY 4.0)
 - limits: GRSciColl licence not yet confirmed (dev_notes/reference_data.md)
 - home: vignettes/reference-data.Rmd
 - also: README, quickstart
+
+### A7 Land and sea by habitat
+- question: My data mixes marine and land taxa; does the sea test flag every whale and every oak alike?
+- answer: Two additions set the land test against the habitat of the record's genus from the Interim Register of Marine and Nonmarine Genera: land genera off the land, marine-only genera on land. Genera the register leaves open are not tested.
+- payoff: One rule can drop trees at sea and starfish inland without dropping seabirds, seals or coastal records.
+- evidence: ?test_habitat; ?reference_habitat; tests/testthat/test-habitat.R; data-raw/habitat.R
+- limits: genus level only; most marine genera have empty freshwater/terrestrial flags in IRMNG and stay untested; coastal records depend on `land_scale` and the buffers; fossils of living marine genera lie on land
+- home: vignettes/tests.Rmd
+- also: DESCRIPTION, README, vignettes/reference-data.Rmd, vignettes/gazetteers.Rmd
 
 ## Non-goals
 - No record is removed by the package.

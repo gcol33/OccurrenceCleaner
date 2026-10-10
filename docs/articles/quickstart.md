@@ -97,6 +97,8 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 | 25 | dataset_rounded | in a dataset whose coordinates lie on a regular grid | cd_round |
 | 26 | range | outside the range polygons of its species | cc_iucn |
 | 27 | aohi | within 10 km of an Artificial Hotspot Occurrence Inventory point | cc_aohi |
+| 28 | sea_nonmarine | outside the land polygons, and the genus does not live in the sea | NA |
+| 29 | land_marine | inside the land polygons, and the genus lives only in the sea | NA |
 
 The tests with an `equivalent` are CoordinateCleaner’s record tests with
 its default buffers, up to the differences listed in the article Coming
@@ -194,7 +196,9 @@ knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 | admin0_10 | Natural Earth | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
+| institutions_wikidata | Wikidata | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | 2022-10-10 | 2026-10-10 |
+| habitat | IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera | 2026-10-06 | 2026-10-10 |
 
 `reference = "CoordinateCleaner"` uses that package’s own tables
 instead, which gives its flags up to the same differences
@@ -226,10 +230,10 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpwP5nqy\flagse4804fad7051
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp84hGvy\flags174b855114174
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
-#>   layout:    v3
-#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)
+#>   layout:    v4
+#>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
                  rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",

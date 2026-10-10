@@ -7,10 +7,13 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often georeferenced
-to the institution. The default gazetteer is the 6,080 institutions with
-coordinates in GBIF's Global Registry of Scientific Collections
-(GRSciColl), less five whose coordinates the \code{zero} test flags: they lie
-near (0, 0) or have a longitude of exactly 0, and are geocoding errors.
+to the institution. The default gazetteer holds 13,515 points: the 6,080
+institutions with coordinates in GBIF's Global Registry of Scientific
+Collections (GRSciColl), less five whose coordinates the \code{zero} test flags
+(they lie near (0, 0) or have a longitude of exactly 0, and are geocoding
+errors), and 7,435 botanical gardens, natural history museums, zoos,
+aquaria and herbaria with coordinates in Wikidata (CC0), retrieved
+2026-10-10. The \code{source} column of \code{\link[=reference_points]{reference_points()}} tells them apart.
 }
 \section{Fields}{
  \code{lon}, \code{lat}.
@@ -23,8 +26,9 @@ near (0, 0) or have a longitude of exactly 0, and are geocoding errors.
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. Its \code{institutions} table
-also holds botanic gardens from BGCI and points from Wikipedia and
-GeoNames, which \code{reference = "CoordinateCleaner"} uses.
+(9,773 points with coordinates) takes botanic gardens from BGCI and
+museums from Wikipedia where this package takes Wikidata;
+\code{reference = "CoordinateCleaner"} uses that table.
 }
 
 \section{Custom gazetteer}{
@@ -55,6 +59,7 @@ Other tests:
 \code{\link{test_establishment}},
 \code{\link{test_gbif_headquarters}},
 \code{\link{test_gbif_issue}},
+\code{\link{test_habitat}},
 \code{\link{test_invalid}},
 \code{\link{test_outlier}},
 \code{\link{test_range}},

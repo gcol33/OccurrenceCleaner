@@ -126,13 +126,13 @@ reference version is recorded with the flags.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ri</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_info.html">reference_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">ri</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"layer"</span>, <span class="st">"source"</span>, <span class="st">"file"</span>, <span class="st">"version"</span>, <span class="st">"retrieved"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="7%">
-<col width="33%">
-<col width="47%">
-<col width="6%">
-<col width="6%">
+<col width="9%">
+<col width="36%">
+<col width="45%">
+<col width="4%">
+<col width="4%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">layer</th>
@@ -206,11 +206,27 @@ reference version is recorded with the flags.</p>
 <td align="left">2026-10-09</td>
 </tr>
 <tr class="even">
+<td align="left">institutions_wikidata</td>
+<td align="left">Wikidata</td>
+<td align="left">wikidata_Q167346.csv, wikidata_Q1970365.csv,
+wikidata_Q43501.csv, wikidata_Q181916.csv, wikidata_Q2281788.csv</td>
+<td align="left">2026-10-10</td>
+<td align="left">2026-10-10</td>
+</tr>
+<tr class="odd">
 <td align="left">aohi</td>
 <td align="left">Park et al. 2023, AHOI (Dryad <a href="doi:10.5061/dryad.v41ns1s0p" class="uri">doi:10.5061/dryad.v41ns1s0p</a>)</td>
 <td align="left">birds_20221010.csv, insects_20221010.csv,
 mammals_20221010.csv, plants_20221010.csv</td>
 <td align="left">2022-10-10</td>
+<td align="left">2026-10-10</td>
+</tr>
+<tr class="even">
+<td align="left">habitat</td>
+<td align="left">IRMNG, Rees, T. (compiler) (2026). The Interim Register
+of Marine and Nonmarine Genera</td>
+<td align="left">IRMNG_genera_DwCA_2026-10-06.zip</td>
+<td align="left">2026-10-06</td>
 <td align="left">2026-10-10</td>
 </tr>
 </tbody>
@@ -219,8 +235,8 @@ mammals_20221010.csv, plants_20221010.csv</td>
 source file and the licence. The tests read these layers:</p>
 <table class="table">
 <colgroup>
-<col width="14%">
-<col width="85%">
+<col width="17%">
+<col width="82%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">test</th>
@@ -239,7 +255,9 @@ points, admin-1 label points</td>
 </tr>
 <tr class="odd">
 <td align="left">institution</td>
-<td align="left">GBIF GRSciColl institutions with coordinates</td>
+<td align="left">GBIF GRSciColl institutions and Wikidata botanical
+gardens, natural history museums, zoos, aquaria and herbaria, with
+coordinates</td>
 </tr>
 <tr class="even">
 <td align="left">gbif_headquarters</td>
@@ -263,6 +281,11 @@ al. 2023), 308 points</td>
 <td align="left">country_mismatch</td>
 <td align="left">Natural Earth admin-0 countries 1:50m</td>
 </tr>
+<tr class="odd">
+<td align="left">sea_nonmarine, land_marine</td>
+<td align="left">the land of sea, and genus habitats from the Interim
+Register of Marine and Nonmarine Genera</td>
+</tr>
 </tbody>
 </table>
 <p>All Natural Earth layers are in the public domain; the Natural Earth
@@ -278,6 +301,24 @@ GRSciColl absorbed the Global Registry of Biodiversity Repositories
 (GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF
 publishes the registry through its open API and states no separate
 licence for it.</p>
+<p>The institutions are completed from Wikidata, released under CC0:
+every item that is a botanical garden, natural history museum, zoo,
+public aquarium or herbarium, or of a subclass of one, and has a
+coordinate location, queried on 2026-10-10. After duplicate items are
+dropped these are 7,435 points (3,319 botanical gardens, 1,391 museums,
+2,618 zoos and aquaria, 107 herbaria), none at zero coordinates. The
+<code>source</code> column of
+<code>reference_points("institution")</code> says which registry each
+point comes from.</p>
+<p>The genus habitats of <code>sea_nonmarine</code> and
+<code>land_marine</code> come from the Interim Register of Marine and
+Nonmarine Genera (IRMNG), Darwin Core archive of 2026-10-06, under CC BY
+4.0; cite it as Rees, T. (compiler) (2026). The Interim Register of
+Marine and Nonmarine Genera. Available from <a href="https://www.irmng.org" class="external-link uri">https://www.irmng.org</a> at
+VLIZ. IRMNG sets marine, brackish, freshwater and terrestrial flags per
+name; the package classes 296,474 genera as not marine and 21,891 as
+only marine, keyed by kingdom, by the rule in
+<code><a href="../reference/reference_habitat.html">?reference_habitat</a></code>.</p>
 <p>The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie,
 Thammavong, Tulaiha and Feng (<a href="https://doi.org/10.1111/jbi.14543" class="external-link">2023</a>) lists the coordinates
 that recur most often in GBIF records of plants, birds, insects and
@@ -332,8 +373,8 @@ Natural Earth 5.1.1)</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">6,080 (GRSciColl, without the five at zero
-coordinates)</td>
+<td align="left">13,515 (6,080 GRSciColl, without the five at zero
+coordinates, and 7,435 Wikidata)</td>
 </tr>
 </tbody>
 </table>
@@ -356,11 +397,13 @@ centroids are exactly the Natural Earth admin-1 label points of an older
 release: all 4,549 codes that still exist match at distance 0. The
 package uses the 5.1.1 release, in which 96 of CoordinateCleaner’s codes
 no longer exist.</p></li>
-<li><p><strong>Institutions.</strong> The package uses GRSciColl only.
-CoordinateCleaner’s table also has 712 botanic gardens from Botanic
-Gardens Conservation International, 627 points from Wikipedia and 3 from
-GeoNames, which are not rebuilt here. GRSciColl has added institutions
-since CoordinateCleaner’s table was compiled.</p></li>
+<li><p><strong>Institutions.</strong> CoordinateCleaner takes 712
+botanic gardens from Botanic Gardens Conservation International, 627
+points from Wikipedia and 3 from GeoNames; the package takes botanical
+gardens, natural history museums, zoos, aquaria and herbaria from
+Wikidata instead, 3,319 botanical gardens among them. GRSciColl has also
+added institutions since CoordinateCleaner’s table was
+compiled.</p></li>
 </ul>
 <p>The capital difference shows directly in the flags. Records at a few
 alternative or official capitals, under both references:</p>
@@ -13598,9 +13641,9 @@ the version of each layer:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)"</span></span>
+<span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed
 CoordinateCleaner version instead. For streamed input the same label is
 written to the output directory, and a rerun into that directory with a
@@ -13614,7 +13657,7 @@ references.</p>
 <ul>
 <li><p><code>reference = "natural_earth"</code> (the default) needs no
 other package, has a version and checksum for every layer, and uses
-current Natural Earth and GRSciColl data.</p></li>
+current Natural Earth, GRSciColl and Wikidata data.</p></li>
 <li><p><code>reference = "CoordinateCleaner"</code> gives
 CoordinateCleaner’s flags up to the differences listed in the article
 Coming from CoordinateCleaner, for example to compare with a published

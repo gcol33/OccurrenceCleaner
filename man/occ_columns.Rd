@@ -15,6 +15,8 @@ occ_columns(
   min_age = "min_ma",
   max_age = "max_ma",
   dataset = "datasetKey",
+  genus = "genus",
+  kingdom = "kingdom",
   id = "gbifID"
 )
 }
@@ -39,6 +41,13 @@ million years, as the Paleobiology Database's \code{min_ma} and \code{max_ma}.}
 
 \item{dataset}{Dataset the record belongs to, for the dataset-level tests
 (\code{datasetKey} in GBIF data).}
+
+\item{genus}{Genus of the record, for the habitat tests \code{sea_nonmarine} and
+\code{land_marine}. The first word is taken, so a binomial species column
+(\code{occ_columns(genus = "species")}) works as well as a genus column.}
+
+\item{kingdom}{Kingdom of the record, read by the habitat tests when the
+column is present, to tell apart genus names used in two kingdoms.}
 
 \item{id}{Record identifier, copied into on-disk flag output when present.}
 }

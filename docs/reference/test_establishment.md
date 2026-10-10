@@ -33,6 +33,7 @@ Other tests:
 [`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
 [`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
 [`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
+[`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md),
 [`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
 [`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
 [`test_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),

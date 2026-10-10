@@ -152,9 +152,9 @@
 ## Quantities
 
 ### test-count
-- metric: tests in the layout: 28 (11 coordinate record tests, `range`, `aohi`, `outlier`, 2 dataset tests, 4 fossil tests, 8 GBIF field tests); 20 ported from CoordinateCleaner; layout_version 3
+- metric: tests in the layout: 30 (11 coordinate record tests, `range`, `aohi`, `outlier`, 2 dataset tests, 4 fossil tests, 8 GBIF field tests, 2 habitat tests); 20 ported from CoordinateCleaner; layout_version 4
 - source: `flag_tests()`
-- stated-at: NEWS.md; @p:tests.opener (eleven and eight here, nine elsewhere); @p:gbif.flag ("nineteen tests in the first bits")
+- stated-at: NEWS.md; @p:tests.opener (eleven, eight and two here, nine elsewhere); @p:gbif.flag ("nineteen tests in the first bits")
 - note: README and DESCRIPTION give no count
 
 ### aohi-points
@@ -206,6 +206,21 @@
 - stated-at: @p:ref.layers; @p:ref.vs-cc; ?test_institution
 - stated-at: @p:rules.per-test; @p:rules.compare
 
+### institutions-wikidata
+- metric: 7,435 Wikidata points (3,319 BotanicalGarden, 1,391 Museum, 2,618 ZooAquarium, 107 Herbarium) from 8,341 rows; 13,515 institution points shipped in all
+- source: data-raw/institutions.R, queried 2026-10-10; dev_notes/reference_data.md
+- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution
+
+### habitat-genera
+- metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine
+- source: data-raw/habitat.R on the IRMNG archive of 2026-10-06; dev_notes/reference_data.md
+- stated-at: @p:ref.layers
+
+### habitat-source
+- metric: IRMNG Darwin Core archive 2026-10-06, CC BY 4.0, citation "Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera. Available from https://www.irmng.org at VLIZ."
+- source: eml.xml of the archive; data-raw/habitat.R
+- stated-at: ?reference_habitat; ?test_habitat; @p:ref.layers; vignettes/tests.Rmd (References); README (gazetteer sources); DESCRIPTION; NEWS.md
+
 ### buffer-band
 - metric: share of a buffer radius inside CoordinateCleaner's inscribed polygon (99.9 % at 72 vertices, 99.7 % at 40)
 - source: r cos(pi/n), @p:cc.buffer-circles
@@ -225,10 +240,10 @@
 - stated-at: @p:out.outlier; @p:out.methods; @p:out.large; @p:out.guidance; @p:fossil.outliers
 
 ### range-aohi-buffers
-- argument: flag_occurrences(buffers): range 0 m, aohi 10 km
-- home: ?test_range, ?test_aohi
-- stated-at: @p:readme.tests (aohi 10 km); @p:out.aohi; @p:gaz.ranges (100 km example)
-- note: `@param buffers` in ?flag_occurrences names only capital, centroid, institution, gbif_headquarters and zero
+- argument: flag_occurrences(buffers): range 0 m, aohi 10 km, sea_nonmarine 0 m, land_marine 0 m
+- home: ?test_range, ?test_aohi, ?test_habitat
+- stated-at: @p:readme.tests (aohi 10 km); @p:out.aohi; @p:gaz.ranges (100 km example); @p:tests.habitat (named, no value)
+- note: `@param buffers` in ?flag_occurrences names all of them with their defaults
 
 ### land-scale
 - argument: flag_occurrences(land_scale = 110)

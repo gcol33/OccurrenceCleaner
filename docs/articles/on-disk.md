@@ -91,7 +91,7 @@ m <- read_flagged(out)
 str(m[c("tests", "layout_version", "reference", "keep", "n", "units", "package_version")])
 #> List of 7
 #>  $ tests          : chr [1:9] "invalid" "zero" "equal" "capital" ...
-#>  $ layout_version : int 3
+#>  $ layout_version : int 4
 #>  $ reference      : chr "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, plac"| __truncated__
 #>  $ keep           : chr [1:2] "kingdom" "year"
 #>  $ n              : num 9000

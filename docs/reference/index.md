@@ -57,6 +57,8 @@
   : Test: outside the species range
 - [`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
   : Test: artificial hotspots
+- [`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
+  : Tests: habitat at sea and on land
 
 ## Rules and tallies
 
@@ -96,6 +98,8 @@
   : Reference data: sources and versions
 - [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
   : Reference points of a proximity test
+- [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
+  : Genus habitats of the habitat tests
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
   : Download the 1:10m land layer
 

@@ -24,7 +24,9 @@ published on a grid.
 
 It also reads three fields GBIF fills for each record: the quality
 warnings GBIF attaches during processing, the basis of record and the
-establishment means.
+establishment means. Two more tests set the land test against the
+habitat of the record’s genus, to find land genera at sea and marine
+genera on land.
 
 Records are flagged and kept, and users choose afterwards which flags to
 filter on.
@@ -189,9 +191,9 @@ already finished.
   the CoordinateCleaner-equivalent tests that need only coordinates and
   a species name.
 - **[`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)**:
-  which columns hold which field (coordinates, species, country code,
-  fossil ages, dataset key, GBIF fields); Darwin Core defaults,
-  case-insensitive.
+  which columns hold which field (coordinates, species, genus and
+  kingdom, country code, fossil ages, dataset key, GBIF fields); Darwin
+  Core defaults, case-insensitive.
 - **[`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)**,
   **[`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)**:
   the pinned gazetteers (source, version, SHA-256) and the on-demand
@@ -200,6 +202,9 @@ already finished.
   the points a proximity test uses (capitals, centroids, institutions,
   GBIF headquarters, artificial hotspots), to inspect, filter or extend
   and pass back through `gazetteers`.
+- **[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)**:
+  the genera the habitat tests know, marine or not, from the Interim
+  Register of Marine and Nonmarine Genera.
 - **[`read_flagged()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**,
   **[`flagged_table()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**:
   open on-disk flag output as a vectra table.
@@ -233,6 +238,8 @@ already finished.
 | `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
+| `sea_nonmarine` | outside the land polygons, genus not marine (IRMNG) | addition |
+| `land_marine` | inside the land polygons, genus only marine (IRMNG) | addition |
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with
 a kd-tree on the unit sphere and decided with the Vincenty inverse
@@ -241,10 +248,11 @@ Natural Earth layers through a grid index that resolves boundary cells
 exactly.
 
 The gazetteers are rebuilt from the original public sources (Natural
-Earth, public domain; GBIF GRSciColl for institutions), each pinned to a
-version and checksum. `reference = "CoordinateCleaner"` reads that
-package’s own tables instead and gives its flags up to the documented
-differences, which
+Earth, public domain; GBIF GRSciColl and Wikidata for institutions; the
+Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus
+habitats), each pinned to a version and checksum.
+`reference = "CoordinateCleaner"` reads that package’s own tables
+instead and gives its flags up to the documented differences, which
 [`?flag_occurrences`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 lists and the test suite enforces. The `gazetteers` argument replaces
 the layer of single tests with the user’s own points or polygons,
@@ -393,6 +401,8 @@ well:
   : Test: outside the species range
 - [`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
   : Test: artificial hotspots
+- [`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
+  : Tests: habitat at sea and on land
 
 ## Rules and tallies
 
@@ -432,6 +442,8 @@ well:
   : Reference data: sources and versions
 - [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
   : Reference points of a proximity test
+- [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
+  : Genus habitats of the habitat tests
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
   : Download the 1:10m land layer
 

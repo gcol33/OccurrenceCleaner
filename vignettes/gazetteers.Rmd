@@ -13,7 +13,7 @@ has_sf <- requireNamespace("sf", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges). The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in CoordinateCleaner's. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with sf, and shows how a custom layer is recorded with the flags.
+Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in CoordinateCleaner's. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with sf, replaces the genus habitats, and shows how a custom layer is recorded with the flags.
 
 ## Installation
 
@@ -40,7 +40,7 @@ inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 ```
 
-The institution table is the GBIF registry of scientific collections (GRSciColl): `type` says what kind of institution each is, and `master_source` where GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry).
+The institution table joins the GBIF registry of scientific collections (GRSciColl) and the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata: `source` says which of the two each point comes from, `type` what kind of institution it is, and `master_source`, for GRSciColl entries, where GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry).
 
 ## A filtered point gazetteer
 
@@ -138,6 +138,21 @@ data.frame(r, outside = flag_occurrences(r, tests = "range", gazetteers = list(r
 
 The toad at 45 E lies in the second of its two polygons and is kept; the one at 20 W lies in the Atlantic, outside both. The lizard at 55 N is 3 degrees north of its range and stays flagged with a 100 km buffer. *Rana arvalis* has no polygon and is not tested.
 
+## A genus habitat table
+
+The habitat tests `sea_nonmarine` and `land_marine` look up the record's genus in `reference_habitat()`, built from the Interim Register of Marine and Nonmarine Genera. A table with a `genus` column, a logical `marine` column (`TRUE` only marine, `FALSE` not marine) and optionally a `kingdom` column replaces it, for example to class a genus the register leaves open:
+
+```{r habitat}
+h <- reference_habitat()
+h[h$genus %in% c("Larus", "Zostera"), ]
+mine <- rbind(h, data.frame(kingdom = "Plantae", genus = "Zostera", marine = TRUE))
+x <- data.frame(kingdom = "Plantae", genus = "Zostera", decimalLongitude = 16.37, decimalLatitude = 48.21)
+flag_occurrences(x, tests = "land_marine")$flag_land_marine
+flag_occurrences(x, tests = "land_marine", gazetteers = list(habitat = mine))$flag_land_marine
+```
+
+The register marks seagrass (*Zostera*) as marine but leaves its freshwater and terrestrial flags empty, so the shipped table does not class it and its records are not tested; classed as only marine, a record of it in Vienna is flagged.
+
 ## Recording the layer
 
 A custom layer is indexed once per call, and its size and an MD5 checksum of its coordinates are written into the reference label of the output:
@@ -155,12 +170,13 @@ The checksum identifies the exact table, so two analyses that report the same la
 knitr::kable(data.frame(
   CoordinateCleaner = c("cc_cap(ref = ...)", "cc_cen(ref = ...)", "cc_inst(ref = ...)",
                         "cc_sea(ref = ...)", "cc_urb(ref = ...)", "cc_coun(ref = ..., ref_col = ...)",
-                        "cc_iucn(range = ...)", "cc_aohi(taxa = ...)"),
+                        "cc_iucn(range = ...)", "cc_aohi(taxa = ...)", "(none)"),
   OccurrenceCleaner = c("gazetteers = list(capital = points)", "gazetteers = list(centroid = points)",
                         "gazetteers = list(institution = points)", "gazetteers = list(sea = polygons)",
                         "gazetteers = list(urban = polygons)", "gazetteers = list(country_mismatch = polygons)",
                         "gazetteers = list(range = polygons)",
-                        "gazetteers = list(aohi = subset of reference_points(\"aohi\"))"),
+                        "gazetteers = list(aohi = subset of reference_points(\"aohi\"))",
+                        "gazetteers = list(habitat = genera)"),
   check.names = FALSE))
 ```
 

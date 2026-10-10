@@ -10,7 +10,7 @@ Version 0.1.0 is the first release, installed from GitHub; the [changelog](https
 
 OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea, in the wrong country or outside the species range; duplicates; records far from the rest of their species; and datasets whose coordinates were converted from degrees and minutes or published on a grid.
 
-It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.
+It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means. Two more tests set the land test against the habitat of the record's genus, to find land genera at sea and marine genera on land.
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
@@ -105,9 +105,10 @@ Rerunning the same call after an interruption skips the input files already fini
 - **`as_spatialvalid()`**: the flags in the layout of CoordinateCleaner's `spatialvalid` object, for code written for it.
 - **`flag_tests()`**: which bit of `flags` holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
-- **`occ_columns()`**: which columns hold which field (coordinates, species, country code, fossil ages, dataset key, GBIF fields); Darwin Core defaults, case-insensitive.
+- **`occ_columns()`**: which columns hold which field (coordinates, species, genus and kingdom, country code, fossil ages, dataset key, GBIF fields); Darwin Core defaults, case-insensitive.
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
 - **`reference_points()`**: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through `gazetteers`.
+- **`reference_habitat()`**: the genera the habitat tests know, marine or not, from the Interim Register of Marine and Nonmarine Genera.
 - **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a vectra table.
 - **`export_pyrate()`**: write fossil records as PyRate input files.
 
@@ -138,10 +139,12 @@ Rerunning the same call after an interruption skips the input files already fini
 | `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
+| `sea_nonmarine` | outside the land polygons, genus not marine (IRMNG) | addition |
+| `land_marine` | inside the land polygons, genus only marine (IRMNG) | addition |
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.
 
-The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces. The `gazetteers` argument replaces the layer of single tests with the user's own points or polygons, recorded with the flags by size and checksum.
+The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl and Wikidata for institutions; the Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus habitats), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces. The `gazetteers` argument replaces the layer of single tests with the user's own points or polygons, recorded with the flags by size and checksum.
 
 ## Documentation
 

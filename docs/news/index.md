@@ -8,8 +8,8 @@ Initial release.
 
 - [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md):
   one verb for a data frame or an on-disk table (Parquet directory,
-  `.vtr`, delimited file, or any `vectra_node`). Twenty-eight tests, one
-  bit each in an integer flag word; nothing is dropped.
+  `.vtr`, delimited file, or any `vectra_node`). Thirty tests, one bit
+  each in an integer flag word; nothing is dropped.
 - Twelve tests reproduce CoordinateCleaner’s record tests with its
   default buffers (`invalid`, `zero`, `equal`, `capital`, `centroid`,
   `institution`, `gbif_headquarters`, `sea`, `urban`,
@@ -35,8 +35,10 @@ Initial release.
   ([`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html));
   eight read GBIF fields (`issue_coordinate`, `issue_taxon`,
   `issue_date`, `issue_rounded`, `basis_fossil`, `basis_living`,
-  `establishment_introduced`, `establishment_managed`). Tests read from
-  a record field carry that field as a prefix.
+  `establishment_introduced`, `establishment_managed`); two set the land
+  test against the habitat of the record’s genus (`sea_nonmarine`,
+  `land_marine`). Tests read from a record field carry that field as a
+  prefix.
 - Proximity tests run as kd-tree candidate searches on the unit sphere
   decided by WGS84 geodesic distance; polygon tests as grid-indexed
   point-in-polygon with exact boundary cells. Both in C++ with no
@@ -80,8 +82,10 @@ Initial release.
 
 - Own gazetteers rebuilt from Natural Earth (capitals, country and
   province centroids, land at 1:110m and 1:50m, urban areas, countries)
-  and GBIF GRSciColl (institutions, without the five entries the `zero`
-  test flags), each pinned by version and SHA-256 in
+  GBIF GRSciColl and Wikidata (institutions: 6,080 GRSciColl entries
+  without the five the `zero` test flags, and 7,435 Wikidata botanical
+  gardens, natural history museums, zoos, aquaria and herbaria), each
+  pinned by version and SHA-256 in
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md);
   the 1:10m land layer is fetched on demand by
   [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).
@@ -108,3 +112,8 @@ Initial release.
 - [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
   returns the points of a proximity test with their attributes, to
   inspect, filter or extend.
+- Genus habitats for `sea_nonmarine` and `land_marine` are built from
+  the Interim Register of Marine and Nonmarine Genera (Darwin Core
+  archive of 2026-10-06, CC BY 4.0) and returned by
+  [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md);
+  `gazetteers = list(habitat = ...)` replaces them.

@@ -43,7 +43,9 @@ knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 | admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
 | institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
+| institutions_wikidata | Wikidata | wikidata_Q167346.csv, wikidata_Q1970365.csv, wikidata_Q43501.csv, wikidata_Q181916.csv, wikidata_Q2281788.csv | 2026-10-10 | 2026-10-10 |
 | aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | birds_20221010.csv, insects_20221010.csv, mammals_20221010.csv, plants_20221010.csv | 2022-10-10 | 2026-10-10 |
+| habitat | IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera | IRMNG_genera_DwCA_2026-10-06.zip | 2026-10-06 | 2026-10-10 |
 
 Each row also holds the download URL, the SHA-256 checksum of the source
 file and the licence. The tests read these layers:
@@ -52,12 +54,13 @@ file and the licence. The tests read these layers:
 |:---|:---|
 | capital | Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories |
 | centroid | Natural Earth admin-0 country centroids and label points, admin-1 label points |
-| institution | GBIF GRSciColl institutions with coordinates |
+| institution | GBIF GRSciColl institutions and Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, with coordinates |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
 | sea | Natural Earth land at 1:110m (default), 1:50m or 1:10m |
 | urban | Natural Earth urban areas 1:50m |
 | country_mismatch | Natural Earth admin-0 countries 1:50m |
+| sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
 
 All Natural Earth layers are in the public domain; the Natural Earth
 terms of use say that “No permission is needed to use Natural Earth.”
@@ -71,6 +74,25 @@ every record at (0, 0) as lying at an institution as well. GRSciColl
 absorbed the Global Registry of Biodiversity Repositories (GRBio) in
 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes
 the registry through its open API and states no separate licence for it.
+
+The institutions are completed from Wikidata, released under CC0: every
+item that is a botanical garden, natural history museum, zoo, public
+aquarium or herbarium, or of a subclass of one, and has a coordinate
+location, queried on 2026-10-10. After duplicate items are dropped these
+are 7,435 points (3,319 botanical gardens, 1,391 museums, 2,618 zoos and
+aquaria, 107 herbaria), none at zero coordinates. The `source` column of
+`reference_points("institution")` says which registry each point comes
+from.
+
+The genus habitats of `sea_nonmarine` and `land_marine` come from the
+Interim Register of Marine and Nonmarine Genera (IRMNG), Darwin Core
+archive of 2026-10-06, under CC BY 4.0; cite it as Rees, T. (compiler)
+(2026). The Interim Register of Marine and Nonmarine Genera. Available
+from <https://www.irmng.org> at VLIZ. IRMNG sets marine, brackish,
+freshwater and terrestrial flags per name; the package classes 296,474
+genera as not marine and 21,891 as only marine, keyed by kingdom, by the
+rule in
+[`?reference_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md).
 
 The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie,
 Thammavong, Tulaiha and Feng ([2023](https://doi.org/10.1111/jbi.14543))
@@ -100,7 +122,7 @@ same tables. Measured on 2026-10-09:
 | capitals | 225 (one per ISO3 code) | 243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals) |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and geo-locate | 516 (polygon centroid and label point per country, Natural Earth 5.1.1) |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,596 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 6,080 (GRSciColl, without the five at zero coordinates) |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 13,515 (6,080 GRSciColl, without the five at zero coordinates, and 7,435 Wikidata) |
 
 - **Capitals.** 212 countries match by ISO3 code. The median distance
   between the two packages’ capital points for the same country is 0.92
@@ -121,11 +143,12 @@ same tables. Measured on 2026-10-09:
   the 5.1.1 release, in which 96 of CoordinateCleaner’s codes no longer
   exist.
 
-- **Institutions.** The package uses GRSciColl only. CoordinateCleaner’s
-  table also has 712 botanic gardens from Botanic Gardens Conservation
-  International, 627 points from Wikipedia and 3 from GeoNames, which
-  are not rebuilt here. GRSciColl has added institutions since
-  CoordinateCleaner’s table was compiled.
+- **Institutions.** CoordinateCleaner takes 712 botanic gardens from
+  Botanic Gardens Conservation International, 627 points from Wikipedia
+  and 3 from GeoNames; the package takes botanical gardens, natural
+  history museums, zoos, aquaria and herbaria from Wikidata instead,
+  3,319 botanical gardens among them. GRSciColl has also added
+  institutions since CoordinateCleaner’s table was compiled.
 
 The capital difference shows directly in the flags. Records at a few
 alternative or official capitals, under both references:
@@ -247,9 +270,9 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)"
+#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 attr(f, "occ_layout_version")
-#> [1] 3
+#> [1] 4
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed CoordinateCleaner
@@ -262,7 +285,7 @@ one output directory never mixes flags from two references.
 
 - `reference = "natural_earth"` (the default) needs no other package,
   has a version and checksum for every layer, and uses current Natural
-  Earth and GRSciColl data.
+  Earth, GRSciColl and Wikidata data.
 
 - `reference = "CoordinateCleaner"` gives CoordinateCleaner’s flags up
   to the differences listed in the article Coming from

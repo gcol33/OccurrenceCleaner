@@ -65,6 +65,7 @@ Other tests:
 \code{\link{test_establishment}},
 \code{\link{test_gbif_headquarters}},
 \code{\link{test_gbif_issue}},
+\code{\link{test_habitat}},
 \code{\link{test_institution}},
 \code{\link{test_invalid}},
 \code{\link{test_outlier}},

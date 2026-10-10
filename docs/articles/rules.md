@@ -127,9 +127,9 @@ summary(f)
 #>   all           invalid 3120       0  0.00    0     0.00
 #>   all              zero 3120      40  1.28    0     0.00
 #>   all             equal 3120      40  1.28    0     0.00
-#>   all           capital 3120     160  5.13  124     3.97
+#>   all           capital 3120     160  5.13  120     3.85
 #>   all          centroid 3120      16  0.51    1     0.03
-#>   all       institution 3120       0  0.00    0     0.00
+#>   all       institution 3120       4  0.13    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
 #>   all               sea 3120     105  3.37   52     1.67
 #>   all         duplicate 3120     130  4.17   92     2.95
@@ -214,13 +214,13 @@ s <- summary(f, rules = rules["cc"], by = "kingdom")
 s[s$test %in% c("capital", "sea", "(any)"), ]
 #> <occ_summary> 3,120 records, grouped by kingdom
 #>   kingdom rule    test    n flagged  pct only pct_only
-#>  Animalia   cc capital 1546      85 5.50   80     5.17
+#>  Animalia   cc capital 1546      85 5.50   77     4.98
 #>  Animalia   cc     sea 1546      53 3.43   33     2.13
 #>  Animalia   cc   (any) 1546     138 8.93              
 #>     Fungi   cc capital  312      15 4.81   12     3.85
 #>     Fungi   cc     sea  312      10 3.21    6     1.92
 #>     Fungi   cc   (any)  312      25 8.01              
-#>   Plantae   cc capital 1262      60 4.75   53     4.20
+#>   Plantae   cc capital 1262      60 4.75   52     4.12
 #>   Plantae   cc     sea 1262      42 3.33   26     2.06
 #>   Plantae   cc   (any) 1262     103 8.16
 ```

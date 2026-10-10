@@ -138,12 +138,15 @@ land, and for <code>country_mismatch</code> the features need at least one code
 column (<code>iso_a2</code>, <code>iso_a3</code>, <code>adm0_a3</code> or <code>code</code>, any case). Each layer is
 indexed once per call, and its size and MD5 checksum are recorded in the
 reference label of the output. <code>range</code> takes species range polygons (see
-<a href="test_range.html">test_range</a>) and <code>sampling</code> a table of records per country for the
-sampling correction of <a href="test_outlier.html">test_outlier</a>.</p></dd>
+<a href="test_range.html">test_range</a>), <code>sampling</code> a table of records per country for the
+sampling correction of <a href="test_outlier.html">test_outlier</a>, and <code>habitat</code> a table of genus
+habitats for <a href="test_habitat.html">test_habitat</a> (see <code><a href="reference_habitat.html">reference_habitat()</a></code>). The land layer
+given for <code>sea</code> is also the land of the habitat tests.</p></dd>
 
 
 <dt id="arg-land-scale">land_scale<a class="anchor" aria-label="anchor" href="#arg-land-scale"></a></dt>
-<dd><p>Natural Earth scale of the land layer for <code>sea</code>: 110
+<dd><p>Natural Earth scale of the land layer for <code>sea</code> and the
+habitat tests: 110
 (the default of CoordinateCleaner's <code>cc_sea()</code>; its <code>clean_coordinates()</code>
 uses <code>seas_scale = 50</code>), 50, or 10 (downloaded on first use, see
 <code><a href="download_reference.html">download_reference()</a></code>).</p></dd>
@@ -152,8 +155,9 @@ uses <code>seas_scale = 50</code>), 50, or 10 (downloaded on first use, see
 <dt id="arg-buffers">buffers<a class="anchor" aria-label="anchor" href="#arg-buffers"></a></dt>
 <dd><p>Named list overriding buffer distances in metres for
 <code>capital</code> (10000), <code>centroid</code> (1000), <code>institution</code> (100),
-<code>gbif_headquarters</code> (1000), <code>range</code> (0) and <code>aohi</code> (10000), or in degrees
-for <code>zero</code> (0.5). Unnamed entries keep the defaults.</p></dd>
+<code>gbif_headquarters</code> (1000), <code>range</code> (0), <code>aohi</code> (10000),
+<code>sea_nonmarine</code> (0) and <code>land_marine</code> (0), or in degrees for <code>zero</code>
+(0.5). Unnamed entries keep the defaults.</p></dd>
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>

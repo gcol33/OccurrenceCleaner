@@ -3,15 +3,17 @@
 Nine tests compare records with reference data: five with points
 (capitals, centroids, institutions, the GBIF headquarters, artificial
 hotspots) and four with polygons (land, urban areas, countries, species
-ranges). The package ships its own pinned layers for all but the species
-ranges, which only a user can supply, and
+ranges); the two habitat tests read the land together with a table of
+genus habitats. The package ships its own pinned layers for all but the
+species ranges, which only a user can supply, and
 `reference = "CoordinateCleaner"` swaps in CoordinateCleaner’s. The
 `gazetteers` argument of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 replaces the layer of single tests with a user’s own, as the `ref`
 arguments of CoordinateCleaner’s `cc_*()` functions do. This article
 filters and extends the shipped point tables, builds polygon layers with
-sf, and shows how a custom layer is recorded with the flags.
+sf, replaces the genus habitats, and shows how a custom layer is
+recorded with the flags.
 
 ## Installation
 
@@ -59,16 +61,18 @@ table(caps$class)
 inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
-#>              Herbarium                 Museum      UniversityCollege 
-#>                   2982                    682                    284 
-#> OtherInstitutionalType            ZooAquarium        BotanicalGarden 
-#>                    152                    122                     87
+#>        BotanicalGarden              Herbarium            ZooAquarium 
+#>                   3406                   3089                   2740 
+#>                 Museum      UniversityCollege OtherInstitutionalType 
+#>                   2073                    284                    152
 ```
 
-The institution table is the GBIF registry of scientific collections
-(GRSciColl): `type` says what kind of institution each is, and
-`master_source` where GBIF took the entry from (Index Herbariorum,
-GRSciColl itself, or the GBIF registry).
+The institution table joins the GBIF registry of scientific collections
+(GRSciColl) and the botanical gardens, natural history museums, zoos,
+aquaria and herbaria of Wikidata: `source` says which of the two each
+point comes from, `type` what kind of institution it is, and
+`master_source`, for GRSciColl entries, where GBIF took the entry from
+(Index Herbariorum, GRSciColl itself, or the GBIF registry).
 
 ## A filtered point gazetteer
 
@@ -83,7 +87,7 @@ use a wider buffer for them:
 
 herbaria <- inst[inst$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 2982
+#> [1] 3089
 near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -92,20 +96,13 @@ f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution 
                            gazetteers = list(institution = herbaria))
 data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
-#>                                                         near      type  all
-#> 1                              Andorra Research + Innovation Herbarium TRUE
-#> 2                                             UAE University Herbarium TRUE
-#> 3                                           Kabul University Herbarium TRUE
-#> 4                         Museu Nacional de História Natural    Museum TRUE
-#> 5 Museo Argentino de Ciencias Naturales Bernardino Rivadavia    Museum TRUE
-#> 6                              Burgenländisches Landesmuseum    Museum TRUE
-#>   herbaria_only
-#> 1          TRUE
-#> 2          TRUE
-#> 3          TRUE
-#> 4         FALSE
-#> 5         FALSE
-#> 6         FALSE
+#>                                      near      type  all herbaria_only
+#> 1           Andorra Research + Innovation Herbarium TRUE          TRUE
+#> 2                          UAE University Herbarium TRUE          TRUE
+#> 3                        Kabul University Herbarium TRUE          TRUE
+#> 4                                    <NA>    Museum TRUE         FALSE
+#> 5        Natural History Museum Abu Dhabi    Museum TRUE         FALSE
+#> 6 Natural Sciences Museum Sabiha Kasimati    Museum TRUE         FALSE
 ```
 
 Each record lies about 0.005 degrees (a few hundred metres) east of an
@@ -251,6 +248,35 @@ one at 20 W lies in the Atlantic, outside both. The lizard at 55 N is 3
 degrees north of its range and stays flagged with a 100 km buffer. *Rana
 arvalis* has no polygon and is not tested.
 
+## A genus habitat table
+
+The habitat tests `sea_nonmarine` and `land_marine` look up the record’s
+genus in
+[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md),
+built from the Interim Register of Marine and Nonmarine Genera. A table
+with a `genus` column, a logical `marine` column (`TRUE` only marine,
+`FALSE` not marine) and optionally a `kingdom` column replaces it, for
+example to class a genus the register leaves open:
+
+``` r
+
+h <- reference_habitat()
+h[h$genus %in% c("Larus", "Zostera"), ]
+#> [1] kingdom genus   marine 
+#> <0 rows> (or 0-length row.names)
+mine <- rbind(h, data.frame(kingdom = "Plantae", genus = "Zostera", marine = TRUE))
+x <- data.frame(kingdom = "Plantae", genus = "Zostera", decimalLongitude = 16.37, decimalLatitude = 48.21)
+flag_occurrences(x, tests = "land_marine")$flag_land_marine
+#> [1] FALSE
+flag_occurrences(x, tests = "land_marine", gazetteers = list(habitat = mine))$flag_land_marine
+#> [1] TRUE
+```
+
+The register marks seagrass (*Zostera*) as marine but leaves its
+freshwater and terrestrial flags empty, so the shipped table does not
+class it and its records are not tested; classed as only marine, a
+record of it in Vienna is flagged.
+
 ## Recording the layer
 
 A custom layer is indexed once per call, and its size and an MD5
@@ -261,7 +287,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10); custom: institution 2982 points md5 21d3c14ee080c1b70e2e32115aece93d"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3089 points md5 40221db6c243b6b9a8b637f8f4e3ae79"
 ```
 
 The checksum identifies the exact table, so two analyses that report the
@@ -282,6 +308,7 @@ two gazetteers.
 | cc_coun(ref = …, ref_col = …) | gazetteers = list(country_mismatch = polygons) |
 | cc_iucn(range = …) | gazetteers = list(range = polygons) |
 | cc_aohi(taxa = …) | gazetteers = list(aohi = subset of reference_points(“aohi”)) |
+| (none) | gazetteers = list(habitat = genera) |
 
 CoordinateCleaner’s point references need its own column names
 (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude

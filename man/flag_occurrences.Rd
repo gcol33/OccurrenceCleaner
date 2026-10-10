@@ -45,18 +45,22 @@ land, and for \code{country_mismatch} the features need at least one code
 column (\code{iso_a2}, \code{iso_a3}, \code{adm0_a3} or \code{code}, any case). Each layer is
 indexed once per call, and its size and MD5 checksum are recorded in the
 reference label of the output. \code{range} takes species range polygons (see
-\link{test_range}) and \code{sampling} a table of records per country for the
-sampling correction of \link{test_outlier}.}
+\link{test_range}), \code{sampling} a table of records per country for the
+sampling correction of \link{test_outlier}, and \code{habitat} a table of genus
+habitats for \link{test_habitat} (see \code{\link[=reference_habitat]{reference_habitat()}}). The land layer
+given for \code{sea} is also the land of the habitat tests.}
 
-\item{land_scale}{Natural Earth scale of the land layer for \code{sea}: 110
+\item{land_scale}{Natural Earth scale of the land layer for \code{sea} and the
+habitat tests: 110
 (the default of CoordinateCleaner's \code{cc_sea()}; its \code{clean_coordinates()}
 uses \code{seas_scale = 50}), 50, or 10 (downloaded on first use, see
 \code{\link[=download_reference]{download_reference()}}).}
 
 \item{buffers}{Named list overriding buffer distances in metres for
 \code{capital} (10000), \code{centroid} (1000), \code{institution} (100),
-\code{gbif_headquarters} (1000), \code{range} (0) and \code{aohi} (10000), or in degrees
-for \code{zero} (0.5). Unnamed entries keep the defaults.}
+\code{gbif_headquarters} (1000), \code{range} (0), \code{aohi} (10000),
+\code{sea_nonmarine} (0) and \code{land_marine} (0), or in degrees for \code{zero}
+(0.5). Unnamed entries keep the defaults.}
 
 \item{settings}{Named list overriding the options of the grouped tests,
 one entry per test, each a named list; unnamed options keep their

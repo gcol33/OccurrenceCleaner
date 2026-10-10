@@ -73,16 +73,20 @@
 #'   column (`iso_a2`, `iso_a3`, `adm0_a3` or `code`, any case). Each layer is
 #'   indexed once per call, and its size and MD5 checksum are recorded in the
 #'   reference label of the output. `range` takes species range polygons (see
-#'   [test_range]) and `sampling` a table of records per country for the
-#'   sampling correction of [test_outlier].
-#' @param land_scale Natural Earth scale of the land layer for `sea`: 110
+#'   [test_range]), `sampling` a table of records per country for the
+#'   sampling correction of [test_outlier], and `habitat` a table of genus
+#'   habitats for [test_habitat] (see [reference_habitat()]). The land layer
+#'   given for `sea` is also the land of the habitat tests.
+#' @param land_scale Natural Earth scale of the land layer for `sea` and the
+#'   habitat tests: 110
 #'   (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()`
 #'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see
 #'   [download_reference()]).
 #' @param buffers Named list overriding buffer distances in metres for
 #'   `capital` (10000), `centroid` (1000), `institution` (100),
-#'   `gbif_headquarters` (1000), `range` (0) and `aohi` (10000), or in degrees
-#'   for `zero` (0.5). Unnamed entries keep the defaults.
+#'   `gbif_headquarters` (1000), `range` (0), `aohi` (10000),
+#'   `sea_nonmarine` (0) and `land_marine` (0), or in degrees for `zero`
+#'   (0.5). Unnamed entries keep the defaults.
 #' @param settings Named list overriding the options of the grouped tests,
 #'   one entry per test, each a named list; unnamed options keep their
 #'   defaults, which are CoordinateCleaner's. See [test_outlier],
@@ -143,7 +147,8 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
 }
 
 .default_buffers <- list(capital = 10000, centroid = 1000, institution = 100,
-                         gbif_headquarters = 1000, zero = 0.5, range = 0, aohi = 10000)
+                         gbif_headquarters = 1000, zero = 0.5, range = 0, aohi = 10000,
+                         sea_nonmarine = 0, land_marine = 0)
 
 check_buffers <- function(buffers) {
   b <- .default_buffers
@@ -188,7 +193,7 @@ flag_chunk <- function(d, cfg, cols) {
   }
   spatial <- intersect(tests, c("invalid", "zero", "equal", "capital", "centroid", "institution",
                                 "gbif_headquarters", "sea", "urban", "country_mismatch",
-                                "duplicate", "range", "aohi"))
+                                "duplicate", "range", "aohi", .habitat_tests))
   if (length(spatial)) {
     lon <- to_numeric(d[[cols$lon]])
     lat <- to_numeric(d[[cols$lat]])
@@ -206,9 +211,23 @@ flag_chunk <- function(d, cfg, cols) {
       idx <- cfg$custom[[t]] %||% point_index(t, cfg$reference)
       set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]]))
     }
-    if ("sea" %in% tests) {
-      p <- cfg$custom$sea %||% polygon_index("sea", cfg$reference, cfg$land_scale)
-      set_bit("sea", ok & cpp_polygon_locate(p$index, lon_ok, lat_ok) == 0L)
+    if (any(c("sea", .habitat_tests) %in% tests)) {
+      land <- cfg$custom$sea %||% polygon_index("sea", cfg$reference, cfg$land_scale)
+      on_land <- cpp_polygon_locate(land$index, lon_ok, lat_ok) > 0L
+      if ("sea" %in% tests) set_bit("sea", ok & !on_land)
+    }
+    if (any(.habitat_tests %in% tests)) {
+      marine <- habitat_of(cfg$custom$habitat %||% habitat_index(), d[[cols$genus]],
+                           if (!is.null(cols$kingdom)) d[[cols$kingdom]])
+      off_coast <- function(hit, buffer) {
+        if (buffer > 0 && any(hit))
+          hit[hit] <- !cpp_polygon_near(land$index, lon_ok[hit], lat_ok[hit], buffer)
+        hit
+      }
+      if ("sea_nonmarine" %in% tests)
+        set_bit("sea_nonmarine", off_coast(ok & !on_land & marine %in% FALSE, cfg$buffers$sea_nonmarine))
+      if ("land_marine" %in% tests)
+        set_bit("land_marine", off_coast(ok & on_land & marine %in% TRUE, cfg$buffers$land_marine))
     }
     if ("urban" %in% tests) {
       p <- cfg$custom$urban %||% polygon_index("urban", cfg$reference, cfg$land_scale)

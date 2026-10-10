@@ -14,7 +14,9 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     or gridded coordinates, with the same tests and defaults as
     'CoordinateCleaner'. It also reads
     the quality warnings GBIF attaches to each record, the basis of record and
-    the establishment means. Records are flagged and kept, and users choose
+    the establishment means, and checks records at sea or on land against the
+    habitat of their genus from the Interim Register of Marine and Nonmarine
+    Genera. Records are flagged and kept, and users choose
     afterwards which flags to filter on. Data frames of a few million records
     are flagged in seconds, and GBIF snapshots of billions of records are
     processed by reading Parquet files in chunks.

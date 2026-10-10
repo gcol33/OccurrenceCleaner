@@ -25,16 +25,16 @@ flag_tests <- function() {
   x
 }
 
-.layout_version <- 3L
+.layout_version <- 4L
 
 .flag_layout <- data.frame(
-  bit = 0:27,
+  bit = 0:29,
   test = c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters",
            "sea", "urban", "country_mismatch", "duplicate",
            "issue_coordinate", "issue_taxon", "issue_date", "issue_rounded",
            "basis_fossil", "basis_living", "establishment_introduced", "establishment_managed",
            "age_equal", "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
-           "dataset_ddmm", "dataset_rounded", "range", "aohi"),
+           "dataset_ddmm", "dataset_rounded", "range", "aohi", "sea_nonmarine", "land_marine"),
   definition = c(
     "coordinate missing, not numeric or outside [-180, 180] x [-90, 90]",
     "longitude or latitude exactly zero, or within 0.5 degrees of (0, 0)",
@@ -63,18 +63,23 @@ flag_tests <- function() {
     "in a dataset with a degree-minute to decimal conversion error",
     "in a dataset whose coordinates lie on a regular grid",
     "outside the range polygons of its species",
-    "within 10 km of an Artificial Hotspot Occurrence Inventory point"),
-  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8), rep("CoordinateCleaner", 9)),
+    "within 10 km of an Artificial Hotspot Occurrence Inventory point",
+    "outside the land polygons, and the genus does not live in the sea",
+    "inside the land polygons, and the genus lives only in the sea"),
+  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8), rep("CoordinateCleaner", 9),
+             rep("OccurrenceCleaner", 2)),
   equivalent = c("cc_val", "cc_zero", "cc_equ", "cc_cap", "cc_cen", "cc_inst", "cc_gbif", "cc_sea",
                  "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8), "cf_equal",
-                 "cc_outl", "cf_age", "cf_outl", "cf_range", "cd_ddmm", "cd_round", "cc_iucn", "cc_aohi"),
+                 "cc_outl", "cf_age", "cf_outl", "cf_range", "cd_ddmm", "cd_round", "cc_iucn", "cc_aohi",
+                 NA, NA),
   spatialvalid = c(".val", ".zer", ".equ", ".cap", ".cen", ".inst", ".gbf", ".sea", ".urb", ".con",
                    ".dpl", rep(NA_character_, 8), ".aeq", ".otl", NA, ".spt", ".trg", NA, NA,
-                   ".rang", ".aohi"),
+                   ".rang", ".aohi", NA, NA),
   needs = c(rep("lon,lat", 9), "lon,lat,country", "lon,lat,species", rep("issue", 4), "basis",
             "basis", "establishment", "establishment", "min_age,max_age",
             "lon,lat,species", "min_age,max_age,species", "lon,lat,min_age,max_age,species",
-            "min_age,max_age,species", "lon,lat,dataset", "lon,lat,dataset", "lon,lat,species", "lon,lat"),
+            "min_age,max_age,species", "lon,lat,dataset", "lon,lat,dataset", "lon,lat,species", "lon,lat",
+            "lon,lat,genus", "lon,lat,genus"),
   stringsAsFactors = FALSE
 )
 

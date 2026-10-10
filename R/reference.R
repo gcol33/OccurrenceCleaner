@@ -92,7 +92,8 @@ sha256_file <- function(path) {
 #'   own gazetteers, the attributes of each point: `name`, `country`,
 #'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
 #'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
-#'   `type`, `active`, `master_source` for institutions (GRSciColl); `id`,
+#'   `type`, `active`, `master_source`, `source` for institutions (`source`
+#'   is GRSciColl or Wikidata, `key` the GRSciColl key or Wikidata item); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
 #'   Plantae), `frequency` (records at the point), `category`,
 #'   `determination` (TRUE for a real observation site, FALSE for an
@@ -235,7 +236,7 @@ prepare_gazetteers <- function(gazetteers, columns = occ_columns()) {
   if (!is.list(gazetteers) || inherits(gazetteers, c("data.frame", "sf", "sfc")) ||
       is.null(names(gazetteers)) || any(!nzchar(names(gazetteers))))
     stop("`gazetteers` must be a named list of reference layers, one per test")
-  bad <- setdiff(names(gazetteers), c(.point_tests, .polygon_tests, "sampling"))
+  bad <- setdiff(names(gazetteers), c(.point_tests, .polygon_tests, "sampling", "habitat"))
   if (length(bad)) stop("`gazetteers` has no reference layer for test(s): ", paste(bad, collapse = ", "))
   index <- list()
   label <- character()
@@ -244,6 +245,10 @@ prepare_gazetteers <- function(gazetteers, columns = occ_columns()) {
     if (t == "sampling") {
       index$sampling <- gazetteer_sampling(g)
       label <- c(label, sprintf("sampling %d countries md5 %s", nrow(index$sampling), checksum(index$sampling)))
+    } else if (t == "habitat") {
+      h <- gazetteer_habitat(g)
+      index$habitat <- habitat_lookup(h)
+      label <- c(label, sprintf("habitat %d genera md5 %s", nrow(h), checksum(h)))
     } else if (t %in% .point_tests) {
       p <- gazetteer_points(g, t)
       index[[t]] <- cpp_point_index(p$lon, p$lat)
@@ -393,6 +398,6 @@ reference_label_base <- function(reference, land_scale) {
     paste0("CoordinateCleaner ",
            if (requireNamespace("CoordinateCleaner", quietly = TRUE))
              as.character(utils::packageVersion("CoordinateCleaner")) else "(not installed)",
-           " (land ", land_scale, ")")
+           " (land ", land_scale, "; habitat ", ref_meta$version[ref_meta$layer == "habitat"], ")")
   }
 }

@@ -14,10 +14,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Lists the problems the tests catch, including outliers and converted or gridded datasets, and says they use CoordinateCleaner's tests and defaults.
 - leaves: what is flagged and that the definitions are CoordinateCleaner's
 
-### desc.gbif  [A4]
-- idea: GBIF fields
-- job: Adds the tests that read GBIF's own quality fields.
-- leaves: issue warnings, basis of record and establishment means are tests too
+### desc.gbif  [A4 A7]
+- idea: GBIF fields; habitat at sea and on land
+- job: Adds the tests that read GBIF's own quality fields and the genus-habitat check of land and sea.
+- leaves: issue warnings, basis of record and establishment means are tests too; records at sea or on land are checked against the genus habitat (IRMNG)
 
 ### desc.flags  [A3]
 - idea: flagged and kept
@@ -36,10 +36,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Names the package as an extension of CoordinateCleaner for large-scale data and lists the problems it flags, from coordinates at centroids to outliers and converted datasets.
 - leaves: the parent, the purpose and the list of problems
 
-### readme.gbif  [A4]
-- idea: GBIF fields
-- job: Adds the three GBIF fields the package reads.
-- leaves: issue warnings, basis of record, establishment means; details in the test table
+### readme.gbif  [A4 A7]
+- idea: GBIF fields; habitat tests
+- job: Adds the three GBIF fields the package reads and the two habitat tests.
+- leaves: issue warnings, basis of record, establishment means; land genera at sea and marine genera on land; details in the test table
 
 ### readme.flags  [A3]
 - idea: flagged and kept
@@ -96,12 +96,12 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.box  (list)
 - idea: exported functions
 - job: Lists each exported function by what it does.
-- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields, `reference_points()` for custom gazetteers and AHOI, `export_pyrate()` and `as_spatialvalid()`
+- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields (genus and kingdom among them), `reference_points()` for custom gazetteers and AHOI, `reference_habitat()`, `export_pyrate()` and `as_spatialvalid()`
 
-### readme.tests  [A1 A4 A6]  (table)
+### readme.tests  [A1 A4 A6 A7]  (table)
 - idea: tests, definitions, sources
 - job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
-- leaves: the test names and their origin: twenty from CoordinateCleaner, including range, hotspot, outlier, dataset and four fossil tests
+- leaves: the test names and their origin: twenty from CoordinateCleaner, including range, hotspot, outlier, dataset and four fossil tests; ten additions, two of them the habitat tests
 
 ### readme.method  [A1]
 - idea: how tests are computed
@@ -111,7 +111,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.reference  [A1 A5]
 - idea: pinned gazetteers; CC tables
 - job: Says where the gazetteers come from and that CoordinateCleaner's tables give its flags up to the documented differences.
-- leaves: own gazetteers are pinned; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
+- leaves: own gazetteers are pinned, from Natural Earth, GRSciColl and Wikidata, and IRMNG for genus habitats; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
 
 ### readme.docs  (section)
 - idea: routing
@@ -278,8 +278,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ## The tests in detail (explanation, A4 home)
 
-### tests.opener  [A1 A4]
-- idea: twenty tests; twelve from CC; fossil test in its own article; per-test help
+### tests.opener  [A1 A4 A7]
+- idea: eleven CC record tests, ten additions (eight GBIF fields, two habitat); the rest elsewhere; per-test help
 - job: Says what the article covers per test and which tests come from CoordinateCleaner.
 - leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
 
@@ -309,6 +309,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: land polygons at three scales
 - job: Defines `sea` and shows that the land scale decides coastal records.
 - leaves: `land_scale`, which CoordinateCleaner default each scale matches
+
+### tests.habitat  [A7]  (section)
+- idea: sea vs genus habitat; IRMNG; homonyms; coast and fossils
+- job: Defines `sea_nonmarine` and `land_marine`, where the habitats come from and which genera stay untested, and shows the three tests side by side.
+- leaves: `reference_habitat()`; `genus` and `kingdom` columns; the land and buffers of the habitat tests; `basis_fossil` for marine fossils
 
 ### tests.urban  [A1]  (section)
 - idea: urban polygons; not a default
@@ -509,11 +514,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### ref.layers  [A5]  (section)
 - idea: sources, versions, licences
 - job: Lists each layer with source and version, which test reads it, and the licences.
-- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; nothing copied from CoordinateCleaner
+- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner
 
 ### ref.vs-cc  [A1 A5]  (section)
 - idea: same places, different tables
-- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer, and shows the capital difference in flags.
+- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: Wikidata in place of BGCI, Wikipedia and GeoNames), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.land-scale  [A1 A5]  (section)
@@ -534,7 +539,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### ref.choose  [A1 A5]  (section)
 - idea: which reference to use
 - job: Says when to use each reference.
-- leaves: own gazetteers by default; CoordinateCleaner's to compare with published work
+- leaves: own gazetteers (Natural Earth, GRSciColl, Wikidata) by default; CoordinateCleaner's to compare with published work
 
 ## Outliers and dataset tests (how-to, A6 home)
 
@@ -646,8 +651,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ## Using custom gazetteers (how-to, A5)
 
-### gaz.opener  [A5]
-- idea: seven reference tests; replace one layer
+### gaz.opener  [A5 A7]
+- idea: nine reference tests and the habitat tests; replace one layer
 - job: Says which tests use reference data and that `gazetteers` replaces the layer of single tests, as CoordinateCleaner's `ref` arguments do.
 - leaves: what the article covers
 
@@ -656,7 +661,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### gaz.points  [A5]  (section)
 - idea: reference_points returns a test's points
 - job: Shows the shipped capital and institution points with their attributes.
-- leaves: `reference_points()`; institution `type` and `master_source`
+- leaves: `reference_points()`; institution `source` (GRSciColl or Wikidata), `type` and `master_source`
 
 ### gaz.filtered  [A5]  (section)
 - idea: herbaria only, wider buffer
@@ -678,6 +683,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Builds range polygons for two species and shows records inside, outside and with a buffer.
 - leaves: the species column, per-species indices, species without a polygon untested
 
+### gaz.habitat  [A5 A7]  (section)
+- idea: replace the genus habitat table
+- job: Shows the shipped habitat table and a user table that classes a genus the register leaves open.
+- leaves: `gazetteers = list(habitat = ...)` with `genus`, `marine`, optional `kingdom`
+
 ### gaz.record  [A5]  (section)
 - idea: size and MD5 in the reference label
 - job: Shows that a custom layer is recorded with the flags and protects streamed output.
@@ -686,4 +696,4 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### gaz.vs-cc  [A1 A5]  (section)
 - idea: ref arguments mapped; same flags with same layers
 - job: Maps CoordinateCleaner's `ref` arguments to `gazetteers` entries and states the tested equivalence.
-- leaves: column names found by any common spelling; every code column matched
+- leaves: column names found by any common spelling; every code column matched; the habitat table has no CoordinateCleaner counterpart

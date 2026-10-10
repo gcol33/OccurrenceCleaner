@@ -113,17 +113,21 @@ NULL
 #' Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 #' distance, closed ball): herbaria, museums, botanic gardens, zoos and
 #' universities holding collections, where specimens are often georeferenced
-#' to the institution. The default gazetteer is the 6,080 institutions with
-#' coordinates in GBIF's Global Registry of Scientific Collections
-#' (GRSciColl), less five whose coordinates the `zero` test flags: they lie
-#' near (0, 0) or have a longitude of exactly 0, and are geocoding errors.
+#' to the institution. The default gazetteer holds 13,515 points: the 6,080
+#' institutions with coordinates in GBIF's Global Registry of Scientific
+#' Collections (GRSciColl), less five whose coordinates the `zero` test flags
+#' (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding
+#' errors), and 7,435 botanical gardens, natural history museums, zoos,
+#' aquaria and herbaria with coordinates in Wikidata (CC0), retrieved
+#' 2026-10-10. The `source` column of [reference_points()] tells them apart.
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section Buffer: `buffers = list(institution = 100)`, in metres.
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. Its `institutions` table
-#'   also holds botanic gardens from BGCI and points from Wikipedia and
-#'   GeoNames, which `reference = "CoordinateCleaner"` uses.
+#'   (9,773 points with coordinates) takes botanic gardens from BGCI and
+#'   museums from Wikipedia where this package takes Wikidata;
+#'   `reference = "CoordinateCleaner"` uses that table.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
@@ -613,4 +617,50 @@ NULL
 #' x <- data.frame(decimalLongitude = a$lon[1] + 0.01, decimalLatitude = a$lat[1])
 #' flag_occurrences(x, tests = "aohi")$flag_aohi
 #' @name test_aohi
+NULL
+
+#' Tests: habitat at sea and on land
+#'
+#' Two tests set the land test against the habitat of the record's genus:
+#' * `sea_nonmarine` flags records outside the land polygons whose genus does
+#'   not live in the sea (a tree or a toad in open water);
+#' * `land_marine` flags records inside the land polygons whose genus lives
+#'   only in the sea (a starfish or a coral inland).
+#'
+#' The genus habitats come from the Interim Register of Marine and Nonmarine
+#' Genera (IRMNG; Rees, T. (compiler) (2026). The Interim Register of Marine
+#' and Nonmarine Genera. Available from https://www.irmng.org at VLIZ; CC BY
+#' 4.0), see [reference_habitat()] for how a genus is classed. Records of a
+#' genus IRMNG does not class (missing flags, or both habitats, as for gulls,
+#' seals, salmon or mangroves) are not tested. The genus is the first word of
+#' the `genus` field, so a binomial species column works too; a `kingdom`
+#' column, when present, resolves genus names used in two kingdoms. The land
+#' is the layer of `sea`: `land_scale`, or `gazetteers$sea`.
+#'
+#' A coarse coast puts coastal records on the wrong side: at the default
+#' `land_scale = 110` the coastline is generalised by kilometres. The buffers
+#' leave records within that distance of the coast untested.
+#'
+#' Marine fossils of a living marine genus lie on land too; combine with
+#' `basis_fossil` in a rule to keep them.
+#'
+#' @section Fields: `lon`, `lat`, `genus`; `kingdom` when present.
+#' @section Buffer: `buffers = list(sea_nonmarine = 0, land_marine = 0)`, in
+#'   metres from the land polygon edge.
+#' @section Custom gazetteer: `gazetteers = list(habitat = <data frame>)` with
+#'   columns `genus`, `marine` (logical: `TRUE` only marine, `FALSE` not
+#'   marine) and optionally `kingdom`; `gazetteers = list(sea = <sf>)` replaces
+#'   the land.
+#' @section CoordinateCleaner: Not in CoordinateCleaner, whose `cc_sea()`
+#'   flags every record off the land, marine or not.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()], [reference_habitat()], [test_sea]
+#' @examples
+#' x <- data.frame(kingdom = c("Plantae", "Animalia", "Animalia", "Plantae"),
+#'                 genus = c("Quercus", "Asterias", "Asterias", "Quercus"),
+#'                 decimalLongitude = c(-30, 16.37, -30, 16.37),
+#'                 decimalLatitude = c(40, 48.21, 40, 48.21))
+#' f <- flag_occurrences(x, tests = c("sea", "sea_nonmarine", "land_marine"))
+#' f[, c("genus", "flag_sea", "flag_sea_nonmarine", "flag_land_marine")]
+#' @name test_habitat
 NULL
