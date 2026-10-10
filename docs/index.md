@@ -30,6 +30,17 @@ species columns: a GBIF download (for example from rgbif), a whole GBIF
 snapshot, or another aggregator’s export. Taxonomic name cleaning is not
 part of the package.
 
+Records usually come from
+[rgbif](https://cran.r-project.org/package=rgbif) (GBIF) or
+[paleobioDB](https://cran.r-project.org/package=paleobioDB) (the
+Paleobiology Database), with names matched beforehand, for example with
+[taxize](https://cran.r-project.org/package=taxize). The kept records go
+on to species distribution models such as
+[dismo](https://cran.r-project.org/package=dismo) or
+[sdm](https://cran.r-project.org/package=sdm), or, for fossils, to
+PyRate through
+[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md).
+
 The tests are reimplemented with CoordinateCleaner’s definitions,
 default buffers and settings, and CoordinateCleaner itself is needed
 only to compare: the test suite runs it on sampled records and checks

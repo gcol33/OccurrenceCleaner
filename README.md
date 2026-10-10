@@ -14,6 +14,8 @@ Records are flagged and kept, and users choose afterwards which flags to filter 
 
 The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package.
 
+Records usually come from [rgbif](https://cran.r-project.org/package=rgbif) (GBIF) or [paleobioDB](https://cran.r-project.org/package=paleobioDB) (the Paleobiology Database), with names matched beforehand, for example with [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), or, for fossils, to PyRate through `export_pyrate()`.
+
 The tests are reimplemented with CoordinateCleaner's definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
 Data frames containing a few million records are flagged in seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
