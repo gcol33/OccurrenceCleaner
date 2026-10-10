@@ -49,16 +49,18 @@ m <- data.frame(
 knitr::kable(m)
 ```
 
-Every test is chosen by name through the `tests` argument of the one verb, `flag_occurrences()`, so there are no `cc_*` functions in this package; with both attached, CoordinateCleaner's functions keep their names.
+OccurrenceCleaner has one flagging function, `flag_occurrences()`, and its `tests` argument chooses which tests run. It has no `cc_*` functions, so attaching both packages hides none of CoordinateCleaner's.
 
-The test names of `clean_coordinates()` are plural ("capitals"), the names here singular ("capital"); `clean_fossils()` calls the age test "agesequal", here `age_equal`:
+CoordinateCleaner's `clean_coordinates()` and `clean_fossils()` also choose tests by name, but the names differ:
 
 ```{r test-names, echo = FALSE}
 knitr::kable(data.frame(
   CoordinateCleaner = c("capitals", "centroids", "countries", "duplicates", "equal",
-                        "gbif", "institutions", "seas", "urban", "zeros"),
+                        "gbif", "institutions", "seas", "urban", "zeros",
+                        "agesequal (`clean_fossils()`)"),
   OccurrenceCleaner = c("capital", "centroid", "country_mismatch", "duplicate", "equal",
-                        "gbif_headquarters", "institution", "sea", "urban", "zero")))
+                        "gbif_headquarters", "institution", "sea", "urban", "zero",
+                        "age_equal")))
 ```
 
 The check for missing or out-of-range coordinates has no name in `clean_coordinates()`. It always runs first, and if any coordinate fails it, `clean_coordinates()` stops and returns that result alone. Here it is the `invalid` test, and the other tests still run on the records that pass it.

@@ -10,7 +10,7 @@
 
 ### test-names
 - detail: the `tests` argument of `clean_coordinates()` takes plural names ("capitals", "centroids", "countries", "duplicates", "institutions", "seas", "zeros") and "gbif"; that of `flag_occurrences()` takes singular names, "country_mismatch" and "gbif_headquarters"; the coordinate validity check has no test name in `clean_coordinates()` and stops the run (@p:cc.validity)
-- avoid: `fn(tests = )` as a name for an argument in reader-facing text; write "the `tests` argument of `fn()`"
+- avoid: `fn(tests = )` as a name for an argument in reader-facing text; write "the `tests` argument of `fn()`"; "the names here" (name the package); joining the fossil name to the coordinate names with a semicolon (it is a table row)
 - home: @p:cc.test-names
 
 ### value-default

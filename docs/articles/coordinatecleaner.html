@@ -216,14 +216,13 @@ package, not a dependency.</p>
 </tr>
 </tbody>
 </table>
-<p>Every test is chosen by name through the <code>tests</code> argument
-of the one verb, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, so there are no
-<code>cc_*</code> functions in this package; with both attached,
-CoordinateCleaner’s functions keep their names.</p>
-<p>The test names of <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> are plural
-(“capitals”), the names here singular (“capital”);
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code> calls the age test “agesequal”, here
-<code>age_equal</code>:</p>
+<p>OccurrenceCleaner has one flagging function,
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, and its <code>tests</code> argument
+chooses which tests run. It has no <code>cc_*</code> functions, so
+attaching both packages hides none of CoordinateCleaner’s.</p>
+<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> and
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code> also choose tests by name, but the names
+differ:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -269,6 +268,10 @@ CoordinateCleaner’s functions keep their names.</p>
 <tr class="even">
 <td align="left">zeros</td>
 <td align="left">zero</td>
+</tr>
+<tr class="odd">
+<td align="left">agesequal (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>)</td>
+<td align="left">age_equal</td>
 </tr>
 </tbody>
 </table>

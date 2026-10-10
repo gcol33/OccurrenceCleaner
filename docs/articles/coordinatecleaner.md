@@ -50,30 +50,30 @@ library(OccurrenceCleaner)
 | value = “clean” | x\[!has_flag(x\$flags, rule), \] |
 | value = “flagged” / “spatialvalid” | the flag\_ columns |
 
-Every test is chosen by name through the `tests` argument of the one
-verb,
+OccurrenceCleaner has one flagging function,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
-so there are no `cc_*` functions in this package; with both attached,
-CoordinateCleaner’s functions keep their names.
+and its `tests` argument chooses which tests run. It has no `cc_*`
+functions, so attaching both packages hides none of CoordinateCleaner’s.
 
-The test names of
+CoordinateCleaner’s
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-are plural (“capitals”), the names here singular (“capital”);
+and
 [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)
-calls the age test “agesequal”, here `age_equal`:
+also choose tests by name, but the names differ:
 
 | CoordinateCleaner | OccurrenceCleaner |
-|:------------------|:------------------|
-| capitals          | capital           |
-| centroids         | centroid          |
-| countries         | country_mismatch  |
-| duplicates        | duplicate         |
-| equal             | equal             |
-| gbif              | gbif_headquarters |
-| institutions      | institution       |
-| seas              | sea               |
-| urban             | urban             |
-| zeros             | zero              |
+|:---|:---|
+| capitals | capital |
+| centroids | centroid |
+| countries | country_mismatch |
+| duplicates | duplicate |
+| equal | equal |
+| gbif | gbif_headquarters |
+| institutions | institution |
+| seas | sea |
+| urban | urban |
+| zeros | zero |
+| agesequal ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | age_equal |
 
 The check for missing or out-of-range coordinates has no name in
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
