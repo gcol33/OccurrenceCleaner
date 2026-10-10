@@ -523,8 +523,9 @@ headquarters edge, 0.31 m of the 100 m institution edge.</p>
 buffer around (0, 0). In version 3.0.1 the buffer point is created
 without a coordinate reference system, terra assumes longitude and
 latitude, and <code>terra::buffer(width = 0.5)</code> then buffers 0.5
-<strong>metres</strong>. Only records with a longitude or latitude of
-exactly zero are flagged:</p>
+<strong>metres</strong> (<a href="https://github.com/ropensci/CoordinateCleaner/issues/114" class="external-link">CoordinateCleaner
+issue 114</a>). Only records with a longitude or latitude of exactly
+zero are flagged:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span>, <span class="fl">0.001</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">0.3</span>, <span class="fl">0.001</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>

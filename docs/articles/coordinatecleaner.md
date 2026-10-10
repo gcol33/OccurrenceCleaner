@@ -231,8 +231,9 @@ CoordinateCleaner’s
 documents a 0.5-degree buffer around (0, 0). In version 3.0.1 the buffer
 point is created without a coordinate reference system, terra assumes
 longitude and latitude, and `terra::buffer(width = 0.5)` then buffers
-0.5 **metres**. Only records with a longitude or latitude of exactly
-zero are flagged:
+0.5 **metres** ([CoordinateCleaner issue
+114](https://github.com/ropensci/CoordinateCleaner/issues/114)). Only
+records with a longitude or latitude of exactly zero are flagged:
 
 ``` r
 

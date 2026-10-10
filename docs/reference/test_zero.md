@@ -17,7 +17,9 @@ only.
 Equivalent to `cc_zero()`. CoordinateCleaner 3.0.1 documents the same
 0.5 degree buffer, but builds the buffer point without a CRS, so terra
 buffers 0.5 metres and only exact zeros are flagged.
-`buffers = list(zero = 0)` reproduces that behaviour.
+`buffers = list(zero = 0)` reproduces that behaviour. Reported as
+[CoordinateCleaner issue
+114](https://github.com/ropensci/CoordinateCleaner/issues/114).
 
 ## See also
 

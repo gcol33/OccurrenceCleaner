@@ -226,7 +226,7 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpAvZEr8\flags1d25c36d1fa1
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpwP5nqy\flagse4804fad7051
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v3
 #>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, aohi 2022-10-10)
