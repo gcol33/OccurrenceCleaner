@@ -37,8 +37,10 @@ Paleobiology Database), with names matched beforehand, for example with
 [taxize](https://cran.r-project.org/package=taxize). The kept records go
 on to species distribution models such as
 [dismo](https://cran.r-project.org/package=dismo) or
-[sdm](https://cran.r-project.org/package=sdm), or, for fossils, to
-PyRate through
+[sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses
+on phylogenies with
+[phytools](https://cran.r-project.org/package=phytools), or, for
+fossils, to PyRate through
 [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md).
 
 The tests are reimplemented with CoordinateCleaner’s definitions,
