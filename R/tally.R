@@ -19,15 +19,16 @@
 #' @param tests Tests to count individually. Default: those recorded with the
 #'   flags, or every test with a set bit.
 #' @return A data frame with the `by` columns, `n` (records), `n_valid`
-#'   (records without the `val` flag, when `val` was run), one column
+#'   (records without the `invalid` flag, when `invalid` was run), one column
 #'   `flagged_<test>` per test, and per rule `removed_<rule>` and `kept_<rule>`.
 #'   The attribute `occ_rules` holds the rules.
 #' @examples
 #' x <- data.frame(species = c("a", "a", "b", "c"), kingdom = c("P", "P", "A", "A"),
 #'                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
 #'                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-#' f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-#' tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "gbif", "cap"), mild = "zero"))
+#' f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+#' tally_flags(f, by = "kingdom",
+#'             rules = list(strict = c("zero", "gbif_headquarters", "capital"), mild = "zero"))
 #' @export
 tally_flags <- function(x, by = NULL, rules = NULL, bins = NULL, tests = NULL) {
   if (is.data.frame(x)) {
@@ -101,7 +102,7 @@ tally_chunk <- function(d, by, rules, bins, tests) {
   f <- as.integer(d$flags)
   g <- if (length(keys)) interaction(keys, drop = TRUE, lex.order = TRUE) else factor(rep("all", length(f)))
   counts <- list(n = tabulate(g, nbins = nlevels(g)))
-  if ("val" %in% tests) counts$n_valid <- tabulate(g[!has_flag(f, "val")], nbins = nlevels(g))
+  if ("invalid" %in% tests) counts$n_valid <- tabulate(g[!has_flag(f, "invalid")], nbins = nlevels(g))
   for (t in tests) counts[[paste0("flagged_", t)]] <- tabulate(g[has_flag(f, t)], nbins = nlevels(g))
   for (r in names(rules)) {
     rem <- has_flag(f, rules[[r]])

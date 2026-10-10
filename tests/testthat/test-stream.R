@@ -13,7 +13,7 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   vectra::write_vtr(d1, file.path(src, "a.vtr"))
   vectra::write_vtr(d2, file.path(src, "b.vtr"))
   out <- tempfile("out")
-  tests <- c("val", "zero", "gbif", "cap", "sea", "dupl")
+  tests <- c("invalid", "zero", "gbif_headquarters", "capital", "sea", "duplicate")
   res <- flag_occurrences(src, tests = tests, out = out, keep = c("kingdom", "year"), part_rows = 100, verbose = FALSE)
   expect_s3_class(res, "occ_flagged")
   expect_identical(res$n, 550)
@@ -35,10 +35,10 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_identical(res2$parts, res$parts)
   expect_message(flag_occurrences(src, tests = tests, out = out, keep = c("kingdom", "year"), part_rows = 100), "skipped")
   # different tests into the same directory is refused
-  expect_error(flag_occurrences(src, tests = "val", out = out, verbose = FALSE), "different tests")
+  expect_error(flag_occurrences(src, tests = "invalid", out = out, verbose = FALSE), "different tests")
 
   # tally on disk equals tally in memory
-  rules <- list(strict = c("zero", "gbif", "cap", "sea"))
+  rules <- list(strict = c("zero", "gbif_headquarters", "capital", "sea"))
   t_disk <- tally_flags(out, by = "kingdom", rules = rules, bins = list(year = c(1950, 2000)))
   t_mem <- tally_flags(want, by = "kingdom", rules = rules, bins = list(year = c(1950, 2000)))
   expect_equal(t_disk, t_mem, ignore_attr = TRUE)
@@ -61,7 +61,7 @@ test_that("a slice of the GBIF snapshot streams through tbl_parquet", {
   skip_if_not(dir.exists(snap), "GBIF snapshot not available")
   parts <- head(sort(list.files(snap, full.names = TRUE)), 3)
   out <- tempfile("gbif")
-  res <- flag_occurrences(parts, tests = c(default_tests(), "coun", "rounded", "fossil"), out = out,
+  res <- flag_occurrences(parts, tests = c(default_tests(), "country_mismatch", "issue_rounded", "basis_fossil"), out = out,
                           keep = c("kingdom", "year", "coordinateuncertaintyinmeters"), verbose = FALSE)
   expect_gt(res$n, 0)
   got <- vectra::collect(flagged_table(res))
@@ -72,6 +72,6 @@ test_that("a slice of the GBIF snapshot streams through tbl_parquet", {
   want <- flag_occurrences(d, tests = res$tests)
   expect_identical(got$flags[seq_len(nrow(d))], want$flags)
   t <- tally_flags(res, by = "kingdom", bins = list(coordinateuncertaintyinmeters = c(10, 100, 1000)),
-                   rules = list(cc = c("zero", "equ", "cap", "cen", "inst", "gbif", "sea")))
+                   rules = list(cc = c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea")))
   expect_identical(sum(t$n), as.integer(res$n))
 })

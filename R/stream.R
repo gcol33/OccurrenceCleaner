@@ -78,7 +78,8 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
   }
   meta <- list(out = normalizePath(out), tests = cfg$tests, layout_version = cfg$layout_version,
                reference = cfg$reference_label, columns = unclass(cfg$columns), keep = keep,
-               buffers = cfg$buffers, dupl_by = cfg$dupl_by, dupl_cell = cfg$dupl_cell,
+               buffers = cfg$buffers, duplicate_by = cfg$duplicate_by,
+               duplicate_cell = cfg$duplicate_cell,
                n = total, parts = parts, units = vapply(units, `[[`, "", "name"),
                package_version = as.character(utils::packageVersion("OccurrenceCleaner")),
                finished = Sys.time())

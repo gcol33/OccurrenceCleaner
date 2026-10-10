@@ -3,7 +3,7 @@
 # mismatch must be one of the documented differences (see ?flag_occurrences):
 #
 #  * proximity tests: CoordinateCleaner buffers are inscribed polygons (72
-#    vertices for cap/cen/gbif, 40 for inst), so it may miss records between
+#    vertices for capital/centroid/gbif_headquarters, 40 for institution), so it may miss records between
 #    r*cos(pi/n) and r from the reference point; it never flags more.
 #  * zero: CoordinateCleaner 3.0.1 applies 0.5 m instead of 0.5 degrees.
 
@@ -41,39 +41,39 @@ check_proximity <- function(test, fn, r, sides, n = 3000, seed = 1, ...) {
   c(n = nrow(x), flagged_cc = sum(theirs), flagged_ours = sum(ours), band = length(extra))
 }
 
-test_that("cap matches cc_cap up to the 72-gon band", {
-  s <- check_proximity("cap", CoordinateCleaner::cc_cap, 10000, 72)
+test_that("capital matches cc_cap up to the 72-gon band", {
+  s <- check_proximity("capital", CoordinateCleaner::cc_cap, 10000, 72)
   expect_gt(s[["flagged_cc"]], 0)
 })
 
-test_that("cen matches cc_cen up to the 72-gon band", {
-  s <- check_proximity("cen", CoordinateCleaner::cc_cen, 1000, 72)
+test_that("centroid matches cc_cen up to the 72-gon band", {
+  s <- check_proximity("centroid", CoordinateCleaner::cc_cen, 1000, 72)
   expect_gt(s[["flagged_cc"]], 0)
 })
 
-test_that("inst matches cc_inst up to the 40-gon band", {
-  s <- check_proximity("inst", CoordinateCleaner::cc_inst, 100, 40)
+test_that("institution matches cc_inst up to the 40-gon band", {
+  s <- check_proximity("institution", CoordinateCleaner::cc_inst, 100, 40)
   expect_gt(s[["flagged_cc"]], 0)
 })
 
-test_that("gbif matches cc_gbif up to the 72-gon band", {
-  s <- check_proximity("gbif", CoordinateCleaner::cc_gbif, 1000, 72, n = 400)
+test_that("gbif_headquarters matches cc_gbif up to the 72-gon band", {
+  s <- check_proximity("gbif_headquarters", CoordinateCleaner::cc_gbif, 1000, 72, n = 400)
   expect_gt(s[["flagged_cc"]], 0)
 })
 
-test_that("val, equ and dupl match exactly", {
+test_that("invalid, equal and duplicate match exactly", {
   set.seed(4)
   n <- 2000
   x <- data.frame(species = sample(c("a", "b"), n, TRUE),
                   decimalLongitude = c(runif(n - 6, -200, 200), NA, 0, 10, -10, 180, 5),
                   decimalLatitude = c(runif(n - 6, -100, 100), 1, 0, 10, 10, -90, 5))
   x[sample(n, 200), c("decimalLongitude", "decimalLatitude", "species")] <- x[sample(n, 200), c("decimalLongitude", "decimalLatitude", "species")]
-  f <- flag_occurrences(x, tests = c("val", "equ", "dupl"))
-  expect_identical(f$flag_val, cc(CoordinateCleaner::cc_val, x))
-  ok <- !f$flag_val
-  expect_identical(f$flag_equ[ok], cc(CoordinateCleaner::cc_equ, x[ok, ]))
-  expect_identical(f$flag_dupl[ok], cc(CoordinateCleaner::cc_dupl, x[ok, ]))
-  expect_identical(flag_occurrences(x[ok, ], tests = "dupl", dupl_by = "species")$flag_dupl,
+  f <- flag_occurrences(x, tests = c("invalid", "equal", "duplicate"))
+  expect_identical(f$flag_invalid, cc(CoordinateCleaner::cc_val, x))
+  ok <- !f$flag_invalid
+  expect_identical(f$flag_equal[ok], cc(CoordinateCleaner::cc_equ, x[ok, ]))
+  expect_identical(f$flag_duplicate[ok], cc(CoordinateCleaner::cc_dupl, x[ok, ]))
+  expect_identical(flag_occurrences(x[ok, ], tests = "duplicate", duplicate_by = "species")$flag_duplicate,
                    cc(CoordinateCleaner::cc_dupl, x[ok, ], additions = "species"))
 })
 
@@ -89,7 +89,7 @@ test_that("zero matches cc_zero outside the 0.5 degree disc", {
   expect_true(all(f$flag_zero[theirs]))
 })
 
-test_that("sea, urb and coun match CoordinateCleaner on its Natural Earth layers", {
+test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natural Earth layers", {
   skip_if_not_installed("rnaturalearth")
   skip_if_offline()
   set.seed(7)
@@ -102,22 +102,22 @@ test_that("sea, urb and coun match CoordinateCleaner on its Natural Earth layers
   x <- rbind(x, data.frame(species = "a", decimalLongitude = near[, 1], decimalLatitude = near[, 2]))
   x$countrycode <- sample(c("FRA", "DEU", "BRA", "USA", NA), nrow(x), TRUE)
 
-  f <- flag_occurrences(x, tests = c("sea", "urb"), reference = "CoordinateCleaner")
+  f <- flag_occurrences(x, tests = c("sea", "urban"), reference = "CoordinateCleaner")
   sea <- cc(CoordinateCleaner::cc_sea, x)
   expect_identical(f$flag_sea, sea)
-  urb <- cc(CoordinateCleaner::cc_urb, x)
-  expect_identical(f$flag_urb, urb)
+  urban <- cc(CoordinateCleaner::cc_urb, x)
+  expect_identical(f$flag_urban, urban)
 
-  f <- flag_occurrences(x, tests = "coun", reference = "CoordinateCleaner", columns = occ_columns(country = "countrycode"))
-  coun <- cc(CoordinateCleaner::cc_coun, x, iso3 = "countrycode")
-  expect_identical(f$flag_coun, coun)
+  f <- flag_occurrences(x, tests = "country_mismatch", reference = "CoordinateCleaner", columns = occ_columns(country = "countrycode"))
+  mismatch <- cc(CoordinateCleaner::cc_coun, x, iso3 = "countrycode")
+  expect_identical(f$flag_country_mismatch, mismatch)
 })
 
 test_that("own gazetteers flag the same records as CoordinateCleaner's at the same points", {
   # Not an equivalence claim (the gazetteers differ, see dev_notes); a smoke
   # check that the default reference runs and flags capitals and GBIF HQ.
   x <- data.frame(species = "a", decimalLongitude = c(2.3522, 12.58, 16.3738), decimalLatitude = c(48.8566, 55.67, 48.2082))
-  f <- flag_occurrences(x, tests = c("cap", "gbif"))
-  expect_identical(f$flag_cap, c(TRUE, TRUE, TRUE))
-  expect_identical(f$flag_gbif, c(FALSE, TRUE, FALSE))
+  f <- flag_occurrences(x, tests = c("capital", "gbif_headquarters"))
+  expect_identical(f$flag_capital, c(TRUE, TRUE, TRUE))
+  expect_identical(f$flag_gbif_headquarters, c(FALSE, TRUE, FALSE))
 })

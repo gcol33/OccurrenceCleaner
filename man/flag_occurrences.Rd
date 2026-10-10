@@ -11,8 +11,8 @@ flag_occurrences(
   reference = c("natural_earth", "CoordinateCleaner"),
   land_scale = 110,
   buffers = NULL,
-  dupl_by = NULL,
-  dupl_cell = NULL,
+  duplicate_by = NULL,
+  duplicate_cell = NULL,
   out = NULL,
   keep = NULL,
   part_rows = 2e+06,
@@ -36,15 +36,16 @@ flag_occurrences(
 (CoordinateCleaner's default), 50, or 10 (downloaded on first use, see
 \code{\link[=download_reference]{download_reference()}}).}
 
-\item{buffers}{Named list overriding buffer distances in metres for \code{cap},
-\code{cen}, \code{inst}, \code{gbif}, or in degrees for \code{zero}. Unnamed entries keep the
-defaults.}
+\item{buffers}{Named list overriding buffer distances in metres for
+\code{capital}, \code{centroid}, \code{institution}, \code{gbif_headquarters}, or in degrees
+for \code{zero}. Unnamed entries keep the defaults.}
 
-\item{dupl_by}{Additional column names a duplicate must share (as
+\item{duplicate_by}{Additional column names a duplicate must share (as
 CoordinateCleaner's \code{additions}), for example an event date.}
 
-\item{dupl_cell}{Cell size in degrees. When given, coordinates are binned to
-this grid before comparing duplicates, so "same cell and species" counts.}
+\item{duplicate_cell}{Cell size in degrees. When given, coordinates are
+binned to this grid before comparing duplicates, so "same cell and
+species" counts.}
 
 \item{out}{Output directory for streamed input (required then, ignored for a
 data frame).}
@@ -86,26 +87,28 @@ input, see Value.
 \section{Tests}{
 
 See \code{\link[=flag_tests]{flag_tests()}} for the layout. Tests equivalent to CoordinateCleaner use
-its default buffers: \code{cap} 10 km, \code{cen} 1 km, \code{inst} 100 m, \code{gbif} 1 km,
-\code{zero} 0.5 degrees. Proximity tests are closed balls in WGS84 geodesic
-distance. Records failing \code{val} are given no spatial flag.
+its default buffers: \code{capital} 10 km, \code{centroid} 1 km, \code{institution} 100 m,
+\code{gbif_headquarters} 1 km, \code{zero} 0.5 degrees. Proximity tests are closed
+balls in WGS84 geodesic distance. Records failing \code{invalid} are given no
+spatial flag.
 
 Documented differences to CoordinateCleaner 3.0.1, each verified in the
 package tests:
 \itemize{
 \item CoordinateCleaner approximates each buffer circle by an inscribed polygon
-(72 vertices for \code{cap}, \code{cen}, \code{gbif}; 40 for \code{inst}), so a record between
-99.9 \% (\code{cap}, \code{cen}, \code{gbif}) or 99.7 \% (\code{inst}) of the buffer and the
+(72 vertices for \code{capital}, \code{centroid}, \code{gbif_headquarters}; 40 for
+\code{institution}), so a record between 99.9 \% (\code{capital}, \code{centroid},
+\code{gbif_headquarters}) or 99.7 \% (\code{institution}) of the buffer and the
 buffer itself is flagged here and may not be there. Everything
 CoordinateCleaner flags is flagged here.
 \item \code{cc_zero}'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.
-\item \code{coun} compares the record's code with both the alpha-2 and alpha-3 codes
-of the Natural Earth country polygon the point falls in; CoordinateCleaner
-compares alpha-3 only. Records without a code, or at sea, are flagged as in
+\item \code{country_mismatch} compares the record's code with both the alpha-2 and
+alpha-3 codes of the Natural Earth country polygon the point falls in;
+CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
 CoordinateCleaner.
-\item \code{dupl} on streamed input is evaluated within each input file (Parquet
+\item \code{duplicate} on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.
 \item With the default reference the gazetteers are rebuilt from the original
 sources; \code{reference = "CoordinateCleaner"} uses that package's own tables.
@@ -116,6 +119,6 @@ sources; \code{reference = "CoordinateCleaner"} uses that package's own tables.
 x <- data.frame(species = c("a", "a", "b", "c"),
                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-f[, c("species", "flags", "flag_zero", "flag_gbif", "flag_cap")]
+f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+f[, c("species", "flags", "flag_zero", "flag_gbif_headquarters", "flag_capital")]
 }

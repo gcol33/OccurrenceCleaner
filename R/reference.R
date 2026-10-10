@@ -79,24 +79,24 @@ sha256_file <- function(path) {
 point_gazetteer <- function(test, reference) {
   if (reference == "natural_earth") {
     return(switch(test,
-      cap = ref_capitals[, c("lon", "lat")],
-      cen = ref_centroids[, c("lon", "lat")],
-      inst = ref_institutions[, c("lon", "lat")],
-      gbif = data.frame(lon = 12.58, lat = 55.67)))
+      capital = ref_capitals[, c("lon", "lat")],
+      centroid = ref_centroids[, c("lon", "lat")],
+      institution = ref_institutions[, c("lon", "lat")],
+      gbif_headquarters = data.frame(lon = 12.58, lat = 55.67)))
   }
-  if (test == "gbif") return(data.frame(lon = 12.58, lat = 55.67))
+  if (test == "gbif_headquarters") return(data.frame(lon = 12.58, lat = 55.67))
   need_coordinatecleaner()
   cr <- get_cc_data("countryref")
   switch(test,
-    cap = {
+    capital = {
       d <- unique(cr[!is.na(cr$capital.lon) & !is.na(cr$capital.lat), c("capital.lon", "capital.lat")])
       data.frame(lon = d$capital.lon, lat = d$capital.lat)
     },
-    cen = {
+    centroid = {
       d <- cr[!is.na(cr$centroid.lon) & !is.na(cr$centroid.lat), ]
       data.frame(lon = d$centroid.lon, lat = d$centroid.lat)
     },
-    inst = {
+    institution = {
       d <- get_cc_data("institutions")
       d <- d[!is.na(d$decimalLongitude) & !is.na(d$decimalLatitude), ]
       data.frame(lon = d$decimalLongitude, lat = d$decimalLatitude)
@@ -120,18 +120,18 @@ polygon_layer <- function(test, reference, land_scale) {
       sea = switch(as.character(land_scale),
         "110" = ref_land_110, "50" = ref_land_50,
         "10" = readRDS(download_reference("land_10"))),
-      urb = ref_urban_50,
-      coun = ref_countries_50))
+      urban = ref_urban_50,
+      country_mismatch = ref_countries_50))
   }
   if (!requireNamespace("rnaturalearth", quietly = TRUE))
     stop("reference = \"CoordinateCleaner\" needs the rnaturalearth package for polygon layers")
   sf <- switch(test,
     sea = rnaturalearth::ne_download(scale = land_scale, type = "land", category = "physical",
                                     returnclass = "sf", load = TRUE),
-    urb = rnaturalearth::ne_download(scale = "medium", type = "urban_areas", returnclass = "sf",
+    urban = rnaturalearth::ne_download(scale = "medium", type = "urban_areas", returnclass = "sf",
                                     load = TRUE),
-    coun = rnaturalearth::ne_countries(scale = "medium", returnclass = "sf"))
-  features <- if (test == "coun") {
+    country_mismatch = rnaturalearth::ne_countries(scale = "medium", returnclass = "sf"))
+  features <- if (test == "country_mismatch") {
     d <- as.data.frame(sf)
     a3 <- as.character(d$iso_a3); a3[a3 == "-99"] <- NA
     a2 <- as.character(d$iso_a2); a2[a2 == "-99"] <- NA

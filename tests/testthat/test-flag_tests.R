@@ -12,10 +12,10 @@ test_that("flag layout is versioned and consistent", {
 })
 
 test_that("flag_mask and has_flag follow the layout", {
-  expect_identical(flag_mask("val"), 1L)
-  expect_identical(flag_mask(c("val", "zero")), 3L)
-  expect_identical(flag_mask("cap"), bitwShiftL(1L, 3L))
-  expect_identical(has_flag(c(0L, 8L, 16L, 24L, NA), c("cap", "cen")), c(FALSE, TRUE, TRUE, TRUE, NA))
+  expect_identical(flag_mask("invalid"), 1L)
+  expect_identical(flag_mask(c("invalid", "zero")), 3L)
+  expect_identical(flag_mask("capital"), bitwShiftL(1L, 3L))
+  expect_identical(has_flag(c(0L, 8L, 16L, 24L, NA), c("capital", "centroid")), c(FALSE, TRUE, TRUE, TRUE, NA))
   expect_error(flag_mask("nope"), "unknown test")
   expect_error(flag_mask(NA_character_), "character vector")
 })

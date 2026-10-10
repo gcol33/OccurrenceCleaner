@@ -4,7 +4,7 @@ Initial release.
 
 ## Flagging
 * `flag_occurrences()`: one verb for a data frame or an on-disk table (Parquet directory, `.vtr`, delimited file, or any `vectra_node`). Nineteen tests, one bit each in an integer flag word; nothing is dropped.
-* Eleven tests reproduce CoordinateCleaner's record tests with its default buffers (`val`, `zero`, `equ`, `cap`, `cen`, `inst`, `gbif`, `sea`, `urb`, `coun`, `dupl`); eight read GBIF fields (`issue_geo`, `issue_tax`, `issue_date`, `rounded`, `fossil`, `living`, `introduced`, `managed`).
+* Eleven tests reproduce CoordinateCleaner's record tests with its default buffers (`invalid`, `zero`, `equal`, `capital`, `centroid`, `institution`, `gbif_headquarters`, `sea`, `urban`, `country_mismatch`, `duplicate`); eight read GBIF fields (`issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded`, `basis_fossil`, `basis_living`, `establishment_introduced`, `establishment_managed`). Tests read from a record field carry that field as a prefix.
 * Proximity tests run as kd-tree candidate searches on the unit sphere decided by WGS84 geodesic distance; polygon tests as grid-indexed point-in-polygon with exact boundary cells. Both in C++ with no external library.
 * Streamed input is processed per file, written as `.vtr` parts with the kept columns, and resumable.
 

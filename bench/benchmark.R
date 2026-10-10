@@ -23,8 +23,9 @@ make_records <- function(n, seed = 1) {
              decimalLatitude = c(near[, 2], runif(n - k, -60, 75)))
 }
 
-tests <- c(cap = "cc_cap", cen = "cc_cen", inst = "cc_inst", gbif = "cc_gbif", sea = "cc_sea",
-           zero = "cc_zero", equ = "cc_equ", val = "cc_val", dupl = "cc_dupl")
+tests <- c(capital = "cc_cap", centroid = "cc_cen", institution = "cc_inst",
+           gbif_headquarters = "cc_gbif", sea = "cc_sea",
+           zero = "cc_zero", equal = "cc_equ", invalid = "cc_val", duplicate = "cc_dupl")
 rows <- list()
 cc_ok <- setNames(rep(TRUE, length(tests)), names(tests))
 for (n in sizes) {

@@ -12,8 +12,9 @@ A character vector of test names.
 \description{
 The tests \code{\link[=flag_occurrences]{flag_occurrences()}} runs when \code{tests} is not given: every
 CoordinateCleaner-equivalent test that needs only coordinates and a species
-name. \code{coun} needs a country code, \code{urb} is left out as in CoordinateCleaner's
-\code{clean_coordinates()}, and the GBIF-field additions need GBIF columns.
+name. \code{country_mismatch} needs a country code, \code{urban} is left out as in
+CoordinateCleaner's \code{clean_coordinates()}, and the GBIF-field additions need
+GBIF columns.
 }
 \examples{
 default_tests()

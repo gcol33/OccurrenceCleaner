@@ -27,9 +27,10 @@ flag_tests <- function() {
 
 .flag_layout <- data.frame(
   bit = 0:18,
-  test = c("val", "zero", "equ", "cap", "cen", "inst", "gbif", "sea", "urb", "coun", "dupl",
-           "issue_geo", "issue_tax", "issue_date", "rounded", "fossil", "living", "introduced",
-           "managed"),
+  test = c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters",
+           "sea", "urban", "country_mismatch", "duplicate",
+           "issue_coordinate", "issue_taxon", "issue_date", "issue_rounded",
+           "basis_fossil", "basis_living", "establishment_introduced", "establishment_managed"),
   definition = c(
     "coordinate missing, not numeric or outside [-180, 180] x [-90, 90]",
     "longitude or latitude exactly zero, or within 0.5 degrees of (0, 0)",
@@ -64,15 +65,17 @@ flag_tests <- function() {
 #'
 #' The tests [flag_occurrences()] runs when `tests` is not given: every
 #' CoordinateCleaner-equivalent test that needs only coordinates and a species
-#' name. `coun` needs a country code, `urb` is left out as in CoordinateCleaner's
-#' `clean_coordinates()`, and the GBIF-field additions need GBIF columns.
+#' name. `country_mismatch` needs a country code, `urban` is left out as in
+#' CoordinateCleaner's `clean_coordinates()`, and the GBIF-field additions need
+#' GBIF columns.
 #'
 #' @return A character vector of test names.
 #' @examples
 #' default_tests()
 #' @export
 default_tests <- function() {
-  c("val", "zero", "equ", "cap", "cen", "inst", "gbif", "sea", "dupl")
+  c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea",
+    "duplicate")
 }
 
 #' Bit mask and membership for sets of tests
@@ -87,8 +90,8 @@ default_tests <- function() {
 #' @return `flag_mask()`: a single integer. `has_flag()`: a logical vector the
 #'   length of `flags`; `NA` flags give `NA`.
 #' @examples
-#' flag_mask(c("cap", "cen"))
-#' has_flag(c(0L, 8L, 16L, 24L), c("cap", "cen"))
+#' flag_mask(c("capital", "centroid"))
+#' has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
 #' @export
 flag_mask <- function(tests) {
   tests <- check_tests(tests)

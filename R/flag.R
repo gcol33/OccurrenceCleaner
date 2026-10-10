@@ -14,25 +14,27 @@
 #'
 #' @section Tests:
 #' See [flag_tests()] for the layout. Tests equivalent to CoordinateCleaner use
-#' its default buffers: `cap` 10 km, `cen` 1 km, `inst` 100 m, `gbif` 1 km,
-#' `zero` 0.5 degrees. Proximity tests are closed balls in WGS84 geodesic
-#' distance. Records failing `val` are given no spatial flag.
+#' its default buffers: `capital` 10 km, `centroid` 1 km, `institution` 100 m,
+#' `gbif_headquarters` 1 km, `zero` 0.5 degrees. Proximity tests are closed
+#' balls in WGS84 geodesic distance. Records failing `invalid` are given no
+#' spatial flag.
 #'
 #' Documented differences to CoordinateCleaner 3.0.1, each verified in the
 #' package tests:
 #' * CoordinateCleaner approximates each buffer circle by an inscribed polygon
-#'   (72 vertices for `cap`, `cen`, `gbif`; 40 for `inst`), so a record between
-#'   99.9 % (`cap`, `cen`, `gbif`) or 99.7 % (`inst`) of the buffer and the
+#'   (72 vertices for `capital`, `centroid`, `gbif_headquarters`; 40 for
+#'   `institution`), so a record between 99.9 % (`capital`, `centroid`,
+#'   `gbif_headquarters`) or 99.7 % (`institution`) of the buffer and the
 #'   buffer itself is flagged here and may not be there. Everything
 #'   CoordinateCleaner flags is flagged here.
 #' * `cc_zero`'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 #'   CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 #'   documented 0.5 degree radius.
-#' * `coun` compares the record's code with both the alpha-2 and alpha-3 codes
-#'   of the Natural Earth country polygon the point falls in; CoordinateCleaner
-#'   compares alpha-3 only. Records without a code, or at sea, are flagged as in
+#' * `country_mismatch` compares the record's code with both the alpha-2 and
+#'   alpha-3 codes of the Natural Earth country polygon the point falls in;
+#'   CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
 #'   CoordinateCleaner.
-#' * `dupl` on streamed input is evaluated within each input file (Parquet
+#' * `duplicate` on streamed input is evaluated within each input file (Parquet
 #'   part), not across the whole table.
 #' * With the default reference the gazetteers are rebuilt from the original
 #'   sources; `reference = "CoordinateCleaner"` uses that package's own tables.
@@ -47,13 +49,14 @@
 #' @param land_scale Natural Earth scale of the land layer for `sea`: 110
 #'   (CoordinateCleaner's default), 50, or 10 (downloaded on first use, see
 #'   [download_reference()]).
-#' @param buffers Named list overriding buffer distances in metres for `cap`,
-#'   `cen`, `inst`, `gbif`, or in degrees for `zero`. Unnamed entries keep the
-#'   defaults.
-#' @param dupl_by Additional column names a duplicate must share (as
+#' @param buffers Named list overriding buffer distances in metres for
+#'   `capital`, `centroid`, `institution`, `gbif_headquarters`, or in degrees
+#'   for `zero`. Unnamed entries keep the defaults.
+#' @param duplicate_by Additional column names a duplicate must share (as
 #'   CoordinateCleaner's `additions`), for example an event date.
-#' @param dupl_cell Cell size in degrees. When given, coordinates are binned to
-#'   this grid before comparing duplicates, so "same cell and species" counts.
+#' @param duplicate_cell Cell size in degrees. When given, coordinates are
+#'   binned to this grid before comparing duplicates, so "same cell and
+#'   species" counts.
 #' @param out Output directory for streamed input (required then, ignored for a
 #'   data frame).
 #' @param keep Column names copied next to the flags in streamed output, for
@@ -74,26 +77,29 @@
 #' x <- data.frame(species = c("a", "a", "b", "c"),
 #'                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
 #'                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-#' f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-#' f[, c("species", "flags", "flag_zero", "flag_gbif", "flag_cap")]
+#' f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+#' f[, c("species", "flags", "flag_zero", "flag_gbif_headquarters", "flag_capital")]
 #' @export
 flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              reference = c("natural_earth", "CoordinateCleaner"),
-                             land_scale = 110, buffers = NULL, dupl_by = NULL, dupl_cell = NULL,
+                             land_scale = 110, buffers = NULL, duplicate_by = NULL,
+                             duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
                              verbose = TRUE) {
   tests <- check_tests(tests)
   reference <- match.arg(reference)
   if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
   cfg <- list(tests = tests, columns = columns, reference = reference, land_scale = land_scale,
-              buffers = check_buffers(buffers), dupl_by = dupl_by, dupl_cell = dupl_cell,
+              buffers = check_buffers(buffers), duplicate_by = duplicate_by,
+              duplicate_cell = duplicate_cell,
               layout_version = .layout_version, reference_label = reference_label(reference, land_scale))
   if (is.data.frame(x)) return(flag_df(x, cfg))
   flag_stream(x, cfg, out = out, keep = keep, part_rows = part_rows, resume = resume,
               verbose = verbose)
 }
 
-.default_buffers <- list(cap = 10000, cen = 1000, inst = 100, gbif = 1000, zero = 0.5)
+.default_buffers <- list(capital = 10000, centroid = 1000, institution = 100,
+                         gbif_headquarters = 1000, zero = 0.5)
 
 check_buffers <- function(buffers) {
   b <- .default_buffers
@@ -130,12 +136,14 @@ flag_chunk <- function(d, cfg, cols) {
     hit[is.na(hit)] <- FALSE
     flags[hit] <<- bitwOr(flags[hit], flag_mask(test))
   }
-  spatial <- intersect(tests, c("val", "zero", "equ", "cap", "cen", "inst", "gbif", "sea", "urb", "coun", "dupl"))
+  spatial <- intersect(tests, c("invalid", "zero", "equal", "capital", "centroid", "institution",
+                                "gbif_headquarters", "sea", "urban", "country_mismatch",
+                                "duplicate"))
   if (length(spatial)) {
     lon <- to_numeric(d[[cols$lon]])
     lat <- to_numeric(d[[cols$lat]])
     bad <- !is.finite(lon) | !is.finite(lat) | lon < -180 | lon > 180 | lat < -90 | lat > 90
-    if ("val" %in% tests) set_bit("val", bad)
+    if ("invalid" %in% tests) set_bit("invalid", bad)
     ok <- !bad
     lon_ok <- lon; lat_ok <- lat
     lon_ok[bad] <- NA_real_; lat_ok[bad] <- NA_real_
@@ -143,8 +151,8 @@ flag_chunk <- function(d, cfg, cols) {
       r <- cfg$buffers$zero
       set_bit("zero", ok & (lon == 0 | lat == 0 | sqrt(lon^2 + lat^2) <= r))
     }
-    if ("equ" %in% tests) set_bit("equ", ok & abs(lon) == abs(lat))
-    for (t in intersect(tests, c("cap", "cen", "inst", "gbif"))) {
+    if ("equal" %in% tests) set_bit("equal", ok & abs(lon) == abs(lat))
+    for (t in intersect(tests, c("capital", "centroid", "institution", "gbif_headquarters"))) {
       idx <- point_index(t, cfg$reference)
       set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]]))
     }
@@ -152,12 +160,12 @@ flag_chunk <- function(d, cfg, cols) {
       p <- polygon_index("sea", cfg$reference, cfg$land_scale)
       set_bit("sea", ok & cpp_polygon_locate(p$index, lon_ok, lat_ok) == 0L)
     }
-    if ("urb" %in% tests) {
-      p <- polygon_index("urb", cfg$reference, cfg$land_scale)
-      set_bit("urb", cpp_polygon_locate(p$index, lon_ok, lat_ok) > 0L)
+    if ("urban" %in% tests) {
+      p <- polygon_index("urban", cfg$reference, cfg$land_scale)
+      set_bit("urban", cpp_polygon_locate(p$index, lon_ok, lat_ok) > 0L)
     }
-    if ("coun" %in% tests) {
-      p <- polygon_index("coun", cfg$reference, cfg$land_scale)
+    if ("country_mismatch" %in% tests) {
+      p <- polygon_index("country_mismatch", cfg$reference, cfg$land_scale)
       f <- cpp_polygon_locate(p$index, lon_ok, lat_ok)
       code <- toupper(trimws(as.character(d[[cols$country]])))
       code[!nzchar(code) | is.na(code)] <- NA_character_
@@ -166,35 +174,37 @@ flag_chunk <- function(d, cfg, cols) {
       adm <- p$features$adm0_a3[ifelse(f > 0L, f, NA_integer_)]
       match <- (!is.na(a3) & code == a3) | (!is.na(a2) & code == a2) | (!is.na(adm) & code == adm)
       match[is.na(match)] <- FALSE
-      set_bit("coun", ok & !match)
+      set_bit("country_mismatch", ok & !match)
     }
-    if ("dupl" %in% tests) {
+    if ("duplicate" %in% tests) {
       kx <- lon; ky <- lat
-      if (!is.null(cfg$dupl_cell)) {
-        kx <- floor(lon / cfg$dupl_cell); ky <- floor(lat / cfg$dupl_cell)
+      if (!is.null(cfg$duplicate_cell)) {
+        kx <- floor(lon / cfg$duplicate_cell); ky <- floor(lat / cfg$duplicate_cell)
       }
       key <- data.frame(kx, ky, as.character(d[[cols$species]]), stringsAsFactors = FALSE)
-      for (extra in cfg$dupl_by) {
-        if (!extra %in% names(d)) stop("`dupl_by` column `", extra, "` not found in the input")
+      for (extra in cfg$duplicate_by) {
+        if (!extra %in% names(d)) stop("`duplicate_by` column `", extra, "` not found in the input")
         key[[extra]] <- d[[extra]]
       }
-      set_bit("dupl", ok & duplicated(key))
+      set_bit("duplicate", ok & duplicated(key))
     }
   }
-  issue_tests <- intersect(tests, c("issue_geo", "issue_tax", "issue_date", "rounded"))
+  issue_tests <- intersect(tests, c("issue_coordinate", "issue_taxon", "issue_date", "issue_rounded"))
   if (length(issue_tests)) {
     iss <- issue_sets(d[[cols$issue]])
     for (t in issue_tests) set_bit(t, vapply(iss, function(s) any(s %in% .issue_groups[[t]]), logical(1)))
   }
-  if (any(c("fossil", "living") %in% tests)) {
+  if (any(c("basis_fossil", "basis_living") %in% tests)) {
     b <- toupper(trimws(as.character(d[[cols$basis]])))
-    if ("fossil" %in% tests) set_bit("fossil", b == "FOSSIL_SPECIMEN")
-    if ("living" %in% tests) set_bit("living", b == "LIVING_SPECIMEN")
+    if ("basis_fossil" %in% tests) set_bit("basis_fossil", b == "FOSSIL_SPECIMEN")
+    if ("basis_living" %in% tests) set_bit("basis_living", b == "LIVING_SPECIMEN")
   }
-  if (any(c("introduced", "managed") %in% tests)) {
+  if (any(c("establishment_introduced", "establishment_managed") %in% tests)) {
     e <- toupper(trimws(as.character(d[[cols$establishment]])))
-    if ("introduced" %in% tests) set_bit("introduced", e %in% c("INTRODUCED", "NATURALISED", "NATURALIZED", "INVASIVE"))
-    if ("managed" %in% tests) set_bit("managed", e %in% c("MANAGED", "CULTIVATED"))
+    if ("establishment_introduced" %in% tests)
+      set_bit("establishment_introduced", e %in% c("INTRODUCED", "NATURALISED", "NATURALIZED", "INVASIVE"))
+    if ("establishment_managed" %in% tests)
+      set_bit("establishment_managed", e %in% c("MANAGED", "CULTIVATED"))
   }
   list(flags = flags)
 }
@@ -206,14 +216,16 @@ to_numeric <- function(v) {
 
 # GBIF issue names per addition test.
 .issue_groups <- list(
-  issue_geo = c("COORDINATE_INVALID", "COORDINATE_OUT_OF_RANGE", "COORDINATE_REPROJECTION_FAILED",
-                "COORDINATE_REPROJECTION_SUSPICIOUS", "COORDINATE_UNCERTAINTY_METERS_INVALID",
-                "COORDINATE_PRECISION_INVALID", "GEODETIC_DATUM_INVALID", "CONTINENT_COORDINATE_MISMATCH",
-                "COUNTRY_COORDINATE_MISMATCH", "PRESUMED_SWAPPED_COORDINATE", "PRESUMED_NEGATED_LONGITUDE",
-                "PRESUMED_NEGATED_LATITUDE", "ZERO_COORDINATE"),
-  issue_tax = c("TAXON_MATCH_FUZZY", "TAXON_MATCH_HIGHERRANK", "TAXON_MATCH_NONE", "TAXON_MATCH_AGGREGATE"),
+  issue_coordinate = c("COORDINATE_INVALID", "COORDINATE_OUT_OF_RANGE", "COORDINATE_REPROJECTION_FAILED",
+                       "COORDINATE_REPROJECTION_SUSPICIOUS", "COORDINATE_UNCERTAINTY_METERS_INVALID",
+                       "COORDINATE_PRECISION_INVALID", "GEODETIC_DATUM_INVALID",
+                       "CONTINENT_COORDINATE_MISMATCH", "COUNTRY_COORDINATE_MISMATCH",
+                       "PRESUMED_SWAPPED_COORDINATE", "PRESUMED_NEGATED_LONGITUDE",
+                       "PRESUMED_NEGATED_LATITUDE", "ZERO_COORDINATE"),
+  issue_taxon = c("TAXON_MATCH_FUZZY", "TAXON_MATCH_HIGHERRANK", "TAXON_MATCH_NONE",
+                  "TAXON_MATCH_AGGREGATE"),
   issue_date = c("RECORDED_DATE_INVALID", "RECORDED_DATE_UNLIKELY", "RECORDED_DATE_MISMATCH"),
-  rounded = "COORDINATE_ROUNDED"
+  issue_rounded = "COORDINATE_ROUNDED"
 )
 
 # Issue column to a list of character vectors.

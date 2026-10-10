@@ -12,7 +12,8 @@ with an integer \code{flags} column), an \code{occ_flagged} object, or its outpu
 directory.}
 
 \item{by}{Character vector of grouping columns. For on-disk output these must
-have been passed as \code{keep} when flagging.}
+have been passed as \code{keep} when flagging. Missing values form the group
+\code{"missing"}.}
 
 \item{rules}{Named list of character vectors of test names. Default: one
 rule, \code{"all"}, holding every test present in the flags.}
@@ -26,7 +27,7 @@ flags, or every test with a set bit.}
 }
 \value{
 A data frame with the \code{by} columns, \code{n} (records), \code{n_valid}
-(records without the \code{val} flag, when \code{val} was run), one column
+(records without the \code{invalid} flag, when \code{invalid} was run), one column
 \verb{flagged_<test>} per test, and per rule \verb{removed_<rule>} and \verb{kept_<rule>}.
 The attribute \code{occ_rules} holds the rules.
 }
@@ -40,6 +41,7 @@ any of them. Works on a flagged data frame or on the on-disk output of
 x <- data.frame(species = c("a", "a", "b", "c"), kingdom = c("P", "P", "A", "A"),
                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
-f <- flag_occurrences(x, tests = c("val", "zero", "gbif", "cap"))
-tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "gbif", "cap"), mild = "zero"))
+f <- flag_occurrences(x, tests = c("invalid", "zero", "gbif_headquarters", "capital"))
+tally_flags(f, by = "kingdom",
+            rules = list(strict = c("zero", "gbif_headquarters", "capital"), mild = "zero"))
 }

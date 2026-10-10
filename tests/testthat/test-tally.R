@@ -7,16 +7,16 @@ make_flagged <- function() {
   x$decimalLongitude[1:20] <- 0
   x[21:40, c("decimalLongitude", "decimalLatitude")] <- x[1:20, c("decimalLongitude", "decimalLatitude")]
   x$species[21:40] <- x$species[1:20]
-  flag_occurrences(x, tests = c("val", "zero", "sea", "dupl"))
+  flag_occurrences(x, tests = c("invalid", "zero", "sea", "duplicate"))
 }
 
 test_that("tally_flags counts per group and per rule", {
   f <- make_flagged()
-  t <- tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "sea", "dupl"), mild = "zero"))
+  t <- tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "sea", "duplicate"), mild = "zero"))
   expect_identical(t$kingdom, c("Animalia", "Plantae"))
   expect_identical(sum(t$n), nrow(f))
   expect_identical(t$flagged_zero, as.integer(tapply(f$flag_zero, f$kingdom, sum)))
-  expect_identical(t$removed_strict, as.integer(tapply(has_flag(f$flags, c("zero", "sea", "dupl")), f$kingdom, sum)))
+  expect_identical(t$removed_strict, as.integer(tapply(has_flag(f$flags, c("zero", "sea", "duplicate")), f$kingdom, sum)))
   expect_identical(t$kept_strict, t$n - t$removed_strict)
   expect_identical(t$removed_mild, t$flagged_zero)
   expect_identical(names(attr(t, "occ_rules")), c("strict", "mild"))
@@ -24,7 +24,7 @@ test_that("tally_flags counts per group and per rule", {
   t0 <- tally_flags(f)
   expect_identical(nrow(t0), 1L)
   expect_identical(t0$removed_all, sum(f$flags != 0L))
-  expect_identical(t0$n_valid, sum(!f$flag_val))
+  expect_identical(t0$n_valid, sum(!f$flag_invalid))
 })
 
 test_that("missing grouping values form their own group", {
@@ -53,7 +53,7 @@ test_that("bins cut numeric columns and label missing values", {
 
 test_that("tallies merge across chunks exactly", {
   f <- make_flagged()
-  rules <- list(all = c("val", "zero", "sea", "dupl"))
+  rules <- list(all = c("invalid", "zero", "sea", "duplicate"))
   whole <- tally_flags(f, by = c("kingdom", "species"), rules = rules)
   parts <- split(f, rep(1:3, length.out = nrow(f)))
   acc <- NULL

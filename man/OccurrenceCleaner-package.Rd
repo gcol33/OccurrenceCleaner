@@ -22,6 +22,7 @@ biological collection databases. Methods in Ecology and Evolution
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://gillescolling.com/OccurrenceCleaner/}
   \item \url{https://github.com/gcol33/OccurrenceCleaner}
   \item Report bugs at \url{https://github.com/gcol33/OccurrenceCleaner/issues}
 }
