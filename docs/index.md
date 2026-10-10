@@ -11,8 +11,11 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 OccurrenceCleaner flags common problems in species occurrence records.
 These include coordinates at country centroids, capitals or biodiversity
 institutions; zero or equal coordinates; records at sea or in the wrong
-country; and duplicates. It also checks the GBIF issue, basis-of-record
-and establishment fields.
+country; and duplicates. It also reads three GBIF fields: the quality
+warnings GBIF attaches to a record during processing (such as invalid or
+rounded coordinates, a fuzzy taxon match or an unlikely date), the basis
+of record (fossil or living specimens), and the establishment means
+(introduced or cultivated individuals).
 
 Each test stores its result as one bit per record. No records are
 removed: users decide afterwards which flags to use for filtering.
@@ -132,7 +135,7 @@ already finished.
 | `urb` | inside an urban area | `cc_urb` |
 | `coun` | outside the country given by the record’s country code | `cc_coun` |
 | `dupl` | same coordinates and species as an earlier record | `cc_dupl` |
-| `issue_geo`, `issue_tax`, `issue_date`, `rounded` | GBIF issue flags by group | addition |
+| `issue_geo`, `issue_tax`, `issue_date`, `rounded` | GBIF quality warnings (`issue` field) on coordinates, taxon match, date, rounding | addition |
 | `fossil`, `living` | basis of record | addition |
 | `introduced`, `managed` | establishment means | addition |
 

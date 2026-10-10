@@ -8,8 +8,8 @@ Authors@R:
 Description: Flags common problems in species occurrence records, such as
     coordinates at country centroids, capitals or biodiversity institutions,
     zero or equal coordinates, records at sea or in the wrong country, and
-    duplicates, and checks the GBIF issue, basis-of-record and establishment
-    fields. Each test stores its result as one bit per record and no records
+    duplicates. It also reads the quality warnings GBIF attaches to each
+    record, the basis of record and the establishment means. Each test stores its result as one bit per record and no records
     are removed, so users decide afterwards which flags to use for filtering.
     The tests and default buffers follow 'CoordinateCleaner' (Zizka et al.
     2019 <doi:10.1111/2041-210X.13152>). Data frames of a few million records
