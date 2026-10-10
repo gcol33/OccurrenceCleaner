@@ -22,6 +22,11 @@ establishment means.
 Records are flagged and kept, and users choose afterwards which flags to
 filter on.
 
+The input is any table of records with Darwin Core coordinate and
+species columns: a GBIF download (for example from rgbif), a whole GBIF
+snapshot, or another aggregator’s export. Taxonomic name cleaning is not
+part of the package.
+
 The test suite runs CoordinateCleaner on sampled records and checks that
 both packages return the same flags with the same default buffers; the
 few deliberate differences are listed in [Coming from

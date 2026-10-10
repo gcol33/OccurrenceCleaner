@@ -208,7 +208,7 @@ institutions (in Coimbra, Bornova and Hsinchu) are registered with
 coordinates within a few hundred metres of (0, 0), so the institution
 gazetteer itself carries the zero-coordinate error.
 
-The negated longitudes show the limit of the spatial tests. Only 17 of
+The negated longitudes show the limit of the spatial tests. Only 18 of
 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
 tell it from a correct one. None of the 30 records entered at whole
@@ -277,10 +277,11 @@ knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tes
 The most common combination is `capital + urban`: a capital lies inside
 its own urban area, so in a rule that already holds `capital`, adding
 `urban` removes only the city records more than 10 km from the capital
-point. The 15 zero-coordinate records carry six tests at once. Records
-with a single flag (`duplicate`, `issue_rounded`,
-`establishment_managed`, `basis_living`) are the ones a rule keeps or
-loses depending on whether that one test is in it.
+point. 15 of the 20 zero-coordinate records carry six tests at once: the
+five above plus `duplicate`, since they share their coordinates and
+often their species. Records with a single flag (`duplicate`,
+`issue_rounded`, `establishment_managed`, `basis_living`) are the ones a
+rule keeps or loses depending on whether that one test is in it.
 
 ## Comparing cleaning rules
 
@@ -451,9 +452,10 @@ can see. The 20 records with a fuzzy taxon match are removed through
 
 - **Run every test that the columns allow, once.** The pass over the
   records is the expensive step; rules are a bit-mask query afterwards.
-  On worky (Ryzen 7 5700G) the nine default tests took 1.9 s for one
-  million records in memory (`dev_notes/benchmark.md`), so there is
-  little reason to run fewer tests than the data support.
+  On an AMD Ryzen 7 5700G the nine default tests took 1.9 s for one
+  million records in memory (see the timings in [Coming from
+  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)),
+  so there is little reason to run fewer tests than the data support.
 
 - **`country_mismatch` needs a country code and flags records without
   one.** A record with no code, or one that falls at sea, is flagged, as

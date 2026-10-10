@@ -528,7 +528,7 @@ and <code>country_mismatch</code>, and also <code>institution</code>:
 three GRSciColl institutions (in Coimbra, Bornova and Hsinchu) are
 registered with coordinates within a few hundred metres of (0, 0), so
 the institution gazetteer itself carries the zero-coordinate error.</p>
-<p>The negated longitudes show the limit of the spatial tests. Only 17
+<p>The negated longitudes show the limit of the spatial tests. Only 18
 of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
 tell it from a correct one. None of the 30 records entered at whole
@@ -2992,12 +2992,13 @@ duplicate</td>
 <p>The most common combination is <code>capital + urban</code>: a
 capital lies inside its own urban area, so in a rule that already holds
 <code>capital</code>, adding <code>urban</code> removes only the city
-records more than 10 km from the capital point. The 15 zero-coordinate
-records carry six tests at once. Records with a single flag
-(<code>duplicate</code>, <code>issue_rounded</code>,
-<code>establishment_managed</code>, <code>basis_living</code>) are the
-ones a rule keeps or loses depending on whether that one test is in
-it.</p>
+records more than 10 km from the capital point. 15 of the 20
+zero-coordinate records carry six tests at once: the five above plus
+<code>duplicate</code>, since they share their coordinates and often
+their species. Records with a single flag (<code>duplicate</code>,
+<code>issue_rounded</code>, <code>establishment_managed</code>,
+<code>basis_living</code>) are the ones a rule keeps or loses depending
+on whether that one test is in it.</p>
 </div>
 <div class="section level2">
 <h2 id="comparing-cleaning-rules">Comparing cleaning rules<a class="anchor" aria-label="anchor" href="#comparing-cleaning-rules"></a>
@@ -3477,8 +3478,8 @@ fine.</p>
 <ul>
 <li><p><strong>Run every test that the columns allow, once.</strong> The
 pass over the records is the expensive step; rules are a bit-mask query
-afterwards. On worky (Ryzen 7 5700G) the nine default tests took 1.9 s
-for one million records in memory (<code>dev_notes/benchmark.md</code>),
+afterwards. On an AMD Ryzen 7 5700G the nine default tests took 1.9 s
+for one million records in memory (see the timings in <a href="coordinatecleaner.html#speed">Coming from CoordinateCleaner</a>),
 so there is little reason to run fewer tests than the data
 support.</p></li>
 <li><p><strong><code>country_mismatch</code> needs a country code and

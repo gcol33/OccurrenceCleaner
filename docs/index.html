@@ -93,6 +93,7 @@
 <p>OccurrenceCleaner is an extension of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates.</p>
 <p>It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.</p>
 <p>Records are flagged and kept, and users choose afterwards which flags to filter on.</p>
+<p>The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning is not part of the package.</p>
 <p>The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers; the few deliberate differences are listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
 <p>Data frames containing a few million records are flagged in seconds (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed">timings</a>), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.</p>
 <div class="section level2">
