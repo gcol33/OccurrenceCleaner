@@ -16,8 +16,11 @@ flag_tests()
 ## Value
 
 A data frame with columns `bit` (0-based), `test`, `definition`,
-`source`, `equivalent` (the CoordinateCleaner function, or `NA`) and
-`needs` (the record fields the test reads, as names of
+`source`, `equivalent` (the CoordinateCleaner function, or `NA`),
+`spatialvalid` (the column `clean_coordinates()` or `clean_fossils()`
+writes for the test, used by
+[`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md),
+or `NA`) and `needs` (the record fields the test reads, as names of
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)).
 The attribute `layout_version` holds the layout version.
 

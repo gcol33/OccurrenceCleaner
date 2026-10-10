@@ -68,6 +68,13 @@ Initial release.
   [`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md),
   [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md),
   [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md).
+- [`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md)
+  writes flagged records, in memory or on disk, in the layout of
+  CoordinateCleaner’s `spatialvalid` object (`.cap`, `.zer`, …,
+  `.summary`, `TRUE` for pass), so code and methods written for it run
+  unchanged;
+  [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
+  gives the column name per test.
 
 ### Reference data
 

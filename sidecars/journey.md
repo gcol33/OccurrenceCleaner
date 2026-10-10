@@ -46,16 +46,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: States that records are kept and the filter is chosen afterwards.
 - leaves: the package never removes a record
 
-### readme.input  [A2]
-- idea: what goes in; what is out of scope
-- job: Places the package in the workflow by naming its inputs and the one neighbouring task it leaves out.
-- leaves: a GBIF download, a snapshot or any Darwin Core table works; names are cleaned elsewhere
-
-### readme.neighbours  [A3]
-- idea: upstream sources, name matching, downstream uses
-- job: Names the packages records come from (rgbif, paleobioDB), the one that matches names first (taxize) and where the kept records go (dismo, sdm, phytools, PyRate via `export_pyrate()`).
-- leaves: where the package sits between data sources and analyses
-- note: overlaps readme.input, which already names rgbif as a source and name cleaning as out of scope (`restated-arc`); candidate to merge into one paragraph
+### readme.input  [A2 A3]
+- idea: what goes in, what is out of scope, where the kept records go
+- job: Places the package in the workflow: its inputs with the packages they come from (rgbif, paleobioDB), name matching left to other packages (taxize), and where the kept records go (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
+- leaves: a GBIF download, a PBDB table, a snapshot or any Darwin Core table works; names are cleaned elsewhere; where the package sits between data sources and analyses
 
 ### readme.equivalence  [A1]
 - idea: reimplemented; same flags, tested
@@ -102,7 +96,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.box  (list)
 - idea: exported functions
 - job: Lists each exported function by what it does.
-- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields, `reference_points()` for custom gazetteers and AHOI, and `export_pyrate()`
+- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields, `reference_points()` for custom gazetteers and AHOI, `export_pyrate()` and `as_spatialvalid()`
 
 ### readme.tests  [A1 A4 A6]  (table)
 - idea: tests, definitions, sources
@@ -276,6 +270,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: every function has a counterpart; the functions around the tests
 - job: Says every CoordinateCleaner function has a counterpart and maps the ones around the tests: `cc_outl(sampling_thresh)`, `write_pyrate()`, plot, summary and the class check; explains why the sampling counts are a table and why `export_pyrate()` has its own name.
 - leaves: counts given as `gazetteers = list(sampling = ...)` are reproducible and recorded; both packages can be attached
+
+### cc.spatialvalid  [A1]  (code)
+- idea: code for spatialvalid runs on as_spatialvalid
+- job: Says `as_spatialvalid()` writes CoordinateCleaner's column names with TRUE for pass and the `spatialvalid` class, that its methods work on it, and that the tests compare it with `clean_coordinates()`; shows it on the side-by-side records.
+- leaves: a CoordinateCleaner script keeps working after the switch
 
 ## The tests in detail (explanation, A4 home)
 

@@ -80,6 +80,7 @@ reference:
 - title: Export
   contents:
   - export_pyrate
+  - as_spatialvalid
 - title: Reference data
   contents:
   - reference_info

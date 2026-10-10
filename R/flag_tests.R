@@ -11,8 +11,10 @@
 #' `source = "OccurrenceCleaner"` are additions.
 #'
 #' @return A data frame with columns `bit` (0-based), `test`, `definition`,
-#'   `source`, `equivalent` (the CoordinateCleaner function, or `NA`) and
-#'   `needs` (the record fields the test reads, as names of [occ_columns()]).
+#'   `source`, `equivalent` (the CoordinateCleaner function, or `NA`),
+#'   `spatialvalid` (the column `clean_coordinates()` or `clean_fossils()`
+#'   writes for the test, used by [as_spatialvalid()], or `NA`) and `needs`
+#'   (the record fields the test reads, as names of [occ_columns()]).
 #'   The attribute `layout_version` holds the layout version.
 #' @examples
 #' flag_tests()
@@ -66,6 +68,9 @@ flag_tests <- function() {
   equivalent = c("cc_val", "cc_zero", "cc_equ", "cc_cap", "cc_cen", "cc_inst", "cc_gbif", "cc_sea",
                  "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8), "cf_equal",
                  "cc_outl", "cf_age", "cf_outl", "cf_range", "cd_ddmm", "cd_round", "cc_iucn", "cc_aohi"),
+  spatialvalid = c(".val", ".zer", ".equ", ".cap", ".cen", ".inst", ".gbf", ".sea", ".urb", ".con",
+                   ".dpl", rep(NA_character_, 8), ".aeq", ".otl", NA, ".spt", ".trg", NA, NA,
+                   ".rang", ".aohi"),
   needs = c(rep("lon,lat", 9), "lon,lat,country", "lon,lat,species", rep("issue", 4), "basis",
             "basis", "establishment", "establishment", "min_age,max_age",
             "lon,lat,species", "min_age,max_age,species", "lon,lat,min_age,max_age,species",

@@ -55,7 +55,8 @@ m <- data.frame(
                         "gazetteers = list(capital = ..., sea = ...)",
                         "tally_flags(bins = ...) on max_ma - min_ma",
                         "duplicate_by", "land_scale (default 110, as cc_sea())",
-                        "x[!has_flag(x$flags, rule), ]", "the flag_<test> columns"))
+                        "x[!has_flag(x$flags, rule), ]",
+                        "the flag_<test> columns; as_spatialvalid(f) for the spatialvalid layout"))
 knitr::kable(m)
 ```
 
@@ -255,6 +256,14 @@ knitr::kable(data.frame(
 ```
 
 `cc_outl()` queries GBIF for each country's record count at run time, so its result changes as GBIF grows; here the counts are part of the call and recorded in the reference label. `export_pyrate()` takes the name it has to leave `write_pyrate()` reachable when both packages are attached.
+
+Code written for a `spatialvalid` object runs on `as_spatialvalid(f)`: it writes the record columns, one column per test under CoordinateCleaner's name (`.cap`, `.zer`, `.otl`, ...) with `TRUE` for pass, and `.summary`, with the class `spatialvalid`, so CoordinateCleaner's `summary()` and `plot()` methods and filters on `.summary` work on it. The package tests compare it column by column with `clean_coordinates(value = "spatialvalid")`.
+
+```{r spatialvalid, eval = has_cc}
+sv <- as_spatialvalid(oc)
+head(sv[, c(".zer", ".equ", ".cap", ".dpl", ".summary")])
+summary(sv)
+```
 
 The grouped tests (`outlier`, the three fossil outlier tests and the two dataset tests) compare a record with the other records of its species, taxon or dataset, so a record's flag depends on the rest of the input: adding records of a species can change whether a record of it is an outlier. The article on outliers and dataset tests shows them on worked examples.
 

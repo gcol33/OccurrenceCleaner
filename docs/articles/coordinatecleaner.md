@@ -58,7 +58,7 @@ library(OccurrenceCleaner)
 | additions (cc_dupl) | duplicate_by |
 | seas_scale (default 50) | land_scale (default 110, as cc_sea()) |
 | value = “clean” | x\[!has_flag(x\$flags, rule), \] |
-| value = “flagged” / “spatialvalid” | the flag\_ columns |
+| value = “flagged” / “spatialvalid” | the flag\_ columns; as_spatialvalid(f) for the spatialvalid layout |
 
 OccurrenceCleaner has one flagging function,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
@@ -395,6 +395,33 @@ in the reference label.
 takes the name it has to leave
 [`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html)
 reachable when both packages are attached.
+
+Code written for a `spatialvalid` object runs on `as_spatialvalid(f)`:
+it writes the record columns, one column per test under
+CoordinateCleaner’s name (`.cap`, `.zer`, `.otl`, …) with `TRUE` for
+pass, and `.summary`, with the class `spatialvalid`, so
+CoordinateCleaner’s [`summary()`](https://rdrr.io/r/base/summary.html)
+and [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods and
+filters on `.summary` work on it. The package tests compare it column by
+column with `clean_coordinates(value = "spatialvalid")`.
+
+``` r
+
+sv <- as_spatialvalid(oc)
+head(sv[, c(".zer", ".equ", ".cap", ".dpl", ".summary")])
+#>    .zer  .equ .cap  .dpl .summary
+#> 1 FALSE FALSE TRUE  TRUE    FALSE
+#> 2 FALSE FALSE TRUE  TRUE    FALSE
+#> 3 FALSE FALSE TRUE FALSE    FALSE
+#> 4 FALSE FALSE TRUE FALSE    FALSE
+#> 5 FALSE FALSE TRUE FALSE    FALSE
+#> 6 FALSE FALSE TRUE FALSE    FALSE
+summary(sv)
+#>     .val     .zer     .equ     .cap     .cen    .inst     .gbf     .dpl 
+#>        0       30       40      436       29        0        0       18 
+#> .summary 
+#>      491
+```
 
 The grouped tests (`outlier`, the three fossil outlier tests and the two
 dataset tests) compare a record with the other records of its species,

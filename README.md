@@ -14,9 +14,7 @@ It also reads three fields GBIF fills for each record: the quality warnings GBIF
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
-The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from rgbif), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package.
-
-Records usually come from [rgbif](https://cran.r-project.org/package=rgbif) (GBIF) or [paleobioDB](https://cran.r-project.org/package=paleobioDB) (the Paleobiology Database), with names matched beforehand, for example with [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
+The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from [rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from the Paleobiology Database (for example from [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
 
 The tests are reimplemented with CoordinateCleaner's definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
@@ -104,6 +102,7 @@ Rerunning the same call after an interruption skips the input files already fini
 - **`tally_flags()`**: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.
 - **`summary()`**, **`plot()`**: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.
 - **`has_flag()`**, **`flag_mask()`**: which records a rule removes, read from the `flags` column.
+- **`as_spatialvalid()`**: the flags in the layout of CoordinateCleaner's `spatialvalid` object, for code written for it.
 - **`flag_tests()`**: which bit of `flags` holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
 - **`occ_columns()`**: which columns hold which field (coordinates, species, country code, fossil ages, dataset key, GBIF fields); Darwin Core defaults, case-insensitive.

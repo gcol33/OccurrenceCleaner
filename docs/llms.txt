@@ -30,16 +30,14 @@ Records are flagged and kept, and users choose afterwards which flags to
 filter on.
 
 The input is any table of records with Darwin Core coordinate and
-species columns: a GBIF download (for example from rgbif), a whole GBIF
-snapshot, or another aggregator’s export. Taxonomic name cleaning is not
-part of the package.
-
-Records usually come from
-[rgbif](https://cran.r-project.org/package=rgbif) (GBIF) or
-[paleobioDB](https://cran.r-project.org/package=paleobioDB) (the
-Paleobiology Database), with names matched beforehand, for example with
-[taxize](https://cran.r-project.org/package=taxize). The kept records go
-on to species distribution models such as
+species columns: a GBIF download (for example from
+[rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from
+the Paleobiology Database (for example from
+[paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole
+GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning
+is not part of the package; names are matched beforehand, for example
+with [taxize](https://cran.r-project.org/package=taxize). The kept
+records go on to species distribution models such as
 [dismo](https://cran.r-project.org/package=dismo) or
 [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses
 on phylogenies with
@@ -181,6 +179,9 @@ already finished.
 - **[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)**,
   **[`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)**:
   which records a rule removes, read from the `flags` column.
+- **[`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md)**:
+  the flags in the layout of CoordinateCleaner’s `spatialvalid` object,
+  for code written for it.
 - **[`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)**:
   which bit of `flags` holds which test, with its definition, source and
   CoordinateCleaner equivalent; versioned.
@@ -422,6 +423,8 @@ well:
 
 - [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
   : Export fossil records as PyRate input
+- [`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md)
+  : Convert flags to CoordinateCleaner's spatialvalid format
 
 ## Reference data
 

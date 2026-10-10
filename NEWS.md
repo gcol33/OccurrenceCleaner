@@ -13,6 +13,7 @@ Initial release.
 * `tally_flags()`: loss tables by grouping columns, with numeric bins and named rules, over a data frame or the on-disk output. Per rule it also counts the records each test is the sole reason for.
 * `summary()` on flagged records, on-disk output or a tally gives the percentage of records each test and rule removes, with the sole-reason share; `plot()` draws it as bars or, by group, as a grid, and maps kept and removed records with `type = "map"`.
 * `has_flag()`, `flag_mask()`, `flag_tests()`, `default_tests()`.
+* `as_spatialvalid()` writes flagged records, in memory or on disk, in the layout of CoordinateCleaner's `spatialvalid` object (`.cap`, `.zer`, ..., `.summary`, `TRUE` for pass), so code and methods written for it run unchanged; `flag_tests()` gives the column name per test.
 
 ## Reference data
 * Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions, without the five entries the `zero` test flags), each pinned by version and SHA-256 in `reference_info()`; the 1:10m land layer is fetched on demand by `download_reference()`.

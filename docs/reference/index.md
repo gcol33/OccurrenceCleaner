@@ -87,6 +87,8 @@
 
 - [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
   : Export fossil records as PyRate input
+- [`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md)
+  : Convert flags to CoordinateCleaner's spatialvalid format
 
 ## Reference data
 

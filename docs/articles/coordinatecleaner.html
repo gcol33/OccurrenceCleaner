@@ -259,7 +259,8 @@ outlier and dataset tests</td>
 </tr>
 <tr class="odd">
 <td align="left">value = “flagged” / “spatialvalid”</td>
-<td align="left">the flag_<test> columns</test>
+<td align="left">the flag_<test> columns; as_spatialvalid(f) for the
+spatialvalid layout</test>
 </td>
 </tr>
 </tbody>
@@ -790,6 +791,30 @@ part of the call and recorded in the reference label.
 <code><a href="../reference/export_pyrate.html">export_pyrate()</a></code> takes the name it has to leave
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> reachable when both packages are
 attached.</p>
+<p>Code written for a <code>spatialvalid</code> object runs on
+<code>as_spatialvalid(f)</code>: it writes the record columns, one
+column per test under CoordinateCleaner’s name (<code>.cap</code>,
+<code>.zer</code>, <code>.otl</code>, …) with <code>TRUE</code> for
+pass, and <code>.summary</code>, with the class
+<code>spatialvalid</code>, so CoordinateCleaner’s <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>
+and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods and filters on <code>.summary</code>
+work on it. The package tests compare it column by column with
+<code>clean_coordinates(value = "spatialvalid")</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_spatialvalid.html">as_spatialvalid</a></span><span class="op">(</span><span class="va">oc</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sv</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".zer"</span>, <span class="st">".equ"</span>, <span class="st">".cap"</span>, <span class="st">".dpl"</span>, <span class="st">".summary"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    .zer  .equ .cap  .dpl .summary</span></span>
+<span><span class="co">#&gt; 1 FALSE FALSE TRUE  TRUE    FALSE</span></span>
+<span><span class="co">#&gt; 2 FALSE FALSE TRUE  TRUE    FALSE</span></span>
+<span><span class="co">#&gt; 3 FALSE FALSE TRUE FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 4 FALSE FALSE TRUE FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 5 FALSE FALSE TRUE FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 6 FALSE FALSE TRUE FALSE    FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sv</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     .val     .zer     .equ     .cap     .cen    .inst     .gbf     .dpl </span></span>
+<span><span class="co">#&gt;        0       30       40      436       29        0        0       18 </span></span>
+<span><span class="co">#&gt; .summary </span></span>
+<span><span class="co">#&gt;      491</span></span></code></pre></div>
 <p>The grouped tests (<code>outlier</code>, the three fossil outlier
 tests and the two dataset tests) compare a record with the other records
 of its species, taxon or dataset, so a record’s flag depends on the rest

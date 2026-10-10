@@ -16,8 +16,9 @@
 - home: @p:cc.test-names
 
 ### value-default
-- detail: `cc_*()` default `value = "clean"` removes records; `clean_coordinates()` default `value = "spatialvalid"` flags, with TRUE meaning pass; `flag_<test>` is TRUE for fail
-- home: @p:cc.pipe; @p:cc.clean-coordinates
+- detail: `cc_*()` default `value = "clean"` removes records; `clean_coordinates()` default `value = "spatialvalid"` flags, with TRUE meaning pass; `flag_<test>` is TRUE for fail; `as_spatialvalid()` converts to the `spatialvalid` layout (column names from the `spatialvalid` column of `flag_tests()`, `.<test>` for tests without one, `.summary`)
+- home: @p:cc.pipe; @p:cc.clean-coordinates; @p:cc.spatialvalid
+- stated-at: ?as_spatialvalid; @p:readme.box; NEWS.md
 
 ### sea-scale
 - detail: `cc_sea(scale = 110)`; `clean_coordinates(seas_scale = 50)`; `flag_occurrences(land_scale = 110)`
