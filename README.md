@@ -156,6 +156,10 @@ The gazetteers are rebuilt from the original public sources (Natural Earth, publ
 - [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html)
 - [Full Reference](https://gillescolling.com/OccurrenceCleaner/reference/)
 
+## Contributing
+
+Bug reports and pull requests are welcome; see the [contributing guide](https://gillescolling.com/OccurrenceCleaner/CONTRIBUTING.html).
+
 ## Support
 
 > "Software is like sex: it's better when it's free." — Linus Torvalds

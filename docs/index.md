@@ -267,6 +267,11 @@ recorded with the flags by size and checksum.
 - [Full
   Reference](https://gillescolling.com/OccurrenceCleaner/reference/)
 
+## Contributing
+
+Bug reports and pull requests are welcome; see the [contributing
+guide](https://gillescolling.com/OccurrenceCleaner/CONTRIBUTING.html).
+
 ## Support
 
 > “Software is like sex: it’s better when it’s free.” — Linus Torvalds
