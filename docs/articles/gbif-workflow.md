@@ -7,6 +7,16 @@ over the same flags before choosing one. The data are simulated so that
 every error is known, which makes it possible to check that each test
 catches what it should and nothing else.
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ``` r
 
 library(OccurrenceCleaner)

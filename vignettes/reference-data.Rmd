@@ -94,7 +94,7 @@ Cape Town, Sucre and Naypyidaw are flagged only with the Natural Earth list; Pre
 
 ## Land scale and the `sea` test
 
-The `sea` test flags records outside the land polygons. The coarse 1:110m layer, CoordinateCleaner's default, smooths the coast and drops small islands; the 1:50m layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
+The `sea` test flags records outside the land polygons. The coarse 1:110m layer, the default of CoordinateCleaner's `cc_sea()` (its `clean_coordinates()` uses 1:50m), smooths the coast and drops small islands; the 1:50m layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
 
 ```{r land-grid}
 g <- expand.grid(decimalLongitude = seq(7.5, 15.5, by = 0.05),
@@ -161,6 +161,6 @@ attr(f, "occ_layout_version")
 
 - `reference = "natural_earth"` (the default) needs no other package, has a version and checksum for every layer, and uses current Natural Earth and GRSciColl data.
 
-- `reference = "CoordinateCleaner"` reproduces CoordinateCleaner's flags, for example to compare with a published analysis that used it. It needs CoordinateCleaner installed, and rnaturalearth for the polygon tests, which downloads the Natural Earth layers at run time as CoordinateCleaner does.
+- `reference = "CoordinateCleaner"` gives CoordinateCleaner's flags up to the differences listed in the article Coming from CoordinateCleaner, for example to compare with a published analysis that used it. It needs CoordinateCleaner installed, and rnaturalearth for the polygon tests, which downloads the Natural Earth layers at run time as CoordinateCleaner does.
 
 Both references use the same buffers and the same geodesic distance, so the difference between them is in the points and polygons only.

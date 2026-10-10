@@ -19,8 +19,8 @@ versioned: \code{layout_version} changes whenever a bit is added, removed or
 redefined, and the flag output records which version produced it.
 }
 \details{
-Tests marked \code{source = "CoordinateCleaner"} reproduce the test of the same
-name in that package with its default buffer (see the \code{equivalent} column);
+Tests marked \code{source = "CoordinateCleaner"} are equivalent to the test of
+the same name in that package with its default buffer (see the \code{equivalent} column);
 the documented differences are listed in \code{\link[=flag_occurrences]{flag_occurrences()}}. Tests marked
 \code{source = "OccurrenceCleaner"} are additions.
 }

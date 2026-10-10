@@ -22,7 +22,8 @@ province centroids, land, urban areas and country polygons from Natural Earth
 Scientific Collections (GRSciColl). With \code{reference = "CoordinateCleaner"} the
 point gazetteers are read from the user's CoordinateCleaner installation
 (\code{countryref}, \code{institutions}) and the polygon layers are downloaded through
-rnaturalearth exactly as that package does, which reproduces its flags.
+rnaturalearth exactly as that package does, which gives its flags up to the
+differences documented in \code{\link[=flag_occurrences]{flag_occurrences()}}.
 }
 \examples{
 reference_info()

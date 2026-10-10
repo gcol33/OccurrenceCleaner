@@ -2,14 +2,25 @@
 
 This article goes through the nineteen tests one by one: what each
 computes, which fields it reads, where its edge lies, and how its result
-can be changed through an argument. The first eleven reproduce the
-record tests of CoordinateCleaner (Zizka et
+can be changed through an argument. The first eleven are the record
+tests of CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
-buffers; the other eight read GBIF fields and are additions of this
-package. Each test also has a help page of its own
+buffers, up to the differences listed in the article Coming from
+CoordinateCleaner; the other eight read GBIF fields and are additions of
+this package. Each test also has a help page of its own
 ([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
 …).
+
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
 
 ``` r
 
@@ -249,8 +260,12 @@ reports directly.
 
 `sea` flags records outside the land polygons of Natural Earth. The land
 layer comes at three scales: 1:110m (the default, as in
-CoordinateCleaner), 1:50m and 1:10m, set with `land_scale`. The test is
-a planar point-in-polygon test in longitude and latitude, through a grid
+CoordinateCleaner’s
+[`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
+its
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+uses 1:50m), 1:50m and 1:10m, set with `land_scale`. The test is a
+planar point-in-polygon test in longitude and latitude, through a grid
 index whose boundary cells are resolved exactly.
 
 The scale decides the result for records near the coast. The GBIF

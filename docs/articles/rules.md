@@ -22,6 +22,16 @@ single pass.
 4.  **Apply** the chosen rule,
     [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ## Example
 
 ``` r

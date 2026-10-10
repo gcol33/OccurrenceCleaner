@@ -10,6 +10,16 @@ functions that have no counterpart. The chunks that call
 CoordinateCleaner run only when it is installed; it is a suggested
 package, not a dependency.
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ``` r
 
 library(OccurrenceCleaner)
@@ -17,31 +27,51 @@ library(OccurrenceCleaner)
 
 ## Function mapping
 
-| CoordinateCleaner                  | OccurrenceCleaner                |
-|:-----------------------------------|:---------------------------------|
-| cc_val()                           | invalid                          |
-| cc_zero()                          | zero                             |
-| cc_equ()                           | equal                            |
-| cc_cap()                           | capital                          |
-| cc_cen()                           | centroid                         |
-| cc_inst()                          | institution                      |
-| cc_gbif()                          | gbif_headquarters                |
-| cc_sea()                           | sea                              |
-| cc_urb()                           | urban                            |
-| cc_coun()                          | country_mismatch                 |
-| cc_dupl()                          | duplicate                        |
-| clean_coordinates()                | flag_occurrences(x, tests = …)   |
-| buffer arguments (capitals_rad, …) | buffers = list(capital = …)      |
-| additions (cc_dupl)                | duplicate_by                     |
-| seas_scale                         | land_scale                       |
-| value = “clean”                    | x\[!has_flag(x\$flags, rule), \] |
-| value = “flagged” / “spatialvalid” | the flag\_ columns               |
+| CoordinateCleaner                  | OccurrenceCleaner                     |
+|:-----------------------------------|:--------------------------------------|
+| cc_val()                           | invalid                               |
+| cc_zero()                          | zero                                  |
+| cc_equ()                           | equal                                 |
+| cc_cap()                           | capital                               |
+| cc_cen()                           | centroid                              |
+| cc_inst()                          | institution                           |
+| cc_gbif()                          | gbif_headquarters                     |
+| cc_sea()                           | sea                                   |
+| cc_urb()                           | urban                                 |
+| cc_coun()                          | country_mismatch                      |
+| cc_dupl()                          | duplicate                             |
+| clean_coordinates()                | flag_occurrences(x, tests = …)        |
+| buffer arguments (capitals_rad, …) | buffers = list(capital = …)           |
+| additions (cc_dupl)                | duplicate_by                          |
+| seas_scale (default 50)            | land_scale (default 110, as cc_sea()) |
+| value = “clean”                    | x\[!has_flag(x\$flags, rule), \]      |
+| value = “flagged” / “spatialvalid” | the flag\_ columns                    |
 
 Every test is chosen by name through the `tests` argument of the one
 verb,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
 so there are no `cc_*` functions in this package; with both attached,
 CoordinateCleaner’s functions keep their names.
+
+The test names of `clean_coordinates(tests = )` are plural where the
+names here are singular. Validity has no name there:
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+checks it first and, if any coordinate is invalid, stops and returns
+only that check. Here it is the `invalid` test, and the other tests
+still run on the valid records.
+
+| clean_coordinates(tests = ) | flag_occurrences(tests = ) |
+|:----------------------------|:---------------------------|
+| capitals                    | capital                    |
+| centroids                   | centroid                   |
+| countries                   | country_mismatch           |
+| duplicates                  | duplicate                  |
+| equal                       | equal                      |
+| gbif                        | gbif_headquarters          |
+| institutions                | institution                |
+| seas                        | sea                        |
+| urban                       | urban                      |
+| zeros                       | zero                       |
 
 ## Side by side
 

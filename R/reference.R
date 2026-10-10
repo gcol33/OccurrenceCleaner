@@ -10,7 +10,8 @@
 #' Scientific Collections (GRSciColl). With `reference = "CoordinateCleaner"` the
 #' point gazetteers are read from the user's CoordinateCleaner installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
-#' rnaturalearth exactly as that package does, which reproduces its flags.
+#' rnaturalearth exactly as that package does, which gives its flags up to the
+#' differences documented in [flag_occurrences()].
 #'
 #' @return A data frame with one row per layer: `layer`, `source`, `file`,
 #'   `version`, `url`, `sha256`, `retrieved`, `licence`.

@@ -13,9 +13,9 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     the same tests and default buffers as 'CoordinateCleaner'. It also reads
     the quality warnings GBIF attaches to each record, the basis of record and
     the establishment means. Records are flagged and kept, and users choose
-    afterwards which flags to filter on. Data frames of a few million records are flagged in
-    seconds, and GBIF snapshots of billions of records are processed by
-    reading Parquet files in chunks.
+    afterwards which flags to filter on. Data frames of a few million records
+    are flagged in seconds, and GBIF snapshots of billions of records are
+    processed by reading Parquet files in chunks.
 License: MIT + file LICENSE
 URL: https://gillescolling.com/OccurrenceCleaner/, https://github.com/gcol33/OccurrenceCleaner
 BugReports: https://github.com/gcol33/OccurrenceCleaner/issues

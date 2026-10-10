@@ -30,10 +30,10 @@
 #' * `cc_zero`'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 #'   CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 #'   documented 0.5 degree radius.
-#' * `country_mismatch` compares the record's code with both the alpha-2 and
-#'   alpha-3 codes of the Natural Earth country polygon the point falls in;
-#'   CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
-#'   CoordinateCleaner.
+#' * `country_mismatch` compares the record's code with the ISO alpha-2 code,
+#'   the ISO alpha-3 code and the Natural Earth `ADM0_A3` code of the country
+#'   polygon the point falls in; CoordinateCleaner compares alpha-3 only.
+#'   Records without a code, or at sea, are flagged as in CoordinateCleaner.
 #' * `duplicate` on streamed input is evaluated within each input file (Parquet
 #'   part), not across the whole table.
 #' * With the default reference the gazetteers are rebuilt from the original
@@ -47,7 +47,8 @@
 #'   `"CoordinateCleaner"` (that package's tables, read at run time). See
 #'   [reference_info()].
 #' @param land_scale Natural Earth scale of the land layer for `sea`: 110
-#'   (CoordinateCleaner's default), 50, or 10 (downloaded on first use, see
+#'   (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()`
+#'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see
 #'   [download_reference()]).
 #' @param buffers Named list overriding buffer distances in metres for
 #'   `capital`, `centroid`, `institution`, `gbif_headquarters`, or in degrees

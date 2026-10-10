@@ -5,8 +5,8 @@
 #' versioned: `layout_version` changes whenever a bit is added, removed or
 #' redefined, and the flag output records which version produced it.
 #'
-#' Tests marked `source = "CoordinateCleaner"` reproduce the test of the same
-#' name in that package with its default buffer (see the `equivalent` column);
+#' Tests marked `source = "CoordinateCleaner"` are equivalent to the test of
+#' the same name in that package with its default buffer (see the `equivalent` column);
 #' the documented differences are listed in [flag_occurrences()]. Tests marked
 #' `source = "OccurrenceCleaner"` are additions.
 #'

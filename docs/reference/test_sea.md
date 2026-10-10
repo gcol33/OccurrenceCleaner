@@ -13,8 +13,9 @@ once by
 
 ## CoordinateCleaner
 
-Equivalent to `cc_sea()` with its default `scale = 110` (`seas_scale` in
-`clean_coordinates()`); identical flags on the same layer.
+Equivalent to `cc_sea()` with its default `scale = 110`
+(`clean_coordinates()` uses `seas_scale = 50`, which is
+`land_scale = 50` here); identical flags on the same layer.
 CoordinateCleaner downloads the layer through rnaturalearth at run time;
 here it is bundled and pinned.
 

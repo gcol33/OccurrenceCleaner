@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-OccurrenceCleaner flags errors in species occurrence records and keeps every record. Each test sets one bit in an integer flag word, so deciding which records to drop is a query over the flags, made after the pass and changed without rerunning it.
+OccurrenceCleaner is an extension of CoordinateCleaner (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) tailored to large-scale occurrence data. It flags errors in species occurrence records and keeps every record. Each test sets one bit in an integer flag word, so deciding which records to drop is a query over the flags, made after the pass and changed without rerunning it.
 
 ## Installation
 
@@ -51,7 +51,7 @@ The first record is within 1 km of the GBIF headquarters in Copenhagen, hence al
 knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 ```
 
-The first eleven tests reproduce CoordinateCleaner's record tests with its default buffers; the rest read GBIF's `issue`, `basisOfRecord` and `establishmentMeans` fields. `default_tests()` names the tests that need only coordinates and a species.
+The first eleven tests are CoordinateCleaner's record tests with its default buffers, up to the differences listed in the article Coming from CoordinateCleaner; the rest read GBIF's `issue`, `basisOfRecord` and `establishmentMeans` fields. `default_tests()` names the tests that need only coordinates and a species.
 
 ## Rules are queries over the flags
 
@@ -94,7 +94,7 @@ The gazetteers are rebuilt from Natural Earth and GBIF's registry of scientific 
 knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 ```
 
-`reference = "CoordinateCleaner"` uses that package's own tables instead, which reproduces its flags (CoordinateCleaner must be installed). The land layer for the `sea` test comes at Natural Earth scale 110 (CoordinateCleaner's default), 50, or 10; the 1:10m layer is downloaded once on first use.
+`reference = "CoordinateCleaner"` uses that package's own tables instead, which gives its flags up to the same differences (CoordinateCleaner must be installed). The land layer for the `sea` test comes at Natural Earth scale 110 (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()` uses 50), 50, or 10; the 1:10m layer is downloaded once on first use.
 
 ## A table on disk
 

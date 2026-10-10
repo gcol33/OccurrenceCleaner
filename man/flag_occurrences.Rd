@@ -33,7 +33,8 @@ flag_occurrences(
 \code{\link[=reference_info]{reference_info()}}.}
 
 \item{land_scale}{Natural Earth scale of the land layer for \code{sea}: 110
-(CoordinateCleaner's default), 50, or 10 (downloaded on first use, see
+(the default of CoordinateCleaner's \code{cc_sea()}; its \code{clean_coordinates()}
+uses \code{seas_scale = 50}), 50, or 10 (downloaded on first use, see
 \code{\link[=download_reference]{download_reference()}}).}
 
 \item{buffers}{Named list overriding buffer distances in metres for
@@ -106,10 +107,10 @@ CoordinateCleaner flags is flagged here.
 \item \code{cc_zero}'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
 CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.
-\item \code{country_mismatch} compares the record's code with both the alpha-2 and
-alpha-3 codes of the Natural Earth country polygon the point falls in;
-CoordinateCleaner compares alpha-3 only. Records without a code, or at sea, are flagged as in
-CoordinateCleaner.
+\item \code{country_mismatch} compares the record's code with the ISO alpha-2 code,
+the ISO alpha-3 code and the Natural Earth \code{ADM0_A3} code of the country
+polygon the point falls in; CoordinateCleaner compares alpha-3 only.
+Records without a code, or at sea, are flagged as in CoordinateCleaner.
 \item \code{duplicate} on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.
 \item With the default reference the gazetteers are rebuilt from the original

@@ -6,11 +6,15 @@
 [![Codecov test coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https://app.codecov.io/gh/gcol33/OccurrenceCleaner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records. These include coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates. It also reads three GBIF fields: the quality warnings GBIF attaches to a record during processing (such as invalid or rounded coordinates, a fuzzy taxon match or an unlikely date), the basis of record (fossil or living specimens), and the establishment means (introduced or cultivated individuals).
+OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates.
+
+It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means.
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
-The test suite checks that both packages return the same flags with the same default buffers. Data frames containing a few million records are flagged in seconds, and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
+The test suite runs CoordinateCleaner on sampled records and checks that both packages return the same flags with the same default buffers; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
+
+Data frames containing a few million records are flagged in seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.
 
 ## Installation
 
@@ -32,7 +36,7 @@ x <- data.frame(species = c("Quercus robur", "Quercus robur", "Fagus sylvatica")
 flag_occurrences(x)
 ```
 
-The result is `x` with an integer `flags` column and one logical `flag_<test>` column per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.
+The result is `x` with one logical `flag_<test>` column per test and an integer `flags` column that holds all of them, one bit per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.
 
 ## Several rules from one pass
 
@@ -74,10 +78,10 @@ Rerunning the same call after an interruption skips the input files already fini
 ## What's in the box
 
 - **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out.
-- **`tally_flags()`**: flags to a loss table by any grouping columns, with bins and named rules.
+- **`tally_flags()`**: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.
 - **`summary()`**, **`plot()`**: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.
-- **`has_flag()`**, **`flag_mask()`**: a rule as a bit mask over the flag word.
-- **`flag_tests()`**: the versioned flag layout: bit, test, definition, source, CoordinateCleaner equivalent.
+- **`has_flag()`**, **`flag_mask()`**: which records a rule removes, read from the `flags` column.
+- **`flag_tests()`**: which bit of `flags` holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.
 - **`default_tests()`**: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.
 - **`occ_columns()`**: which columns hold which field; Darwin Core defaults, case-insensitive.
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
@@ -102,7 +106,9 @@ Rerunning the same call after an interruption skips the input files already fini
 | `basis_fossil`, `basis_living` | basis of record | addition |
 | `establishment_introduced`, `establishment_managed` | establishment means | addition |
 
-Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly. The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions); `reference = "CoordinateCleaner"` reads that package's own tables instead and reproduces its flags. The documented differences, each enforced by a test, are in `?flag_occurrences`.
+Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.
+
+The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; GBIF GRSciColl for institutions), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces.
 
 ## Documentation
 

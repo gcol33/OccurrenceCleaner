@@ -7,6 +7,16 @@ each layer comes from, how the package’s own gazetteers compare with
 CoordinateCleaner’s, how much the choice of land scale changes the `sea`
 test, and how the reference version is recorded with the flags.
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ``` r
 
 library(OccurrenceCleaner)
@@ -127,9 +137,13 @@ the Natural Earth list catches it.
 ## Land scale and the `sea` test
 
 The `sea` test flags records outside the land polygons. The coarse
-1:110m layer, CoordinateCleaner’s default, smooths the coast and drops
-small islands; the 1:50m layer follows the coast more closely. A grid of
-points over Denmark and the western Baltic shows where the two disagree:
+1:110m layer, the default of CoordinateCleaner’s
+[`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
+(its
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+uses 1:50m), smooths the coast and drops small islands; the 1:50m layer
+follows the coast more closely. A grid of points over Denmark and the
+western Baltic shows where the two disagree:
 
 ``` r
 
@@ -230,11 +244,12 @@ one output directory never mixes flags from two references.
   has a version and checksum for every layer, and uses current Natural
   Earth and GRSciColl data.
 
-- `reference = "CoordinateCleaner"` reproduces CoordinateCleaner’s
-  flags, for example to compare with a published analysis that used it.
-  It needs CoordinateCleaner installed, and rnaturalearth for the
-  polygon tests, which downloads the Natural Earth layers at run time as
-  CoordinateCleaner does.
+- `reference = "CoordinateCleaner"` gives CoordinateCleaner’s flags up
+  to the differences listed in the article Coming from
+  CoordinateCleaner, for example to compare with a published analysis
+  that used it. It needs CoordinateCleaner installed, and rnaturalearth
+  for the polygon tests, which downloads the Natural Earth layers at run
+  time as CoordinateCleaner does.
 
 Both references use the same buffers and the same geodesic distance, so
 the difference between them is in the points and polygons only.

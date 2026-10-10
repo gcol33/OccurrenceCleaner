@@ -26,7 +26,8 @@ GBIF's Global Registry of Scientific Collections (GRSciColl). With
 `reference = "CoordinateCleaner"` the point gazetteers are read from the
 user's CoordinateCleaner installation (`countryref`, `institutions`) and
 the polygon layers are downloaded through rnaturalearth exactly as that
-package does, which reproduces its flags.
+package does, which gives its flags up to the differences documented in
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
 
 ## Examples
 

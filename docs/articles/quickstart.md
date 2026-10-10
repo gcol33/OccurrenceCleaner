@@ -1,9 +1,21 @@
 # Quick start
 
-OccurrenceCleaner flags errors in species occurrence records and keeps
-every record. Each test sets one bit in an integer flag word, so
-deciding which records to drop is a query over the flags, made after the
-pass and changed without rerunning it.
+OccurrenceCleaner is an extension of CoordinateCleaner (Zizka et
+al. [2019](https://doi.org/10.1111/2041-210X.13152)) tailored to
+large-scale occurrence data. It flags errors in species occurrence
+records and keeps every record. Each test sets one bit in an integer
+flag word, so deciding which records to drop is a query over the flags,
+made after the pass and changed without rerunning it.
+
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
 
 ``` r
 
@@ -77,8 +89,9 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 | 17 | establishment_introduced | establishment means is introduced, naturalised or invasive | NA |
 | 18 | establishment_managed | establishment means is managed or cultivated | NA |
 
-The first eleven tests reproduce CoordinateCleaner’s record tests with
-its default buffers; the rest read GBIF’s `issue`, `basisOfRecord` and
+The first eleven tests are CoordinateCleaner’s record tests with its
+default buffers, up to the differences listed in the article Coming from
+CoordinateCleaner; the rest read GBIF’s `issue`, `basisOfRecord` and
 `establishmentMeans` fields.
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
 names the tests that need only coordinates and a species.
@@ -174,10 +187,13 @@ knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 | institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
 
 `reference = "CoordinateCleaner"` uses that package’s own tables
-instead, which reproduces its flags (CoordinateCleaner must be
-installed). The land layer for the `sea` test comes at Natural Earth
-scale 110 (CoordinateCleaner’s default), 50, or 10; the 1:10m layer is
-downloaded once on first use.
+instead, which gives its flags up to the same differences
+(CoordinateCleaner must be installed). The land layer for the `sea` test
+comes at Natural Earth scale 110 (the default of CoordinateCleaner’s
+[`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
+its
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+uses 50), 50, or 10; the 1:10m layer is downloaded once on first use.
 
 ## A table on disk
 
@@ -200,7 +216,7 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpobkWNZ\flags1da047e970a9
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpycKqJN\flags1893462e0247f
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v1
 #>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)

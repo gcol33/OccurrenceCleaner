@@ -23,9 +23,9 @@ The attribute `layout_version` holds the layout version.
 
 ## Details
 
-Tests marked `source = "CoordinateCleaner"` reproduce the test of the
-same name in that package with its default buffer (see the `equivalent`
-column); the documented differences are listed in
+Tests marked `source = "CoordinateCleaner"` are equivalent to the test
+of the same name in that package with its default buffer (see the
+`equivalent` column); the documented differences are listed in
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
 Tests marked `source = "OccurrenceCleaner"` are additions.
 

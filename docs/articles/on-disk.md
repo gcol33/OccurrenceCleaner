@@ -10,6 +10,16 @@ flags to disk next to the columns kept for grouping. This article walks
 through the output layout, resuming an interrupted run, tallying from
 disk, and the one test whose result depends on how the input is split.
 
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("gcol33/OccurrenceCleaner")
+```
+
+Needs a C++ compiler (Rtools on Windows).
+
 ``` r
 
 library(OccurrenceCleaner)
@@ -130,8 +140,9 @@ flag_occurrences(src, out = out, tests = c("invalid", "zero"), keep = c("kingdom
 
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 accepts the `occ_flagged` object or the output directory and streams the
-parts, so a loss table over the whole snapshot is built without loading
-it. Grouping columns must have been kept when flagging:
+parts, so the counts per group of records each test flags and each rule
+removes are built over the whole snapshot without loading it. Grouping
+columns must have been kept when flagging:
 
 ``` r
 

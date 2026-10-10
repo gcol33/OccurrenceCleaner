@@ -35,17 +35,28 @@ m <- data.frame(
   CoordinateCleaner = c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()", "cc_inst()",
                         "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()",
                         "clean_coordinates()", "buffer arguments (capitals_rad, ...)",
-                        "additions (cc_dupl)", "seas_scale", "value = \"clean\"",
+                        "additions (cc_dupl)", "seas_scale (default 50)", "value = \"clean\"",
                         "value = \"flagged\" / \"spatialvalid\""),
   OccurrenceCleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
                         "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate",
                         "flag_occurrences(x, tests = ...)", "buffers = list(capital = ...)",
-                        "duplicate_by", "land_scale",
+                        "duplicate_by", "land_scale (default 110, as cc_sea())",
                         "x[!has_flag(x$flags, rule), ]", "the flag_<test> columns"))
 knitr::kable(m)
 ```
 
 Every test is chosen by name through the `tests` argument of the one verb, `flag_occurrences()`, so there are no `cc_*` functions in this package; with both attached, CoordinateCleaner's functions keep their names.
+
+The test names of `clean_coordinates(tests = )` are plural where the names here are singular. Validity has no name there: `clean_coordinates()` checks it first and, if any coordinate is invalid, stops and returns only that check. Here it is the `invalid` test, and the other tests still run on the valid records.
+
+```{r test-names, echo = FALSE}
+knitr::kable(data.frame(
+  `clean_coordinates(tests = )` = c("capitals", "centroids", "countries", "duplicates", "equal",
+                                    "gbif", "institutions", "seas", "urban", "zeros"),
+  `flag_occurrences(tests = )` = c("capital", "centroid", "country_mismatch", "duplicate", "equal",
+                                   "gbif_headquarters", "institution", "sea", "urban", "zero"),
+  check.names = FALSE))
+```
 
 ## Side by side
 
