@@ -30,7 +30,7 @@
 ### grouped-test-names
 - detail: `clean_fossils()` names "temprange" and "spatiotemp", here `age_range_outlier` and `spatiotemporal_outlier` (and `age_outlier` for `cf_age()`); `clean_dataset()` names "ddmm" and "periodicity", here `dataset_ddmm` and `dataset_rounded`; `clean_coordinates()` "outliers", here `outlier`
 - home: @p:cc.test-names
-- stated-at: @p:fossil.outliers
+- stated-at: @p:fossil.outliers; @p:readme.fossil
 
 ## Terms
 
@@ -88,6 +88,7 @@
 - forms: minimum age; maximum age; `min_age`, `max_age` fields of `occ_columns()`; `min_ma`, `max_ma` (PBDB and CoordinateCleaner column names)
 - as: the two ends of a fossil record's stratigraphic age range, in million years
 - defined: @p:fossil.opener
+- stated-at: @p:readme.fossil (PBDB `lng` and `accepted_name` mapped; ages read from `min_ma`, `max_ma` by default)
 
 ### gazetteers-argument
 - forms: `gazetteers`; custom gazetteer; custom layer

@@ -83,6 +83,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Says why the outlier and dataset tests run in a pass over the whole input and shows `settings` in one call.
 - leaves: the grouped tests exist, work streamed too, and take CoordinateCleaner's options through `settings`
 
+### readme.fossil  [A1 A6]  (code)
+- idea: PBDB table, clean_fossils' tests
+- job: Shows a PBDB fossil table flagged with the age test and two fossil outlier tests, columns named once.
+- leaves: fossil tables take the same verb; `occ_columns()` for PBDB names; ages read from `min_ma`, `max_ma` by default
+
 ### readme.snapshot  [A2]  (section)
 - idea: streaming a snapshot
 - job: Shows the same verb on a GBIF Parquet snapshot, with resumable units.
