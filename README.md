@@ -6,9 +6,11 @@
 [![Codecov test coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https://app.codecov.io/gh/gcol33/OccurrenceCleaner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**The CoordinateCleaner record tests, computed as nearest-neighbour and point-in-polygon queries in C++, streamed from disk.**
+OccurrenceCleaner flags common problems in species occurrence records. These include coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea or in the wrong country; and duplicates. It also checks the GBIF issue, basis-of-record and establishment fields.
 
-Point it at a data frame of occurrence records or at a GBIF snapshot on disk, and it flags the usual errors: coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea or in the wrong country, duplicates, and the GBIF issue, basis-of-record and establishment fields. Every test writes one bit per record and nothing is dropped, so a cleaning rule is a query over the flags, chosen afterwards. The tests and default buffers are those of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), checked record by record against it in the test suite. The default tests flag ten million records in about 18 seconds on one core, and a snapshot of billions streams from Parquet in chunks.
+Each test stores its result as one bit per record. No records are removed: users decide afterwards which flags to use for filtering.
+
+The tests and default buffers follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), and the test suite compares the two packages record by record. The difference is speed and scale: OccurrenceCleaner flags data frames containing a few million records in seconds and processes GBIF snapshots containing billions of records by reading Parquet files in chunks.
 
 ```r
 library(OccurrenceCleaner)
