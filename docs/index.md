@@ -8,25 +8,26 @@ coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-OccurrenceCleaner flags common problems in species occurrence records.
-These include coordinates at country centroids, capitals or biodiversity
-institutions; zero or equal coordinates; records at sea or in the wrong
-country; and duplicates. It also reads three GBIF fields: the quality
-warnings GBIF attaches to a record during processing (such as invalid or
-rounded coordinates, a fuzzy taxon match or an unlikely date), the basis
-of record (fossil or living specimens), and the establishment means
+OccurrenceCleaner is an extension of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(Zizka et al. 2019) tailored to large-scale occurrence data. It flags
+common problems in species occurrence records. These include coordinates
+at country centroids, capitals or biodiversity institutions; zero or
+equal coordinates; records at sea or in the wrong country; and
+duplicates. It also reads three GBIF fields: the quality warnings GBIF
+attaches to a record during processing (such as invalid or rounded
+coordinates, a fuzzy taxon match or an unlikely date), the basis of
+record (fossil or living specimens), and the establishment means
 (introduced or cultivated individuals).
 
 Each test stores its result as one bit per record. No records are
 removed: users decide afterwards which flags to use for filtering.
 
-The tests and default buffers follow
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. 2019), and the test suite compares the two packages record
-by record. The difference is speed and scale: OccurrenceCleaner flags
-data frames containing a few million records in seconds and processes
-GBIF snapshots containing billions of records by reading Parquet files
-in chunks.
+The tests and default buffers follow CoordinateCleaner, and the test
+suite checks that both packages return the same flags. The difference is
+speed and scale: OccurrenceCleaner flags data frames containing a few
+million records in seconds and processes GBIF snapshots containing
+billions of records by reading Parquet files in chunks.
 
 ``` r
 

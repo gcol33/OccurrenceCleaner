@@ -83,7 +83,7 @@ The gazetteers are rebuilt from Natural Earth and GBIF's registry of scientific 
 knitr::kable(reference_info()[, c("layer", "source", "version", "retrieved")])
 ```
 
-`reference = "CoordinateCleaner"` uses that package's own tables instead, which reproduces its flags record by record (CoordinateCleaner must be installed). The land layer for the `sea` test comes at Natural Earth scale 110 (CoordinateCleaner's default), 50, or 10; the 1:10m layer is downloaded once on first use.
+`reference = "CoordinateCleaner"` uses that package's own tables instead, which reproduces its flags (CoordinateCleaner must be installed). The land layer for the `sea` test comes at Natural Earth scale 110 (CoordinateCleaner's default), 50, or 10; the 1:10m layer is downloaded once on first use.
 
 ## A table on disk
 
