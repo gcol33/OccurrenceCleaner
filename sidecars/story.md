@@ -11,7 +11,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - phrase: an extension of CoordinateCleaner tailored to large-scale occurrence data
 - same: test definitions and defaults of all twenty CoordinateCleaner tests: eleven coordinate record tests, `range` (`cc_iucn`), `aohi` (`cc_aohi`), the geographic outlier test (`cc_outl`), two dataset tests (`cd_ddmm`, `cd_round`) and four fossil tests (`cf_equal`, `cf_age`, `cf_outl`, `cf_range`); verified by `tests/testthat/test-equivalence.R` and `tests/testthat/test-group.R`, which run CoordinateCleaner on sampled records
 - differs: flags instead of filtering (CoordinateCleaner's `cc_*()` default `value = "clean"` removes records); one verb with a `tests` argument instead of one function per test; singular test names (`capital`) where `clean_coordinates()` takes plural ones (`capitals`); one `buffers` list instead of `*_rad` arguments and one `settings` list for the outlier and dataset options; own gazetteers by default; the documented flag differences (buffer circles, zero buffer, country codes, invalid coordinates, outliers of large species, random age draws, small datasets, streamed duplicates); additions (GBIF issue, basis of record, establishment means)
-- status: every CoordinateCleaner 3.0.1 test has a counterpart; not ported: `cc_outl(sampling_thresh)` (live rgbif query) and `write_pyrate()` (export format)
+- status: every CoordinateCleaner 3.0.1 function has a counterpart; `cc_outl(sampling_thresh)` takes the per-country record counts as a table (`gazetteers = list(sampling = ...)`) instead of a live rgbif query; `write_pyrate()` is `export_pyrate()`, renamed so both can be attached
 - home: vignettes/coordinatecleaner.Rmd ("Coming from CoordinateCleaner")
 
 ## Arcs
@@ -57,7 +57,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - answer: `outlier`, the three fossil outlier tests and the two dataset tests run in a group pass over the whole input before the record tests, in memory or streamed, with their options in `settings`.
 - payoff: CoordinateCleaner's outlier and dataset checks run on a snapshot, and a species split over many files is still tested as one group.
 - evidence: vignettes/outliers.Rmd; vignettes/fossils.Rmd (Outliers within a taxon); tests/testthat/test-group.R; ?test_outlier
-- limits: a grouped flag depends on the rest of the input; species below `min_occs` and datasets below the span or size thresholds are not tested; `dataset_rounded` can flag small clustered datasets that are not gridded
+- limits: a grouped flag depends on the rest of the input; species below `min_occs` and datasets below the span or size thresholds are not tested; `dataset_rounded` can flag small clustered datasets that are not gridded; the sampling correction is only as current as the record counts supplied
 - home: vignettes/outliers.Rmd
 - also: DESCRIPTION, README, vignettes/fossils.Rmd, vignettes/coordinatecleaner.Rmd
 
@@ -72,14 +72,14 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 
 ## Non-goals
 - No record is removed by the package.
-- No test that depends on a live web query (`cc_outl(sampling_thresh)`), no PyRate export.
+- No test that depends on a live web query; the sampling correction reads counts the user supplies.
 - No shipped species range maps; `range` takes the user's polygons.
 - No taxonomic name cleaning.
 
 ## Documents
 - DESCRIPTION: listing text; claim, relation, A1-A4 in one sentence each (the A6 tests named in the A1 list)
-- README / landing: claim, relation, A1-A3 one line each, first example, rules, grouped tests (A6), snapshot, test table, routing
-- ?OccurrenceCleaner: entry point inside R; claim, relation, verb map
+- README / landing: claim, relation, A1-A3 one line each, first example, rules, grouped tests (A6), snapshot, test table, routing, acknowledgement of the CoordinateCleaner authors, both citations
+- ?OccurrenceCleaner: entry point inside R; claim, relation, verb map, credit and both citations
 - quickstart (Get Started): tutorial from a data frame to a tally and a streamed table
 - tests: explanation of each test (A4 home)
 - rules: how-to choose and compare rules (A3 home)
@@ -87,7 +87,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - gbif-workflow: how-to, a GBIF download end to end
 - reference-data: explanation of the gazetteers (A5 home)
 - gazetteers: how-to use custom points, polygons and species ranges (A5)
-- fossils: how-to flag a fossil table (A1, A3, A6)
+- fossils: how-to flag a fossil table and export it to PyRate (A1, A3, A6)
 - outliers: how-to run the outlier, dataset and hotspot tests (A6 home)
 - coordinatecleaner: comparison (A1 home, relation home)
 - help pages: reference

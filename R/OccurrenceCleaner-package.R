@@ -8,6 +8,11 @@
 #' on-disk table, [flag_tests()] for which bit holds which test, and
 #' [tally_flags()] to count what each test and rule removes.
 #'
+#' The tests, their default buffers and the options of the outlier and
+#' dataset tests come from CoordinateCleaner by Alexander Zizka and
+#' co-authors; please cite Zizka et al. (2019) together with this package
+#' (`citation("OccurrenceCleaner")` gives both).
+#'
 #' @references Zizka A, Silvestro D, Andermann T, et al. (2019)
 #'   CoordinateCleaner: standardized cleaning of occurrence records from
 #'   biological collection databases. Methods in Ecology and Evolution

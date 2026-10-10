@@ -14,6 +14,12 @@ query over the flags. See \code{\link[=flag_occurrences]{flag_occurrences()}} to
 on-disk table, \code{\link[=flag_tests]{flag_tests()}} for which bit holds which test, and
 \code{\link[=tally_flags]{tally_flags()}} to count what each test and rule removes.
 }
+\details{
+The tests, their default buffers and the options of the outlier and
+dataset tests come from CoordinateCleaner by Alexander Zizka and
+co-authors; please cite Zizka et al. (2019) together with this package
+(\code{citation("OccurrenceCleaner")} gives both).
+}
 \references{
 Zizka A, Silvestro D, Andermann T, et al. (2019)
 CoordinateCleaner: standardized cleaning of occurrence records from

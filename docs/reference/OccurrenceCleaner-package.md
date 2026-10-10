@@ -12,6 +12,13 @@ for which bit holds which test, and
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 to count what each test and rule removes.
 
+## Details
+
+The tests, their default buffers and the options of the outlier and
+dataset tests come from CoordinateCleaner by Alexander Zizka and
+co-authors; please cite Zizka et al. (2019) together with this package
+(`citation("OccurrenceCleaner")` gives both).
+
 ## References
 
 Zizka A, Silvestro D, Andermann T, et al. (2019) CoordinateCleaner:

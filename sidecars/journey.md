@@ -52,9 +52,9 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - leaves: a GBIF download, a snapshot or any Darwin Core table works; names are cleaned elsewhere
 
 ### readme.equivalence  [A1]
-- idea: same flags, tested
-- job: Says the test suite checks both packages return the same flags and points to the deliberate differences.
-- leaves: equivalence is tested, and where the exceptions are listed
+- idea: reimplemented; same flags, tested
+- job: Says the tests are reimplemented with CoordinateCleaner's definitions and defaults, that CoordinateCleaner is needed only to compare, and that the test suite checks both return the same flags, pointing to the deliberate differences.
+- leaves: CoordinateCleaner is not called at run time; equivalence is tested, and where the exceptions are listed
 
 ### readme.scale  [A2]
 - idea: seconds; billions by chunks
@@ -96,7 +96,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.box  (list)
 - idea: exported functions
 - job: Lists each exported function by what it does.
-- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields and `reference_points()` for custom gazetteers and AHOI
+- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields, `reference_points()` for custom gazetteers and AHOI, and `export_pyrate()`
 
 ### readme.tests  [A1 A4 A6]  (table)
 - idea: tests, definitions, sources
@@ -119,8 +119,18 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - leaves: where each topic lives
 
 ### readme.support  (section)
+
+### readme.acknowledgements  [A1]  (section)
+- idea: credit CC authors in specifics
+- job: Credits Zizka and co-authors for the tests, default buffers and grouped-test options, and says what this package takes from CoordinateCleaner: the specification and the reference sources.
+- leaves: who made the tests and what was taken from them
+
 ### readme.license  (section)
+
 ### readme.citation  (section)
+- idea: cite both, as bibtex
+- job: Gives the bibtex for this package and for Zizka et al. (2019), the same two entries `citation()` returns.
+- leaves: both references ready to paste
 
 ## ?OccurrenceCleaner
 
@@ -128,6 +138,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: extension of CC; flags, rule afterwards; verb map
 - job: States the relation, that records are kept and the rule chosen afterwards, and points to the three main functions.
 - leaves: the verb map
+
+### pkg.credit  [A1]
+- idea: credit CC authors; cite both
+- job: Credits Zizka and co-authors for the tests and defaults and asks for both citations.
+- leaves: `citation("OccurrenceCleaner")` gives both
 
 ## Quick start
 
@@ -246,10 +261,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Explains why proximity tests are faster and gives timings with machine and versions.
 - leaves: the speed ratio per test and the benchmark script
 
-### cc.no-counterpart  [A1]  (section)
-- idea: what stays in CoordinateCleaner
-- job: Says every CoordinateCleaner test has a counterpart and lists what remains: `sampling_thresh`, `write_pyrate()`, the plot and class check.
-- leaves: the two things only CoordinateCleaner does
+### cc.around-tests  [A1]  (section)
+- idea: every function has a counterpart; the functions around the tests
+- job: Says every CoordinateCleaner function has a counterpart and maps the ones around the tests: `cc_outl(sampling_thresh)`, `write_pyrate()`, plot, summary and the class check; explains why the sampling counts are a table and why `export_pyrate()` has its own name.
+- leaves: counts given as `gazetteers = list(sampling = ...)` are reproducible and recorded; both packages can be attached
 
 ## The tests in detail (explanation, A4 home)
 
@@ -530,6 +545,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Flags geographic outliers with the default fence and explains the one miss and the untested small species.
 - leaves: Q75 + 5 x IQR of mean distances; `min_occs`
 
+### out.sampling  [A1 A6]
+- idea: sampling correction from supplied counts
+- job: Explains CoordinateCleaner's sampling correction and runs it with a per-country count table.
+- leaves: `settings = list(outlier = list(sampling_thresh = ...))` with `gazetteers = list(sampling = <counts>)`; outliers stay flagged only in well-sampled countries
+
 ### out.methods  [A6]
 - idea: three methods via settings
 - job: Compares the quantile, MAD and distance methods and maps the default result.
@@ -603,6 +623,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - idea: identical flags with CoordinateCleaner's fossil tests
 - job: Shows identical flags with `cf_equal()` and says where the outlier tests are compared with `cf_age()`, `cf_outl()` and `cf_range()`.
 - leaves: `age_range_outlier` identical; the draw tests identical only when nothing is drawn
+
+### fossil.pyrate  [A1 A3]  (section)
+- idea: kept records to PyRate input
+- job: Says what PyRate is and writes the records a rule keeps as PyRate input with seeded age draws.
+- leaves: `export_pyrate()`, `status`, `replicates`, `seed`, `random = FALSE`; same layout as `write_pyrate()`, compared in the tests
 
 ### fossil.gbif  [A4]  (section)
 - idea: basis_fossil in GBIF data

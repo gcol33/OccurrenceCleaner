@@ -5,8 +5,10 @@
 ### coordinatecleaner
 - forms: an extension of CoordinateCleaner; an extension of 'CoordinateCleaner'
 - as: runs CoordinateCleaner's record tests with the same definitions and default buffers, for large-scale data, keeping every record
-- avoid: follows CoordinateCleaner; reproduces CoordinateCleaner (without "up to the documented differences")
+- avoid: follows CoordinateCleaner; reproduces CoordinateCleaner (without "up to the documented differences"); wraps or calls CoordinateCleaner (the tests are reimplemented; CoordinateCleaner runs only in the equivalence tests and under `reference = "CoordinateCleaner"`)
 - stated-at: @p:desc.claim; @p:readme.claim; @p:pkg.overview; @p:qs.opener; @p:cc.opener
+- reimplemented-at: @p:readme.equivalence
+- credit: Zizka and co-authors named for the tests, default buffers and grouped-test options at @p:readme.acknowledgements and @p:pkg.credit; cite both at @p:readme.citation (bibtex), @p:pkg.credit and inst/CITATION
 
 ### test-names
 - detail: the `tests` argument of `clean_coordinates()` takes plural names ("capitals", "centroids", "countries", "duplicates", "institutions", "seas", "zeros") and "gbif"; that of `flag_occurrences()` takes singular names, "country_mismatch" and "gbif_headquarters"; the coordinate validity check has no test name in `clean_coordinates()` and stops the run (@p:cc.validity)
@@ -31,6 +33,16 @@
 - detail: `clean_fossils()` names "temprange" and "spatiotemp", here `age_range_outlier` and `spatiotemporal_outlier` (and `age_outlier` for `cf_age()`); `clean_dataset()` names "ddmm" and "periodicity", here `dataset_ddmm` and `dataset_rounded`; `clean_coordinates()` "outliers", here `outlier`
 - home: @p:cc.test-names
 - stated-at: @p:fossil.outliers; @p:readme.fossil
+
+### pyrate-name
+- detail: CoordinateCleaner's `write_pyrate()` is `export_pyrate()` here, same file layout; the different name keeps `write_pyrate()` reachable when both packages are attached
+- home: @p:cc.around-tests
+- stated-at: @p:fossil.pyrate; @p:readme.box; ?export_pyrate
+
+### sampling-counts
+- detail: `cc_outl(sampling_thresh)` counts GBIF records per country online at run time; here the counts are a table passed as `gazetteers = list(sampling = ...)` with `settings = list(outlier = list(sampling_thresh = ...))`, and are recorded in the reference label
+- home: @p:cc.around-tests
+- stated-at: @p:out.sampling; ?test_outlier (Settings); ?flag_occurrences (`gazetteers`)
 
 ## Terms
 
@@ -92,8 +104,8 @@
 
 ### gazetteers-argument
 - forms: `gazetteers`; custom gazetteer; custom layer
-- as: the argument of `flag_occurrences()` that replaces the reference layer of single tests with the user's points or polygons
-- defined: @p:gaz.opener
+- as: the argument of `flag_occurrences()` that replaces the reference layer of single tests with the user's points or polygons, or supplies the per-country record counts of the outlier sampling correction (`sampling`)
+- defined: @p:gaz.opener; `sampling` at @p:out.sampling
 - glossed: @p:readme.reference
 
 ### reference-points
@@ -207,7 +219,7 @@
 - note: all agree with `.default_buffers` in R/flag.R (checked 2026-10-10)
 
 ### grouped-settings
-- argument: flag_occurrences(settings): outlier method "quantile", mltpl 5, tdi 1000 km, min_occs 7, raster from 10,000 records at 0.5 degrees; fossil outlier tests method "quantile", mltpl 5, size_thresh 7, replicates 5; dataset_ddmm min_span 2; dataset_rounded min_unique_ds_size 4
+- argument: flag_occurrences(settings): outlier method "quantile", mltpl 5, tdi 1000 km, min_occs 7, raster from 10,000 records at 0.5 degrees, sampling_thresh (see ?test_outlier); fossil outlier tests method "quantile", mltpl 5, size_thresh 7, replicates 5; dataset_ddmm min_span 2; dataset_rounded min_unique_ds_size 4
 - home: the Settings sections of ?test_outlier, ?test_age_outlier, ?test_spatiotemporal_outlier, ?test_age_range_outlier, ?test_dataset_ddmm, ?test_dataset_rounded
 - stated-at: @p:out.outlier; @p:out.methods; @p:out.large; @p:out.guidance; @p:fossil.outliers
 
