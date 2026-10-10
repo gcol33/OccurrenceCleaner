@@ -59,5 +59,16 @@ reference:
 - title: Package
   contents: OccurrenceCleaner-package
 articles:
-- title: Articles
-  contents: quickstart
+- title: Workflows
+  navbar: Workflows
+  contents:
+  - quickstart
+  - gbif-workflow
+  - rules
+  - on-disk
+- title: Background
+  navbar: Background
+  contents:
+  - tests
+  - reference-data
+  - coordinatecleaner

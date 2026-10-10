@@ -33,6 +33,7 @@ LinkingTo:
 Suggests:
     CoordinateCleaner,
     geosphere,
+    ggplot2,
     knitr,
     rmarkdown,
     rnaturalearth,

@@ -1,0 +1,196 @@
+---
+title: "Coming from CoordinateCleaner"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Coming from CoordinateCleaner}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE) &&
+  requireNamespace("geosphere", quietly = TRUE)
+```
+
+OccurrenceCleaner runs the record tests of CoordinateCleaner (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the same definitions and default buffers, and writes the result as flags instead of filtering. This article maps each CoordinateCleaner function to its test here, runs both packages on the same records, lists every case where the flags differ and why, and names the CoordinateCleaner functions that have no counterpart. The chunks that call CoordinateCleaner run only when it is installed; it is a suggested package, not a dependency.
+
+```{r setup, message = FALSE}
+library(OccurrenceCleaner)
+```
+
+## Function mapping
+
+```{r mapping, echo = FALSE}
+m <- data.frame(
+  CoordinateCleaner = c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()", "cc_inst()",
+                        "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()",
+                        "clean_coordinates()", "buffer arguments (capitals_rad, ...)",
+                        "additions (cc_dupl)", "seas_scale", "value = \"clean\"",
+                        "value = \"flagged\" / \"spatialvalid\""),
+  OccurrenceCleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
+                        "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate",
+                        "flag_occurrences(x, tests = ...)", "buffers = list(capital = ...)",
+                        "duplicate_by", "land_scale",
+                        "x[!has_flag(x$flags, rule), ]", "the flag_<test> columns"))
+knitr::kable(m)
+```
+
+Every test is chosen by name through the `tests` argument of the one verb, `flag_occurrences()`, so there are no `cc_*` functions in this package; with both attached, CoordinateCleaner's functions keep their names.
+
+## Side by side
+
+A typical CoordinateCleaner pipeline filters as it goes, each `cc_*()` call dropping the records it flags:
+
+```{r cc-pipe, eval = FALSE}
+library(CoordinateCleaner)
+clean <- x |>
+  cc_val() |>
+  cc_equ() |>
+  cc_zero() |>
+  cc_cap() |>
+  cc_cen() |>
+  cc_inst() |>
+  cc_gbif() |>
+  cc_sea()
+```
+
+The same cleaning here is one flagging call and one subset. The subset can be changed later without flagging again:
+
+```{r oc-pipe, eval = FALSE}
+f <- flag_occurrences(x, tests = c("invalid", "equal", "zero", "capital", "centroid",
+                                   "institution", "gbif_headquarters", "sea"))
+clean <- f[!has_flag(f$flags, c("invalid", "equal", "zero", "capital", "centroid",
+                                "institution", "gbif_headquarters", "sea")), ]
+```
+
+`clean_coordinates()` is the closer equivalent, since it also returns one column per test rather than dropping records. Its columns are `TRUE` for records that pass, the `flag_<test>` columns here are `TRUE` for records that fail. Records within 30 km of five capitals, plus 20 zeros, 20 equal coordinates and 10 records within 0.3 degrees of (0, 0), run through both:
+
+```{r both-data, eval = has_cc}
+set.seed(3)
+caps <- cbind(lon = c(16.37, 2.35, -3.70, 13.40, 69.17), lat = c(48.21, 48.86, 40.42, 52.52, 34.53))
+k <- sample(5, 4000, TRUE)
+p <- geosphere::destPoint(caps[k, ], b = runif(4000, 0, 360), d = 30000 * sqrt(runif(4000)))
+x <- data.frame(species = sample(c("a", "b"), 4000, TRUE),
+                decimalLongitude = round(p[, 1], 4), decimalLatitude = round(p[, 2], 4))
+x[1:20, 2:3] <- 0
+x[21:40, 3] <- x[21:40, 2]
+x[41:50, 2:3] <- round(runif(20, -0.3, 0.3), 4)
+```
+
+```{r both-run, eval = has_cc, message = FALSE, warning = FALSE}
+cc <- CoordinateCleaner::clean_coordinates(
+  x, lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
+  tests = c("capitals", "centroids", "equal", "gbif", "institutions", "zeros", "duplicates"),
+  value = "spatialvalid", verbose = FALSE)
+oc <- flag_occurrences(x, tests = c("invalid", "zero", "equal", "capital", "centroid",
+                                    "institution", "gbif_headquarters", "duplicate"),
+                       reference = "CoordinateCleaner")
+```
+
+`reference = "CoordinateCleaner"` reads that package's own gazetteers at run time, so both packages test against the same points. Per test, the share of records with the same verdict:
+
+```{r both-agree, eval = has_cc}
+pairs <- c(.zer = "zero", .equ = "equal", .cap = "capital", .cen = "centroid",
+           .inst = "institution", .gbf = "gbif_headquarters", .dpl = "duplicate")
+agree <- vapply(names(pairs), function(cn)
+  mean((!cc[[cn]]) == oc[[paste0("flag_", pairs[[cn]])]], na.rm = TRUE), numeric(1))
+knitr::kable(data.frame(CoordinateCleaner = names(pairs), OccurrenceCleaner = pairs,
+                        flagged_cc = vapply(names(pairs), function(cn) sum(!cc[[cn]], na.rm = TRUE), 1),
+                        flagged_oc = vapply(pairs, function(t) sum(oc[[paste0("flag_", t)]]), 1),
+                        agreement = round(agree, 5)), row.names = FALSE)
+```
+
+The two differ in `zero`, on purpose, for the 10 records near but not at (0, 0), and in `capital` for records at the buffer edge; the next section explains both. The package's own test suite runs this comparison on sampled records for every equivalent test and requires the differences to be only those documented below.
+
+## Where the flags differ
+
+### Buffer circles
+
+CoordinateCleaner builds each buffer as a polygon with its vertices on the circle (72 vertices for capitals, centroids and the GBIF headquarters, 40 for institutions) and tests whether a record lies inside that polygon. Between two vertices the polygon edge lies inside the circle, at $r \cos(\pi / n)$ from the centre at mid-edge: 99.9 % of the buffer for 72 vertices, 99.7 % for 40. OccurrenceCleaner tests the geodesic distance against the buffer itself. A record due north of Kabul's capital point (a vertex direction) and one at a bearing of 2.5 degrees (mid-edge), each at 9,995 m:
+
+```{r band, eval = has_cc, message = FALSE, warning = FALSE}
+e <- new.env(); utils::data("countryref", package = "CoordinateCleaner", envir = e)
+kabul <- unlist(e$countryref[e$countryref$iso3 == "AFG", c("capital.lon", "capital.lat")][1, ])
+p <- geosphere::destPoint(kabul, b = c(0, 2.5), d = 9995)
+y <- data.frame(species = "a", decimalLongitude = p[, 1], decimalLatitude = p[, 2])
+data.frame(bearing = c(0, 2.5), distance_m = 9995,
+           cc_flagged = !CoordinateCleaner::cc_cap(y, value = "flagged", verbose = FALSE),
+           oc_flagged = flag_occurrences(y, tests = "capital", reference = "CoordinateCleaner")$flag_capital)
+```
+
+So every record CoordinateCleaner flags is flagged here, and the extra flags are records between 99.7 % and 100 % of a buffer: within 9.5 m of the 10 km capital edge, 0.95 m of the 1 km centroid and headquarters edge, 0.31 m of the 100 m institution edge.
+
+### The zero buffer
+
+CoordinateCleaner's `cc_zero()` documents a 0.5-degree buffer around (0, 0). In version 3.0.1 the buffer point is created without a coordinate reference system, terra assumes longitude and latitude, and `terra::buffer(width = 0.5)` then buffers 0.5 **metres**. Only records with a longitude or latitude of exactly zero are flagged:
+
+```{r zero-diff, eval = has_cc, message = FALSE, warning = FALSE}
+z <- data.frame(species = "a", decimalLongitude = c(0, 0.3, 0.001), decimalLatitude = c(12, 0.3, 0.001))
+data.frame(z[, 2:3],
+           cc_flagged = !CoordinateCleaner::cc_zero(z, value = "flagged", verbose = FALSE),
+           oc_flagged = flag_occurrences(z, tests = "zero")$flag_zero,
+           oc_zero_buffer_0 = flag_occurrences(z, tests = "zero", buffers = list(zero = 0))$flag_zero)
+```
+
+This package applies the documented 0.5-degree radius. `buffers = list(zero = 0)` reproduces CoordinateCleaner 3.0.1's results.
+
+### Country codes
+
+`cc_coun()` compares the record's code with the ISO alpha-3 code of the country polygon only. GBIF's `countryCode` is alpha-2, so a GBIF table needs converting first. `country_mismatch` accepts alpha-2, alpha-3 and Natural Earth's `ADM0_A3` code, which fills the gaps where Natural Earth has `-99` for the ISO code. For records whose code is alpha-3 and present in Natural Earth, the two tests agree.
+
+### Records without valid coordinates
+
+For rows with missing or out-of-range coordinates, CoordinateCleaner's spatial tests return `NA` (`cc_zero`, `cc_equ`) or "clean" (`cc_cap`), and `cc_dupl` flags the second of two such rows. Here such a record gets the `invalid` bit and no other spatial bit, so a rule that holds `invalid` removes it and a rule without `invalid` sees no spatial flag on it.
+
+### Duplicates in streamed input
+
+On a data frame `duplicate` is evaluated over the whole table, as `cc_dupl()` is. On a table streamed from disk it is evaluated within each input file; the on-disk article shows how to make the files the right units for that.
+
+### Gazetteers
+
+With the default `reference = "natural_earth"` the gazetteers are rebuilt from the original sources (Natural Earth, GBIF's registry of collections), not copied from CoordinateCleaner, whose code and data are GPL-3. They hold the same kinds of points but not the same coordinates; the reference-data article measures the differences. `reference = "CoordinateCleaner"` uses CoordinateCleaner's tables and reproduces its flags up to the differences above.
+
+## Speed
+
+The proximity tests are where the two packages differ most, because CoordinateCleaner builds a polygon per reference point and tests each record against all of them, while this package queries a kd-tree. Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1), single process, both reading CoordinateCleaner's gazetteers, in seconds:
+
+```{r bench, echo = FALSE}
+b <- data.frame(
+  test = c("capital", "centroid", "institution", "gbif_headquarters", "sea", "zero", "equal",
+           "invalid", "duplicate", "default_tests() (own reference)"),
+  oc_1e6 = c(0.28, 0.15, 0.18, 0.08, 0.06, 0.07, 0.03, 0.02, 1.55, 1.9),
+  cc_1e6 = c(24.5, 34.9, 1, 0.6, 5.9, 0.6, 0, 5.9, 1.1, NA),
+  oc_1e7 = c(1.78, 2.15, 1.73, 0.81, 0.66, 0.42, 0.36, 0.38, 13.79, 17.79),
+  cc_1e7 = c(242.3, 246.2, 7.4, 6.5, 59.7, 6.7, 0.1, 64.3, 11.9, NA))
+options(knitr.kable.NA = "not run")
+knitr::kable(b, col.names = c("test", "OccurrenceCleaner, 1e6", "CoordinateCleaner, 1e6",
+                              "OccurrenceCleaner, 1e7", "CoordinateCleaner, 1e7"))
+```
+
+At ten million records the capital test takes 1.8 s here and 242 s in CoordinateCleaner, the centroid test 2.2 s and 246 s. The equal and duplicate tests are plain vector operations in both packages and take about the same time. Beyond memory, an on-disk table is streamed in chunks (see the on-disk article), so the input size is bounded by disk space only. The benchmark script is `bench/benchmark.R` in the source repository.
+
+## What has no counterpart
+
+CoordinateCleaner also has the functions below, which have no counterpart in OccurrenceCleaner 0.1.0. For them CoordinateCleaner remains the tool, and its result can be combined with the flags here by joining on a record identifier.
+
+```{r not-ported, echo = FALSE}
+knitr::kable(data.frame(
+  `CoordinateCleaner function` = c("cc_outl()", "cc_iucn()", "cc_aohi()", "cd_ddmm(), cd_round()",
+                                   "clean_dataset()", "cf_age(), cf_equal(), cf_outl(), cf_range(), clean_fossils()",
+                                   "write_pyrate()"),
+  `what it does` = c("spatial outliers per species (distance or quantile methods)",
+                     "records outside a species' range polygon",
+                     "records in an artificial hotspot occurrence inventory",
+                     "dataset-level tests for degree-minute conversion errors and rasterised sampling",
+                     "runs the dataset-level tests",
+                     "fossil age and range tests on PBDB-style data",
+                     "export to PyRate"),
+  check.names = FALSE), row.names = FALSE)
+```
+
+`cc_outl()` compares each record with the other records of the same species, so its result depends on the whole species sample and changes when records are added or removed; the tests here are record tests whose flag depends only on the record itself and pinned reference data. The basis-of-record test `basis_fossil` flags fossil specimens but does not test their age.
+
+## References
+
+Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D, Farooq H, Herdean A, Ariza M, Scharn R, Svanteson S, Wengström N, Zizka V, Antonelli A (2019). CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. *Methods in Ecology and Evolution* 10:744-751. [doi:10.1111/2041-210X.13152](https://doi.org/10.1111/2041-210X.13152)

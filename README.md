@@ -105,6 +105,12 @@ Needs a C++ compiler (Rtools on Windows).
 ## Documentation
 
 - [Quick Start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html)
+- [Cleaning GBIF data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html)
+- [Choosing a cleaning rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.html)
+- [Large tables on disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
+- [The tests in detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html)
+- [Reference data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html)
+- [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html)
 - [Full Reference](https://gillescolling.com/OccurrenceCleaner/reference/)
 
 ## Support
