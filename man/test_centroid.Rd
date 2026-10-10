@@ -24,6 +24,11 @@ ones); its province centroids are the admin-1 label points of an older
 Natural Earth release.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(centroid = points)}, a data frame
+of longitude and latitude; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(14.1307, 10), decimalLatitude = c(47.5857, 50))
 flag_occurrences(x, tests = "centroid")$flag_centroid
@@ -32,6 +37,7 @@ flag_occurrences(x, tests = "centroid")$flag_centroid
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}, \code{\link[=reference_info]{reference_info()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_country_mismatch}},

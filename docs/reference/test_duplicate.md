@@ -22,6 +22,7 @@ the second of two such records.
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

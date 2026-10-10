@@ -88,11 +88,12 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 | 16 | basis_living | basis of record is a living specimen | NA |
 | 17 | establishment_introduced | establishment means is introduced, naturalised or invasive | NA |
 | 18 | establishment_managed | establishment means is managed or cultivated | NA |
+| 19 | age_equal | minimum age equal to or greater than the maximum age | cf_equal |
 
-The first eleven tests are CoordinateCleaner’s record tests with its
-default buffers, up to the differences listed in the article Coming from
-CoordinateCleaner; the rest read GBIF’s `issue`, `basisOfRecord` and
-`establishmentMeans` fields.
+The tests with an `equivalent` are CoordinateCleaner’s record tests with
+its default buffers, up to the differences listed in the article Coming
+from CoordinateCleaner; the others read GBIF’s `issue`, `basisOfRecord`
+and `establishmentMeans` fields.
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
 names the tests that need only coordinates and a species.
 
@@ -216,9 +217,9 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpaeECra\flags15ee057811631
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp80agVq\flags17b94645f7f2a
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
-#>   layout:    v1
+#>   layout:    v2
 #>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),

@@ -28,6 +28,7 @@ f[, c("flag_basis_fossil", "flag_basis_living")]
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},
 \code{\link{test_country_mismatch}},

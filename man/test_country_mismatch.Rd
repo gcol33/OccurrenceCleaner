@@ -21,6 +21,11 @@ are identical. GBIF's \code{countryCode} is alpha-2 and works here without
 conversion.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(country_mismatch = polygons)}, an \code{sf} or
+\code{sfc} object of country polygons with a code column; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = 16.37, decimalLatitude = 48.21,
                 countryCode = c("AT", "AUT", "DE", NA))
@@ -30,6 +35,7 @@ flag_occurrences(x, tests = "country_mismatch")$flag_country_mismatch
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}, \code{\link[=occ_columns]{occ_columns()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

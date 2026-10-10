@@ -28,6 +28,12 @@ between vertices; records in that band (within 9.5 m of the 10 km edge)
 are flagged here and may not be there. With
 `reference = "CoordinateCleaner"` its `countryref` capitals are used.
 
+## Custom gazetteer
+
+`gazetteers = list(capital = points)`, a data frame of longitude and
+latitude; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
@@ -35,6 +41,7 @@ are flagged here and may not be there. With
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
 [`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),

@@ -52,12 +52,14 @@
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -201,12 +203,13 @@ vectors works too.</p>
 <div class="section level2">
 <h2 id="flagging-every-test-once">Flagging every test once<a class="anchor" aria-label="anchor" href="#flagging-every-test-once"></a>
 </h2>
-<p>All nineteen tests can run here, because the table has coordinates, a
-species, a country code and the three GBIF fields.
-<code><a href="../reference/occ_columns.html">occ_columns()</a></code> only needs to be told the identifier, since
-the other defaults match case-insensitively:</p>
+<p>Nineteen of the twenty tests can run here, because the table has
+coordinates, a species, a country code and the three GBIF fields; the
+twentieth, <code>age_equal</code>, needs fossil ages (see the fossil
+article). <code><a href="../reference/occ_columns.html">occ_columns()</a></code> only needs to be told the
+identifier, since the other defaults match case-insensitively:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span></span>
+<code class="sourceCode R"><span><span class="va">all_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">test</span>, <span class="st">"age_equal"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, tests <span class="op">=</span> <span class="va">all_tests</span>, columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2276   32</span></span>

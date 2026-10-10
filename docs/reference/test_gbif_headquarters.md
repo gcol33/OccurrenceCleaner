@@ -18,12 +18,19 @@ the 1 km circle. The point lies outside the 1:50m Natural Earth coast,
 so it also fails `sea` at `land_scale = 50` and `country_mismatch` with
 code `"DK"`, in both packages.
 
+## Custom gazetteer
+
+`gazetteers = list(gbif_headquarters = points)`, a data frame of
+longitude and latitude; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

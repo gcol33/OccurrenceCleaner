@@ -14,12 +14,19 @@ Equivalent to `cc_urb()` with its default 1:50m urban areas; identical
 flags on the same layer. Not run by `clean_coordinates()` by default
 either.
 
+## Custom gazetteer
+
+`gazetteers = list(urban = polygons)`, an `sf` or `sfc` object of
+urban-area polygons; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

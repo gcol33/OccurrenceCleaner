@@ -16,6 +16,12 @@ Equivalent to `cc_coun()`, which compares alpha-3 codes only; for
 alpha-3 codes present in Natural Earth the flags are identical. GBIF's
 `countryCode` is alpha-2 and works here without conversion.
 
+## Custom gazetteer
+
+`gazetteers = list(country_mismatch = polygons)`, an `sf` or `sfc`
+object of country polygons with a code column; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
@@ -23,6 +29,7 @@ alpha-3 codes present in Natural Earth the flags are identical. GBIF's
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

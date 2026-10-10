@@ -26,6 +26,11 @@ also holds botanic gardens from BGCI and points from Wikipedia and
 GeoNames, which \code{reference = "CoordinateCleaner"} uses.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(institution = points)}, a data frame
+of longitude and latitude; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(16.3598, 15), decimalLatitude = c(48.2052, 47))
 flag_occurrences(x, tests = "institution")$flag_institution
@@ -34,6 +39,7 @@ flag_occurrences(x, tests = "institution")$flag_institution
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}, \code{\link[=reference_info]{reference_info()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

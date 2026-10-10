@@ -14,6 +14,8 @@
 #'   a list column of character vectors.
 #' @param basis Basis of record (`basisOfRecord`).
 #' @param establishment Establishment means (`establishmentMeans`).
+#' @param min_age,max_age Minimum and maximum age of a fossil record, in
+#'   million years, as the Paleobiology Database's `min_ma` and `max_ma`.
 #' @param id Record identifier, copied into on-disk flag output when present.
 #' @return A named list of column names with class `occ_columns`.
 #' @examples
@@ -21,9 +23,11 @@
 #' @export
 occ_columns <- function(lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
                         country = "countryCode", issue = "issue", basis = "basisOfRecord",
-                        establishment = "establishmentMeans", id = "gbifID") {
+                        establishment = "establishmentMeans", min_age = "min_ma", max_age = "max_ma",
+                        id = "gbifID") {
   cols <- list(lon = lon, lat = lat, species = species, country = country, issue = issue,
-               basis = basis, establishment = establishment, id = id)
+               basis = basis, establishment = establishment, min_age = min_age,
+               max_age = max_age, id = id)
   for (nm in names(cols)) {
     v <- cols[[nm]]
     if (!is.character(v) || length(v) != 1L || is.na(v) || !nzchar(v))

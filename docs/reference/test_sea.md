@@ -19,6 +19,12 @@ Equivalent to `cc_sea()` with its default `scale = 110`
 CoordinateCleaner downloads the layer through rnaturalearth at run time;
 here it is bundled and pinned.
 
+## Custom gazetteer
+
+`gazetteers = list(sea = polygons)`, an `sf` or `sfc` object of land
+polygons; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
@@ -26,6 +32,7 @@ here it is bundled and pinned.
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

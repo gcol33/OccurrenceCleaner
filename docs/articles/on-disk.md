@@ -91,7 +91,7 @@ m <- read_flagged(out)
 str(m[c("tests", "layout_version", "reference", "keep", "n", "units", "package_version")])
 #> List of 7
 #>  $ tests          : chr [1:9] "invalid" "zero" "equal" "capital" ...
-#>  $ layout_version : int 1
+#>  $ layout_version : int 2
 #>  $ reference      : chr "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, plac"| __truncated__
 #>  $ keep           : chr [1:2] "kingdom" "year"
 #>  $ n              : num 9000
@@ -274,14 +274,14 @@ h$n
 GBIF’s Parquet snapshot (the `occurrence.parquet` directory) holds the
 Darwin Core terms in lower case, which the case-insensitive defaults of
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
-find. A pass over all nineteen tests, keeping the columns a loss
-analysis groups by:
+find. A pass over every test except the fossil age test, keeping the
+columns a loss analysis groups by:
 
 ``` r
 
 f <- flag_occurrences(
   "gbif_snapshot/occurrence.parquet",
-  tests = flag_tests()$test,
+  tests = setdiff(flag_tests()$test, "age_equal"),
   out = "flags",
   keep = c("kingdom", "phylum", "class", "year", "coordinateuncertaintyinmeters"),
   land_scale = 50)

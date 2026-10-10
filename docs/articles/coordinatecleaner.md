@@ -27,25 +27,28 @@ library(OccurrenceCleaner)
 
 ## Function mapping
 
-| CoordinateCleaner                  | OccurrenceCleaner                     |
-|:-----------------------------------|:--------------------------------------|
-| cc_val()                           | invalid                               |
-| cc_zero()                          | zero                                  |
-| cc_equ()                           | equal                                 |
-| cc_cap()                           | capital                               |
-| cc_cen()                           | centroid                              |
-| cc_inst()                          | institution                           |
-| cc_gbif()                          | gbif_headquarters                     |
-| cc_sea()                           | sea                                   |
-| cc_urb()                           | urban                                 |
-| cc_coun()                          | country_mismatch                      |
-| cc_dupl()                          | duplicate                             |
-| clean_coordinates()                | flag_occurrences(x, tests = …)        |
-| buffer arguments (capitals_rad, …) | buffers = list(capital = …)           |
-| additions (cc_dupl)                | duplicate_by                          |
-| seas_scale (default 50)            | land_scale (default 110, as cc_sea()) |
-| value = “clean”                    | x\[!has_flag(x\$flags, rule), \]      |
-| value = “flagged” / “spatialvalid” | the flag\_ columns                    |
+| CoordinateCleaner | OccurrenceCleaner |
+|:---|:---|
+| cc_val() | invalid |
+| cc_zero() | zero |
+| cc_equ() | equal |
+| cc_cap() | capital |
+| cc_cen() | centroid |
+| cc_inst() | institution |
+| cc_gbif() | gbif_headquarters |
+| cc_sea() | sea |
+| cc_urb() | urban |
+| cc_coun() | country_mismatch |
+| cc_dupl() | duplicate |
+| cf_equal() | age_equal |
+| clean_coordinates() | flag_occurrences(x, tests = …) |
+| buffer arguments (capitals_rad, …) | buffers = list(capital = …) |
+| ref arguments (cc_cap(ref = …), cc_sea(ref = …), …) | gazetteers = list(capital = …, sea = …) |
+| cf_range(method = “time”, max_range = …) | tally_flags(bins = …) on max_ma - min_ma |
+| additions (cc_dupl) | duplicate_by |
+| seas_scale (default 50) | land_scale (default 110, as cc_sea()) |
+| value = “clean” | x\[!has_flag(x\$flags, rule), \] |
+| value = “flagged” / “spatialvalid” | the flag\_ columns |
 
 Every test is chosen by name through the `tests` argument of the one
 verb,
@@ -53,25 +56,33 @@ verb,
 so there are no `cc_*` functions in this package; with both attached,
 CoordinateCleaner’s functions keep their names.
 
-The test names of `clean_coordinates(tests = )` are plural where the
-names here are singular. Validity has no name there:
+Both
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-checks it first and, if any coordinate is invalid, stops and returns
-only that check. Here it is the `invalid` test, and the other tests
-still run on the valid records.
+and
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+choose their tests by name through a `tests` argument.
+CoordinateCleaner’s names are plural (“capitals”), the names here
+singular (“capital”):
 
-| clean_coordinates(tests = ) | flag_occurrences(tests = ) |
-|:----------------------------|:---------------------------|
-| capitals                    | capital                    |
-| centroids                   | centroid                   |
-| countries                   | country_mismatch           |
-| duplicates                  | duplicate                  |
-| equal                       | equal                      |
-| gbif                        | gbif_headquarters          |
-| institutions                | institution                |
-| seas                        | sea                        |
-| urban                       | urban                      |
-| zeros                       | zero                       |
+| CoordinateCleaner | OccurrenceCleaner |
+|:------------------|:------------------|
+| capitals          | capital           |
+| centroids         | centroid          |
+| countries         | country_mismatch  |
+| duplicates        | duplicate         |
+| equal             | equal             |
+| gbif              | gbif_headquarters |
+| institutions      | institution       |
+| seas              | sea               |
+| urban             | urban             |
+| zeros             | zero              |
+
+The check for missing or out-of-range coordinates has no name in
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
+It always runs first, and if any coordinate fails it,
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+stops and returns that result alone. Here it is the `invalid` test, and
+the other tests still run on the records that pass it.
 
 ## Side by side
 
@@ -307,15 +318,18 @@ joining on a record identifier.
 | cc_aohi() | records in an artificial hotspot occurrence inventory |
 | cd_ddmm(), cd_round() | dataset-level tests for degree-minute conversion errors and rasterised sampling |
 | clean_dataset() | runs the dataset-level tests |
-| cf_age(), cf_equal(), cf_outl(), cf_range(), clean_fossils() | fossil age and range tests on PBDB-style data |
+| cf_age(), cf_outl(), cf_range(method = “quantile” or “mad”) | fossil age and range outliers per taxon |
 | write_pyrate() | export to PyRate |
 
 [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
 compares each record with the other records of the same species, so its
 result depends on the whole species sample and changes when records are
 added or removed; the tests here are record tests whose flag depends
-only on the record itself and pinned reference data. The basis-of-record
-test `basis_fossil` flags fossil specimens but does not test their age.
+only on the record itself and pinned reference data. The same holds for
+the per-taxon fossil tests.
+[`cf_equal()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html)
+is a record test and is ported as `age_equal`; the fossil article shows
+it and the age-range bins on a fossil table.
 
 ## References
 

@@ -22,6 +22,12 @@ the 100 m circle. Its `institutions` table also holds botanic gardens
 from BGCI and points from Wikipedia and GeoNames, which
 `reference = "CoordinateCleaner"` uses.
 
+## Custom gazetteer
+
+`gazetteers = list(institution = points)`, a data frame of longitude and
+latitude; see
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+
 ## See also
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
@@ -29,6 +35,7 @@ from BGCI and points from Wikipedia and GeoNames, which
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
 
 Other tests:
+[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
 [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
 [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),

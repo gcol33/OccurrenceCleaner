@@ -45,12 +45,14 @@ coordinates in GBIF's Global Registry of Scientific Collections
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -102,9 +104,15 @@ also holds botanic gardens from BGCI and points from Wikipedia and
 GeoNames, which <code>reference = "CoordinateCleaner"</code> uses.</p>
     </div>
     <div class="section level2">
+    <h2 id="custom-gazetteer">Custom gazetteer<a class="anchor" aria-label="anchor" href="#custom-gazetteer"></a></h2>
+    <p><code>gazetteers = list(institution = points)</code>, a data frame
+of longitude and latitude; see <code><a href="flag_occurrences.html">flag_occurrences()</a></code>.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="flag_occurrences.html">flag_occurrences()</a></code>, <code><a href="flag_tests.html">flag_tests()</a></code>, <code><a href="reference_info.html">reference_info()</a></code></p>
 <p>Other tests:
+<code><a href="test_age_equal.html">test_age_equal</a></code>,
 <code><a href="test_basis.html">test_basis</a></code>,
 <code><a href="test_capital.html">test_capital</a></code>,
 <code><a href="test_centroid.html">test_centroid</a></code>,

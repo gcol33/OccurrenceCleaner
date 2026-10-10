@@ -37,7 +37,9 @@
 #' * `duplicate` on streamed input is evaluated within each input file (Parquet
 #'   part), not across the whole table.
 #' * With the default reference the gazetteers are rebuilt from the original
-#'   sources; `reference = "CoordinateCleaner"` uses that package's own tables.
+#'   sources; `reference = "CoordinateCleaner"` uses that package's own tables,
+#'   and `gazetteers` replaces the layer of single tests, as the `ref`
+#'   arguments of CoordinateCleaner's functions do.
 #'
 #' @param x A data frame, a `vectra_node`, or a path (file or directory).
 #' @param tests Character vector of test names, see [flag_tests()]. Default
@@ -46,6 +48,17 @@
 #' @param reference `"natural_earth"` (own gazetteers, the default) or
 #'   `"CoordinateCleaner"` (that package's tables, read at run time). See
 #'   [reference_info()].
+#' @param gazetteers Named list of user-supplied reference layers, each
+#'   replacing the reference layer of one test. Point tests (`capital`,
+#'   `centroid`, `institution`, `gbif_headquarters`) take a data frame with
+#'   longitude and latitude columns (named `lon`/`lat`, `longitude`/`latitude`
+#'   or `decimalLongitude`/`decimalLatitude`, any case). Polygon tests (`sea`,
+#'   `urban`, `country_mismatch`) take an `sf` or `sfc` object of POLYGON or
+#'   MULTIPOLYGON geometries in longitude and latitude; for `sea` they are the
+#'   land, and for `country_mismatch` the features need at least one code
+#'   column (`iso_a2`, `iso_a3`, `adm0_a3` or `code`, any case). Each layer is
+#'   indexed once per call, and its size and MD5 checksum are recorded in the
+#'   reference label of the output.
 #' @param land_scale Natural Earth scale of the land layer for `sea`: 110
 #'   (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()`
 #'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see
@@ -85,17 +98,20 @@
 #' @export
 flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              reference = c("natural_earth", "CoordinateCleaner"),
-                             land_scale = 110, buffers = NULL, duplicate_by = NULL,
+                             gazetteers = NULL, land_scale = 110, buffers = NULL,
+                             duplicate_by = NULL,
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
                              verbose = TRUE) {
   tests <- check_tests(tests)
   reference <- match.arg(reference)
   if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
+  custom <- prepare_gazetteers(gazetteers)
   cfg <- list(tests = tests, columns = columns, reference = reference, land_scale = land_scale,
               buffers = check_buffers(buffers), duplicate_by = duplicate_by,
-              duplicate_cell = duplicate_cell,
-              layout_version = .layout_version, reference_label = reference_label(reference, land_scale))
+              duplicate_cell = duplicate_cell, custom = custom$index,
+              layout_version = .layout_version,
+              reference_label = reference_label(reference, land_scale, custom$label))
   if (is.data.frame(x)) return(flag_df(x, cfg))
   flag_stream(x, cfg, out = out, keep = keep, part_rows = part_rows, resume = resume,
               verbose = verbose)
@@ -158,19 +174,20 @@ flag_chunk <- function(d, cfg, cols) {
     }
     if ("equal" %in% tests) set_bit("equal", ok & abs(lon) == abs(lat))
     for (t in intersect(tests, c("capital", "centroid", "institution", "gbif_headquarters"))) {
-      idx <- point_index(t, cfg$reference)
+      idx <- cfg$custom[[t]] %||% point_index(t, cfg$reference)
       set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]]))
     }
     if ("sea" %in% tests) {
-      p <- polygon_index("sea", cfg$reference, cfg$land_scale)
+      p <- cfg$custom$sea %||% polygon_index("sea", cfg$reference, cfg$land_scale)
       set_bit("sea", ok & cpp_polygon_locate(p$index, lon_ok, lat_ok) == 0L)
     }
     if ("urban" %in% tests) {
-      p <- polygon_index("urban", cfg$reference, cfg$land_scale)
+      p <- cfg$custom$urban %||% polygon_index("urban", cfg$reference, cfg$land_scale)
       set_bit("urban", cpp_polygon_locate(p$index, lon_ok, lat_ok) > 0L)
     }
     if ("country_mismatch" %in% tests) {
-      p <- polygon_index("country_mismatch", cfg$reference, cfg$land_scale)
+      p <- cfg$custom$country_mismatch %||%
+        polygon_index("country_mismatch", cfg$reference, cfg$land_scale)
       f <- cpp_polygon_locate(p$index, lon_ok, lat_ok)
       code <- toupper(trimws(as.character(d[[cols$country]])))
       code[!nzchar(code) | is.na(code)] <- NA_character_
@@ -210,6 +227,11 @@ flag_chunk <- function(d, cfg, cols) {
       set_bit("establishment_introduced", e %in% c("INTRODUCED", "NATURALISED", "NATURALIZED", "INVASIVE"))
     if ("establishment_managed" %in% tests)
       set_bit("establishment_managed", e %in% c("MANAGED", "CULTIVATED"))
+  }
+  if ("age_equal" %in% tests) {
+    lo <- to_numeric(d[[cols$min_age]])
+    hi <- to_numeric(d[[cols$max_age]])
+    set_bit("age_equal", lo >= hi)
   }
   list(flags = flags)
 }

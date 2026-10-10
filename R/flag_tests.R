@@ -23,14 +23,15 @@ flag_tests <- function() {
   x
 }
 
-.layout_version <- 1L
+.layout_version <- 2L
 
 .flag_layout <- data.frame(
-  bit = 0:18,
+  bit = 0:19,
   test = c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters",
            "sea", "urban", "country_mismatch", "duplicate",
            "issue_coordinate", "issue_taxon", "issue_date", "issue_rounded",
-           "basis_fossil", "basis_living", "establishment_introduced", "establishment_managed"),
+           "basis_fossil", "basis_living", "establishment_introduced", "establishment_managed",
+           "age_equal"),
   definition = c(
     "coordinate missing, not numeric or outside [-180, 180] x [-90, 90]",
     "longitude or latitude exactly zero, or within 0.5 degrees of (0, 0)",
@@ -50,12 +51,13 @@ flag_tests <- function() {
     "basis of record is a fossil specimen",
     "basis of record is a living specimen",
     "establishment means is introduced, naturalised or invasive",
-    "establishment means is managed or cultivated"),
-  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8)),
+    "establishment means is managed or cultivated",
+    "minimum age equal to or greater than the maximum age"),
+  source = c(rep("CoordinateCleaner", 11), rep("OccurrenceCleaner", 8), "CoordinateCleaner"),
   equivalent = c("cc_val", "cc_zero", "cc_equ", "cc_cap", "cc_cen", "cc_inst", "cc_gbif", "cc_sea",
-                 "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8)),
+                 "cc_urb", "cc_coun", "cc_dupl", rep(NA_character_, 8), "cf_equal"),
   needs = c(rep("lon,lat", 9), "lon,lat,country", "lon,lat,species", rep("issue", 4), "basis",
-            "basis", "establishment", "establishment"),
+            "basis", "establishment", "establishment", "min_age,max_age"),
   stringsAsFactors = FALSE
 )
 

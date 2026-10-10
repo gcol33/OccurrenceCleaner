@@ -17,6 +17,11 @@ Flags records inside the Natural Earth 1:50m urban-area polygons. Not in
 \code{clean_coordinates()} by default either.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(urban = polygons)}, an \code{sf} or
+\code{sfc} object of urban-area polygons; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(16.37, 15.3), decimalLatitude = c(48.21, 47.5))
 flag_occurrences(x, tests = "urban")$flag_urban
@@ -25,6 +30,7 @@ flag_occurrences(x, tests = "urban")$flag_urban
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

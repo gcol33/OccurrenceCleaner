@@ -1,0 +1,121 @@
+---
+title: "Using custom gazetteers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using custom gazetteers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
+has_sf <- requireNamespace("sf", quietly = TRUE)
+has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
+```
+
+Seven tests compare records with reference data: four with points (capitals, centroids, institutions, the GBIF headquarters) and three with polygons (land, urban areas, countries). The package ships its own pinned layers for all of them, and `reference = "CoordinateCleaner"` swaps in CoordinateCleaner's. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with sf, and shows how a custom layer is recorded with the flags.
+
+```{r setup, message = FALSE}
+library(OccurrenceCleaner)
+```
+
+## The shipped points
+
+`reference_points()` returns the points of a proximity test with their attributes:
+
+```{r points}
+caps <- reference_points("capital")
+head(caps)
+table(caps$class)
+inst <- reference_points("institution")
+head(sort(table(inst$type), decreasing = TRUE))
+```
+
+The institution table is the GBIF registry of scientific collections (GRSciColl): `type` says what kind of institution each is, and `master_source` where GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry).
+
+## A filtered point gazetteer
+
+A point layer is any data frame with longitude and latitude columns (`lon`/`lat`, `longitude`/`latitude` or `decimalLongitude`/`decimalLatitude`, in any case). A plant study, for example, may want to flag records at herbaria only, since a specimen georeferenced to a zoological museum is unlikely in a plant table, and use a wider buffer for them:
+
+```{r herbaria}
+herbaria <- inst[inst$type %in% "Herbarium", ]
+nrow(herbaria)
+near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
+x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
+                decimalLatitude = near$lat)
+f_all <- flag_occurrences(x, tests = "institution", buffers = list(institution = 1000))
+f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution = 1000),
+                           gazetteers = list(institution = herbaria))
+data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
+           herbaria_only = f_herb$flag_institution)
+```
+
+Each record lies about 0.005 degrees (a few hundred metres) east of an institution: three herbaria, then three museums. The full table flags all six at a 1 km buffer; the herbarium table flags only `r sum(f_herb$flag_institution)`, the records next to the herbaria.
+
+## An extended point gazetteer
+
+The two capital tables differ: the Natural Earth table lists alternative and official capitals, CoordinateCleaner's has one point per country, rounded to 0.01 degrees. Their union flags records near either:
+
+```{r union, eval = has_cc}
+both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
+nrow(both)
+y <- data.frame(city = c("Cape Town", "Naypyidaw", "Vienna"), decimalLongitude = c(18.42, 96.13, 16.37),
+                decimalLatitude = c(-33.92, 19.75, 48.21))
+data.frame(city = y$city,
+           CoordinateCleaner = flag_occurrences(y, tests = "capital", reference = "CoordinateCleaner")$flag_capital,
+           union = flag_occurrences(y, tests = "capital", gazetteers = list(capital = both))$flag_capital)
+```
+
+Other point sets fit the same way: regional capitals for a study in which collections were georeferenced to provincial seats, the field stations of a survey, or the coordinates a particular data provider uses as a default.
+
+## Polygon layers
+
+Polygon layers are `sf` or `sfc` objects of POLYGON or MULTIPOLYGON geometries in longitude and latitude (EPSG:4326). For `sea`, the polygons are the land: a record outside every polygon is flagged. That makes `sea` with a custom layer a test for "outside the study area":
+
+```{r study-area, eval = has_sf}
+area <- sf::st_sfc(sf::st_polygon(list(rbind(c(9.5, 46.4), c(17.2, 46.4), c(17.2, 49.0),
+                                             c(9.5, 49.0), c(9.5, 46.4)))), crs = 4326)
+z <- data.frame(decimalLongitude = c(16.37, 11.40, 8.54, 19.04), decimalLatitude = c(48.21, 47.26, 47.37, 47.50))
+flag_occurrences(z, tests = "sea", gazetteers = list(sea = area))$flag_sea
+```
+
+The first two points (Vienna, Innsbruck) lie inside the box, the last two (Zurich, Budapest) outside it. The same applies to `urban`, whose polygons are the areas to flag, for example a city's built-up area at a finer scale than Natural Earth's.
+
+For `country_mismatch` the polygons carry codes. Any of the columns `iso_a2`, `iso_a3`, `adm0_a3` or `code` (in any case) is read, and the record's code is matched against all of them. Two territories with their own codes:
+
+```{r countries, eval = has_sf}
+terr <- sf::st_sf(
+  code = c("XA", "XB"),
+  geometry = sf::st_sfc(sf::st_polygon(list(rbind(c(0, 0), c(10, 0), c(10, 10), c(0, 10), c(0, 0)))),
+                        sf::st_polygon(list(rbind(c(10, 0), c(20, 0), c(20, 10), c(10, 10), c(10, 0)))),
+                        crs = 4326))
+w <- data.frame(decimalLongitude = c(5, 15, 15, 25), decimalLatitude = 5, countryCode = c("XA", "XB", "XA", "XA"))
+flag_occurrences(w, tests = "country_mismatch", gazetteers = list(country_mismatch = terr))$flag_country_mismatch
+```
+
+The third record is in territory XB with code XA, the fourth outside both territories, so both are flagged.
+
+## Recording the layer
+
+A custom layer is indexed once per call, and its size and an MD5 checksum of its coordinates are written into the reference label of the output:
+
+```{r label}
+f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
+attr(f, "occ_reference")
+```
+
+The checksum identifies the exact table, so two analyses that report the same label used the same points. For streamed input the label is stored in the output directory, and a rerun into that directory with a different custom layer stops with an error instead of mixing flags from two gazetteers.
+
+## Comparison with CoordinateCleaner
+
+```{r cc-map, echo = FALSE}
+knitr::kable(data.frame(
+  CoordinateCleaner = c("cc_cap(ref = ...)", "cc_cen(ref = ...)", "cc_inst(ref = ...)",
+                        "cc_sea(ref = ...)", "cc_urb(ref = ...)", "cc_coun(ref = ..., ref_col = ...)"),
+  OccurrenceCleaner = c("gazetteers = list(capital = points)", "gazetteers = list(centroid = points)",
+                        "gazetteers = list(institution = points)", "gazetteers = list(sea = polygons)",
+                        "gazetteers = list(urban = polygons)", "gazetteers = list(country_mismatch = polygons)"),
+  check.names = FALSE))
+```
+
+CoordinateCleaner's point references need its own column names (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude and latitude columns are found by name in any of the common spellings. Its `cc_coun()` reads one code column chosen with `ref_col`; here every code column present is matched. With the same reference points and polygons the two packages give the same flags, up to the buffer-polygon band described in the article Coming from CoordinateCleaner; the package tests check this for `institution` and `sea`.

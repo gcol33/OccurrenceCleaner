@@ -30,6 +30,11 @@ at 99.9 \% of the buffer between vertices; records in that band (within
 \code{reference = "CoordinateCleaner"} its \code{countryref} capitals are used.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(capital = points)}, a data frame
+of longitude and latitude; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(16.37, 16.51), decimalLatitude = c(48.21, 48.25))
 flag_occurrences(x, tests = "capital")$flag_capital
@@ -39,6 +44,7 @@ flag_occurrences(x, tests = "capital", buffers = list(capital = 20000))$flag_cap
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}, \code{\link[=reference_info]{reference_info()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_centroid}},
 \code{\link{test_country_mismatch}},

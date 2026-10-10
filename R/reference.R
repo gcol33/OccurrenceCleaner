@@ -76,16 +76,35 @@ sha256_file <- function(path) {
 
 # ---- compiled indices, cached per session -----------------------------------
 
-# Point gazetteer (data frame with lon, lat) for a test under a reference.
-point_gazetteer <- function(test, reference) {
-  if (reference == "natural_earth") {
-    return(switch(test,
-      capital = ref_capitals[, c("lon", "lat")],
-      centroid = ref_centroids[, c("lon", "lat")],
-      institution = ref_institutions[, c("lon", "lat")],
-      gbif_headquarters = data.frame(lon = 12.58, lat = 55.67)))
-  }
+#' Reference points of a proximity test
+#'
+#' Returns the points a proximity test measures distance to: capitals,
+#' country and province centroids, biodiversity institutions, or the GBIF
+#' headquarters. The table can be inspected, filtered or extended and passed
+#' back through the `gazetteers` argument of [flag_occurrences()].
+#'
+#' @param test One of `"capital"`, `"centroid"`, `"institution"`,
+#'   `"gbif_headquarters"`.
+#' @param reference `"natural_earth"` (the package's own gazetteers) or
+#'   `"CoordinateCleaner"` (that package's tables, which must be installed).
+#' @return A data frame with columns `lon` and `lat` and, for the package's
+#'   own gazetteers, the attributes of each point: `name`, `country`,
+#'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
+#'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
+#'   `type`, `active`, `master_source` for institutions (GRSciColl). For
+#'   `reference = "CoordinateCleaner"` the columns are `lon` and `lat` only.
+#' @examples
+#' head(reference_points("capital"))
+#' table(reference_points("centroid")$type)
+#' @export
+reference_points <- function(test = c("capital", "centroid", "institution", "gbif_headquarters"),
+                             reference = c("natural_earth", "CoordinateCleaner")) {
+  test <- match.arg(test)
+  reference <- match.arg(reference)
   if (test == "gbif_headquarters") return(data.frame(lon = 12.58, lat = 55.67))
+  if (reference == "natural_earth") {
+    return(switch(test, capital = ref_capitals, centroid = ref_centroids, institution = ref_institutions))
+  }
   need_coordinatecleaner()
   cr <- get_cc_data("countryref")
   switch(test,
@@ -102,6 +121,11 @@ point_gazetteer <- function(test, reference) {
       d <- d[!is.na(d$decimalLongitude) & !is.na(d$decimalLatitude), ]
       data.frame(lon = d$decimalLongitude, lat = d$decimalLatitude)
     })
+}
+
+# Point gazetteer (data frame with lon, lat) for a test under a reference.
+point_gazetteer <- function(test, reference) {
+  reference_points(test, reference)[, c("lon", "lat")]
 }
 
 point_index <- function(test, reference) {
@@ -189,8 +213,119 @@ get_cc_data <- function(name) {
   get(name, envir = e)
 }
 
+# ---- user-supplied gazetteers --------------------------------------------------
+
+.point_tests <- c("capital", "centroid", "institution", "gbif_headquarters")
+.polygon_tests <- c("sea", "urban", "country_mismatch")
+
+# Index each user layer once: list(index = per-test index, label = text for
+# the reference label, or NULL when none is given).
+prepare_gazetteers <- function(gazetteers) {
+  if (is.null(gazetteers)) return(list(index = list(), label = NULL))
+  if (!is.list(gazetteers) || inherits(gazetteers, c("data.frame", "sf", "sfc")) ||
+      is.null(names(gazetteers)) || any(!nzchar(names(gazetteers))))
+    stop("`gazetteers` must be a named list of reference layers, one per test")
+  bad <- setdiff(names(gazetteers), c(.point_tests, .polygon_tests))
+  if (length(bad)) stop("`gazetteers` has no reference layer for test(s): ", paste(bad, collapse = ", "))
+  index <- list()
+  label <- character()
+  for (t in names(gazetteers)) {
+    g <- gazetteers[[t]]
+    if (t %in% .point_tests) {
+      p <- gazetteer_points(g, t)
+      index[[t]] <- cpp_point_index(p$lon, p$lat)
+      label <- c(label, sprintf("%s %d points md5 %s", t, length(p$lon), checksum(p)))
+    } else {
+      layer <- gazetteer_polygons(g, t)
+      cell <- min(2, max(0.1, sqrt(64800 / length(layer$x))))
+      index[[t]] <- list(index = cpp_polygon_index(layer$x / 1e7, layer$y / 1e7, as.integer(layer$ring_start),
+                                                   as.integer(layer$ring_feature), cell),
+                         features = layer$features)
+      label <- c(label, sprintf("%s %d features md5 %s", t, nrow(layer$features),
+                                checksum(layer[c("x", "y", "ring_start", "ring_feature")])))
+    }
+  }
+  list(index = index, label = paste(label, collapse = ", "))
+}
+
+# A point layer: data frame to finite lon/lat vectors.
+gazetteer_points <- function(g, test) {
+  if (!is.data.frame(g)) stop("`gazetteers$", test, "` must be a data frame of points")
+  nm <- tolower(names(g))
+  lon <- match(c("lon", "longitude", "decimallongitude"), nm)
+  lat <- match(c("lat", "latitude", "decimallatitude"), nm)
+  lon <- lon[!is.na(lon)][1]
+  lat <- lat[!is.na(lat)][1]
+  if (is.na(lon) || is.na(lat))
+    stop("`gazetteers$", test, "` needs longitude and latitude columns ",
+         "(lon/lat, longitude/latitude or decimalLongitude/decimalLatitude)")
+  x <- to_numeric(g[[lon]])
+  y <- to_numeric(g[[lat]])
+  ok <- is.finite(x) & is.finite(y) & abs(x) <= 180 & abs(y) <= 90
+  if (!any(ok)) stop("`gazetteers$", test, "` has no valid coordinates")
+  list(lon = x[ok], lat = y[ok])
+}
+
+# A polygon layer: sf or sfc to the compact ring representation, plus the code
+# columns for country_mismatch.
+gazetteer_polygons <- function(g, test) {
+  if (inherits(g, "sf")) {
+    geom <- g[[attr(g, "sf_column")]]
+    d <- as.data.frame(g)
+    d[[attr(g, "sf_column")]] <- NULL
+  } else if (inherits(g, "sfc")) {
+    geom <- g
+    d <- data.frame(row.names = seq_along(g))
+  } else {
+    stop("`gazetteers$", test, "` must be an sf or sfc object of polygons")
+  }
+  epsg <- attr(geom, "crs")$epsg
+  if (!is.null(epsg) && !is.na(epsg) && epsg != 4326)
+    stop("`gazetteers$", test, "` must be in longitude and latitude (EPSG:4326), not EPSG:", epsg)
+  if (!all(vapply(geom, function(p) inherits(p, c("POLYGON", "MULTIPOLYGON")), logical(1))))
+    stop("`gazetteers$", test, "` must hold POLYGON or MULTIPOLYGON geometries")
+  rings <- rings_from_sfc(geom)
+  features <- if (test == "country_mismatch") gazetteer_codes(d) else data.frame(id = seq_along(geom))
+  list(x = as.integer(round(rings$x * 1e7)), y = as.integer(round(rings$y * 1e7)),
+       ring_start = rings$ring_start, ring_feature = rings$ring_feature, features = features)
+}
+
+# Country codes per feature: iso_a3, iso_a2 and adm0_a3 columns, and a generic
+# `code` column sorted into alpha-2 or alpha-3 by length.
+gazetteer_codes <- function(d) {
+  code_col <- function(name) {
+    i <- match(name, tolower(names(d)))
+    if (is.na(i)) return(rep(NA_character_, nrow(d)))
+    v <- toupper(trimws(as.character(d[[i]])))
+    v[is.na(v) | v %in% c("", "-99")] <- NA_character_
+    v
+  }
+  f <- data.frame(iso_a3 = code_col("iso_a3"), iso_a2 = code_col("iso_a2"),
+                  adm0_a3 = code_col("adm0_a3"), stringsAsFactors = FALSE)
+  generic <- code_col("code")
+  if (all(is.na(unlist(f))) && all(is.na(generic)))
+    stop("`gazetteers$country_mismatch` needs a code column: iso_a2, iso_a3, adm0_a3 or code")
+  fill3 <- is.na(f$iso_a3) & !is.na(generic) & nchar(generic) == 3L
+  fill2 <- is.na(f$iso_a2) & !is.na(generic) & nchar(generic) == 2L
+  f$iso_a3[fill3] <- generic[fill3]
+  f$iso_a2[fill2] <- generic[fill2]
+  f
+}
+
+checksum <- function(obj) {
+  f <- tempfile()
+  on.exit(unlink(f))
+  writeBin(serialize(unname(obj), NULL, version = 3), f)
+  unname(tools::md5sum(f))
+}
+
 # Version label written into flag output.
-reference_label <- function(reference, land_scale) {
+reference_label <- function(reference, land_scale, custom = NULL) {
+  base <- reference_label_base(reference, land_scale)
+  if (is.null(custom)) base else paste0(base, "; custom: ", custom)
+}
+
+reference_label_base <- function(reference, land_scale) {
   if (reference == "natural_earth") {
     m <- ref_meta
     paste0("natural_earth (land ", land_scale, "; ",

@@ -39,6 +39,8 @@
   : Tests: basis of record
 - [`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
   : Tests: establishment means
+- [`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
+  : Test: fossil age range
 
 ## Rules and tallies
 
@@ -69,6 +71,8 @@
 
 - [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
   : Reference data: sources and versions
+- [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
+  : Reference points of a proximity test
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
   : Download the 1:10m land layer
 

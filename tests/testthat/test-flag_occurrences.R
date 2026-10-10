@@ -15,7 +15,7 @@ test_that("record-field tests follow their definitions", {
   # invalid records carry only the invalid flag
   expect_identical(f$flags[7:9], rep(flag_mask("invalid"), 3))
   expect_identical(attr(f, "occ_tests"), c("invalid", "zero", "equal"))
-  expect_identical(attr(f, "occ_layout_version"), 1L)
+  expect_identical(attr(f, "occ_layout_version"), 2L)
   expect_match(attr(f, "occ_reference"), "natural_earth")
 })
 

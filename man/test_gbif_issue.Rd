@@ -43,6 +43,7 @@ f[, c("flag_issue_coordinate", "flag_issue_taxon", "flag_issue_rounded")]
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

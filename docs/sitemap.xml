@@ -1,6 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/404.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/articles/fossils.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/articles/index.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html</loc></url>
@@ -26,8 +28,10 @@
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/reference_info.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/reference_points.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_basis.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.html</loc></url>

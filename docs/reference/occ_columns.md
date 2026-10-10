@@ -18,6 +18,8 @@ occ_columns(
   issue = "issue",
   basis = "basisOfRecord",
   establishment = "establishmentMeans",
+  min_age = "min_ma",
+  max_age = "max_ma",
   id = "gbifID"
 )
 ```
@@ -50,6 +52,11 @@ occ_columns(
 - establishment:
 
   Establishment means (`establishmentMeans`).
+
+- min_age, max_age:
+
+  Minimum and maximum age of a fossil record, in million years, as the
+  Paleobiology Database's `min_ma` and `max_ma`.
 
 - id:
 

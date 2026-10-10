@@ -22,6 +22,11 @@ buffer within 0.95 m of the 1 km circle. The point lies outside the
 and \code{country_mismatch} with code \code{"DK"}, in both packages.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(gbif_headquarters = points)}, a data frame
+of longitude and latitude; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(12.58, 12.6), decimalLatitude = c(55.67, 55.7))
 flag_occurrences(x, tests = "gbif_headquarters")$flag_gbif_headquarters
@@ -30,6 +35,7 @@ flag_occurrences(x, tests = "gbif_headquarters")$flag_gbif_headquarters
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

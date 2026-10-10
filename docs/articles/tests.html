@@ -52,12 +52,14 @@
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -98,14 +100,15 @@
 
     
     
-<p>This article goes through the nineteen tests one by one: what each
+<p>This article goes through the twenty tests one by one: what each
 computes, which fields it reads, where its edge lies, and how its result
-can be changed through an argument. The first eleven are the record
-tests of CoordinateCleaner (Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with its
+can be changed through an argument. Twelve are the record tests of
+CoordinateCleaner (Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with its
 default buffers, up to the differences listed in the article Coming from
 CoordinateCleaner; the other eight read GBIF fields and are additions of
-this package. Each test also has a help page of its own
-(<code><a href="../reference/test_capital.html">?test_capital</a></code>, <code><a href="../reference/test_sea.html">?test_sea</a></code>, …).</p>
+this package. The fossil age test is described in the fossil article.
+Each test also has a help page of its own (<code><a href="../reference/test_capital.html">?test_capital</a></code>,
+<code><a href="../reference/test_sea.html">?test_sea</a></code>, …).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -273,11 +276,18 @@ counterpart:</p>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
 </tr>
+<tr class="even">
+<td align="right">19</td>
+<td align="left">age_equal</td>
+<td align="left">min_age,max_age</td>
+<td align="left">CoordinateCleaner</td>
+<td align="left">cf_equal</td>
+</tr>
 </tbody>
 </table>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"layout_version"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2</span></span></code></pre></div>
 <p>A record’s flag word is the sum of <code>2^bit</code> over the tests
 it fails, so a word of 10 (<code>2^1 + 2^3</code>) means
 <code>zero</code> and <code>capital</code>. <code><a href="../reference/flag_mask.html">flag_mask()</a></code>

@@ -52,12 +52,14 @@
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -353,14 +355,21 @@ invasive</td>
 <td align="left">establishment means is managed or cultivated</td>
 <td align="left">NA</td>
 </tr>
+<tr class="even">
+<td align="right">19</td>
+<td align="left">age_equal</td>
+<td align="left">minimum age equal to or greater than the maximum
+age</td>
+<td align="left">cf_equal</td>
+</tr>
 </tbody>
 </table>
-<p>The first eleven tests are CoordinateCleaner’s record tests with its
-default buffers, up to the differences listed in the article Coming from
-CoordinateCleaner; the rest read GBIF’s <code>issue</code>,
-<code>basisOfRecord</code> and <code>establishmentMeans</code> fields.
-<code><a href="../reference/default_tests.html">default_tests()</a></code> names the tests that need only coordinates
-and a species.</p>
+<p>The tests with an <code>equivalent</code> are CoordinateCleaner’s
+record tests with its default buffers, up to the differences listed in
+the article Coming from CoordinateCleaner; the others read GBIF’s
+<code>issue</code>, <code>basisOfRecord</code> and
+<code>establishmentMeans</code> fields. <code><a href="../reference/default_tests.html">default_tests()</a></code>
+names the tests that need only coordinates and a species.</p>
 </div>
 <div class="section level2">
 <h2 id="rules-are-queries-over-the-flags">Rules are queries over the flags<a class="anchor" aria-label="anchor" href="#rules-are-queries-over-the-flags"></a>
@@ -610,9 +619,9 @@ grouping, and a rerun skips finished units.</p>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 5,000 records in 2 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpaeECra\flags15ee057811631</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp80agVq\flags17b94645f7f2a</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate</span></span>
-<span><span class="co">#&gt;   layout:    v1</span></span>
+<span><span class="co">#&gt;   layout:    v2</span></span>
 <span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)</span></span>
 <span><span class="co">#&gt;   keep:      kingdom, year</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>

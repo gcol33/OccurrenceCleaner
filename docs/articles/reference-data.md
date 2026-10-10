@@ -229,7 +229,7 @@ f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
 #> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09)"
 attr(f, "occ_layout_version")
-#> [1] 1
+#> [1] 2
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed CoordinateCleaner

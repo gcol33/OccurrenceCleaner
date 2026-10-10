@@ -33,13 +33,17 @@ library(OccurrenceCleaner)
 ```{r mapping, echo = FALSE}
 m <- data.frame(
   CoordinateCleaner = c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()", "cc_inst()",
-                        "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()",
+                        "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()", "cf_equal()",
                         "clean_coordinates()", "buffer arguments (capitals_rad, ...)",
+                        "ref arguments (cc_cap(ref = ...), cc_sea(ref = ...), ...)",
+                        "cf_range(method = \"time\", max_range = ...)",
                         "additions (cc_dupl)", "seas_scale (default 50)", "value = \"clean\"",
                         "value = \"flagged\" / \"spatialvalid\""),
   OccurrenceCleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
-                        "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate",
+                        "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate", "age_equal",
                         "flag_occurrences(x, tests = ...)", "buffers = list(capital = ...)",
+                        "gazetteers = list(capital = ..., sea = ...)",
+                        "tally_flags(bins = ...) on max_ma - min_ma",
                         "duplicate_by", "land_scale (default 110, as cc_sea())",
                         "x[!has_flag(x$flags, rule), ]", "the flag_<test> columns"))
 knitr::kable(m)
@@ -47,16 +51,17 @@ knitr::kable(m)
 
 Every test is chosen by name through the `tests` argument of the one verb, `flag_occurrences()`, so there are no `cc_*` functions in this package; with both attached, CoordinateCleaner's functions keep their names.
 
-The test names of `clean_coordinates(tests = )` are plural where the names here are singular. Validity has no name there: `clean_coordinates()` checks it first and, if any coordinate is invalid, stops and returns only that check. Here it is the `invalid` test, and the other tests still run on the valid records.
+Both `clean_coordinates()` and `flag_occurrences()` choose their tests by name through a `tests` argument. CoordinateCleaner's names are plural ("capitals"), the names here singular ("capital"):
 
 ```{r test-names, echo = FALSE}
 knitr::kable(data.frame(
-  `clean_coordinates(tests = )` = c("capitals", "centroids", "countries", "duplicates", "equal",
-                                    "gbif", "institutions", "seas", "urban", "zeros"),
-  `flag_occurrences(tests = )` = c("capital", "centroid", "country_mismatch", "duplicate", "equal",
-                                   "gbif_headquarters", "institution", "sea", "urban", "zero"),
-  check.names = FALSE))
+  CoordinateCleaner = c("capitals", "centroids", "countries", "duplicates", "equal",
+                        "gbif", "institutions", "seas", "urban", "zeros"),
+  OccurrenceCleaner = c("capital", "centroid", "country_mismatch", "duplicate", "equal",
+                        "gbif_headquarters", "institution", "sea", "urban", "zero")))
 ```
+
+The check for missing or out-of-range coordinates has no name in `clean_coordinates()`. It always runs first, and if any coordinate fails it, `clean_coordinates()` stops and returns that result alone. Here it is the `invalid` test, and the other tests still run on the records that pass it.
 
 ## Side by side
 
@@ -197,19 +202,19 @@ CoordinateCleaner also has the functions below, which have no counterpart in Occ
 ```{r not-ported, echo = FALSE}
 knitr::kable(data.frame(
   `CoordinateCleaner function` = c("cc_outl()", "cc_iucn()", "cc_aohi()", "cd_ddmm(), cd_round()",
-                                   "clean_dataset()", "cf_age(), cf_equal(), cf_outl(), cf_range(), clean_fossils()",
+                                   "clean_dataset()", "cf_age(), cf_outl(), cf_range(method = \"quantile\" or \"mad\")",
                                    "write_pyrate()"),
   `what it does` = c("spatial outliers per species (distance or quantile methods)",
                      "records outside a species' range polygon",
                      "records in an artificial hotspot occurrence inventory",
                      "dataset-level tests for degree-minute conversion errors and rasterised sampling",
                      "runs the dataset-level tests",
-                     "fossil age and range tests on PBDB-style data",
+                     "fossil age and range outliers per taxon",
                      "export to PyRate"),
   check.names = FALSE), row.names = FALSE)
 ```
 
-`cc_outl()` compares each record with the other records of the same species, so its result depends on the whole species sample and changes when records are added or removed; the tests here are record tests whose flag depends only on the record itself and pinned reference data. The basis-of-record test `basis_fossil` flags fossil specimens but does not test their age.
+`cc_outl()` compares each record with the other records of the same species, so its result depends on the whole species sample and changes when records are added or removed; the tests here are record tests whose flag depends only on the record itself and pinned reference data. The same holds for the per-taxon fossil tests. `cf_equal()` is a record test and is ported as `age_equal`; the fossil article shows it and the age-range bins on a fossil table.
 
 ## References
 

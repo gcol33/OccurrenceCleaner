@@ -12,6 +12,8 @@ occ_columns(
   issue = "issue",
   basis = "basisOfRecord",
   establishment = "establishmentMeans",
+  min_age = "min_ma",
+  max_age = "max_ma",
   id = "gbifID"
 )
 }
@@ -30,6 +32,9 @@ a list column of character vectors.}
 \item{basis}{Basis of record (\code{basisOfRecord}).}
 
 \item{establishment}{Establishment means (\code{establishmentMeans}).}
+
+\item{min_age, max_age}{Minimum and maximum age of a fossil record, in
+million years, as the Paleobiology Database's \code{min_ma} and \code{max_ma}.}
 
 \item{id}{Record identifier, copied into on-disk flag output when present.}
 }

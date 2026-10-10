@@ -278,6 +278,8 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
   : Tests: basis of record
 - [`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
   : Tests: establishment means
+- [`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
+  : Test: fossil age range
 
 ## Rules and tallies
 
@@ -308,6 +310,8 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
 
 - [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
   : Reference data: sources and versions
+- [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
+  : Reference points of a proximity test
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
   : Download the 1:10m land layer
 
@@ -325,6 +329,8 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
   start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.md):
 - [Cleaning GBIF
   data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md):
+- [Cleaning fossil
+  records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md):
 - [Choosing a cleaning
   rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.md):
 - [Large tables on
@@ -336,5 +342,7 @@ Evolution* 10:744-751. <doi:10.1111/2041-210X.13152>
   detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.md):
 - [Reference
   data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md):
+- [Using custom
+  gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md):
 - [Coming from
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md):

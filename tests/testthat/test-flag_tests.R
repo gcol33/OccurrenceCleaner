@@ -1,12 +1,12 @@
 test_that("flag layout is versioned and consistent", {
   ft <- flag_tests()
   expect_s3_class(ft, "data.frame")
-  expect_identical(attr(ft, "layout_version"), 1L)
+  expect_identical(attr(ft, "layout_version"), 2L)
   expect_identical(ft$bit, seq_len(nrow(ft)) - 1L)
   expect_false(anyDuplicated(ft$test) > 0)
   expect_true(all(ft$source %in% c("CoordinateCleaner", "OccurrenceCleaner")))
   cc <- ft$source == "CoordinateCleaner"
-  expect_true(all(startsWith(ft$equivalent[cc], "cc_")))
+  expect_true(all(grepl("^c[cf]_", ft$equivalent[cc])))
   expect_true(all(is.na(ft$equivalent[!cc])))
   expect_true(all(default_tests() %in% ft$test))
 })

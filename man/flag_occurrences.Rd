@@ -9,6 +9,7 @@ flag_occurrences(
   tests = NULL,
   columns = occ_columns(),
   reference = c("natural_earth", "CoordinateCleaner"),
+  gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
   duplicate_by = NULL,
@@ -31,6 +32,18 @@ flag_occurrences(
 \item{reference}{\code{"natural_earth"} (own gazetteers, the default) or
 \code{"CoordinateCleaner"} (that package's tables, read at run time). See
 \code{\link[=reference_info]{reference_info()}}.}
+
+\item{gazetteers}{Named list of user-supplied reference layers, each
+replacing the reference layer of one test. Point tests (\code{capital},
+\code{centroid}, \code{institution}, \code{gbif_headquarters}) take a data frame with
+longitude and latitude columns (named \code{lon}/\code{lat}, \code{longitude}/\code{latitude}
+or \code{decimalLongitude}/\code{decimalLatitude}, any case). Polygon tests (\code{sea},
+\code{urban}, \code{country_mismatch}) take an \code{sf} or \code{sfc} object of POLYGON or
+MULTIPOLYGON geometries in longitude and latitude; for \code{sea} they are the
+land, and for \code{country_mismatch} the features need at least one code
+column (\code{iso_a2}, \code{iso_a3}, \code{adm0_a3} or \code{code}, any case). Each layer is
+indexed once per call, and its size and MD5 checksum are recorded in the
+reference label of the output.}
 
 \item{land_scale}{Natural Earth scale of the land layer for \code{sea}: 110
 (the default of CoordinateCleaner's \code{cc_sea()}; its \code{clean_coordinates()}
@@ -114,7 +127,9 @@ Records without a code, or at sea, are flagged as in CoordinateCleaner.
 \item \code{duplicate} on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.
 \item With the default reference the gazetteers are rebuilt from the original
-sources; \code{reference = "CoordinateCleaner"} uses that package's own tables.
+sources; \code{reference = "CoordinateCleaner"} uses that package's own tables,
+and \code{gazetteers} replaces the layer of single tests, as the \code{ref}
+arguments of CoordinateCleaner's functions do.
 }
 }
 

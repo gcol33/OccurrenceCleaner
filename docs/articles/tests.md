@@ -1,13 +1,14 @@
 # The tests in detail
 
-This article goes through the nineteen tests one by one: what each
+This article goes through the twenty tests one by one: what each
 computes, which fields it reads, where its edge lies, and how its result
-can be changed through an argument. The first eleven are the record
-tests of CoordinateCleaner (Zizka et
+can be changed through an argument. Twelve are the record tests of
+CoordinateCleaner (Zizka et
 al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
 buffers, up to the differences listed in the article Coming from
 CoordinateCleaner; the other eight read GBIF fields and are additions of
-this package. Each test also has a help page of its own
+this package. The fossil age test is described in the fossil article.
+Each test also has a help page of its own
 ([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
 …).
@@ -60,11 +61,12 @@ knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
 |  16 | basis_living             | basis           | OccurrenceCleaner | NA         |
 |  17 | establishment_introduced | establishment   | OccurrenceCleaner | NA         |
 |  18 | establishment_managed    | establishment   | OccurrenceCleaner | NA         |
+|  19 | age_equal                | min_age,max_age | CoordinateCleaner | cf_equal   |
 
 ``` r
 
 attr(flag_tests(), "layout_version")
-#> [1] 1
+#> [1] 2
 ```
 
 A record’s flag word is the sum of `2^bit` over the tests it fails, so a

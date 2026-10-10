@@ -22,6 +22,11 @@ the same layer. CoordinateCleaner downloads the layer through
 rnaturalearth at run time; here it is bundled and pinned.
 }
 
+\section{Custom gazetteer}{
+ \code{gazetteers = list(sea = polygons)}, an \code{sf} or
+\code{sfc} object of land polygons; see \code{\link[=flag_occurrences]{flag_occurrences()}}.
+}
+
 \examples{
 x <- data.frame(decimalLongitude = c(12.58, 16.37, -30), decimalLatitude = c(55.67, 48.21, 40))
 flag_occurrences(x, tests = "sea")$flag_sea
@@ -31,6 +36,7 @@ flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}, \code{\link[=reference_info]{reference_info()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

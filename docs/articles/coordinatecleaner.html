@@ -52,12 +52,14 @@
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -122,8 +124,8 @@ package, not a dependency.</p>
 </h2>
 <table class="table">
 <colgroup>
-<col width="49%">
-<col width="50%">
+<col width="56%">
+<col width="43%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -175,26 +177,39 @@ package, not a dependency.</p>
 <td align="left">duplicate</td>
 </tr>
 <tr class="even">
+<td align="left">cf_equal()</td>
+<td align="left">age_equal</td>
+</tr>
+<tr class="odd">
 <td align="left">clean_coordinates()</td>
 <td align="left">flag_occurrences(x, tests = …)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">buffer arguments (capitals_rad, …)</td>
 <td align="left">buffers = list(capital = …)</td>
 </tr>
+<tr class="odd">
+<td align="left">ref arguments (cc_cap(ref = …), cc_sea(ref = …),
+…)</td>
+<td align="left">gazetteers = list(capital = …, sea = …)</td>
+</tr>
 <tr class="even">
+<td align="left">cf_range(method = “time”, max_range = …)</td>
+<td align="left">tally_flags(bins = …) on max_ma - min_ma</td>
+</tr>
+<tr class="odd">
 <td align="left">additions (cc_dupl)</td>
 <td align="left">duplicate_by</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">seas_scale (default 50)</td>
 <td align="left">land_scale (default 110, as cc_sea())</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">value = “clean”</td>
 <td align="left">x[!has_flag(x$flags, rule), ]</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">value = “flagged” / “spatialvalid”</td>
 <td align="left">the flag_<test> columns</test>
 </td>
@@ -205,16 +220,14 @@ package, not a dependency.</p>
 of the one verb, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, so there are no
 <code>cc_*</code> functions in this package; with both attached,
 CoordinateCleaner’s functions keep their names.</p>
-<p>The test names of <code>clean_coordinates(tests = )</code> are plural
-where the names here are singular. Validity has no name there:
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> checks it first and, if any coordinate
-is invalid, stops and returns only that check. Here it is the
-<code>invalid</code> test, and the other tests still run on the valid
-records.</p>
+<p>Both <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> and
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> choose their tests by name through a
+<code>tests</code> argument. CoordinateCleaner’s names are plural
+(“capitals”), the names here singular (“capital”):</p>
 <table class="table">
 <thead><tr class="header">
-<th align="left">clean_coordinates(tests = )</th>
-<th align="left">flag_occurrences(tests = )</th>
+<th align="left">CoordinateCleaner</th>
+<th align="left">OccurrenceCleaner</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -259,6 +272,11 @@ records.</p>
 </tr>
 </tbody>
 </table>
+<p>The check for missing or out-of-range coordinates has no name in
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>. It always runs first, and if any
+coordinate fails it, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> stops and returns
+that result alone. Here it is the <code>invalid</code> test, and the
+other tests still run on the records that pass it.</p>
 </div>
 <div class="section level2">
 <h2 id="side-by-side">Side by side<a class="anchor" aria-label="anchor" href="#side-by-side"></a>
@@ -605,8 +623,8 @@ remains the tool, and its result can be combined with the flags here by
 joining on a record identifier.</p>
 <table class="table">
 <colgroup>
-<col width="43%">
-<col width="56%">
+<col width="42%">
+<col width="57%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner function</th>
@@ -637,9 +655,9 @@ and rasterised sampling</td>
 <td align="left">runs the dataset-level tests</td>
 </tr>
 <tr class="even">
-<td align="left">cf_age(), cf_equal(), cf_outl(), cf_range(),
-clean_fossils()</td>
-<td align="left">fossil age and range tests on PBDB-style data</td>
+<td align="left">cf_age(), cf_outl(), cf_range(method = “quantile” or
+“mad”)</td>
+<td align="left">fossil age and range outliers per taxon</td>
 </tr>
 <tr class="odd">
 <td align="left">write_pyrate()</td>
@@ -651,8 +669,10 @@ clean_fossils()</td>
 the same species, so its result depends on the whole species sample and
 changes when records are added or removed; the tests here are record
 tests whose flag depends only on the record itself and pinned reference
-data. The basis-of-record test <code>basis_fossil</code> flags fossil
-specimens but does not test their age.</p>
+data. The same holds for the per-taxon fossil tests.
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal()</a></code> is a record test and is ported as
+<code>age_equal</code>; the fossil article shows it and the age-range
+bins on a fossil table.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

@@ -73,6 +73,8 @@ NULL
 #'   at 99.9 % of the buffer between vertices; records in that band (within
 #'   9.5 m of the 10 km edge) are flagged here and may not be there. With
 #'   `reference = "CoordinateCleaner"` its `countryref` capitals are used.
+#' @section Custom gazetteer: `gazetteers = list(capital = points)`, a data frame
+#'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [reference_info()]
 #' @examples
@@ -95,6 +97,8 @@ NULL
 #'   centroids come from other sources (median 30 km from the Natural Earth
 #'   ones); its province centroids are the admin-1 label points of an older
 #'   Natural Earth release.
+#' @section Custom gazetteer: `gazetteers = list(centroid = points)`, a data frame
+#'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [reference_info()]
 #' @examples
@@ -118,6 +122,8 @@ NULL
 #'   edge lies within 0.31 m of the 100 m circle. Its `institutions` table
 #'   also holds botanic gardens from BGCI and points from Wikipedia and
 #'   GeoNames, which `reference = "CoordinateCleaner"` uses.
+#' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
+#'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [reference_info()]
 #' @examples
@@ -137,6 +143,8 @@ NULL
 #'   buffer within 0.95 m of the 1 km circle. The point lies outside the
 #'   1:50m Natural Earth coast, so it also fails `sea` at `land_scale = 50`
 #'   and `country_mismatch` with code `"DK"`, in both packages.
+#' @section Custom gazetteer: `gazetteers = list(gbif_headquarters = points)`, a data frame
+#'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
@@ -159,6 +167,8 @@ NULL
 #'   `land_scale = 50` here); identical flags on
 #'   the same layer. CoordinateCleaner downloads the layer through
 #'   rnaturalearth at run time; here it is bundled and pinned.
+#' @section Custom gazetteer: `gazetteers = list(sea = polygons)`, an `sf` or
+#'   `sfc` object of land polygons; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [reference_info()]
 #' @examples
@@ -177,6 +187,8 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_urb()` with its default
 #'   1:50m urban areas; identical flags on the same layer. Not run by
 #'   `clean_coordinates()` by default either.
+#' @section Custom gazetteer: `gazetteers = list(urban = polygons)`, an `sf` or
+#'   `sfc` object of urban-area polygons; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
@@ -198,6 +210,8 @@ NULL
 #'   alpha-3 codes only; for alpha-3 codes present in Natural Earth the flags
 #'   are identical. GBIF's `countryCode` is alpha-2 and works here without
 #'   conversion.
+#' @section Custom gazetteer: `gazetteers = list(country_mismatch = polygons)`, an `sf` or
+#'   `sfc` object of country polygons with a code column; see [flag_occurrences()].
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [occ_columns()]
 #' @examples
@@ -298,4 +312,29 @@ NULL
 #' f <- flag_occurrences(x, tests = c("establishment_introduced", "establishment_managed"))
 #' f[, c("flag_establishment_introduced", "flag_establishment_managed")]
 #' @name test_establishment
+NULL
+
+#' Test: fossil age range
+#'
+#' Flags records whose minimum age is equal to or greater than their maximum
+#' age: a zero-length or inverted stratigraphic range, which in the
+#' Paleobiology Database usually means one age was copied into both fields or
+#' the two were swapped. Records with a missing age are not flagged.
+#'
+#' The width of the range (`max_age - min_age`) is a numeric field, not a
+#' test: it stays a raw column and is cut at tally time with `bins`, as the
+#' record year is.
+#'
+#' @section Fields: `min_age`, `max_age` (`min_ma`, `max_ma` by default; see
+#'   [occ_columns()]).
+#' @section CoordinateCleaner: Equivalent to `cf_equal()`; identical flags.
+#'   `cf_range(method = "time")` is a threshold on the range width, here a bin
+#'   in [tally_flags()]; `cf_range()` and `cf_age()` with `method = "quantile"`
+#'   or `"mad"` compare records of a taxon with each other and are not ported.
+#' @family tests
+#' @seealso [flag_occurrences()], [flag_tests()]
+#' @examples
+#' x <- data.frame(min_ma = c(10, 20, 30), max_ma = c(20, 20, 25))
+#' flag_occurrences(x, tests = "age_equal")$flag_age_equal
+#' @name test_age_equal
 NULL

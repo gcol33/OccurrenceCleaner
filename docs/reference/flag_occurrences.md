@@ -15,6 +15,7 @@ flag_occurrences(
   tests = NULL,
   columns = occ_columns(),
   reference = c("natural_earth", "CoordinateCleaner"),
+  gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
   duplicate_by = NULL,
@@ -51,6 +52,20 @@ flag_occurrences(
   `"natural_earth"` (own gazetteers, the default) or
   `"CoordinateCleaner"` (that package's tables, read at run time). See
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md).
+
+- gazetteers:
+
+  Named list of user-supplied reference layers, each replacing the
+  reference layer of one test. Point tests (`capital`, `centroid`,
+  `institution`, `gbif_headquarters`) take a data frame with longitude
+  and latitude columns (named `lon`/`lat`, `longitude`/`latitude` or
+  `decimalLongitude`/`decimalLatitude`, any case). Polygon tests (`sea`,
+  `urban`, `country_mismatch`) take an `sf` or `sfc` object of POLYGON
+  or MULTIPOLYGON geometries in longitude and latitude; for `sea` they
+  are the land, and for `country_mismatch` the features need at least
+  one code column (`iso_a2`, `iso_a3`, `adm0_a3` or `code`, any case).
+  Each layer is indexed once per call, and its size and MD5 checksum are
+  recorded in the reference label of the output.
 
 - land_scale:
 
@@ -165,7 +180,8 @@ package tests:
 
 - With the default reference the gazetteers are rebuilt from the
   original sources; `reference = "CoordinateCleaner"` uses that
-  package's own tables.
+  package's own tables, and `gazetteers` replaces the layer of single
+  tests, as the `ref` arguments of CoordinateCleaner's functions do.
 
 ## Examples
 

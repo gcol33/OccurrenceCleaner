@@ -56,6 +56,7 @@ reference:
   - test_gbif_issue
   - test_basis
   - test_establishment
+  - test_age_equal
 - title: Rules and tallies
   contents:
   - tally_flags
@@ -71,6 +72,7 @@ reference:
 - title: Reference data
   contents:
   - reference_info
+  - reference_points
   - download_reference
 - title: Package
   contents: OccurrenceCleaner-package
@@ -80,6 +82,7 @@ articles:
   contents:
   - quickstart
   - gbif-workflow
+  - fossils
   - rules
   - on-disk
 - title: Background
@@ -87,4 +90,5 @@ articles:
   contents:
   - tests
   - reference-data
+  - gazetteers
   - coordinatecleaner

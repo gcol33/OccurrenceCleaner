@@ -35,12 +35,14 @@
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,8 +73,8 @@
 <div class="section level3">
 <h3 id="flagging-0-1-0">Flagging<a class="anchor" aria-label="anchor" href="#flagging-0-1-0"></a></h3>
 <ul><li>
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>: one verb for a data frame or an on-disk table (Parquet directory, <code>.vtr</code>, delimited file, or any <code>vectra_node</code>). Nineteen tests, one bit each in an integer flag word; nothing is dropped.</li>
-<li>Eleven tests reproduce CoordinateCleaner’s record tests with its default buffers (<code>invalid</code>, <code>zero</code>, <code>equal</code>, <code>capital</code>, <code>centroid</code>, <code>institution</code>, <code>gbif_headquarters</code>, <code>sea</code>, <code>urban</code>, <code>country_mismatch</code>, <code>duplicate</code>); eight read GBIF fields (<code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>, <code>basis_fossil</code>, <code>basis_living</code>, <code>establishment_introduced</code>, <code>establishment_managed</code>). Tests read from a record field carry that field as a prefix.</li>
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>: one verb for a data frame or an on-disk table (Parquet directory, <code>.vtr</code>, delimited file, or any <code>vectra_node</code>). Twenty tests, one bit each in an integer flag word; nothing is dropped.</li>
+<li>Twelve tests reproduce CoordinateCleaner’s record tests with its default buffers (<code>invalid</code>, <code>zero</code>, <code>equal</code>, <code>capital</code>, <code>centroid</code>, <code>institution</code>, <code>gbif_headquarters</code>, <code>sea</code>, <code>urban</code>, <code>country_mismatch</code>, <code>duplicate</code>, and the fossil age test <code>age_equal</code>, as <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal()</a></code>); eight read GBIF fields (<code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>, <code>basis_fossil</code>, <code>basis_living</code>, <code>establishment_introduced</code>, <code>establishment_managed</code>). Tests read from a record field carry that field as a prefix.</li>
 <li>Proximity tests run as kd-tree candidate searches on the unit sphere decided by WGS84 geodesic distance; polygon tests as grid-indexed point-in-polygon with exact boundary cells. Both in C++ with no external library.</li>
 <li>Streamed input is processed per file, written as <code>.vtr</code> parts with the kept columns, and resumable.</li>
 </ul></div>
@@ -90,6 +92,10 @@
 <ul><li>Own gazetteers rebuilt from Natural Earth (capitals, country and province centroids, land at 1:110m and 1:50m, urban areas, countries) and GBIF GRSciColl (institutions), each pinned by version and SHA-256 in <code><a href="../reference/reference_info.html">reference_info()</a></code>; the 1:10m land layer is fetched on demand by <code><a href="../reference/download_reference.html">download_reference()</a></code>.</li>
 <li>
 <code>reference = "CoordinateCleaner"</code> reads that package’s tables at run time and reproduces its flags; the equivalence suite documents every difference.</li>
+<li>
+<code>gazetteers</code> in <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> replaces the reference layer of single tests with user points (data frame) or polygons (<code>sf</code>/<code>sfc</code>), as the <code>ref</code> arguments of CoordinateCleaner’s functions; the layer’s size and MD5 checksum are recorded in the reference label.</li>
+<li>
+<code><a href="../reference/reference_points.html">reference_points()</a></code> returns the points of a proximity test with their attributes, to inspect, filter or extend.</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

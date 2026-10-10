@@ -31,6 +31,7 @@ flag_occurrences(x, tests = "duplicate", duplicate_cell = 0.01)$flag_duplicate
 \code{\link[=flag_occurrences]{flag_occurrences()}}, \code{\link[=flag_tests]{flag_tests()}}
 
 Other tests:
+\code{\link{test_age_equal}},
 \code{\link{test_basis}},
 \code{\link{test_capital}},
 \code{\link{test_centroid}},

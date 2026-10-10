@@ -41,12 +41,14 @@ summarised with tally_flags()."><script>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -86,6 +88,7 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 <span>  tests <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="occ_columns.html">occ_columns</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"natural_earth"</span>, <span class="st">"CoordinateCleaner"</span><span class="op">)</span>,</span>
+<span>  gazetteers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  land_scale <span class="op">=</span> <span class="fl">110</span>,</span>
 <span>  buffers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  duplicate_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -119,6 +122,20 @@ summarised with <code><a href="tally_flags.html">tally_flags()</a></code>.</p>
 <dd><p><code>"natural_earth"</code> (own gazetteers, the default) or
 <code>"CoordinateCleaner"</code> (that package's tables, read at run time). See
 <code><a href="reference_info.html">reference_info()</a></code>.</p></dd>
+
+
+<dt id="arg-gazetteers">gazetteers<a class="anchor" aria-label="anchor" href="#arg-gazetteers"></a></dt>
+<dd><p>Named list of user-supplied reference layers, each
+replacing the reference layer of one test. Point tests (<code>capital</code>,
+<code>centroid</code>, <code>institution</code>, <code>gbif_headquarters</code>) take a data frame with
+longitude and latitude columns (named <code>lon</code>/<code>lat</code>, <code>longitude</code>/<code>latitude</code>
+or <code>decimalLongitude</code>/<code>decimalLatitude</code>, any case). Polygon tests (<code>sea</code>,
+<code>urban</code>, <code>country_mismatch</code>) take an <code>sf</code> or <code>sfc</code> object of POLYGON or
+MULTIPOLYGON geometries in longitude and latitude; for <code>sea</code> they are the
+land, and for <code>country_mismatch</code> the features need at least one code
+column (<code>iso_a2</code>, <code>iso_a3</code>, <code>adm0_a3</code> or <code>code</code>, any case). Each layer is
+indexed once per call, and its size and MD5 checksum are recorded in the
+reference label of the output.</p></dd>
 
 
 <dt id="arg-land-scale">land_scale<a class="anchor" aria-label="anchor" href="#arg-land-scale"></a></dt>
@@ -216,7 +233,9 @@ Records without a code, or at sea, are flagged as in CoordinateCleaner.</p></li>
 <li><p><code>duplicate</code> on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.</p></li>
 <li><p>With the default reference the gazetteers are rebuilt from the original
-sources; <code>reference = "CoordinateCleaner"</code> uses that package's own tables.</p></li>
+sources; <code>reference = "CoordinateCleaner"</code> uses that package's own tables,
+and <code>gazetteers</code> replaces the layer of single tests, as the <code>ref</code>
+arguments of CoordinateCleaner's functions do.</p></li>
 </ul></div>
 
     <div class="section level2">

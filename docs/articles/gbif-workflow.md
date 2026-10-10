@@ -113,15 +113,16 @@ deliver them; a list column of character vectors works too.
 
 ## Flagging every test once
 
-All nineteen tests can run here, because the table has coordinates, a
-species, a country code and the three GBIF fields.
+Nineteen of the twenty tests can run here, because the table has
+coordinates, a species, a country code and the three GBIF fields; the
+twentieth, `age_equal`, needs fossil ages (see the fossil article).
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 only needs to be told the identifier, since the other defaults match
 case-insensitively:
 
 ``` r
 
-all_tests <- flag_tests()$test
+all_tests <- setdiff(flag_tests()$test, "age_equal")
 f <- flag_occurrences(occ, tests = all_tests, columns = occ_columns(id = "gbifid"))
 dim(f)
 #> [1] 2276   32
