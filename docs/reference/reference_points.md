@@ -12,7 +12,7 @@ extended and passed back through the `gazetteers` argument of
 ``` r
 reference_points(
   test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi"),
-  reference = c("natural_earth", "CoordinateCleaner")
+  reference = c("OccurrenceCleaner", "CoordinateCleaner")
 )
 ```
 
@@ -25,7 +25,7 @@ reference_points(
 
 - reference:
 
-  `"natural_earth"` (the package's own gazetteers) or
+  `"OccurrenceCleaner"` (the package's own gazetteers) or
   `"CoordinateCleaner"` (that package's tables, which must be
   installed).
 

@@ -250,15 +250,15 @@ x <- data.frame(city = c("Pretoria", "Cape Town", "La Paz", "Sucre", "Yangon", "
                 decimalLongitude = c(28.19, 18.42, -68.15, -65.26, 96.16, 96.13),
                 decimalLatitude = c(-25.75, -33.92, -16.50, -19.04, 16.80, 19.75))
 data.frame(city = x$city,
-           natural_earth = flag_occurrences(x, tests = "capital")$flag_capital,
+           OccurrenceCleaner = flag_occurrences(x, tests = "capital")$flag_capital,
            CoordinateCleaner = flag_occurrences(x, tests = "capital", reference = "CoordinateCleaner")$flag_capital)
-#>        city natural_earth CoordinateCleaner
-#> 1  Pretoria          TRUE              TRUE
-#> 2 Cape Town          TRUE             FALSE
-#> 3    La Paz          TRUE              TRUE
-#> 4     Sucre          TRUE             FALSE
-#> 5    Yangon          TRUE              TRUE
-#> 6 Naypyidaw          TRUE             FALSE
+#>        city OccurrenceCleaner CoordinateCleaner
+#> 1  Pretoria              TRUE              TRUE
+#> 2 Cape Town              TRUE             FALSE
+#> 3    La Paz              TRUE              TRUE
+#> 4     Sucre              TRUE             FALSE
+#> 5    Yangon              TRUE              TRUE
+#> 6 Naypyidaw              TRUE             FALSE
 ```
 
 Cape Town, Sucre and Naypyidaw are flagged only through the Natural
@@ -398,7 +398,7 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.1.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 attr(f, "occ_layout_version")
 #> [1] 4
 ```
@@ -412,9 +412,9 @@ one output directory never mixes flags from two references.
 
 ## Choosing a reference
 
-- `reference = "natural_earth"` (the default) needs no other package,
-  has a version and checksum for every layer, and uses current Natural
-  Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
+- `reference = "OccurrenceCleaner"` (the default) needs no other
+  package, has a version and checksum for every layer, and uses current
+  Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
 - `reference = "CoordinateCleaner"` gives
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s

@@ -215,7 +215,7 @@ test_that("the sampling correction keeps outliers only in well-sampled countries
 })
 
 test_that("country areas are close to the surveyed areas", {
-  a <- OccurrenceCleaner:::country_areas_km2(OccurrenceCleaner:::polygon_layer("country_mismatch", "natural_earth", 110))
+  a <- OccurrenceCleaner:::country_areas_km2(OccurrenceCleaner:::polygon_layer("country_mismatch", "OccurrenceCleaner", 110))
   expect_equal(unname(a["AT"]), 83879, tolerance = 0.01)
   expect_equal(unname(a["DE"]), 357022, tolerance = 0.01)
   expect_lt(unname(a["ZA"]), 1221037 * 1.01)

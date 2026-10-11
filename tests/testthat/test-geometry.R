@@ -100,7 +100,7 @@ test_that("land index agrees with brute force on the bundled 1:110m layer", {
     for (i in which(rl >= bb[1] & rl <= bb[2] & rt >= bby[1] & rt <= bby[2]))
       if (pip(rl[i], rt[i], vx, vy)) want[i] <- !want[i]
   }
-  idx <- OccurrenceCleaner:::polygon_index("sea", "natural_earth", 110)$index
+  idx <- OccurrenceCleaner:::polygon_index("sea", "OccurrenceCleaner", 110)$index
   got <- OccurrenceCleaner:::cpp_polygon_locate(idx, rl, rt) > 0
   expect_identical(got, want)
   # the poles and the antimeridian

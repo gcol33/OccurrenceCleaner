@@ -15,7 +15,7 @@ Every gazetteer the package uses is pinned to a source file, a version and a
 retrieval date, and the flag output records which reference produced it.
 }
 \details{
-With \code{reference = "natural_earth"} (the default of \code{\link[=flag_occurrences]{flag_occurrences()}}) the
+With \code{reference = "OccurrenceCleaner"} (the default of \code{\link[=flag_occurrences]{flag_occurrences()}}) the
 package uses its own gazetteers built in \verb{data-raw/}: capitals from the
 CIA World Factbook and Natural Earth, province centroids, land, urban areas
 and country polygons from Natural Earth (public domain), country centroids

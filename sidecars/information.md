@@ -259,7 +259,7 @@
 - stated-at: @p:readme.tests; @p:qs.reference
 
 ### reference
-- argument: flag_occurrences(reference = "natural_earth")
+- argument: flag_occurrences(reference = "OccurrenceCleaner")
 - home: ?flag_occurrences
 - stated-at: @p:readme.reference; @p:qs.reference; @p:cc.gazetteers
 

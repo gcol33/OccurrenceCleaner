@@ -558,15 +558,15 @@ alternative or official capitals, under both references:</p>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28.19</span>, <span class="fl">18.42</span>, <span class="op">-</span><span class="fl">68.15</span>, <span class="op">-</span><span class="fl">65.26</span>, <span class="fl">96.16</span>, <span class="fl">96.13</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">25.75</span>, <span class="op">-</span><span class="fl">33.92</span>, <span class="op">-</span><span class="fl">16.50</span>, <span class="op">-</span><span class="fl">19.04</span>, <span class="fl">16.80</span>, <span class="fl">19.75</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">city</span>,</span>
-<span>           natural_earth <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span>,</span>
+<span>           OccurrenceCleaner <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span>,</span>
 <span>           CoordinateCleaner <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        city natural_earth CoordinateCleaner</span></span>
-<span><span class="co">#&gt; 1  Pretoria          TRUE              TRUE</span></span>
-<span><span class="co">#&gt; 2 Cape Town          TRUE             FALSE</span></span>
-<span><span class="co">#&gt; 3    La Paz          TRUE              TRUE</span></span>
-<span><span class="co">#&gt; 4     Sucre          TRUE             FALSE</span></span>
-<span><span class="co">#&gt; 5    Yangon          TRUE              TRUE</span></span>
-<span><span class="co">#&gt; 6 Naypyidaw          TRUE             FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt;        city OccurrenceCleaner CoordinateCleaner</span></span>
+<span><span class="co">#&gt; 1  Pretoria              TRUE              TRUE</span></span>
+<span><span class="co">#&gt; 2 Cape Town              TRUE             FALSE</span></span>
+<span><span class="co">#&gt; 3    La Paz              TRUE              TRUE</span></span>
+<span><span class="co">#&gt; 4     Sucre              TRUE             FALSE</span></span>
+<span><span class="co">#&gt; 5    Yangon              TRUE              TRUE</span></span>
+<span><span class="co">#&gt; 6 Naypyidaw              TRUE             FALSE</span></span></code></pre></div>
 <p>Cape Town, Sucre and Naypyidaw are flagged only through the Natural
 Earth extension points; Pretoria, La Paz and Yangon under both. Which
 list is right depends on what an error looks like: a herbarium sheet in
@@ -13822,7 +13822,7 @@ the version of each layer:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.1.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
@@ -13835,8 +13835,8 @@ one output directory never mixes flags from two references.</p>
 <h2 id="choosing-a-reference">Choosing a reference<a class="anchor" aria-label="anchor" href="#choosing-a-reference"></a>
 </h2>
 <ul>
-<li><p><code>reference = "natural_earth"</code> (the default) needs no
-other package, has a version and checksum for every layer, and uses
+<li><p><code>reference = "OccurrenceCleaner"</code> (the default) needs
+no other package, has a version and checksum for every layer, and uses
 current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI
 data.</p></li>
 <li><p><code>reference = "CoordinateCleaner"</code> gives <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s

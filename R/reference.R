@@ -3,7 +3,7 @@
 #' Every gazetteer the package uses is pinned to a source file, a version and a
 #' retrieval date, and the flag output records which reference produced it.
 #'
-#' With `reference = "natural_earth"` (the default of [flag_occurrences()]) the
+#' With `reference = "OccurrenceCleaner"` (the default of [flag_occurrences()]) the
 #' package uses its own gazetteers built in `data-raw/`: capitals from the
 #' CIA World Factbook and Natural Earth, province centroids, land, urban areas
 #' and country polygons from Natural Earth (public domain), country centroids
@@ -89,7 +89,7 @@ sha256_file <- function(path) {
 #'
 #' @param test One of `"capital"`, `"centroid"`, `"institution"`,
 #'   `"gbif_headquarters"`, `"aohi"`.
-#' @param reference `"natural_earth"` (the package's own gazetteers) or
+#' @param reference `"OccurrenceCleaner"` (the package's own gazetteers) or
 #'   `"CoordinateCleaner"` (that package's tables, which must be installed).
 #' @return A data frame with columns `lon` and `lat` and, for the package's
 #'   own gazetteers, the attributes of each point: `name`, `country`,
@@ -117,11 +117,11 @@ sha256_file <- function(path) {
 #' table(reference_points("centroid")$type)
 #' @export
 reference_points <- function(test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi"),
-                             reference = c("natural_earth", "CoordinateCleaner")) {
+                             reference = c("OccurrenceCleaner", "CoordinateCleaner")) {
   test <- match.arg(test)
   reference <- match.arg(reference)
   if (test == "gbif_headquarters") return(data.frame(lon = 12.58, lat = 55.67))
-  if (reference == "natural_earth") {
+  if (reference == "OccurrenceCleaner") {
     return(switch(test, capital = ref_capitals, centroid = ref_centroids, institution = ref_institutions,
                   aohi = ref_aohi))
   }
@@ -164,7 +164,7 @@ point_index <- function(test, reference) {
 
 # Polygon layer (compact ring list) for a test under a reference.
 polygon_layer <- function(test, reference, land_scale) {
-  if (reference == "natural_earth") {
+  if (reference == "OccurrenceCleaner") {
     return(switch(test,
       sea = switch(as.character(land_scale),
         "110" = ref_land_110, "50" = ref_land_50,
@@ -403,9 +403,9 @@ reference_label <- function(reference, land_scale, custom = NULL) {
 }
 
 reference_label_base <- function(reference, land_scale) {
-  if (reference == "natural_earth") {
+  if (reference == "OccurrenceCleaner") {
     m <- ref_meta
-    paste0("natural_earth (land ", land_scale, "; ",
+    paste0("OccurrenceCleaner ", as.character(utils::packageVersion("OccurrenceCleaner")), " (land ", land_scale, "; ",
            paste(sprintf("%s %s", m$layer, m$version), collapse = ", "), ")")
   } else {
     paste0("CoordinateCleaner ",

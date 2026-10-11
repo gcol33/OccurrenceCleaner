@@ -6,14 +6,14 @@
 \usage{
 reference_points(
   test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi"),
-  reference = c("natural_earth", "CoordinateCleaner")
+  reference = c("OccurrenceCleaner", "CoordinateCleaner")
 )
 }
 \arguments{
 \item{test}{One of \code{"capital"}, \code{"centroid"}, \code{"institution"},
 \code{"gbif_headquarters"}, \code{"aohi"}.}
 
-\item{reference}{\code{"natural_earth"} (the package's own gazetteers) or
+\item{reference}{\code{"OccurrenceCleaner"} (the package's own gazetteers) or
 \code{"CoordinateCleaner"} (that package's tables, which must be installed).}
 }
 \value{

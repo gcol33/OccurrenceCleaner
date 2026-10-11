@@ -99,7 +99,7 @@ x <- data.frame(city = c("Pretoria", "Cape Town", "La Paz", "Sucre", "Yangon", "
                 decimalLongitude = c(28.19, 18.42, -68.15, -65.26, 96.16, 96.13),
                 decimalLatitude = c(-25.75, -33.92, -16.50, -19.04, 16.80, 19.75))
 data.frame(city = x$city,
-           natural_earth = flag_occurrences(x, tests = "capital")$flag_capital,
+           OccurrenceCleaner = flag_occurrences(x, tests = "capital")$flag_capital,
            CoordinateCleaner = flag_occurrences(x, tests = "capital", reference = "CoordinateCleaner")$flag_capital)
 ```
 
@@ -192,7 +192,7 @@ attr(f, "occ_layout_version")
 
 ## Choosing a reference
 
-- `reference = "natural_earth"` (the default) needs no other package, has a version and checksum for every layer, and uses current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
+- `reference = "OccurrenceCleaner"` (the default) needs no other package, has a version and checksum for every layer, and uses current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
 - `reference = "CoordinateCleaner"` gives [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s flags up to the differences listed in the article Coming from CoordinateCleaner, for example to compare with a published analysis that used it. It needs CoordinateCleaner installed, and [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) for the polygon tests, which downloads the Natural Earth layers at run time as CoordinateCleaner does.
 

@@ -62,7 +62,7 @@
 #' @param tests Character vector of test names, see [flag_tests()]. Default
 #'   [default_tests()]. A test whose fields are missing from `x` is an error.
 #' @param columns Field names, see [occ_columns()].
-#' @param reference `"natural_earth"` (own gazetteers, the default) or
+#' @param reference `"OccurrenceCleaner"` (own gazetteers, the default) or
 #'   `"CoordinateCleaner"` (that package's tables, read at run time). See
 #'   [reference_info()].
 #' @param gazetteers Named list of user-supplied reference layers, each
@@ -126,7 +126,7 @@
 #' f[, c("species", "flags", "flag_zero", "flag_gbif_headquarters", "flag_capital")]
 #' @export
 flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
-                             reference = c("natural_earth", "CoordinateCleaner"),
+                             reference = c("OccurrenceCleaner", "CoordinateCleaner"),
                              gazetteers = NULL, land_scale = 110, buffers = NULL,
                              settings = NULL, duplicate_by = NULL,
                              duplicate_cell = NULL,

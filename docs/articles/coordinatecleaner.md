@@ -336,7 +336,7 @@ for that.
 
 ### Gazetteers
 
-With the default `reference = "natural_earth"` the gazetteers are
+With the default `reference = "OccurrenceCleaner"` the gazetteers are
 rebuilt from the original sources of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 tables, so they hold the same kinds of points but not the same

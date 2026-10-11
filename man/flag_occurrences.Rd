@@ -8,7 +8,7 @@ flag_occurrences(
   x,
   tests = NULL,
   columns = occ_columns(),
-  reference = c("natural_earth", "CoordinateCleaner"),
+  reference = c("OccurrenceCleaner", "CoordinateCleaner"),
   gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
@@ -30,7 +30,7 @@ flag_occurrences(
 
 \item{columns}{Field names, see \code{\link[=occ_columns]{occ_columns()}}.}
 
-\item{reference}{\code{"natural_earth"} (own gazetteers, the default) or
+\item{reference}{\code{"OccurrenceCleaner"} (own gazetteers, the default) or
 \code{"CoordinateCleaner"} (that package's tables, read at run time). See
 \code{\link[=reference_info]{reference_info()}}.}
 

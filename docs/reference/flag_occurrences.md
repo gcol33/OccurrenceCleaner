@@ -14,7 +14,7 @@ flag_occurrences(
   x,
   tests = NULL,
   columns = occ_columns(),
-  reference = c("natural_earth", "CoordinateCleaner"),
+  reference = c("OccurrenceCleaner", "CoordinateCleaner"),
   gazetteers = NULL,
   land_scale = 110,
   buffers = NULL,
@@ -50,7 +50,7 @@ flag_occurrences(
 
 - reference:
 
-  `"natural_earth"` (own gazetteers, the default) or
+  `"OccurrenceCleaner"` (own gazetteers, the default) or
   `"CoordinateCleaner"` (that package's tables, read at run time). See
   [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md).
 

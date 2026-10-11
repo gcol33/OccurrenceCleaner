@@ -17,7 +17,7 @@ A data frame with one row per layer: `layer`, `source`, `file`,
 
 ## Details
 
-With `reference = "natural_earth"` (the default of
+With `reference = "OccurrenceCleaner"` (the default of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md))
 the package uses its own gazetteers built in `data-raw/`: capitals from
 the CIA World Factbook and Natural Earth, province centroids, land,

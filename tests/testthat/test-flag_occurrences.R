@@ -16,7 +16,7 @@ test_that("record-field tests follow their definitions", {
   expect_identical(f$flags[7:9], rep(flag_mask("invalid"), 3))
   expect_identical(attr(f, "occ_tests"), c("invalid", "zero", "equal"))
   expect_identical(attr(f, "occ_layout_version"), 4L)
-  expect_match(attr(f, "occ_reference"), "natural_earth")
+  expect_match(attr(f, "occ_reference"), "OccurrenceCleaner")
 })
 
 test_that("proximity tests use the default buffers and the own gazetteers", {
