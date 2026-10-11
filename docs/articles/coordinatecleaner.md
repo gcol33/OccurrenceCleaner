@@ -257,9 +257,13 @@ This package applies the documented 0.5-degree radius.
 compares the record’s code with the ISO alpha-3 code of the country
 polygon only. GBIF’s `countryCode` is alpha-2, so a GBIF table needs
 converting first. `country_mismatch` accepts alpha-2, alpha-3 and
-Natural Earth’s `ADM0_A3` code, which fills the gaps where Natural Earth
-has `-99` for the ISO code. For records whose code is alpha-3 and
-present in Natural Earth, the two tests agree.
+Natural Earth’s `ADM0_A3` code, and reads the ISO codes from Natural
+Earth’s `ISO_A2_EH` and `ISO_A3_EH` columns, which are filled where
+`ISO_A2` and `ISO_A3` hold `-99`: in CoordinateCleaner’s layer that is
+France, Norway and Kosovo, so
+[`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
+flags every record that falls in them. For records whose code is alpha-3
+and present in Natural Earth, the two tests agree.
 
 ### Records without valid coordinates
 

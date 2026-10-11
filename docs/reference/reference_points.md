@@ -33,19 +33,24 @@ reference_points(
 
 A data frame with columns `lon` and `lat` and, for the package's own
 gazetteers, the attributes of each point: `name`, `country`, `adm0_a3`,
-`iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`, `type`,
-`method` for centroids; `key`, `code`, `name`, `country`, `city`,
-`type`, `active`, `master_source`, `source`, `extension` for
-institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames or
-BGCI, `key` the GRSciColl key, Wikidata item, the Wikipedia list
-language, revision and line, or the GeoNames or BGCI id with its prefix;
-for Wikipedia rows `city` is the place they are located by and
-`master_source` where its coordinates come from; `extension` is TRUE for
-points from sources CoordinateCleaner's table does not draw on); `id`,
-`taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
-Plantae), `frequency` (records at the point), `category`,
-`determination` (TRUE for a real observation site, FALSE for an
-artificial aggregate of records) and `notes` for the inventory. For
+`iso_a2`, `class`, `source`, `key`, `extension` for capitals (`source`
+is CIA World Factbook or Natural Earth, `key` the Factbook code or the
+Natural Earth country code and name with its prefix); `name`, `adm0_a3`,
+`code`, `type`, `method`, `source`, `key`, `extension` for centroids
+(`source` is CIA World Factbook, thematicmapping, GEOLocate or Natural
+Earth, `key` the Factbook code, ISO3 code or GEOLocate query with its
+prefix); `key`, `code`, `name`, `country`, `city`, `type`, `active`,
+`master_source`, `source`, `extension` for institutions (`source` is
+GRSciColl, Wikidata, Wikipedia, GeoNames or BGCI, `key` the GRSciColl
+key, Wikidata item, the Wikipedia list language, revision and line, or
+the GeoNames or BGCI id with its prefix; for Wikipedia rows `city` is
+the place they are located by and `master_source` where its coordinates
+come from; `extension` is TRUE for points from sources
+CoordinateCleaner's table does not draw on, for capitals, centroids and
+institutions alike); `id`, `taxon` (the group the hotspot was found in:
+Aves, Insecta, Mammalia, Plantae), `frequency` (records at the point),
+`category`, `determination` (TRUE for a real observation site, FALSE for
+an artificial aggregate of records) and `notes` for the inventory. For
 `reference = "CoordinateCleaner"` the columns are `lon` and `lat` only.
 
 ## Examples

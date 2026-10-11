@@ -254,7 +254,7 @@ kept when flagging:</p>
 <td align="left">&lt;1950</td>
 <td align="right">1427</td>
 <td align="right">577</td>
-<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">581</td>
 <td align="right">846</td>
 </tr>
@@ -317,7 +317,7 @@ kept when flagging:</p>
 <td align="left">1950-2000</td>
 <td align="right">1003</td>
 <td align="right">397</td>
-<td align="right">1</td>
+<td align="right">2</td>
 <td align="right">399</td>
 <td align="right">604</td>
 </tr>
@@ -367,9 +367,9 @@ from a fresh <code><a href="../reference/read_flagged.html">flagged_table()</a><
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="va">flagged</span><span class="op">$</span><span class="va">kingdom</span>, capital <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">$</span><span class="va">flags</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           capital</span></span>
 <span><span class="co">#&gt; kingdom    FALSE TRUE</span></span>
-<span><span class="co">#&gt;   Animalia  1203    9</span></span>
+<span><span class="co">#&gt;   Animalia  1202   10</span></span>
 <span><span class="co">#&gt;   Fungi     1169    9</span></span>
-<span><span class="co">#&gt;   Plantae   1199    2</span></span></code></pre></div>
+<span><span class="co">#&gt;   Plantae   1198    3</span></span></code></pre></div>
 <p>To attach the flags to the full records, join on the identifier. For
 a snapshot, the join is best done by vectra on disk; for a small subset,
 in memory:</p>

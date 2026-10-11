@@ -40,24 +40,26 @@ returns the points of a proximity test with their attributes:
 
 caps <- reference_points("capital")
 head(caps)
-#>         name     country adm0_a3 iso_a2                  class        lon
-#> 1 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.028992
-#> 2      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.181314
-#> 3     Luanda      Angola     AGO     AO        Admin-0 capital  13.232481
-#> 4     Tirana     Albania     ALB     AL        Admin-0 capital  19.818883
-#> 5  Mariehamn       Aland     ALD     AX Admin-0 region capital  19.949005
-#> 6    Andorra     Andorra     AND     AD        Admin-0 capital   1.516486
-#>        lat
-#> 1 12.53038
-#> 2 34.51864
-#> 3 -8.83634
-#> 4 41.32754
-#> 5 60.09700
-#> 6 42.50000
+#>         name     country adm0_a3 iso_a2                  class       lon
+#> 1 Oranjestad       Aruba     ABW     AW       Factbook capital -70.03333
+#> 2 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.02899
+#> 3      Kabul Afghanistan     AFG     AF       Factbook capital  69.18333
+#> 4      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.18131
+#> 5     Luanda      Angola     AGO     AO       Factbook capital  13.21667
+#> 6     Luanda      Angola     AGO     AO        Admin-0 capital  13.23248
+#>         lat             source               key extension
+#> 1 12.516667 CIA World Factbook       factbook:AA     FALSE
+#> 2 12.530384      Natural Earth ne:ABW:Oranjestad      TRUE
+#> 3 34.516667 CIA World Factbook       factbook:AF     FALSE
+#> 4 34.518636      Natural Earth      ne:AFG:Kabul      TRUE
+#> 5 -8.833333 CIA World Factbook       factbook:AO     FALSE
+#> 6 -8.836340      Natural Earth     ne:AGO:Luanda      TRUE
 table(caps$class)
 #> 
 #>        Admin-0 capital    Admin-0 capital alt Admin-0 region capital 
-#>                    202                     13                     28
+#>                    202                     13                     28 
+#>       Factbook capital 
+#>                    232
 inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
@@ -121,15 +123,16 @@ next to the herbaria.
 
 ## An extended point gazetteer
 
-The two capital tables differ: the Natural Earth table lists alternative
-and official capitals, CoordinateCleaner’s has one point per country,
-rounded to 0.01 degrees. Their union flags records near either:
+The two capital tables differ: the shipped table holds the Factbook
+capitals unrounded and adds Natural Earth’s alternative and official
+capitals, while CoordinateCleaner’s has one point per country, rounded
+to 0.01 degrees. Their union flags records near either:
 
 ``` r
 
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
 nrow(both)
-#> [1] 468
+#> [1] 700
 y <- data.frame(city = c("Cape Town", "Naypyidaw", "Vienna"), decimalLongitude = c(18.42, 96.13, 16.37),
                 decimalLatitude = c(-33.92, 19.75, 48.21))
 data.frame(city = y$city,
@@ -311,7 +314,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"
+#> [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

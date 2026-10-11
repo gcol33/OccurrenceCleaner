@@ -153,14 +153,14 @@ knitr::kable(t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital",
 
 | kingdom  | year_bin  |    n | flagged_sea | flagged_capital | removed_cc | kept_cc |
 |:---------|:----------|-----:|------------:|----------------:|-----------:|--------:|
-| Animalia | \<1950    | 1427 |         577 |               2 |        581 |     846 |
+| Animalia | \<1950    | 1427 |         577 |               3 |        581 |     846 |
 | Animalia | 1950-2000 | 1075 |         428 |               5 |        434 |     641 |
 | Animalia | \>=2000   |  513 |         195 |               2 |        197 |     316 |
 | Fungi    | \<1950    | 1425 |         553 |               4 |        557 |     868 |
 | Fungi    | 1950-2000 | 1030 |         414 |               4 |        419 |     611 |
 | Fungi    | \>=2000   |  493 |         200 |               1 |        202 |     291 |
 | Plantae  | \<1950    | 1492 |         588 |               1 |        590 |     902 |
-| Plantae  | 1950-2000 | 1003 |         397 |               1 |        399 |     604 |
+| Plantae  | 1950-2000 | 1003 |         397 |               2 |        399 |     604 |
 | Plantae  | \>=2000   |  542 |         212 |               0 |        212 |     330 |
 
 Most of these records are flagged by `sea`, because the simulated points
@@ -209,9 +209,9 @@ applies to it after collecting:
 table(kingdom = flagged$kingdom, capital = has_flag(flagged$flags, "capital"))
 #>           capital
 #> kingdom    FALSE TRUE
-#>   Animalia  1203    9
+#>   Animalia  1202   10
 #>   Fungi     1169    9
-#>   Plantae   1199    2
+#>   Plantae   1198    3
 ```
 
 To attach the flags to the full records, join on the identifier. For a

@@ -122,7 +122,7 @@ knitr::kable(tab)
 | age_copied    |    0 |        0 |           0 |                0 |        25 |
 | age_period    |    0 |        0 |           0 |                0 |         0 |
 | age_swapped   |    0 |        0 |           0 |                0 |        20 |
-| centroid      |    0 |       20 |           0 |                0 |         0 |
+| centroid      |    0 |        0 |           0 |                0 |         0 |
 | centroid_near |    0 |        0 |           0 |                0 |         0 |
 | clean         |    0 |        0 |           0 |               10 |         0 |
 | museum        |    0 |        7 |          15 |               13 |         0 |
@@ -157,17 +157,17 @@ f5 <- flag_occurrences(fos, tests = tests, columns = cols,
                        buffers = list(centroid = 5600, institution = 111))
 c(centroid_1km = sum(f$flag_centroid), centroid_5.6km = sum(f5$flag_centroid))
 #>   centroid_1km centroid_5.6km 
-#>             27             37
+#>              7              8
 ```
 
-The wider buffer adds 10 records:
+The wider buffer adds 1 records:
 
 ``` r
 
 table(f$truth[f5$flag_centroid & !f$flag_centroid])
 #> 
-#> centroid_near 
-#>            10
+#> clean 
+#>     1
 ```
 
 Clean records that happen to lie within 5.6 km of a centroid would be
@@ -195,8 +195,8 @@ knitr::kable(t[, c("age_range_bin", "n", "removed_coords", "removed_ages")])
 
 | age_range_bin |   n | removed_coords | removed_ages |
 |:--------------|----:|---------------:|-------------:|
-| \<5           | 545 |             22 |           45 |
-| 5-15          | 915 |             33 |            0 |
+| \<5           | 545 |             13 |           45 |
+| 5-15          | 915 |             22 |            0 |
 | \>=40         |  40 |              0 |            0 |
 
 The 45 records with a zero or negative range fall into the lowest bin,
@@ -224,8 +224,8 @@ with a cut on the raw column:
 keep <- !has_flag(f$flags, tests) & f$age_range <= 15
 table(f$truth[keep])
 #> 
-#> centroid_near         clean 
-#>            10          1350
+#>      centroid centroid_near         clean 
+#>            20            10          1350
 ```
 
 ## Outliers within a taxon
@@ -331,9 +331,9 @@ cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
 #> #!/usr/bin/env python
 #> from numpy import * 
 #> 
-#> data_1=[array([53.381952,41.28198,33.032813,35.118199,56.426308,55.005381,53.722718,26.580
-#> array([66.140041,41.879909,51.366948,38.879484,49.442001,24.181531,58.023977,42.168362,32.
-#> array([37.124169,57.990481,44.077925,54.277809,31.238536,25.023071,55.587483,58.441157,30.
+#> data_1=[array([27.321797,52.169548,42.004041,34.159467,35.744169,57.036736,53.587171,54.33
+#> array([61.451626,43.567439,53.239993,36.508009,48.022104,25.227798,55.610048,41.251745,32.
+#> array([42.789702,34.184511,54.431699,45.102043,49.554542,28.78179,24.916285,56.789188,30.0
 ```
 
 The draws are seeded, so the same call writes the same file;

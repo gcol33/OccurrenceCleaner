@@ -85,9 +85,15 @@ decided with the Vincenty inverse formula.</p>
 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The default gazetteer holds 243 Natural Earth populated places of the
-classes admin-0 capital, alternative capital and admin-0 region capital
-(dependent territories); see <code><a href="reference_info.html">reference_info()</a></code>.</p>
+    <p>The default gazetteer holds the capital "geographic coordinates" of the
+CIA World Factbook (public domain; 232 points, one per country profile,
+through the factbook.json mirror retrieved 2026-10-11), the source
+CoordinateCleaner's capitals are taken from. The column <code>extension</code> marks
+the 243 Natural Earth populated places of the classes admin-0 capital,
+alternative capital and admin-0 region capital (dependent territories),
+which add the second capitals of countries that have several (Cape Town,
+Sucre, Naypyidaw); passing the points with <code>extension</code> FALSE as
+<code>gazetteers = list(capital = ...)</code> leaves them out. See <code><a href="reference_info.html">reference_info()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="fields">Fields<a class="anchor" aria-label="anchor" href="#fields"></a></h2>
@@ -102,8 +108,14 @@ classes admin-0 capital, alternative capital and admin-0 region capital
     <p>Equivalent to <code>cc_cap()</code>. CoordinateCleaner
 draws the buffer as a 72-gon with vertices on the circle, whose edge lies
 at 99.9 % of the buffer between vertices; records in that band (within
-9.5 m of the 10 km edge) are flagged here and may not be there. With
-<code>reference = "CoordinateCleaner"</code> its <code>countryref</code> capitals are used.</p>
+9.5 m of the 10 km edge) are flagged here and may not be there. Of its
+225 capital points, 221 are Factbook points of the default gazetteer
+rounded to 0.01 degree, which moves them by up to 523 m. The other four
+hold values the Factbook has since revised: Bujumbura for Burundi, whose
+capital it now gives as Gitega; Buenos Aires at 58 40 W, 27 km west of
+the city, now 58 22 W; Melekeok for Palau, now Ngerulmud; and Rangoon,
+1.8 km from its present coordinates. With <code>reference = "CoordinateCleaner"</code>
+its <code>countryref</code> capitals are used.</p>
     </div>
     <div class="section level2">
     <h2 id="custom-gazetteer">Custom gazetteer<a class="anchor" aria-label="anchor" href="#custom-gazetteer"></a></h2>
@@ -143,7 +155,10 @@ of longitude and latitude; see <code><a href="flag_occurrences.html">flag_occurr
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.51</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
-<span><span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span></code></pre></div>
+<span><span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span>,</span>
+<span>                 gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="va">g</span><span class="op">[</span><span class="op">!</span><span class="va">g</span><span class="op">$</span><span class="va">extension</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -42,6 +42,9 @@ knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 | places_10 | Natural Earth | ne_10m_populated_places_simple.zip | 5.1.2 | 2026-10-09 |
 | admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
 | admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
+| factbook | CIA World Factbook (factbook.json) | factbook_json.zip | factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b | 2026-10-11 |
+| world_borders | thematicmapping.org World Borders Dataset | tm_world_borders_0.3.json | 0.3 (2008-07-30) | 2026-10-11 |
+| geolocate | GEOLocate web service | geolocate/\*.json | 2026-10-11 | 2026-10-11 |
 | institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
 | institutions_wikidata | Wikidata | wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv, wikidata_Q43501_v2.csv, wikidata_Q181916_v2.csv, wikidata_Q2281788_v2.csv, wikidata_museum_subjects.csv | 2026-10-10 | 2026-10-10 |
 | institutions_wikipedia | Wikipedia, lists of natural history museums | wikipedia_en_museum_list.json, wikipedia_de_museum_list.json, wikipedia_fr_museum_list.json, wikipedia_nl_museum_list.json, wikipedia_pt_museum_list.json, wikipedia_ar_museum_list.json, wikipedia_eo_museum_list.json, wikipedia_fr_museum_list_flags.csv, wikipedia_pt_museum_list_flags.csv, wikipedia_en_museum_list_titles.csv, wikipedia_de_museum_list_titles.csv, wikipedia_fr_museum_list_titles.csv, wikipedia_nl_museum_list_titles.csv, wikipedia_pt_museum_list_titles.csv, wikipedia_ar_museum_list_titles.csv, wikipedia_eo_museum_list_titles.csv, wikidata_list_items.csv, wikidata_institution_classes.csv, wikidata_search_en.csv, wikidata_search_de.csv, wikidata_search_fr.csv, wikidata_search_nl.csv, wikidata_search_pt.csv, wikidata_search_ar.csv, wikidata_search_eo.csv, geonames_countryInfo.txt, geonames_admin1CodesASCII.txt, geonames_cities500.zip | en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115 | 2026-10-11 |
@@ -55,8 +58,8 @@ file and the licence. The tests read these layers:
 
 | test | reference data |
 |:---|:---|
-| capital | Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories |
-| centroid | Natural Earth admin-0 country centroids and label points, admin-1 label points |
+| capital | CIA World Factbook capital coordinates, Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories |
+| centroid | CIA World Factbook, thematicmapping.org World Borders and GEOLocate country points, Natural Earth admin-0 polygon centroids and label points, admin-1 label points |
 | institution | GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, museums of Wikipedia’s lists of natural history museums, and BGCI gardens, with coordinates |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
@@ -64,6 +67,29 @@ file and the licence. The tests read these layers:
 | urban | Natural Earth urban areas 1:50m |
 | country_mismatch | Natural Earth admin-0 countries 1:50m |
 | sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
+
+The capitals are the capital “geographic coordinates” of the CIA World
+Factbook, the source of CoordinateCleaner’s capitals, read from the same
+factbook.json mirror: one point per country profile, 232 in all. The
+Natural Earth admin-0 capitals, alternative capitals and capitals of
+dependent territories (243) are added with `extension` `TRUE`.
+
+The country centroids come from the three sources CoordinateCleaner’s
+table is compiled from, each taken from the source itself: the
+“Geographic coordinates” of the CIA World Factbook (public domain), read
+from the factbook.json mirror of the Factbook country profiles on
+2026-10-11 (275 points); the label points of the World Borders Dataset
+0.3 by Bjorn Sandvik, thematicmapping.org (246 points), under CC BY-SA,
+from the GeoJSON conversion of the dataset at
+github.com/jeffaudi/world-borders-geojson; and every point the GEOLocate
+georeferencing service (geo-locate.org) returns when a country name is
+entered as country and locality, queried on 2026-10-11 for each country
+name of the three tables (548 points). GEOLocate also returns places
+that carry a country’s name; one such place, Niger State in Nigeria for
+“Niger”, lies inside another country more than 100 km from the queried
+one and is left out. The Natural Earth admin-0 polygon centroids,
+computed on the sphere, and label points (516) are added with
+`extension` `TRUE`.
 
 All Natural Earth layers are in the public domain; the Natural Earth
 terms of use say that “No permission is needed to use Natural Earth.”
@@ -143,29 +169,43 @@ same tables. Measured on 2026-10-09:
 
 | gazetteer | CoordinateCleaner | OccurrenceCleaner |
 |:---|:---|:---|
-| capitals | 225 (one per ISO3 code) | 243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals) |
-| country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and geo-locate | 516 (polygon centroid and label point per country, Natural Earth 5.1.1) |
-| province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,596 (Natural Earth 5.1.1 admin-1 label points) |
+| capitals | 225 (one per ISO3 code) | 475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension |
+| country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate | 1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension |
+| province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
 | institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 18,245 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames), of which 10,580 from CoordinateCleaner’s sources |
 
-- **Capitals.** 212 countries match by ISO3 code. The median distance
-  between the two packages’ capital points for the same country is 0.92
-  km, 90 % are within 7.1 km; CoordinateCleaner’s coordinates are
-  rounded to 0.01 degrees. Natural Earth also lists alternative and
+- **Capitals.** 221 of CoordinateCleaner’s 225 capital points are
+  Factbook points of the package’s table rounded to 0.01 degrees, which
+  moves them by up to 523 m. The other four hold values the Factbook has
+  since revised: Bujumbura for Burundi, whose capital it now gives as
+  Gitega; Buenos Aires at 58 40 W, 27 km west of the city, now 58 22 W;
+  Melekeok for Palau, now Ngerulmud; and Rangoon, 1.8 km from its
+  present coordinates. The Natural Earth points add alternative and
   official capitals that CoordinateCleaner does not hold: Cape Town and
-  Bloemfontein besides Pretoria, Sucre besides La Paz, Naypyidaw instead
-  of Yangon, Dodoma instead of Dar es Salaam, among others.
+  Bloemfontein besides Pretoria, Sucre besides La Paz, Naypyidaw besides
+  Yangon, Dodoma besides Dar es Salaam, among others; the test leaves
+  them out when passed the points with `extension` `FALSE`.
 
-- **Country centroids.** The two define centroids differently, so the
-  points lie a median of 30 km apart (90 % within 259 km). Both use a 1
-  km buffer, so they flag different records: each catches records
-  georeferenced to its own definition of the centre of a country.
+- **Country centroids.** 645 of CoordinateCleaner’s 660 country
+  centroids are points of the package’s table at distance 0. India,
+  Italy and the United Kingdom hold World Borders values that version
+  0.3 of the dataset changed; three GEOLocate points for Macedonia and
+  one for Guinea, at sea at 10 W 5 N, are not returned by GEOLocate
+  today; eight others lie 5 m to 68 km from a shipped point. The Natural
+  Earth points, which CoordinateCleaner does not hold, lie a median of
+  30 km from its centroids and catch records georeferenced to the centre
+  of a country’s polygon; the test leaves them out when passed the
+  points with `extension` `FALSE`.
 
 - **Province centroids.** CoordinateCleaner’s province centroids are
-  exactly the Natural Earth admin-1 label points of an older release:
-  all 4,549 codes that still exist match at distance 0. The package uses
-  the 5.1.1 release, in which 96 of CoordinateCleaner’s codes no longer
-  exist.
+  Natural Earth admin-1 label points of older releases: 4,566 of its
+  4,645 rows match a unit of release 3.3.0, 4.0.0 or 4.1.0 by code and
+  coordinates. The package takes the same layer from release 5.1.1, so
+  every province point comes from CoordinateCleaner’s source and carries
+  `extension` `FALSE`. 4,591 of CoordinateCleaner’s rows are shipped
+  points at distance 0. Of the other 54, 50 lie more than 10 km from any
+  shipped point: 15 hold coordinates of older releases that Natural
+  Earth has since changed, and 39 match no tagged release.
 
 - **Institutions.** CoordinateCleaner takes 712 botanic gardens from
   Botanic Gardens Conservation International (BGCI), 627 points from
@@ -216,11 +256,11 @@ data.frame(city = x$city,
 #> 6 Naypyidaw          TRUE             FALSE
 ```
 
-Cape Town, Sucre and Naypyidaw are flagged only with the Natural Earth
-list; Pretoria, La Paz and Yangon under both. Which list is right
-depends on what an error looks like: a herbarium sheet in Cape Town
-georeferenced to the city is as wrong under either reference, and only
-the Natural Earth list catches it.
+Cape Town, Sucre and Naypyidaw are flagged only through the Natural
+Earth extension points; Pretoria, La Paz and Yangon under both. Which
+list is right depends on what an error looks like: a herbarium sheet in
+Cape Town georeferenced to the city is as wrong under either reference,
+and only the extension points catch it.
 
 ## Land scale and the `sea` test
 
@@ -315,7 +355,7 @@ the version of each layer:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 attr(f, "occ_reference")
-#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
 attr(f, "occ_layout_version")
 #> [1] 4
 ```

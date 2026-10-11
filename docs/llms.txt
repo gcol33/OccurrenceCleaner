@@ -8,10 +8,6 @@ coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Version 0.1.0 is the first release, installed from GitHub; the
-[changelog](https://gillescolling.com/OccurrenceCleaner/news/index.html)
-lists what it contains.
-
 OccurrenceCleaner is an extension of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 (Zizka et al. 2019) tailored to large-scale occurrence data. It flags
@@ -248,7 +244,10 @@ Natural Earth layers through a grid index that resolves boundary cells
 exactly.
 
 The gazetteers are rebuilt from the original public sources (Natural
-Earth, public domain; GBIF GRSciColl and Wikidata for institutions; the
+Earth, public domain; the CIA World Factbook, public domain, for
+capitals and country centroids; the World Borders Dataset by Bjorn
+Sandvik, thematicmapping.org, CC BY-SA, and the GEOLocate service for
+country centroids; GBIF GRSciColl and Wikidata for institutions; the
 Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus
 habitats), each pinned to a version and checksum.
 `reference = "CoordinateCleaner"` reads that package’s own tables
@@ -314,7 +313,8 @@ gazetteers here are rebuilt from the public sources it draws on.
 
 MIT. CoordinateCleaner (GPL-3) is a suggested package used by the
 equivalence tests and by `reference = "CoordinateCleaner"`; none of its
-code or data is bundled.
+code or data is bundled. The country centroid points from the World
+Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.
 
 ## Citation
 

@@ -204,9 +204,12 @@ package tests:
 
 - `country_mismatch` compares the record's code with the ISO alpha-2
   code, the ISO alpha-3 code and the Natural Earth `ADM0_A3` code of the
-  country polygon the point falls in; CoordinateCleaner compares alpha-3
-  only. Records without a code, or at sea, are flagged as in
-  CoordinateCleaner.
+  country polygon the point falls in, taking the ISO codes from Natural
+  Earth's `ISO_A2_EH` and `ISO_A3_EH` columns, which are filled where
+  `ISO_A2` and `ISO_A3` hold `-99` (France, Norway, Kosovo);
+  CoordinateCleaner compares `ISO_A3` only, so it flags every record in
+  France and Norway. Records without a code, or at sea, are flagged as
+  in CoordinateCleaner.
 
 - `duplicate` on streamed input is evaluated within each input file
   (Parquet part), not across the whole table.

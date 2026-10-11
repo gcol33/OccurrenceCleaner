@@ -659,18 +659,37 @@ scientific collections, each pinned to a version and checksum:</p>
 <td align="left">2026-10-09</td>
 </tr>
 <tr class="odd">
+<td align="left">factbook</td>
+<td align="left">CIA World Factbook (factbook.json)</td>
+<td align="left">factbook.json
+144d6977b2b01ac1cbd220de754c0a005616760b</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="even">
+<td align="left">world_borders</td>
+<td align="left">thematicmapping.org World Borders Dataset</td>
+<td align="left">0.3 (2008-07-30)</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="odd">
+<td align="left">geolocate</td>
+<td align="left">GEOLocate web service</td>
+<td align="left">2026-10-11</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="even">
 <td align="left">institutions</td>
 <td align="left">GBIF GRSciColl</td>
 <td align="left">2026-10-09</td>
 <td align="left">2026-10-09</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">institutions_wikidata</td>
 <td align="left">Wikidata</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">institutions_wikipedia</td>
 <td align="left">Wikipedia, lists of natural history museums</td>
 <td align="left">en revision 1376233148; de revision 267938927; fr
@@ -678,25 +697,25 @@ revision 240149609; nl revision 69876533; pt revision 71307420; ar
 revision 76691072; eo revision 9165115</td>
 <td align="left">2026-10-11</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">institutions_geonames</td>
 <td align="left">GeoNames</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">institutions_bgci</td>
 <td align="left">BGCI GardenSearch</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">aohi</td>
 <td align="left">Park et al. 2023, AHOI (Dryad <a href="doi:10.5061/dryad.v41ns1s0p" class="uri">doi:10.5061/dryad.v41ns1s0p</a>)</td>
 <td align="left">2022-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">habitat</td>
 <td align="left">IRMNG, Rees, T. (compiler) (2026). The Interim Register
 of Marine and Nonmarine Genera</td>
@@ -733,10 +752,10 @@ grouping, and a rerun skips finished units.</p>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">out</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 5,000 records in 2 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpQPf4Wq\flags1c3ac1e593be2</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpiAte4y\flags1b8050b468c2</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
-<span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)</span></span>
+<span><span class="co">#&gt;   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)</span></span>
 <span><span class="co">#&gt;   keep:      kingdom, year</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                 rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>

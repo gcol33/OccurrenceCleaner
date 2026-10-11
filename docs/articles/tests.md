@@ -261,8 +261,8 @@ ggplot(data.frame(km = radii / 1000, share = share), aes(km, share)) +
 ![](tests_files/figure-html/capital-sweep-1.svg)
 
 For records spread evenly over a disc, the share grows with the square
-of the buffer. 6.9 % of the records lie within the default 10 km, close
-to the 6.25 % of the area that a 10 km circle covers in a 40 km disc
+of the buffer. 7 % of the records lie within the default 10 km, close to
+the 6.25 % of the area that a 10 km circle covers in a 40 km disc
 (10²/40²); with 3,000 records the sampling error of that share is about
 0.4 percentage points. At 30 km the share rises above the disc ratio (56
 %) because the eastern edge of the disc lies within 30 km of Bratislava,

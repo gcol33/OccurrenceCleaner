@@ -199,13 +199,35 @@ reference version is recorded with the flags.</p>
 <td align="left">2026-10-09</td>
 </tr>
 <tr class="odd">
+<td align="left">factbook</td>
+<td align="left">CIA World Factbook (factbook.json)</td>
+<td align="left">factbook_json.zip</td>
+<td align="left">factbook.json
+144d6977b2b01ac1cbd220de754c0a005616760b</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="even">
+<td align="left">world_borders</td>
+<td align="left">thematicmapping.org World Borders Dataset</td>
+<td align="left">tm_world_borders_0.3.json</td>
+<td align="left">0.3 (2008-07-30)</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="odd">
+<td align="left">geolocate</td>
+<td align="left">GEOLocate web service</td>
+<td align="left">geolocate/*.json</td>
+<td align="left">2026-10-11</td>
+<td align="left">2026-10-11</td>
+</tr>
+<tr class="even">
 <td align="left">institutions</td>
 <td align="left">GBIF GRSciColl</td>
 <td align="left">grscicoll_institutions.tsv</td>
 <td align="left">2026-10-09</td>
 <td align="left">2026-10-09</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">institutions_wikidata</td>
 <td align="left">Wikidata</td>
 <td align="left">wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv,
@@ -214,7 +236,7 @@ wikidata_Q2281788_v2.csv, wikidata_museum_subjects.csv</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">institutions_wikipedia</td>
 <td align="left">Wikipedia, lists of natural history museums</td>
 <td align="left">wikipedia_en_museum_list.json,
@@ -239,21 +261,21 @@ revision 240149609; nl revision 69876533; pt revision 71307420; ar
 revision 76691072; eo revision 9165115</td>
 <td align="left">2026-10-11</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">institutions_geonames</td>
 <td align="left">GeoNames</td>
 <td align="left">geonames_MC.zip, geonames_PT.zip, geonames_IT.zip</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">institutions_bgci</td>
 <td align="left">BGCI GardenSearch</td>
 <td align="left">bgci_map_all.html</td>
 <td align="left">2026-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">aohi</td>
 <td align="left">Park et al. 2023, AHOI (Dryad <a href="doi:10.5061/dryad.v41ns1s0p" class="uri">doi:10.5061/dryad.v41ns1s0p</a>)</td>
 <td align="left">birds_20221010.csv, insects_20221010.csv,
@@ -261,7 +283,7 @@ mammals_20221010.csv, plants_20221010.csv</td>
 <td align="left">2022-10-10</td>
 <td align="left">2026-10-10</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">habitat</td>
 <td align="left">IRMNG, Rees, T. (compiler) (2026). The Interim Register
 of Marine and Nonmarine Genera</td>
@@ -285,13 +307,15 @@ source file and the licence. The tests read these layers:</p>
 <tbody>
 <tr class="odd">
 <td align="left">capital</td>
-<td align="left">Natural Earth populated places: admin-0 capitals,
-alternative capitals and capitals of dependent territories</td>
+<td align="left">CIA World Factbook capital coordinates, Natural Earth
+populated places: admin-0 capitals, alternative capitals and capitals of
+dependent territories</td>
 </tr>
 <tr class="even">
 <td align="left">centroid</td>
-<td align="left">Natural Earth admin-0 country centroids and label
-points, admin-1 label points</td>
+<td align="left">CIA World Factbook, thematicmapping.org World Borders
+and GEOLocate country points, Natural Earth admin-0 polygon centroids
+and label points, admin-1 label points</td>
 </tr>
 <tr class="odd">
 <td align="left">institution</td>
@@ -329,6 +353,28 @@ Register of Marine and Nonmarine Genera</td>
 </tr>
 </tbody>
 </table>
+<p>The capitals are the capital “geographic coordinates” of the CIA
+World Factbook, the source of CoordinateCleaner’s capitals, read from
+the same factbook.json mirror: one point per country profile, 232 in
+all. The Natural Earth admin-0 capitals, alternative capitals and
+capitals of dependent territories (243) are added with
+<code>extension</code> <code>TRUE</code>.</p>
+<p>The country centroids come from the three sources CoordinateCleaner’s
+table is compiled from, each taken from the source itself: the
+“Geographic coordinates” of the CIA World Factbook (public domain), read
+from the factbook.json mirror of the Factbook country profiles on
+2026-10-11 (275 points); the label points of the World Borders Dataset
+0.3 by Bjorn Sandvik, thematicmapping.org (246 points), under CC BY-SA,
+from the GeoJSON conversion of the dataset at
+github.com/jeffaudi/world-borders-geojson; and every point the GEOLocate
+georeferencing service (geo-locate.org) returns when a country name is
+entered as country and locality, queried on 2026-10-11 for each country
+name of the three tables (548 points). GEOLocate also returns places
+that carry a country’s name; one such place, Niger State in Nigeria for
+“Niger”, lies inside another country more than 100 km from the queried
+one and is left out. The Natural Earth admin-0 polygon centroids,
+computed on the sphere, and label points (516) are added with
+<code>extension</code> <code>TRUE</code>.</p>
 <p>All Natural Earth layers are in the public domain; the Natural Earth
 terms of use say that “No permission is needed to use Natural Earth.”
 The institutions come from the bulk export of GBIF’s Global Registry of
@@ -416,20 +462,22 @@ but they are not the same tables. Measured on 2026-10-09:</p>
 <tr class="odd">
 <td align="left">capitals</td>
 <td align="left">225 (one per ISO3 code)</td>
-<td align="left">243 (215 admin-0 capitals and alternative capitals,
-plus dependent-territory capitals)</td>
+<td align="left">475: 232 Factbook capitals and 243 Natural Earth
+capitals, alternative capitals and dependent-territory capitals marked
+as extension</td>
 </tr>
 <tr class="even">
 <td align="left">country centroids</td>
 <td align="left">660 rows from the CIA World Factbook,
-thematicmapping.org and geo-locate</td>
-<td align="left">516 (polygon centroid and label point per country,
-Natural Earth 5.1.1)</td>
+thematicmapping.org and GEOLocate</td>
+<td align="left">1,585: 1,069 from the same three sources (275 Factbook,
+246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon
+centroids and label points marked as extension</td>
 </tr>
 <tr class="odd">
 <td align="left">province centroids</td>
 <td align="left">4,645 (older Natural Earth admin-1 label points)</td>
-<td align="left">4,596 (Natural Earth 5.1.1 admin-1 label points)</td>
+<td align="left">4,594 (Natural Earth 5.1.1 admin-1 label points)</td>
 </tr>
 <tr class="even">
 <td align="left">institutions</td>
@@ -442,24 +490,38 @@ which 10,580 from CoordinateCleaner’s sources</td>
 </tbody>
 </table>
 <ul>
-<li><p><strong>Capitals.</strong> 212 countries match by ISO3 code. The
-median distance between the two packages’ capital points for the same
-country is 0.92 km, 90 % are within 7.1 km; CoordinateCleaner’s
-coordinates are rounded to 0.01 degrees. Natural Earth also lists
-alternative and official capitals that CoordinateCleaner does not hold:
-Cape Town and Bloemfontein besides Pretoria, Sucre besides La Paz,
-Naypyidaw instead of Yangon, Dodoma instead of Dar es Salaam, among
-others.</p></li>
-<li><p><strong>Country centroids.</strong> The two define centroids
-differently, so the points lie a median of 30 km apart (90 % within 259
-km). Both use a 1 km buffer, so they flag different records: each
-catches records georeferenced to its own definition of the centre of a
-country.</p></li>
+<li><p><strong>Capitals.</strong> 221 of CoordinateCleaner’s 225 capital
+points are Factbook points of the package’s table rounded to 0.01
+degrees, which moves them by up to 523 m. The other four hold values the
+Factbook has since revised: Bujumbura for Burundi, whose capital it now
+gives as Gitega; Buenos Aires at 58 40 W, 27 km west of the city, now 58
+22 W; Melekeok for Palau, now Ngerulmud; and Rangoon, 1.8 km from its
+present coordinates. The Natural Earth points add alternative and
+official capitals that CoordinateCleaner does not hold: Cape Town and
+Bloemfontein besides Pretoria, Sucre besides La Paz, Naypyidaw besides
+Yangon, Dodoma besides Dar es Salaam, among others; the test leaves them
+out when passed the points with <code>extension</code>
+<code>FALSE</code>.</p></li>
+<li><p><strong>Country centroids.</strong> 645 of CoordinateCleaner’s
+660 country centroids are points of the package’s table at distance 0.
+India, Italy and the United Kingdom hold World Borders values that
+version 0.3 of the dataset changed; three GEOLocate points for Macedonia
+and one for Guinea, at sea at 10 W 5 N, are not returned by GEOLocate
+today; eight others lie 5 m to 68 km from a shipped point. The Natural
+Earth points, which CoordinateCleaner does not hold, lie a median of 30
+km from its centroids and catch records georeferenced to the centre of a
+country’s polygon; the test leaves them out when passed the points with
+<code>extension</code> <code>FALSE</code>.</p></li>
 <li><p><strong>Province centroids.</strong> CoordinateCleaner’s province
-centroids are exactly the Natural Earth admin-1 label points of an older
-release: all 4,549 codes that still exist match at distance 0. The
-package uses the 5.1.1 release, in which 96 of CoordinateCleaner’s codes
-no longer exist.</p></li>
+centroids are Natural Earth admin-1 label points of older releases:
+4,566 of its 4,645 rows match a unit of release 3.3.0, 4.0.0 or 4.1.0 by
+code and coordinates. The package takes the same layer from release
+5.1.1, so every province point comes from CoordinateCleaner’s source and
+carries <code>extension</code> <code>FALSE</code>. 4,591 of
+CoordinateCleaner’s rows are shipped points at distance 0. Of the other
+54, 50 lie more than 10 km from any shipped point: 15 hold coordinates
+of older releases that Natural Earth has since changed, and 39 match no
+tagged release.</p></li>
 <li><p><strong>Institutions.</strong> CoordinateCleaner takes 712
 botanic gardens from Botanic Gardens Conservation International (BGCI),
 627 points from Wikipedia and 3 from GeoNames. It geocoded 641 of the
@@ -505,11 +567,11 @@ alternative or official capitals, under both references:</p>
 <span><span class="co">#&gt; 4     Sucre          TRUE             FALSE</span></span>
 <span><span class="co">#&gt; 5    Yangon          TRUE              TRUE</span></span>
 <span><span class="co">#&gt; 6 Naypyidaw          TRUE             FALSE</span></span></code></pre></div>
-<p>Cape Town, Sucre and Naypyidaw are flagged only with the Natural
-Earth list; Pretoria, La Paz and Yangon under both. Which list is right
-depends on what an error looks like: a herbarium sheet in Cape Town
-georeferenced to the city is as wrong under either reference, and only
-the Natural Earth list catches it.</p>
+<p>Cape Town, Sucre and Naypyidaw are flagged only through the Natural
+Earth extension points; Pretoria, La Paz and Yangon under both. Which
+list is right depends on what an error looks like: a herbarium sheet in
+Cape Town georeferenced to the city is as wrong under either reference,
+and only the extension points catch it.</p>
 </div>
 <div class="section level2">
 <h2 id="land-scale-and-the-sea-test">Land scale and the <code>sea</code> test<a class="anchor" aria-label="anchor" href="#land-scale-and-the-sea-test"></a>
@@ -13724,7 +13786,7 @@ the version of each layer:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
+<span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed

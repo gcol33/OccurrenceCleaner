@@ -133,24 +133,26 @@ test with their attributes:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">caps</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         name     country adm0_a3 iso_a2                  class        lon</span></span>
-<span><span class="co">#&gt; 1 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.028992</span></span>
-<span><span class="co">#&gt; 2      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.181314</span></span>
-<span><span class="co">#&gt; 3     Luanda      Angola     AGO     AO        Admin-0 capital  13.232481</span></span>
-<span><span class="co">#&gt; 4     Tirana     Albania     ALB     AL        Admin-0 capital  19.818883</span></span>
-<span><span class="co">#&gt; 5  Mariehamn       Aland     ALD     AX Admin-0 region capital  19.949005</span></span>
-<span><span class="co">#&gt; 6    Andorra     Andorra     AND     AD        Admin-0 capital   1.516486</span></span>
-<span><span class="co">#&gt;        lat</span></span>
-<span><span class="co">#&gt; 1 12.53038</span></span>
-<span><span class="co">#&gt; 2 34.51864</span></span>
-<span><span class="co">#&gt; 3 -8.83634</span></span>
-<span><span class="co">#&gt; 4 41.32754</span></span>
-<span><span class="co">#&gt; 5 60.09700</span></span>
-<span><span class="co">#&gt; 6 42.50000</span></span>
+<span><span class="co">#&gt;         name     country adm0_a3 iso_a2                  class       lon</span></span>
+<span><span class="co">#&gt; 1 Oranjestad       Aruba     ABW     AW       Factbook capital -70.03333</span></span>
+<span><span class="co">#&gt; 2 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.02899</span></span>
+<span><span class="co">#&gt; 3      Kabul Afghanistan     AFG     AF       Factbook capital  69.18333</span></span>
+<span><span class="co">#&gt; 4      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.18131</span></span>
+<span><span class="co">#&gt; 5     Luanda      Angola     AGO     AO       Factbook capital  13.21667</span></span>
+<span><span class="co">#&gt; 6     Luanda      Angola     AGO     AO        Admin-0 capital  13.23248</span></span>
+<span><span class="co">#&gt;         lat             source               key extension</span></span>
+<span><span class="co">#&gt; 1 12.516667 CIA World Factbook       factbook:AA     FALSE</span></span>
+<span><span class="co">#&gt; 2 12.530384      Natural Earth ne:ABW:Oranjestad      TRUE</span></span>
+<span><span class="co">#&gt; 3 34.516667 CIA World Factbook       factbook:AF     FALSE</span></span>
+<span><span class="co">#&gt; 4 34.518636      Natural Earth      ne:AFG:Kabul      TRUE</span></span>
+<span><span class="co">#&gt; 5 -8.833333 CIA World Factbook       factbook:AO     FALSE</span></span>
+<span><span class="co">#&gt; 6 -8.836340      Natural Earth     ne:AGO:Luanda      TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">caps</span><span class="op">$</span><span class="va">class</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;        Admin-0 capital    Admin-0 capital alt Admin-0 region capital </span></span>
-<span><span class="co">#&gt;                    202                     13                     28</span></span>
+<span><span class="co">#&gt;                    202                     13                     28 </span></span>
+<span><span class="co">#&gt;       Factbook capital </span></span>
+<span><span class="co">#&gt;                    232</span></span>
 <span><span class="va">inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -213,14 +215,14 @@ next to the herbaria.</p>
 <div class="section level2">
 <h2 id="an-extended-point-gazetteer">An extended point gazetteer<a class="anchor" aria-label="anchor" href="#an-extended-point-gazetteer"></a>
 </h2>
-<p>The two capital tables differ: the Natural Earth table lists
-alternative and official capitals, CoordinateCleaner’s has one point per
-country, rounded to 0.01 degrees. Their union flags records near
-either:</p>
+<p>The two capital tables differ: the shipped table holds the Factbook
+capitals unrounded and adds Natural Earth’s alternative and official
+capitals, while CoordinateCleaner’s has one point per country, rounded
+to 0.01 degrees. Their union flags records near either:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">both</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 468</span></span>
+<span><span class="co">#&gt; [1] 700</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cape Town"</span>, <span class="st">"Naypyidaw"</span>, <span class="st">"Vienna"</span><span class="op">)</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18.42</span>, <span class="fl">96.13</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">33.92</span>, <span class="fl">19.75</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="va">y</span><span class="op">$</span><span class="va">city</span>,</span>
@@ -379,7 +381,7 @@ output:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a

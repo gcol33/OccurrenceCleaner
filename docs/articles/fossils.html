@@ -248,7 +248,7 @@ Per error type:</p>
 <tr class="even">
 <td align="left">centroid</td>
 <td align="right">0</td>
-<td align="right">20</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
@@ -315,13 +315,13 @@ are in metres:</p>
 <span>                       buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>centroid <span class="op">=</span> <span class="fl">5600</span>, institution <span class="op">=</span> <span class="fl">111</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>centroid_1km <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flag_centroid</span><span class="op">)</span>, centroid_5.6km <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">f5</span><span class="op">$</span><span class="va">flag_centroid</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   centroid_1km centroid_5.6km </span></span>
-<span><span class="co">#&gt;             27             37</span></span></code></pre></div>
-<p>The wider buffer adds 10 records:</p>
+<span><span class="co">#&gt;              7              8</span></span></code></pre></div>
+<p>The wider buffer adds 1 records:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">truth</span><span class="op">[</span><span class="va">f5</span><span class="op">$</span><span class="va">flag_centroid</span> <span class="op">&amp;</span> <span class="op">!</span><span class="va">f</span><span class="op">$</span><span class="va">flag_centroid</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; centroid_near </span></span>
-<span><span class="co">#&gt;            10</span></span></code></pre></div>
+<span><span class="co">#&gt; clean </span></span>
+<span><span class="co">#&gt;     1</span></span></code></pre></div>
 <p>Clean records that happen to lie within 5.6 km of a centroid would be
 added too, so a wider buffer trades coarse georeferences caught against
 clean records lost; the per-test tally of the clean subset shows that
@@ -352,13 +352,13 @@ pass serve any threshold:</p>
 <tr class="odd">
 <td align="left">&lt;5</td>
 <td align="right">545</td>
-<td align="right">22</td>
+<td align="right">13</td>
 <td align="right">45</td>
 </tr>
 <tr class="even">
 <td align="left">5-15</td>
 <td align="right">915</td>
-<td align="right">33</td>
+<td align="right">22</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
@@ -527,8 +527,8 @@ rule with a cut on the raw column:</p>
 <code class="sourceCode R"><span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">tests</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">f</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">truth</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; centroid_near         clean </span></span>
-<span><span class="co">#&gt;            10          1350</span></span></code></pre></div>
+<span><span class="co">#&gt;      centroid centroid_near         clean </span></span>
+<span><span class="co">#&gt;            20            10          1350</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="outliers-within-a-taxon">Outliers within a taxon<a class="anchor" aria-label="anchor" href="#outliers-within-a-taxon"></a>
@@ -665,9 +665,9 @@ extant taxa, and replicates of ages drawn from each record’s range:</p>
 <span><span class="co">#&gt; #!/usr/bin/env python</span></span>
 <span><span class="co">#&gt; from numpy import * </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data_1=[array([53.381952,41.28198,33.032813,35.118199,56.426308,55.005381,53.722718,26.580</span></span>
-<span><span class="co">#&gt; array([66.140041,41.879909,51.366948,38.879484,49.442001,24.181531,58.023977,42.168362,32.</span></span>
-<span><span class="co">#&gt; array([37.124169,57.990481,44.077925,54.277809,31.238536,25.023071,55.587483,58.441157,30.</span></span></code></pre></div>
+<span><span class="co">#&gt; data_1=[array([27.321797,52.169548,42.004041,34.159467,35.744169,57.036736,53.587171,54.33</span></span>
+<span><span class="co">#&gt; array([61.451626,43.567439,53.239993,36.508009,48.022104,25.227798,55.610048,41.251745,32.</span></span>
+<span><span class="co">#&gt; array([42.789702,34.184511,54.431699,45.102043,49.554542,28.78179,24.916285,56.789188,30.0</span></span></code></pre></div>
 <p>The draws are seeded, so the same call writes the same file;
 <code>random = FALSE</code> uses the midpoints of the ranges instead.
 CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> writes the same layout;

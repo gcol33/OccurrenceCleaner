@@ -122,12 +122,12 @@ holding every test that was run.
 
 summary(f)
 #> <occ_summary> 3,120 records
-#>   rule all: removes 749 (24.01 %)
+#>   rule all: removes 750 (24.04 %)
 #>  rule              test    n flagged   pct only pct_only
 #>   all           invalid 3120       0  0.00    0     0.00
 #>   all              zero 3120      40  1.28    0     0.00
 #>   all             equal 3120      40  1.28    0     0.00
-#>   all           capital 3120     160  5.13  119     3.81
+#>   all           capital 3120     161  5.16  120     3.85
 #>   all          centroid 3120      16  0.51    1     0.03
 #>   all       institution 3120       5  0.16    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
@@ -136,7 +136,7 @@ summary(f)
 #>   all  issue_coordinate 3120       0  0.00    0     0.00
 #>   all     issue_rounded 3120     411 13.17  361    11.57
 #>   all      basis_fossil 3120      15  0.48   12     0.38
-#>   all             (any) 3120     749 24.01
+#>   all             (any) 3120     750 24.04
 ```
 
 For each test of the rule, `flagged` is the number of records carrying
@@ -179,8 +179,8 @@ rules <- list(strict = tests,
 s <- summary(f, rules = rules)
 s[s$test == "(any)", c("rule", "n", "flagged", "pct")]
 #>     rule    n flagged   pct
-#>   strict 3120     749 24.01
-#>       cc 3120     266  8.53
+#>   strict 3120     750 24.04
+#>       cc 3120     267  8.56
 #>  minimal 3120     105  3.37
 ```
 
@@ -220,9 +220,9 @@ s[s$test %in% c("capital", "sea", "(any)"), ]
 #>     Fungi   cc capital  312      15 4.81   12     3.85
 #>     Fungi   cc     sea  312      10 3.21    6     1.92
 #>     Fungi   cc   (any)  312      25 8.01              
-#>   Plantae   cc capital 1262      60 4.75   51     4.04
+#>   Plantae   cc capital 1262      61 4.83   52     4.12
 #>   Plantae   cc     sea 1262      42 3.33   26     2.06
-#>   Plantae   cc   (any) 1262     103 8.16
+#>   Plantae   cc   (any) 1262     104 8.24
 ```
 
 With grouping, [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
@@ -260,7 +260,7 @@ s[s$rule == "strict" & s$test %in% c("issue_rounded", "(any)"),
 #>  1970-2000 issue_rounded  852  3.52
 #>  1970-2000         (any)  852 14.67
 #>     >=2000 issue_rounded 1140  3.16
-#>     >=2000         (any) 1140 16.84
+#>     >=2000         (any) 1140 16.93
 ```
 
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
@@ -288,7 +288,7 @@ s[s$test %in% c("issue_rounded", "(any)"),
   c("coordinateUncertaintyInMeters_bin", "test", "n", "pct")]
 #>  coordinateUncertaintyInMeters_bin          test    n   pct
 #>                               <100 issue_rounded 1159  3.97
-#>                               <100         (any) 1159 17.86
+#>                               <100         (any) 1159 17.95
 #>                           100-1000 issue_rounded  567  9.35
 #>                           100-1000         (any)  567 18.87
 #>                         1000-10000 issue_rounded  664 30.12
@@ -322,7 +322,7 @@ so the cleaned table is the complement.
 
 clean <- f[!has_flag(f$flags, rules$cc), ]
 nrow(clean)
-#> [1] 2854
+#> [1] 2853
 ```
 
 The removed records keep their flags, and a different rule only needs a

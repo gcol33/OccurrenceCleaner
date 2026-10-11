@@ -217,7 +217,7 @@ the other defaults match case-insensitively:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2276   32</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
 <p>The result is the input with an integer <code>flags</code> column and
 one logical column per test. The <code>occ_reference</code> attribute
 records which gazetteer versions produced the flags; it is worth storing
@@ -256,9 +256,9 @@ their percentage, and the records for which it is the only flag:</p>
 </tr>
 <tr class="even">
 <td align="left">centroid</td>
-<td align="right">9</td>
-<td align="right">0.40</td>
-<td align="right">0</td>
+<td align="right">14</td>
+<td align="right">0.62</td>
+<td align="right">4</td>
 </tr>
 <tr class="odd">
 <td align="left">institution</td>
@@ -294,7 +294,7 @@ their percentage, and the records for which it is the only flag:</p>
 <td align="left">duplicate</td>
 <td align="right">87</td>
 <td align="right">3.82</td>
-<td align="right">42</td>
+<td align="right">41</td>
 </tr>
 <tr class="odd">
 <td align="left">issue_coordinate</td>
@@ -328,8 +328,8 @@ their percentage, and the records for which it is the only flag:</p>
 </tr>
 <tr class="even">
 <td align="left">(any)</td>
-<td align="right">264</td>
-<td align="right">11.60</td>
+<td align="right">268</td>
+<td align="right">11.78</td>
 <td align="right"></td>
 </tr>
 </tbody>
@@ -2616,7 +2616,6 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='256.81' cy='88.17' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='231.29' cy='102.23' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='237.67' cy='105.75' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
-<circle cx='218.53' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='170.68' cy='133.88' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='221.72' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='234.48' cy='105.75' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
@@ -2626,10 +2625,8 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='170.68' cy='137.39' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='228.10' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='218.53' cy='95.20' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
-<circle cx='196.20' cy='109.27' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='234.48' cy='102.23' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='237.67' cy='102.23' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
-<circle cx='196.20' cy='109.27' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='173.87' cy='130.36' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='250.43' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='247.24' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
@@ -2637,10 +2634,8 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='173.87' cy='133.88' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='221.72' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='170.68' cy='133.88' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
-<circle cx='196.20' cy='109.27' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='218.53' cy='95.20' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='231.29' cy='102.23' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
-<circle cx='218.53' cy='91.69' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='199.22' cy='106.07' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='227.59' cy='96.62' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
 <circle cx='172.08' cy='133.27' r='1.62' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D; fill-opacity: 0.60;' />
@@ -2882,7 +2877,12 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='186.44' cy='110.02' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
 <circle cx='177.42' cy='110.88' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
 <circle cx='185.22' cy='108.06' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
+<circle cx='218.53' cy='91.69' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
 <circle cx='221.72' cy='95.20' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
+<circle cx='196.20' cy='109.27' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
+<circle cx='196.20' cy='109.27' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
+<circle cx='196.20' cy='109.27' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
+<circle cx='218.53' cy='91.69' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #B5442F; fill-opacity: 0.60;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)'>
 <line x1='126.01' y1='324.00' x2='381.23' y2='324.00' style='stroke-width: 0.75;' />
@@ -2906,7 +2906,7 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <text class='preserve-color' x='21.60' y='133.80' text-anchor='end' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text class='preserve-color' x='21.60' y='63.48' text-anchor='end' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='36.00,324.00 489.60,324.00 489.60,43.20 36.00,43.20 ' style='stroke-width: 0.75; stroke: #B3B3B3;' />
-<text class='preserve-color' x='262.80' y='25.90' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule spatial: 141 of 2,276 records removed</text>
+<text class='preserve-color' x='262.80' y='25.90' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule spatial: 146 of 2,276 records removed</text>
 </g>
 <g clip-path='url(#cpMzYuMDB8NDg5LjYwfDQzLjIwfDMyNC4wMA==)'>
 <circle cx='44.64' cy='300.96' r='2.16' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D;' />
@@ -2942,7 +2942,7 @@ flag word makes the combinations easy to count: each distinct value of
 </tr>
 <tr class="even">
 <td align="left">duplicate</td>
-<td align="right">42</td>
+<td align="right">41</td>
 </tr>
 <tr class="odd">
 <td align="left">urban</td>
@@ -3044,11 +3044,11 @@ rounding note.</p></li>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">2276</td>
-<td align="right">120</td>
-<td align="right">141</td>
-<td align="right">161</td>
-<td align="right">202</td>
-<td align="right">264</td>
+<td align="right">125</td>
+<td align="right">146</td>
+<td align="right">166</td>
+<td align="right">207</td>
+<td align="right">268</td>
 </tr></tbody>
 </table>
 <p>The ladder removes 119 records under <code>cc</code> and 263 under
@@ -3101,7 +3101,7 @@ tests in the rule remove anyway:</p>
 </defs>
 <g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwyODguMDA=)'>
 <rect x='149.04' y='202.41' width='7.50' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='149.04' y='185.46' width='33.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='149.04' y='185.46' width='52.48' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='168.51' width='56.23' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='151.56' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='149.04' y='134.61' width='74.97' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
@@ -3131,7 +3131,7 @@ tests in the rule remove anyway:</p>
 <text x='319.68' y='249.12' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
 <text x='404.99' y='249.12' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
 <rect x='149.04' y='202.41' width='3.75' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='149.04' y='185.46' width='0.00' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='149.04' y='185.46' width='18.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='168.51' width='0.00' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='151.56' width='0.00' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='134.61' width='0.00' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
@@ -3141,7 +3141,7 @@ tests in the rule remove anyway:</p>
 <rect x='149.04' y='66.82' width='187.43' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='149.04' y='49.87' width='18.74' height='14.12' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <text x='163.74' y='211.76' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.09</text>
-<text x='189.98' y='194.81' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.40</text>
+<text x='208.72' y='194.81' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.62</text>
 <text x='212.47' y='177.86' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.66</text>
 <text x='231.21' y='160.91' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
 <text x='231.21' y='143.96' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
@@ -3150,7 +3150,7 @@ tests in the rule remove anyway:</p>
 <text x='321.18' y='93.12' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
 <text x='437.38' y='76.17' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.30</text>
 <text x='452.38' y='59.22' style='font-size: 0.96em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.47</text>
-<text x='319.32' y='25.90' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc_gbif removes 7.1 % of 2,276 records</text>
+<text x='319.32' y='25.90' text-anchor='middle' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc_gbif removes 7.3 % of 2,276 records</text>
 </g>
 <defs>
   <clipPath id='cpMTQ5LjA0fDQ4OS42MHw0My4yMHwyMjMuMjA='>
@@ -3196,11 +3196,11 @@ kingdom it shows whether a rule hits one group harder than another:</p>
 <tr class="odd">
 <td align="left">Animalia</td>
 <td align="right">897</td>
-<td align="right">0.057</td>
-<td align="right">0.067</td>
-<td align="right">0.079</td>
-<td align="right">0.104</td>
-<td align="right">0.124</td>
+<td align="right">0.062</td>
+<td align="right">0.072</td>
+<td align="right">0.085</td>
+<td align="right">0.109</td>
+<td align="right">0.128</td>
 </tr>
 <tr class="even">
 <td align="left">Fungi</td>
@@ -3281,45 +3281,45 @@ ladder:</p>
 </defs>
 <g clip-path='url(#cpNTAuNzJ8NDIwLjExfDUuNDh8MjU1LjA0)'>
 <rect x='50.72' y='5.48' width='369.39' height='249.56' style='stroke-width: 1.07; stroke: none;' /> fill: #F5F6F8;' />
-<polyline points='50.72,221.24 420.11,221.24 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,162.16 420.11,162.16 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,103.08 420.11,103.08 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,44.00 420.11,44.00 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,250.78 420.11,250.78 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,191.70 420.11,191.70 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,132.62 420.11,132.62 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,73.54 420.11,73.54 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='50.72,14.46 420.11,14.46 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,222.14 420.11,222.14 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,165.42 420.11,165.42 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,108.71 420.11,108.71 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,51.99 420.11,51.99 ' style='stroke-width: 0.53; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,250.50 420.11,250.50 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,193.78 420.11,193.78 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,137.07 420.11,137.07 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,80.35 420.11,80.35 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
+<polyline points='50.72,23.63 420.11,23.63 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
 <polyline points='93.34,255.04 93.34,5.48 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
 <polyline points='164.38,255.04 164.38,5.48 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
 <polyline points='235.41,255.04 235.41,5.48 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
 <polyline points='306.45,255.04 306.45,5.48 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
 <polyline points='377.49,255.04 377.49,5.48 ' style='stroke-width: 1.07; stroke: #3E3F3A; stroke-linecap: butt;' />
-<polyline points='93.34,175.16 164.38,151.53 235.41,123.17 306.45,64.09 377.49,16.82 ' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<polyline points='93.34,243.70 164.38,227.15 235.41,208.25 306.45,160.98 377.49,85.36 ' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
-<polyline points='93.34,165.71 164.38,142.08 235.41,130.26 306.45,104.26 377.49,28.64 ' style='stroke-width: 1.07; stroke: #619CFF; stroke-linecap: butt;' />
-<circle cx='93.34' cy='175.16' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<polyline points='93.34,166.56 164.38,143.87 235.41,114.38 306.45,59.93 377.49,16.82 ' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<polyline points='93.34,243.70 164.38,227.81 235.41,209.66 306.45,164.29 377.49,91.69 ' style='stroke-width: 1.07; stroke: #00BA38; stroke-linecap: butt;' />
+<polyline points='93.34,168.83 164.38,146.14 235.41,134.80 306.45,109.84 377.49,37.24 ' style='stroke-width: 1.07; stroke: #619CFF; stroke-linecap: butt;' />
+<circle cx='93.34' cy='166.56' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
 <circle cx='93.34' cy='243.70' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
-<circle cx='93.34' cy='165.71' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
-<circle cx='164.38' cy='151.53' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<circle cx='164.38' cy='227.15' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
-<circle cx='164.38' cy='142.08' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
-<circle cx='235.41' cy='123.17' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<circle cx='235.41' cy='208.25' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
-<circle cx='235.41' cy='130.26' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
-<circle cx='306.45' cy='64.09' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<circle cx='306.45' cy='160.98' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
-<circle cx='306.45' cy='104.26' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
+<circle cx='93.34' cy='168.83' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
+<circle cx='164.38' cy='143.87' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<circle cx='164.38' cy='227.81' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
+<circle cx='164.38' cy='146.14' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
+<circle cx='235.41' cy='114.38' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<circle cx='235.41' cy='209.66' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
+<circle cx='235.41' cy='134.80' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
+<circle cx='306.45' cy='59.93' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<circle cx='306.45' cy='164.29' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
+<circle cx='306.45' cy='109.84' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
 <circle cx='377.49' cy='16.82' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<circle cx='377.49' cy='85.36' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
-<circle cx='377.49' cy='28.64' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
+<circle cx='377.49' cy='91.69' r='1.95' style='stroke-width: 0.71; stroke: #00BA38; fill: #00BA38;' />
+<circle cx='377.49' cy='37.24' r='1.95' style='stroke-width: 0.71; stroke: #619CFF; fill: #619CFF;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwyNzMuNjA=)'>
-<text x='45.79' y='253.93' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>
-<text x='45.79' y='194.85' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5 %</text>
-<text x='45.79' y='135.77' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>7.5 %</text>
-<text x='45.79' y='76.69' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>10 %</text>
-<text x='45.79' y='17.61' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>12.5 %</text>
+<text x='45.79' y='253.65' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>
+<text x='45.79' y='196.93' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5 %</text>
+<text x='45.79' y='140.22' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>7.5 %</text>
+<text x='45.79' y='83.50' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>10 %</text>
+<text x='45.79' y='26.78' text-anchor='end' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>12.5 %</text>
 <text x='93.34' y='266.27' text-anchor='middle' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc</text>
 <text x='164.38' y='266.27' text-anchor='middle' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc_country</text>
 <text x='235.41' y='266.27' text-anchor='middle' style='font-size: 0.88em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc_gbif</text>
@@ -3371,15 +3371,15 @@ removes most:</p>
 <td align="left">1900-1950</td>
 <td align="right">605</td>
 <td align="right">34</td>
-<td align="right">52</td>
-<td align="right">0.086</td>
+<td align="right">53</td>
+<td align="right">0.088</td>
 </tr>
 <tr class="odd">
 <td align="left">1950-2000</td>
 <td align="right">846</td>
 <td align="right">7</td>
-<td align="right">34</td>
-<td align="right">0.040</td>
+<td align="right">38</td>
+<td align="right">0.045</td>
 </tr>
 <tr class="even">
 <td align="left">&gt;=2000</td>
@@ -3434,8 +3434,8 @@ records without a stated uncertainty form the group
 <tr class="even">
 <td align="left">missing</td>
 <td align="right">395</td>
-<td align="right">23</td>
-<td align="right">372</td>
+<td align="right">28</td>
+<td align="right">367</td>
 </tr>
 </tbody>
 </table>
@@ -3458,11 +3458,11 @@ can tighten the rule without rerunning anything:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">rules</span><span class="op">$</span><span class="va">wild</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2074</span></span>
+<span><span class="co">#&gt; [1] 2069</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     clean duplicate   negated   rounded </span></span>
-<span><span class="co">#&gt;      1998        40         7        29</span></span></code></pre></div>
+<span><span class="co">#&gt;      1998        40         7        24</span></span></code></pre></div>
 <p>The <code>wild</code> rule keeps 1,998 of the 2,000 clean records and
 removes every injected error except the 40 duplicates, which it does not
 target, the 30 whole-degree records and the 7 negated records, which no

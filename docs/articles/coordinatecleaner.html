@@ -547,9 +547,13 @@ zero are flagged:</p>
 alpha-3 code of the country polygon only. GBIF’s
 <code>countryCode</code> is alpha-2, so a GBIF table needs converting
 first. <code>country_mismatch</code> accepts alpha-2, alpha-3 and
-Natural Earth’s <code>ADM0_A3</code> code, which fills the gaps where
-Natural Earth has <code>-99</code> for the ISO code. For records whose
-code is alpha-3 and present in Natural Earth, the two tests agree.</p>
+Natural Earth’s <code>ADM0_A3</code> code, and reads the ISO codes from
+Natural Earth’s <code>ISO_A2_EH</code> and <code>ISO_A3_EH</code>
+columns, which are filled where <code>ISO_A2</code> and
+<code>ISO_A3</code> hold <code>-99</code>: in CoordinateCleaner’s layer
+that is France, Norway and Kosovo, so <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> flags every
+record that falls in them. For records whose code is alpha-3 and present
+in Natural Earth, the two tests agree.</p>
 </div>
 <div class="section level3">
 <h3 id="records-without-valid-coordinates">Records without valid coordinates<a class="anchor" aria-label="anchor" href="#records-without-valid-coordinates"></a>

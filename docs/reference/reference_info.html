@@ -89,9 +89,12 @@ retrieval date, and the flag output records which reference produced it.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>With <code>reference = "natural_earth"</code> (the default of <code><a href="flag_occurrences.html">flag_occurrences()</a></code>) the
-package uses its own gazetteers built in <code>data-raw/</code>: capitals, country and
-province centroids, land, urban areas and country polygons from Natural Earth
-(public domain), and biodiversity institutions from GBIF's Global Registry of
+package uses its own gazetteers built in <code>data-raw/</code>: capitals from the
+CIA World Factbook and Natural Earth, province centroids, land, urban areas
+and country polygons from Natural Earth (public domain), country centroids
+from the CIA World Factbook, the thematicmapping.org World Borders Dataset
+and the GEOLocate service, and
+biodiversity institutions from GBIF's Global Registry of
 Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With <code>reference = "CoordinateCleaner"</code> the
 point gazetteers are read from the user's CoordinateCleaner installation
 (<code>countryref</code>, <code>institutions</code>) and the polygon layers are downloaded through
