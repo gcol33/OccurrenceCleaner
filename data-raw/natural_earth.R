@@ -108,7 +108,11 @@ cat("capitals:", nrow(capitals), "\n")
 # (the latter are what CoordinateCleaner's countryref provinces hold).
 L <- fetch(which(layers$key == "admin0_10")); meta$admin0_10 <- L$meta
 d <- as.data.frame(L$sf)
-ctr <- suppressWarnings(st_coordinates(st_centroid(st_geometry(L$sf))))
+# Centroids on the sphere (s2): a planar centroid of a country spanning the
+# antimeridian (Fiji, Kiribati) falls on the far side of the globe.
+sf_use_s2(TRUE)
+ctr <- suppressWarnings(st_coordinates(st_centroid(st_make_valid(st_geometry(L$sf)))))
+sf_use_s2(FALSE)
 cen0 <- rbind(
   data.frame(name = d$ADMIN, adm0_a3 = d$ADM0_A3, code = d$ADM0_A3, type = "country", method = "polygon centroid",
              lon = ctr[, 1], lat = ctr[, 2], stringsAsFactors = FALSE),

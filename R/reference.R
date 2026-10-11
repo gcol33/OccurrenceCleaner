@@ -4,9 +4,11 @@
 #' retrieval date, and the flag output records which reference produced it.
 #'
 #' With `reference = "natural_earth"` (the default of [flag_occurrences()]) the
-#' package uses its own gazetteers built in `data-raw/`: capitals, country and
-#' province centroids, land, urban areas and country polygons from Natural Earth
-#' (public domain), and biodiversity institutions from GBIF's Global Registry of
+#' package uses its own gazetteers built in `data-raw/`: capitals, province
+#' centroids, land, urban areas and country polygons from Natural Earth
+#' (public domain), country centroids from the CIA World Factbook, the
+#' thematicmapping.org World Borders Dataset and the GEOLocate service, and
+#' biodiversity institutions from GBIF's Global Registry of
 #' Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With `reference = "CoordinateCleaner"` the
 #' point gazetteers are read from the user's CoordinateCleaner installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
@@ -91,14 +93,17 @@ sha256_file <- function(path) {
 #' @return A data frame with columns `lon` and `lat` and, for the package's
 #'   own gazetteers, the attributes of each point: `name`, `country`,
 #'   `adm0_a3`, `iso_a2`, `class` for capitals; `name`, `adm0_a3`, `code`,
-#'   `type`, `method` for centroids; `key`, `code`, `name`, `country`, `city`,
+#'   `type`, `method`, `source`, `key`, `extension` for centroids (`source` is
+#'   CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, `key`
+#'   the Factbook code, ISO3 code or GEOLocate query with its prefix); `key`, `code`, `name`, `country`, `city`,
 #'   `type`, `active`, `master_source`, `source`, `extension` for
 #'   institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames or
 #'   BGCI, `key` the GRSciColl key, Wikidata item, the Wikipedia list
 #'   language, revision and line, or the GeoNames or BGCI id with its prefix;
 #'   for Wikipedia rows `city` is the place they are located by and
 #'   `master_source` where its coordinates come from; `extension` is TRUE for
-#'   points from sources CoordinateCleaner's table does not draw on); `id`,
+#'   points from sources CoordinateCleaner's table does not draw on, for
+#'   centroids and institutions alike); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
 #'   Plantae), `frequency` (records at the point), `category`,
 #'   `determination` (TRUE for a real observation site, FALSE for an

@@ -42,7 +42,7 @@ knitr::kable(data.frame(
   test = c("capital", "centroid", "institution", "gbif_headquarters", "aohi", "sea", "urban", "country_mismatch",
            "sea_nonmarine, land_marine"),
   `reference data` = c("Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories",
-                       "Natural Earth admin-0 country centroids and label points, admin-1 label points",
+                       "CIA World Factbook, thematicmapping.org World Borders and GEOLocate country points, Natural Earth admin-0 polygon centroids and label points, admin-1 label points",
                        "GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, museums of Wikipedia's lists of natural history museums, and BGCI gardens, with coordinates",
                        "one fixed point, 12.58 E, 55.67 N",
                        "Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points",
@@ -52,6 +52,8 @@ knitr::kable(data.frame(
                        "the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera"),
   check.names = FALSE))
 ```
+
+The country centroids come from the three sources CoordinateCleaner's table is compiled from, each taken from the source itself: the "Geographic coordinates" of the CIA World Factbook (public domain), read from the factbook.json mirror of the Factbook country profiles on 2026-10-11 (275 points); the label points of the World Borders Dataset 0.3 by Bjorn Sandvik, thematicmapping.org (246 points), under CC BY-SA, from the GeoJSON conversion of the dataset at github.com/jeffaudi/world-borders-geojson; and every point the GEOLocate georeferencing service (geo-locate.org) returns when a country name is entered as country and locality, queried on 2026-10-11 for each country name of the three tables (548 points). GEOLocate also returns places that carry a country's name; one such place, Niger State in Nigeria for "Niger", lies inside another country more than 100 km from the queried one and is left out. The Natural Earth admin-0 polygon centroids, computed on the sphere, and label points (516) are added with `extension` `TRUE`.
 
 All Natural Earth layers are in the public domain; the Natural Earth terms of use say that "No permission is needed to use Natural Earth." The institutions come from the bulk export of GBIF's Global Registry of Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which 6,085 have coordinates. The five of these that the `zero` test would flag are left out: four are registered within 0.14 degrees of (0, 0), although they are in Portugal, Nigeria, Turkey and Taiwan, and one has a longitude of exactly 0. Kept, they would mark every record at (0, 0) as lying at an institution as well. GRSciColl absorbed the Global Registry of Biodiversity Repositories (GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes the registry through its open API and states no separate licence for it.
 
@@ -70,18 +72,18 @@ The package gazetteers describe the same places as CoordinateCleaner 3.0.1's `co
 ```{r compare, echo = FALSE}
 knitr::kable(data.frame(
   gazetteer = c("capitals", "country centroids", "province centroids", "institutions"),
-  CoordinateCleaner = c("225 (one per ISO3 code)", "660 rows from the CIA World Factbook, thematicmapping.org and geo-locate",
+  CoordinateCleaner = c("225 (one per ISO3 code)", "660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate",
                         "4,645 (older Natural Earth admin-1 label points)",
                         "9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames)"),
   OccurrenceCleaner = c("243 (215 admin-0 capitals and alternative capitals, plus dependent-territory capitals)",
-                        "516 (polygon centroid and label point per country, Natural Earth 5.1.1)",
+                        "1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension",
                         "4,596 (Natural Earth 5.1.1 admin-1 label points)",
                         "18,245 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames), of which 10,580 from CoordinateCleaner's sources")))
 ```
 
 - **Capitals.** 212 countries match by ISO3 code. The median distance between the two packages' capital points for the same country is 0.92 km, 90 % are within 7.1 km; CoordinateCleaner's coordinates are rounded to 0.01 degrees. Natural Earth also lists alternative and official capitals that CoordinateCleaner does not hold: Cape Town and Bloemfontein besides Pretoria, Sucre besides La Paz, Naypyidaw instead of Yangon, Dodoma instead of Dar es Salaam, among others.
 
-- **Country centroids.** The two define centroids differently, so the points lie a median of 30 km apart (90 % within 259 km). Both use a 1 km buffer, so they flag different records: each catches records georeferenced to its own definition of the centre of a country.
+- **Country centroids.** 645 of CoordinateCleaner's 660 country centroids are points of the package's table at distance 0. India, Italy and the United Kingdom hold World Borders values that version 0.3 of the dataset changed; three GEOLocate points for Macedonia and one for Guinea, at sea at 10 W 5 N, are not returned by GEOLocate today; eight others lie 5 m to 68 km from a shipped point. The Natural Earth points, which CoordinateCleaner does not hold, lie a median of 30 km from its centroids and catch records georeferenced to the centre of a country's polygon; the test leaves them out when passed the points with `extension` `FALSE`.
 
 - **Province centroids.** CoordinateCleaner's province centroids are exactly the Natural Earth admin-1 label points of an older release: all 4,549 codes that still exist match at distance 0. The package uses the 5.1.1 release, in which 96 of CoordinateCleaner's codes no longer exist.
 
