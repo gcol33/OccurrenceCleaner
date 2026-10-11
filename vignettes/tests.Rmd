@@ -13,7 +13,7 @@ has_geosphere <- requireNamespace("geosphere", quietly = TRUE)
 has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 ```
 
-This article goes through the record tests that read coordinates and GBIF fields: what each computes, which fields it reads, where its edge lies, and how its result can be changed through an argument. Eleven are the record tests of CoordinateCleaner (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default buffers, up to the differences listed in the article Coming from CoordinateCleaner, eight read GBIF fields, and two compare the land test with the habitat of the record's genus; these ten are additions of this package. The other nine tests of the layout are covered elsewhere: the four fossil tests in the fossil article, the geographic outlier and the two dataset tests in the article on outliers and dataset tests, `range` in the article on custom gazetteers, and `aohi` in the article on outliers and dataset tests. Each test also has a help page of its own (`?test_capital`, `?test_sea`, ...).
+This article goes through the record tests that read coordinates and GBIF fields: what each computes, which fields it reads, where its edge lies, and how its result can be changed through an argument. Eleven are the record tests of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default buffers, up to the differences listed in the article Coming from CoordinateCleaner, eight read GBIF fields, and two compare the land test with the habitat of the record's genus; these ten are additions of this package. The other nine tests of the layout are covered elsewhere: the four fossil tests in the fossil article, the geographic outlier and the two dataset tests in the article on outliers and dataset tests, `range` in the article on custom gazetteers, and `aohi` in the article on outliers and dataset tests. Each test also has a help page of its own (`?test_capital`, `?test_sea`, ...).
 
 ## Installation
 
@@ -30,7 +30,7 @@ library(OccurrenceCleaner)
 
 ## The flag word
 
-Every test owns one bit of an integer. `flag_tests()` lists the layout, the fields each test needs and its CoordinateCleaner counterpart:
+Every test owns one bit of an integer. `flag_tests()` lists the layout, the fields each test needs and its [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) counterpart:
 
 ```{r layout}
 knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
@@ -54,7 +54,7 @@ default_tests()
 
 ## Coordinate validity: `invalid`
 
-A coordinate is invalid when it is missing, not a number, or outside [-180, 180] x [-90, 90]. Text columns are coerced to numbers first, as in CoordinateCleaner's `cc_val`:
+A coordinate is invalid when it is missing, not a number, or outside [-180, 180] x [-90, 90]. Text columns are coerced to numbers first, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_val`:
 
 ```{r invalid}
 x <- data.frame(species = "a",
@@ -85,7 +85,7 @@ flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 1))$flag_zero
 flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 0))$flag_zero
 ```
 
-With `zero = 0` only exact zeros are flagged, which is what CoordinateCleaner 3.0.1 does in practice; the comparison article explains why its documented 0.5-degree buffer is not applied there.
+With `zero = 0` only exact zeros are flagged, which is what [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1 does in practice; the comparison article explains why its documented 0.5-degree buffer is not applied there.
 
 ## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
 
@@ -100,7 +100,7 @@ x <- data.frame(species = "a", decimalLongitude = p[, 1], decimalLatitude = p[, 
 data.frame(distance_m = d, flag = flag_occurrences(x, tests = "gbif_headquarters")$flag_gbif_headquarters)
 ```
 
-The flag switches between 999.9 m and 1000.1 m, at the same distance in every direction. CoordinateCleaner draws each buffer as a polygon with vertices on the circle, so its edge lies between 99.7 % and 100 % of the buffer depending on the bearing; records in that thin band are the only difference between the two packages for these tests.
+The flag switches between 999.9 m and 1000.1 m, at the same distance in every direction. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws each buffer as a polygon with vertices on the circle, so its edge lies between 99.7 % and 100 % of the buffer depending on the bearing; records in that thin band are the only difference between the two packages for these tests.
 
 Buffers are changed per test, in metres:
 
@@ -133,7 +133,7 @@ For records spread evenly over a disc, the share grows with the square of the bu
 
 ## Land and sea: `sea`
 
-`sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110m (the default, as in CoordinateCleaner's `cc_sea()`; its `clean_coordinates()` uses 1:50m), 1:50m and 1:10m, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
+`sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110m (the default, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()`; its `clean_coordinates()` uses 1:50m), 1:50m and 1:10m, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
 
 The scale decides the result for records near the coast. The GBIF headquarters in Copenhagen are on land at 1:110m and in the sea at 1:50m:
 
@@ -163,7 +163,7 @@ The oak in the Atlantic fails both `sea` and `sea_nonmarine`; the starfish in Vi
 
 ## Urban areas: `urban`
 
-`urban` flags records inside the Natural Earth 1:50m urban-area polygons. It is not in `default_tests()`, as in CoordinateCleaner's `clean_coordinates()`, because records in cities are often correct; it is useful as a separate column, for example to remove garden and street-tree records of plants:
+`urban` flags records inside the Natural Earth 1:50m urban-area polygons. It is not in `default_tests()`, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()`, because records in cities are often correct; it is useful as a separate column, for example to remove garden and street-tree records of plants:
 
 ```{r urban}
 x <- data.frame(species = "a", decimalLongitude = c(16.37, 16.51, 15.3),
@@ -176,7 +176,7 @@ The first point is central Vienna. The second is in the north-east of the city, 
 
 ## Country codes: `country_mismatch`
 
-`country_mismatch` flags records whose coordinates fall outside the country named by their country code, using the Natural Earth 1:50m country polygons. The record's code is compared with the polygon's ISO alpha-2 code (as GBIF's `countryCode` gives it), its ISO alpha-3 code (as CoordinateCleaner expects), and Natural Earth's own `ADM0_A3` code, which is filled where ISO has none. Matching is case-insensitive and ignores surrounding spaces:
+`country_mismatch` flags records whose coordinates fall outside the country named by their country code, using the Natural Earth 1:50m country polygons. The record's code is compared with the polygon's ISO alpha-2 code (as GBIF's `countryCode` gives it), its ISO alpha-3 code (as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) expects), and Natural Earth's own `ADM0_A3` code, which is filled where ISO has none. Matching is case-insensitive and ignores surrounding spaces:
 
 ```{r country}
 x <- data.frame(species = "a", decimalLongitude = c(16.37, 16.37, 16.37, 16.37, 16.37, -30),
@@ -201,7 +201,7 @@ f <- flag_occurrences(x, tests = "duplicate")
 f$flag_duplicate
 ```
 
-Two arguments change what counts as the same record. `duplicate_by` adds columns that must also match, as CoordinateCleaner's `additions`, so repeat visits on different dates are kept apart. `duplicate_cell` bins coordinates to a grid of that size in degrees first, so records in the same cell count as duplicates:
+Two arguments change what counts as the same record. `duplicate_by` adds columns that must also match, as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `additions`, so repeat visits on different dates are kept apart. `duplicate_cell` bins coordinates to a grid of that size in degrees first, so records in the same cell count as duplicates:
 
 ```{r dupl-args}
 flag_occurrences(x, tests = "duplicate", duplicate_by = "eventDate")$flag_duplicate

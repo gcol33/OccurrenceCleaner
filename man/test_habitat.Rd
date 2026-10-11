@@ -47,7 +47,7 @@ the land.
 }
 
 \section{CoordinateCleaner}{
- Not in CoordinateCleaner, whose \code{cc_sea()}
+ Not in \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}, whose \code{cc_sea()}
 flags every record off the land, marine or not.
 }
 

@@ -36,7 +36,7 @@ taxon, coordinates rounded to 0.1 degrees and ages are tested once) and
  Equivalent to \code{cf_age()} at taxon level;
 identical flags when no age has to be drawn (every range of zero width).
 Otherwise both draw ages at random and the flags agree in distribution,
-not record by record: CoordinateCleaner draws from the session's random
+not record by record: \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} draws from the session's random
 stream in input order.
 }
 

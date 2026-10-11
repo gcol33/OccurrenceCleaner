@@ -22,7 +22,7 @@ the reference and layout version of the flags as attributes
 \code{occ_reference} and \code{occ_layout_version}.
 }
 \description{
-Returns flagged records in the layout that CoordinateCleaner's
+Returns flagged records in the layout that \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s
 \code{clean_coordinates()} and \code{clean_fossils()} return with
 \code{value = "spatialvalid"}, so code written for that object (its \code{summary()}
 and \code{plot()} methods, filters on \code{.summary}) runs unchanged. The record

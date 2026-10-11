@@ -18,7 +18,7 @@
 #' input, see Value.
 #'
 #' @section Tests:
-#' See [flag_tests()] for the layout. Tests equivalent to CoordinateCleaner use
+#' See [flag_tests()] for the layout. Tests equivalent to [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) use
 #' its default buffers: `capital` 10 km, `centroid` 1 km, `institution` 100 m,
 #' `gbif_headquarters` 1 km, `zero` 0.5 degrees. Proximity tests are closed
 #' balls in WGS84 geodesic distance. Records failing `invalid` are given no
@@ -32,7 +32,7 @@
 #'   `gbif_headquarters`) or 99.7 % (`institution`) of the buffer and the
 #'   buffer itself is flagged here and may not be there. Everything
 #'   CoordinateCleaner flags is flagged here.
-#' * `cc_zero`'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
+#' * `cc_zero`'s 0.5 degree buffer is interpreted by [terra](https://rspatial.github.io/terra/) as 0.5 metres, so
 #'   CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 #'   documented 0.5 degree radius.
 #' * `country_mismatch` compares the record's code with the ISO alpha-2 code,

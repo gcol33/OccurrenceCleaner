@@ -13,7 +13,7 @@ A character vector of test names.
 The tests \code{\link[=flag_occurrences]{flag_occurrences()}} runs when \code{tests} is not given: every
 CoordinateCleaner-equivalent test that needs only coordinates and a species
 name. \code{country_mismatch} needs a country code, \code{urban} is left out as in
-CoordinateCleaner's \code{clean_coordinates()}, and the GBIF-field additions need
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s \code{clean_coordinates()}, and the GBIF-field additions need
 GBIF columns.
 }
 \examples{

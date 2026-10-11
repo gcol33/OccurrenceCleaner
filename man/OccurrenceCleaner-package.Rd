@@ -6,7 +6,7 @@
 \alias{OccurrenceCleaner-package}
 \title{OccurrenceCleaner: fast quality flags for species occurrence records}
 \description{
-An extension of CoordinateCleaner (Zizka et al. 2019) tailored to
+An extension of \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} (Zizka et al. 2019) tailored to
 large-scale occurrence data: it runs that package's record tests with the
 same definitions and default buffers, and keeps every record. Each test
 writes one flag per record, so a cleaning rule is chosen afterwards as a

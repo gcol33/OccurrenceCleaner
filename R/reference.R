@@ -11,9 +11,9 @@
 #' and the GEOLocate service, and
 #' biodiversity institutions from GBIF's Global Registry of
 #' Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With `reference = "CoordinateCleaner"` the
-#' point gazetteers are read from the user's CoordinateCleaner installation
+#' point gazetteers are read from the user's [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
-#' rnaturalearth exactly as that package does, which gives its flags up to the
+#' [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) exactly as that package does, which gives its flags up to the
 #' differences documented in [flag_occurrences()].
 #'
 #' @return A data frame with one row per layer: `layer`, `source`, `file`,
@@ -105,7 +105,7 @@ sha256_file <- function(path) {
 #'   language, revision and line, or the GeoNames or BGCI id with its prefix;
 #'   for Wikipedia rows `city` is the place they are located by and
 #'   `master_source` where its coordinates come from; `extension` is TRUE for
-#'   points from sources CoordinateCleaner's table does not draw on, for
+#'   points from sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table does not draw on, for
 #'   capitals, centroids and institutions alike); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
 #'   Plantae), `frequency` (records at the point), `category`,

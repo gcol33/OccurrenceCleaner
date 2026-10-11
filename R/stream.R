@@ -133,7 +133,7 @@ print.occ_flagged <- function(x, ...) {
 #'
 #' @param x An `occ_flagged` object or the output directory it describes.
 #' @return The `occ_flagged` metadata (`read_flagged()`), or a `vectra_node`
-#'   over all parts (`flagged_table()`), to be used with vectra verbs and
+#'   over all parts (`flagged_table()`), to be used with [vectra](https://gillescolling.com/vectra/) verbs and
 #'   `vectra::collect()`.
 #' @examples
 #' \dontrun{

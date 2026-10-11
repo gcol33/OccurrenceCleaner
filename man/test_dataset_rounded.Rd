@@ -27,7 +27,7 @@ are not tested.
 
 \section{CoordinateCleaner}{
  Equivalent to \code{cd_round()}; identical flags. In
-CoordinateCleaner 3.0.1 an input with several datasets of which one is
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} 3.0.1 an input with several datasets of which one is
 below \code{min_unique_ds_size} stops with an error; here that dataset is not
 tested. Records without a dataset key are not flagged.
 }

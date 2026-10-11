@@ -11,7 +11,7 @@
 #' `source = "OccurrenceCleaner"` are additions.
 #'
 #' @return A data frame with columns `bit` (0-based), `test`, `definition`,
-#'   `source`, `equivalent` (the CoordinateCleaner function, or `NA`),
+#'   `source`, `equivalent` (the [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) function, or `NA`),
 #'   `spatialvalid` (the column `clean_coordinates()` or `clean_fossils()`
 #'   writes for the test, used by [as_spatialvalid()], or `NA`) and `needs`
 #'   (the record fields the test reads, as names of [occ_columns()]).
@@ -90,7 +90,7 @@ flag_tests <- function() {
 #' The tests [flag_occurrences()] runs when `tests` is not given: every
 #' CoordinateCleaner-equivalent test that needs only coordinates and a species
 #' name. `country_mismatch` needs a country code, `urban` is left out as in
-#' CoordinateCleaner's `clean_coordinates()`, and the GBIF-field additions need
+#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()`, and the GBIF-field additions need
 #' GBIF columns.
 #'
 #' @return A character vector of test names.

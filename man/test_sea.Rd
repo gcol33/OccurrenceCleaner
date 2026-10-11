@@ -18,8 +18,8 @@ by \code{\link[=download_reference]{download_reference()}}.
  Equivalent to \code{cc_sea()} with its default
 \code{scale = 110} (\code{clean_coordinates()} uses \code{seas_scale = 50}, which is
 \code{land_scale = 50} here); identical flags on
-the same layer. CoordinateCleaner downloads the layer through
-rnaturalearth at run time; here it is bundled and pinned.
+the same layer. \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} downloads the layer through
+\href{https://docs.ropensci.org/rnaturalearth/}{rnaturalearth} at run time; here it is bundled and pinned.
 }
 
 \section{Custom gazetteer}{

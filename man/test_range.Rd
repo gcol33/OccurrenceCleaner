@@ -26,8 +26,8 @@ local equirectangular projection.
 
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_iucn()}; identical flags
-without a buffer. With a buffer CoordinateCleaner buffers the polygons
-with terra, so records very close to the buffer edge may differ.
+without a buffer. With a buffer \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} buffers the polygons
+with \href{https://rspatial.github.io/terra/}{terra}, so records very close to the buffer edge may differ.
 }
 
 \examples{

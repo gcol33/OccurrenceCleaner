@@ -121,7 +121,7 @@ input, see Value.
 }
 \section{Tests}{
 
-See \code{\link[=flag_tests]{flag_tests()}} for the layout. Tests equivalent to CoordinateCleaner use
+See \code{\link[=flag_tests]{flag_tests()}} for the layout. Tests equivalent to \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} use
 its default buffers: \code{capital} 10 km, \code{centroid} 1 km, \code{institution} 100 m,
 \code{gbif_headquarters} 1 km, \code{zero} 0.5 degrees. Proximity tests are closed
 balls in WGS84 geodesic distance. Records failing \code{invalid} are given no
@@ -136,7 +136,7 @@ package tests:
 \code{gbif_headquarters}) or 99.7 \% (\code{institution}) of the buffer and the
 buffer itself is flagged here and may not be there. Everything
 CoordinateCleaner flags is flagged here.
-\item \code{cc_zero}'s 0.5 degree buffer is interpreted by terra as 0.5 metres, so
+\item \code{cc_zero}'s 0.5 degree buffer is interpreted by \href{https://rspatial.github.io/terra/}{terra} as 0.5 metres, so
 CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.
 \item \code{country_mismatch} compares the record's code with the ISO alpha-2 code,

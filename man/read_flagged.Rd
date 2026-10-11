@@ -14,7 +14,7 @@ flagged_table(x)
 }
 \value{
 The \code{occ_flagged} metadata (\code{read_flagged()}), or a \code{vectra_node}
-over all parts (\code{flagged_table()}), to be used with vectra verbs and
+over all parts (\code{flagged_table()}), to be used with \href{https://gillescolling.com/vectra/}{vectra} verbs and
 \code{vectra::collect()}.
 }
 \description{

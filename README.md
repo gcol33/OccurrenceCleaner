@@ -12,7 +12,7 @@ It also reads three fields GBIF fills for each record: the quality warnings GBIF
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
-The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from [rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from the Paleobiology Database (for example from [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with [taxify](https://cran.r-project.org/package=taxify) or [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
+The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from [rgbif](https://docs.ropensci.org/rgbif/)), a fossil table from the Paleobiology Database (for example from [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with [taxify](https://gillescolling.com/taxify/) or [taxize](https://docs.ropensci.org/taxize/). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
 
 The tests are reimplemented with CoordinateCleaner's definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
@@ -65,7 +65,7 @@ tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
 
 ## Outliers and dataset tests
 
-The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in `settings`, with CoordinateCleaner's defaults:
+The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in `settings`, with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s defaults:
 
 ```r
 flag_occurrences(occ, tests = c("invalid", "outlier", "dataset_ddmm", "dataset_rounded"),
@@ -82,7 +82,7 @@ flag_occurrences(pbdb, tests = c("invalid", "zero", "centroid", "institution", "
 
 ## A whole GBIF snapshot
 
-The same verb streams an on-disk table through [vectra](https://cran.r-project.org/package=vectra): a directory of Parquet parts (a GBIF snapshot), a `.vtr` file, a delimited file or any `vectra_node`. Each input file is one resumable unit, and the flags are written as `.vtr` parts next to the columns you keep for grouping:
+The same verb streams an on-disk table through [vectra](https://gillescolling.com/vectra/): a directory of Parquet parts (a GBIF snapshot), a `.vtr` file, a delimited file or any `vectra_node`. Each input file is one resumable unit, and the flags are written as `.vtr` parts next to the columns you keep for grouping:
 
 ```r
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
@@ -102,7 +102,7 @@ Rerunning the same call after an interruption skips the input files already fini
 
 ## What's in the box
 
-- **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out. `buffers` sets the proximity distances and `settings` the options of the outlier and dataset tests, both with CoordinateCleaner's defaults.
+- **`flag_occurrences()`**: the one flagging verb. Data frame in, data frame out; path or `vectra_node` in, flag parts on disk out. `buffers` sets the proximity distances and `settings` the options of the outlier and dataset tests, both with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s defaults.
 - **`tally_flags()`**: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.
 - **`summary()`**, **`plot()`**: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.
 - **`has_flag()`**, **`flag_mask()`**: which records a rule removes, read from the `flags` column.
@@ -113,7 +113,7 @@ Rerunning the same call after an interruption skips the input files already fini
 - **`reference_info()`**, **`download_reference()`**: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.
 - **`reference_points()`**: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through `gazetteers`.
 - **`reference_habitat()`**: the genera the habitat tests know, marine or not, from the Interim Register of Marine and Nonmarine Genera.
-- **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a vectra table.
+- **`read_flagged()`**, **`flagged_table()`**: open on-disk flag output as a [vectra](https://gillescolling.com/vectra/) table.
 - **`export_pyrate()`**: write fossil records as PyRate input files.
 
 ## Tests
@@ -148,7 +148,7 @@ Rerunning the same call after an interruption skips the input files already fini
 
 Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.
 
-The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; the CIA World Factbook, public domain, for capitals and country centroids; the World Borders Dataset by Bjorn Sandvik, thematicmapping.org, CC BY-SA, and the GEOLocate service for country centroids; GBIF GRSciColl and Wikidata for institutions; the Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus habitats), each pinned to a version and checksum. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces. The `gazetteers` argument replaces the layer of single tests with the user's own points or polygons, recorded with the flags by size and checksum.
+The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; the CIA World Factbook, public domain, for capitals and country centroids; the World Borders Dataset by Bjorn Sandvik, thematicmapping.org, CC BY-SA, and the GEOLocate service for country centroids; GBIF GRSciColl, Wikidata, Wikipedia's lists of natural history museums, GeoNames and BGCI GardenSearch for institutions; the Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus habitats), each pinned to a version and checksum. Points from sources CoordinateCleaner's tables do not draw on (Natural Earth capitals and country centroids, Wikidata institutions beyond the museums of the English Wikipedia list, the museums of the non-English Wikipedia lists) are marked `extension` and used by default; the rows without the mark restrict a test to CoordinateCleaner's sources. `reference = "CoordinateCleaner"` reads that package's own tables instead and gives its flags up to the documented differences, which `?flag_occurrences` lists and the test suite enforces. The `gazetteers` argument replaces the layer of single tests with the user's own points or polygons, recorded with the flags by size and checksum.
 
 ## Documentation
 
@@ -180,11 +180,11 @@ If this package saved you some time, buying me a coffee is a nice way to say tha
 
 ## Acknowledgements
 
-The tests, their default buffers and the options of the outlier and dataset tests come from CoordinateCleaner by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the gazetteers here are rebuilt from the public sources it draws on.
+The tests, their default buffers and the options of the outlier and dataset tests come from [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the gazetteers here are rebuilt from the public sources it draws on.
 
 ## License
 
-MIT. CoordinateCleaner (GPL-3) is a suggested package used by the equivalence tests and by `reference = "CoordinateCleaner"`; none of its code or data is bundled. The country centroid points from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.
+MIT. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (GPL-3) is a suggested package used by the equivalence tests and by `reference = "CoordinateCleaner"`; none of its code or data is bundled. The country centroid points from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.
 
 ## Citation
 

@@ -31,7 +31,7 @@ BGCI, \code{key} the GRSciColl key, Wikidata item, the Wikipedia list
 language, revision and line, or the GeoNames or BGCI id with its prefix;
 for Wikipedia rows \code{city} is the place they are located by and
 \code{master_source} where its coordinates come from; \code{extension} is TRUE for
-points from sources CoordinateCleaner's table does not draw on, for
+points from sources \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s table does not draw on, for
 capitals, centroids and institutions alike); \code{id},
 \code{taxon} (the group the hotspot was found in: Aves, Insecta, Mammalia,
 Plantae), \code{frequency} (records at the point), \code{category},

@@ -26,9 +26,9 @@ NULL
 #' @section Fields: `lon`, `lat`.
 #' @section Buffer: `buffers = list(zero = 0.5)`, in degrees. `zero = 0`
 #'   flags exact zeros only.
-#' @section CoordinateCleaner: Equivalent to `cc_zero()`. CoordinateCleaner
+#' @section CoordinateCleaner: Equivalent to `cc_zero()`. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 #'   3.0.1 documents the same 0.5 degree buffer, but builds the buffer point
-#'   without a CRS, so terra buffers 0.5 metres and only exact zeros are
+#'   without a CRS, so [terra](https://rspatial.github.io/terra/) buffers 0.5 metres and only exact zeros are
 #'   flagged. `buffers = list(zero = 0)` reproduces that behaviour. Reported
 #'   as \href{https://github.com/ropensci/CoordinateCleaner/issues/114}{CoordinateCleaner issue 114}.
 #' @family tests
@@ -66,7 +66,7 @@ NULL
 #' The default gazetteer holds the capital "geographic coordinates" of the
 #' CIA World Factbook (public domain; 232 points, one per country profile,
 #' through the factbook.json mirror retrieved 2026-10-11), the source
-#' CoordinateCleaner's capitals are taken from. The column `extension` marks
+#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s capitals are taken from. The column `extension` marks
 #' the 243 Natural Earth populated places of the classes admin-0 capital,
 #' alternative capital and admin-0 region capital (dependent territories),
 #' which add the second capitals of countries that have several (Cape Town,
@@ -105,7 +105,7 @@ NULL
 #' Flags records within 1 km of a country or province centroid (WGS84
 #' geodesic distance, closed ball), where records georeferenced to a country
 #' or province name end up. The default gazetteer holds the country points of
-#' the three sources CoordinateCleaner's table is compiled from, each taken
+#' the three sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table is compiled from, each taken
 #' from the source: the "Geographic coordinates" of the CIA World Factbook
 #' (public domain; 275 points, through the factbook.json mirror retrieved
 #' 2026-10-11), the label points of the thematicmapping.org World Borders
@@ -165,7 +165,7 @@ NULL
 #' placed at the place the list gives for them, by its Wikidata coordinates
 #' or the GeoNames populated place of that name (`source` "Wikipedia",
 #' `master_source` says which); the three GeoNames places (CC BY 4.0) of
-#' CoordinateCleaner's table; and 3,652 gardens of Botanic Gardens
+#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table; and 3,652 gardens of Botanic Gardens
 #' Conservation International (BGCI) GardenSearch, retrieved 2026-10-10, used
 #' under the BGCI terms (https://www.bgci.org/terms-and-conditions/). The
 #' `source` column of [reference_points()] tells them apart.
@@ -238,8 +238,8 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_sea()` with its default
 #'   `scale = 110` (`clean_coordinates()` uses `seas_scale = 50`, which is
 #'   `land_scale = 50` here); identical flags on
-#'   the same layer. CoordinateCleaner downloads the layer through
-#'   rnaturalearth at run time; here it is bundled and pinned.
+#'   the same layer. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) downloads the layer through
+#'   [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) at run time; here it is bundled and pinned.
 #' @section Custom gazetteer: `gazetteers = list(sea = polygons)`, an `sf` or
 #'   `sfc` object of land polygons; see [flag_occurrences()].
 #' @family tests
@@ -358,7 +358,7 @@ NULL
 #'
 #' @section Fields: `basis`.
 #' @section CoordinateCleaner: No equivalent; additions of this package.
-#'   CoordinateCleaner's fossil tests (`cf_*()`) test fossil ages and ranges,
+#'   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s fossil tests (`cf_*()`) test fossil ages and ranges,
 #'   which this package does not.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
@@ -431,7 +431,7 @@ NULL
 #' distances are taken between cell centres, and the records of the outlier
 #' cells are flagged. Without thinning, distances are weighted by the product
 #' of the cell counts and a cell's distance to itself counts as 100 x
-#' `thinning_res` / 2 km, as in CoordinateCleaner.
+#' `thinning_res` / 2 km, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/).
 #'
 #' The test needs every record of a species, so it runs in a group pass over
 #' the whole input before the record tests; on streamed input that pass reads
@@ -493,7 +493,7 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cf_age()` at taxon level;
 #'   identical flags when no age has to be drawn (every range of zero width).
 #'   Otherwise both draw ages at random and the flags agree in distribution,
-#'   not record by record: CoordinateCleaner draws from the session's random
+#'   not record by record: [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws from the session's random
 #'   stream in input order.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
@@ -539,7 +539,7 @@ NULL
 #' `mltpl` x IQR, or median + `mltpl` x MAD). A record dated only to a long
 #' period among records dated to stages is the typical case. With `level =
 #' "all"` the fence is taken over the whole input instead of per taxon, as in
-#' CoordinateCleaner's dataset-level `cf_range(taxon = "")`. A fixed limit in
+#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s dataset-level `cf_range(taxon = "")`. A fixed limit in
 #' million years needs no test: the range stays a raw column and is cut in
 #' [tally_flags()].
 #'
@@ -608,7 +608,7 @@ NULL
 #'   `T1` (7), `reg_out_thresh` (2), `reg_dist_min` (0.1), `reg_dist_max` (2),
 #'   `min_unique_ds_size` (4) and `axis` (`"both"`).
 #' @section CoordinateCleaner: Equivalent to `cd_round()`; identical flags. In
-#'   CoordinateCleaner 3.0.1 an input with several datasets of which one is
+#'   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1 an input with several datasets of which one is
 #'   below `min_unique_ds_size` stops with an error; here that dataset is not
 #'   tested. Records without a dataset key are not flagged.
 #' @family tests
@@ -637,8 +637,8 @@ NULL
 #'   local equirectangular projection.
 #' @section Custom gazetteer: required; there is no shipped range layer.
 #' @section CoordinateCleaner: Equivalent to `cc_iucn()`; identical flags
-#'   without a buffer. With a buffer CoordinateCleaner buffers the polygons
-#'   with terra, so records very close to the buffer edge may differ.
+#'   without a buffer. With a buffer [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) buffers the polygons
+#'   with [terra](https://rspatial.github.io/terra/), so records very close to the buffer edge may differ.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
@@ -718,7 +718,7 @@ NULL
 #'   columns `genus`, `marine` (logical: `TRUE` only marine, `FALSE` not
 #'   marine) and optionally `kingdom`; `gazetteers = list(sea = <sf>)` replaces
 #'   the land.
-#' @section CoordinateCleaner: Not in CoordinateCleaner, whose `cc_sea()`
+#' @section CoordinateCleaner: Not in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/), whose `cc_sea()`
 #'   flags every record off the land, marine or not.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()], [reference_habitat()], [test_sea]

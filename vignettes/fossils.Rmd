@@ -73,7 +73,7 @@ table(fos$truth)
 
 ## Flagging
 
-`occ_columns()` maps the PBDB names onto the fields the tests read. The tests are the record tests of CoordinateCleaner's `clean_fossils()`, whose defaults are `agesequal`, `centroids`, `equal`, `gbif`, `institutions`, `validity` and `zeros` plus two outlier tests (`spatiotemp`, `temprange`) that the section on outliers below adds; here `age_equal` is its `agesequal`, and the country check runs too because the table has country codes:
+`occ_columns()` maps the PBDB names onto the fields the tests read. The tests are the record tests of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_fossils()`, whose defaults are `agesequal`, `centroids`, `equal`, `gbif`, `institutions`, `validity` and `zeros` plus two outlier tests (`spatiotemp`, `temprange`) that the section on outliers below adds; here `age_equal` is its `agesequal`, and the country check runs too because the table has country codes:
 
 ```{r flag}
 cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name", country = "cc",
@@ -114,7 +114,7 @@ Clean records that happen to lie within 5.6 km of a centroid would be added too,
 
 ## The width of the age range
 
-CoordinateCleaner's `cf_range()` with `method = "time"` flags records whose range is wider than `max_range` Ma. That is a threshold on a numeric field, so here it stays a raw column and is cut when tallying, which lets one flag pass serve any threshold:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cf_range()` with `method = "time"` flags records whose range is wider than `max_range` Ma. That is a threshold on a numeric field, so here it stays a raw column and is cut when tallying, which lets one flag pass serve any threshold:
 
 ```{r range}
 f$age_range <- f$max_ma - f$min_ma
@@ -157,7 +157,7 @@ knitr::kable(tab)
 
 `age_range_outlier` flags all 40 period-dated records and no other. The two tests that draw ages flag fewer of them: an age drawn from 23 to 66 or 145 Ma lands among the genus's ages of 23 to 72 Ma in many draws, so `age_outlier` flags 8 of the 40 and `spatiotemporal_outlier` 3. None of the three flags a clean record. The museum records are not outliers in space here, because every genus in the simulated table occurs in all three regions.
 
-The options are set per test through `settings`, with CoordinateCleaner's defaults: `method` (`"quantile"` or `"mad"`), `mltpl` (5), `size_thresh` (7 records per taxon), `replicates` (5) and `seed`. A stricter fence for the range test and a different seed for the draws:
+The options are set per test through `settings`, with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s defaults: `method` (`"quantile"` or `"mad"`), `mltpl` (5), `size_thresh` (7 records per taxon), `replicates` (5) and `seed`. A stricter fence for the range test and a different seed for the draws:
 
 ```{r outlier-settings}
 g2 <- flag_occurrences(fos, tests = otests, columns = cols,
@@ -190,7 +190,7 @@ paths <- export_pyrate(kept, file.path(tempdir(), "paleogene"), status = "extinc
 cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
 ```
 
-The draws are seeded, so the same call writes the same file; `random = FALSE` uses the midpoints of the ranges instead. CoordinateCleaner's `write_pyrate()` writes the same layout; the package tests compare the two files.
+The draws are seeded, so the same call writes the same file; `random = FALSE` uses the midpoints of the ranges instead. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `write_pyrate()` writes the same layout; the package tests compare the two files.
 
 ## Fossils in GBIF data
 

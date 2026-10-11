@@ -18,7 +18,7 @@ of \code{thinning_res} degrees spanning all valid records (widened by two cells)
 distances are taken between cell centres, and the records of the outlier
 cells are flagged. Without thinning, distances are weighted by the product
 of the cell counts and a cell's distance to itself counts as 100 x
-\code{thinning_res} / 2 km, as in CoordinateCleaner.
+\code{thinning_res} / 2 km, as in \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}.
 
 The test needs every record of a species, so it runs in a group pass over
 the whole input before the record tests; on streamed input that pass reads

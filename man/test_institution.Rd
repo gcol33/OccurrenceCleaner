@@ -20,7 +20,7 @@ have their own Wikidata coordinates; 700 further museums of those lists
 placed at the place the list gives for them, by its Wikidata coordinates
 or the GeoNames populated place of that name (\code{source} "Wikipedia",
 \code{master_source} says which); the three GeoNames places (CC BY 4.0) of
-CoordinateCleaner's table; and 3,652 gardens of Botanic Gardens
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s table; and 3,652 gardens of Botanic Gardens
 Conservation International (BGCI) GardenSearch, retrieved 2026-10-10, used
 under the BGCI terms (https://www.bgci.org/terms-and-conditions/). The
 \code{source} column of \code{\link[=reference_points]{reference_points()}} tells them apart.

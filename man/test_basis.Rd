@@ -15,7 +15,7 @@ spaces.
 
 \section{CoordinateCleaner}{
  No equivalent; additions of this package.
-CoordinateCleaner's fossil tests (\verb{cf_*()}) test fossil ages and ranges,
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s fossil tests (\verb{cf_*()}) test fossil ages and ranges,
 which this package does not.
 }
 

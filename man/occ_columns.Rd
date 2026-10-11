@@ -29,7 +29,7 @@ occ_columns(
 used by the \code{country_mismatch} test.}
 
 \item{issue}{GBIF issue flags, either a character column with the issue
-names separated by \verb{;} (as the GBIF snapshot read through vectra gives) or
+names separated by \verb{;} (as the GBIF snapshot read through \href{https://gillescolling.com/vectra/}{vectra} gives) or
 a list column of character vectors.}
 
 \item{basis}{Basis of record (\code{basisOfRecord}).}

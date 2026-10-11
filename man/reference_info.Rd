@@ -23,9 +23,9 @@ from the CIA World Factbook, the thematicmapping.org World Borders Dataset
 and the GEOLocate service, and
 biodiversity institutions from GBIF's Global Registry of
 Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With \code{reference = "CoordinateCleaner"} the
-point gazetteers are read from the user's CoordinateCleaner installation
+point gazetteers are read from the user's \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} installation
 (\code{countryref}, \code{institutions}) and the polygon layers are downloaded through
-rnaturalearth exactly as that package does, which gives its flags up to the
+\href{https://docs.ropensci.org/rnaturalearth/}{rnaturalearth} exactly as that package does, which gives its flags up to the
 differences documented in \code{\link[=flag_occurrences]{flag_occurrences()}}.
 }
 \examples{

@@ -8,7 +8,7 @@ flag_tests()
 }
 \value{
 A data frame with columns \code{bit} (0-based), \code{test}, \code{definition},
-\code{source}, \code{equivalent} (the CoordinateCleaner function, or \code{NA}),
+\code{source}, \code{equivalent} (the \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} function, or \code{NA}),
 \code{spatialvalid} (the column \code{clean_coordinates()} or \code{clean_fossils()}
 writes for the test, used by \code{\link[=as_spatialvalid]{as_spatialvalid()}}, or \code{NA}) and \code{needs}
 (the record fields the test reads, as names of \code{\link[=occ_columns]{occ_columns()}}).

@@ -111,7 +111,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### readme.reference  [A1 A5]
 - idea: pinned gazetteers; CC tables
 - job: Says where the gazetteers come from and that CoordinateCleaner's tables give its flags up to the documented differences.
-- leaves: own gazetteers are pinned, from Natural Earth, GRSciColl and Wikidata, and IRMNG for genus habitats; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
+- leaves: own gazetteers are pinned, from Natural Earth, the Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI, and IRMNG for genus habitats; points from sources CoordinateCleaner does not draw on are marked `extension` and used by default; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
 
 ### readme.docs  (section)
 - idea: routing
@@ -260,6 +260,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### cc.small-datasets  [A1 A6]
 ### cc.streamed-duplicates  [A1 A2]
 ### cc.gazetteers  [A1 A5]
+- idea: own gazetteers from CC's sources; extension points
+- job: Names the sources the default gazetteers are rebuilt from, lists the extension points with their counts and shows the per-source split; says how to restrict a test to CoordinateCleaner's sources.
+- leaves: `extension` TRUE points are used by default; `g[!g$extension, ]` through `gazetteers` restricts to CC's sources; `reference = "CoordinateCleaner"` reproduces its flags
+
 
 ### cc.speed  [A2]  (section)
 - idea: kd-tree vs polygons; timings
@@ -539,7 +543,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### ref.choose  [A1 A5]  (section)
 - idea: which reference to use
 - job: Says when to use each reference.
-- leaves: own gazetteers (Natural Earth, GRSciColl, Wikidata) by default; CoordinateCleaner's to compare with published work
+- leaves: own gazetteers (Natural Earth, Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI) by default; CoordinateCleaner's to compare with published work
 
 ## Outliers and dataset tests (how-to, A6 home)
 

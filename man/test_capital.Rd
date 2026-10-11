@@ -13,7 +13,7 @@ decided with the Vincenty inverse formula.
 The default gazetteer holds the capital "geographic coordinates" of the
 CIA World Factbook (public domain; 232 points, one per country profile,
 through the factbook.json mirror retrieved 2026-10-11), the source
-CoordinateCleaner's capitals are taken from. The column \code{extension} marks
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s capitals are taken from. The column \code{extension} marks
 the 243 Natural Earth populated places of the classes admin-0 capital,
 alternative capital and admin-0 region capital (dependent territories),
 which add the second capitals of countries that have several (Cape Town,

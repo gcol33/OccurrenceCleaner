@@ -8,7 +8,7 @@ Flags fossil records whose age range (\code{max_age - min_age}) lies above the
 upper fence of the ranges of the other records of their taxon (Q75 +
 \code{mltpl} x IQR, or median + \code{mltpl} x MAD). A record dated only to a long
 period among records dated to stages is the typical case. With \code{level = "all"} the fence is taken over the whole input instead of per taxon, as in
-CoordinateCleaner's dataset-level \code{cf_range(taxon = "")}. A fixed limit in
+\href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s dataset-level \code{cf_range(taxon = "")}. A fixed limit in
 million years needs no test: the range stays a raw column and is cut in
 \code{\link[=tally_flags]{tally_flags()}}.
 }

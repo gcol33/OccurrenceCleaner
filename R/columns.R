@@ -10,7 +10,7 @@
 #' @param country Country code of the record (ISO 3166-1 alpha-2 or alpha-3),
 #'   used by the `country_mismatch` test.
 #' @param issue GBIF issue flags, either a character column with the issue
-#'   names separated by `;` (as the GBIF snapshot read through vectra gives) or
+#'   names separated by `;` (as the GBIF snapshot read through [vectra](https://gillescolling.com/vectra/) gives) or
 #'   a list column of character vectors.
 #' @param basis Basis of record (`basisOfRecord`).
 #' @param establishment Establishment means (`establishmentMeans`).

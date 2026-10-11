@@ -13,7 +13,7 @@ has_sf <- requireNamespace("sf", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in CoordinateCleaner's. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with sf, replaces the genus habitats, and shows how a custom layer is recorded with the flags.
+Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with [sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and shows how a custom layer is recorded with the flags.
 
 ## Installation
 
@@ -22,7 +22,7 @@ Nine tests compare records with reference data: five with points (capitals, cent
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up. The polygon examples also need sf.
+Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up. The polygon examples also need [sf](https://r-spatial.github.io/sf/).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
@@ -40,7 +40,7 @@ inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 ```
 
-The institution table joins the GBIF registry of scientific collections (GRSciColl), the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata, the museums of Wikipedia's lists of natural history museums (the English list and six other language editions), the gardens of Botanic Gardens Conservation International (BGCI) and three GeoNames places: `source` says which registry each point comes from, `type` what kind of institution it is, and `master_source`, for GRSciColl entries, where GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry), and for the Wikipedia museums that the list places only by town, where the town's coordinates come from. `extension` is `TRUE` for the points from sources CoordinateCleaner's own table does not draw on (Wikidata beyond the museums of the English list, and the other language editions); the rows with `extension` `FALSE`, passed as the institution gazetteer, restrict the test to CoordinateCleaner's sources.
+The institution table joins the GBIF registry of scientific collections (GRSciColl), the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata, the museums of Wikipedia's lists of natural history museums (the English list and six other language editions), the gardens of Botanic Gardens Conservation International (BGCI) and three GeoNames places: `source` says which registry each point comes from, `type` what kind of institution it is, and `master_source`, for GRSciColl entries, where GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry), and for the Wikipedia museums that the list places only by town, where the town's coordinates come from. `extension` is `TRUE` for the points from sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s own table does not draw on (Wikidata beyond the museums of the English list, and the other language editions); the rows with `extension` `FALSE`, passed as the institution gazetteer, restrict the test to CoordinateCleaner's sources.
 
 ## A filtered point gazetteer
 
@@ -63,7 +63,7 @@ Each record lies about 0.005 degrees (a few hundred metres) east of an instituti
 
 ## An extended point gazetteer
 
-The two capital tables differ: the shipped table holds the Factbook capitals unrounded and adds Natural Earth's alternative and official capitals, while CoordinateCleaner's has one point per country, rounded to 0.01 degrees. Their union flags records near either:
+The two capital tables differ: the shipped table holds the Factbook capitals unrounded and adds Natural Earth's alternative and official capitals, while [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s has one point per country, rounded to 0.01 degrees. Their union flags records near either:
 
 ```{r union, eval = has_cc}
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
@@ -189,4 +189,4 @@ knitr::kable(data.frame(
   check.names = FALSE))
 ```
 
-CoordinateCleaner's point references need its own column names (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude and latitude columns are found by name in any of the common spellings. Its `cc_coun()` reads one code column chosen with `ref_col`; here every code column present is matched. With the same reference points and polygons the two packages give the same flags, up to the buffer-polygon band described in the article Coming from CoordinateCleaner; the package tests check this for `institution`, `sea` and `range`.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s point references need its own column names (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude and latitude columns are found by name in any of the common spellings. Its `cc_coun()` reads one code column chosen with `ref_col`; here every code column present is matched. With the same reference points and polygons the two packages give the same flags, up to the buffer-polygon band described in the article Coming from CoordinateCleaner; the package tests check this for `institution`, `sea` and `range`.
