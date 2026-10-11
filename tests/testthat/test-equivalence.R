@@ -114,6 +114,14 @@ test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natura
   expect_identical(f$flag_country_mismatch, mismatch)
 })
 
+test_that("country_mismatch reads the filled ISO codes of CoordinateCleaner's country layer", {
+  skip_if_not_installed("rnaturalearth")
+  x <- data.frame(decimalLongitude = c(2.35, 10.75, 21.17), decimalLatitude = c(48.85, 59.91, 42.67),
+                  countryCode = c("FR", "NO", "XK"))
+  f <- flag_occurrences(x, tests = "country_mismatch", reference = "CoordinateCleaner")
+  expect_identical(f$flag_country_mismatch, c(FALSE, FALSE, FALSE))
+})
+
 test_that("own gazetteers flag the same records as CoordinateCleaner's at the same points", {
   # Not an equivalence claim (the gazetteers differ, see dev_notes); a smoke
   # check that the default reference runs and flags capitals and GBIF HQ.

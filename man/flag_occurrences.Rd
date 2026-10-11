@@ -141,7 +141,10 @@ CoordinateCleaner 3.0.1 flags only exact zeros; this package applies the
 documented 0.5 degree radius.
 \item \code{country_mismatch} compares the record's code with the ISO alpha-2 code,
 the ISO alpha-3 code and the Natural Earth \code{ADM0_A3} code of the country
-polygon the point falls in; CoordinateCleaner compares alpha-3 only.
+polygon the point falls in, taking the ISO codes from Natural Earth's
+\code{ISO_A2_EH} and \code{ISO_A3_EH} columns, which are filled where \code{ISO_A2} and
+\code{ISO_A3} hold \code{-99} (France, Norway, Kosovo); CoordinateCleaner compares
+\code{ISO_A3} only, so it flags every record in France and Norway.
 Records without a code, or at sea, are flagged as in CoordinateCleaner.
 \item \code{duplicate} on streamed input is evaluated within each input file (Parquet
 part), not across the whole table.

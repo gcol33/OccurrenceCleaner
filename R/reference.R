@@ -182,8 +182,8 @@ polygon_layer <- function(test, reference, land_scale) {
     country_mismatch = rnaturalearth::ne_countries(scale = "medium", returnclass = "sf"))
   features <- if (test == "country_mismatch") {
     d <- as.data.frame(sf)
-    a3 <- as.character(d$iso_a3); a3[a3 == "-99"] <- NA
-    a2 <- as.character(d$iso_a2); a2[a2 == "-99"] <- NA
+    a3 <- as.character(d$iso_a3_eh); a3[a3 == "-99"] <- NA
+    a2 <- as.character(d$iso_a2_eh); a2[a2 == "-99"] <- NA
     data.frame(name = as.character(d$admin), adm0_a3 = as.character(d$adm0_a3), iso_a3 = a3, iso_a2 = a2,
                stringsAsFactors = FALSE)
   } else data.frame(id = seq_len(nrow(sf)))
