@@ -261,7 +261,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 ### cc.streamed-duplicates  [A1 A2]
 ### cc.gazetteers  [A1 A5]
 - idea: own gazetteers from CC's sources; extension points
-- job: Names the sources the default gazetteers are rebuilt from, lists the extension points with their counts and shows the per-source split; says how to restrict a test to CoordinateCleaner's sources.
+- job: Says the default gazetteers are rebuilt from CoordinateCleaner's sources (listed in the reference-data article), that extension points are used by default, and how to restrict a test to CoordinateCleaner's sources.
 - leaves: `extension` TRUE points are used by default; `g[!g$extension, ]` through `gazetteers` restricts to CC's sources; `reference = "CoordinateCleaner"` reproduces its flags
 
 

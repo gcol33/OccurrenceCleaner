@@ -65,7 +65,7 @@ The genus habitats of `sea_nonmarine` and `land_marine` come from the Interim Re
 
 The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie, Thammavong, Tulaiha and Feng ([2023](https://doi.org/10.1111/jbi.14543)) lists the coordinates that recur most often in GBIF records of plants, birds, insects and mammals, with the reason each recurs: 154 plant, 51 bird, 51 insect and 52 mammal points. It is built from the authors' deposit on Dryad ([doi:10.5061/dryad.v41ns1s0p](https://doi.org/10.5061/dryad.v41ns1s0p)), released under CC0, and keeps 308 points with coordinates. CoordinateCleaner's bundled `aohi` table has 309; the two share 303 points, and the others differ in a few bird points and one plant coordinate (42.26 N there, 42.20 N in the deposit).
 
-The layers are rebuilt from the sources CoordinateCleaner itself draws on, by the scripts in `data-raw/` of the source repository; CoordinateCleaner's code and data are GPL-3, and nothing is copied from them.
+The layers are rebuilt from the sources CoordinateCleaner itself draws on, by the scripts in `data-raw/` of the source repository.
 
 ## How the gazetteers differ from CoordinateCleaner's
 

@@ -213,16 +213,7 @@ On a data frame `duplicate` is evaluated over the whole table, as `cc_dupl()` is
 
 ### Gazetteers
 
-With the default `reference = "natural_earth"` the gazetteers are rebuilt from the sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s own tables draw on, not copied from CoordinateCleaner, whose code and data are GPL-3: Natural Earth for land, countries, province centroids and urban areas; the CIA World Factbook for capitals; the Factbook, the World Borders Dataset and the GEOLocate service for country centroids; and for institutions GBIF's registry of scientific collections (GRSciColl), the English Wikipedia list of natural history museums, GeoNames and the gardens of Botanic Gardens Conservation International (BGCI). They hold the same kinds of points but not the same coordinates; the reference-data article measures the differences.
-
-The capital, country centroid and institution tables also hold points from sources CoordinateCleaner does not use: 243 Natural Earth capitals, alternative capitals and capitals of dependent territories; 516 Natural Earth polygon centroids and label points; and 7,665 institutions, the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata beyond the museums of the English list, and the museums of six more language editions of the Wikipedia list. These carry `extension` `TRUE` in `reference_points()` and are used by default:
-
-```{r extension}
-g <- reference_points("institution")
-table(g$source, g$extension)
-```
-
-Passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources, for example `gazetteers = list(institution = g[!g$extension, ])`. `reference = "CoordinateCleaner"` uses CoordinateCleaner's tables and reproduces its flags up to the differences above.
+With the default `reference = "natural_earth"` the gazetteers are rebuilt from the original sources of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s tables, so they hold the same kinds of points but not the same coordinates; the reference-data article lists the sources and measures the differences. Points from sources CoordinateCleaner does not use, such as Wikidata institutions and Natural Earth capitals, carry `extension` `TRUE` and are used by default; passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources. `reference = "CoordinateCleaner"` uses CoordinateCleaner's tables and reproduces its flags up to the differences above.
 
 ## Speed
 
