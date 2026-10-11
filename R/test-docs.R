@@ -113,7 +113,8 @@ NULL
 #' GEOLocate georeferencing service (geo-locate.org) returns for a country
 #' name, queried 2026-10-11 (548 points; a place of that name more than 100 km
 #' away inside another country is left out). Province centroids are the
-#' Natural Earth 5.1.1 admin-1 label points (4,594). The column `extension`
+#' Natural Earth 5.1.1 admin-1 label points (4,594), the current release of
+#' the layer CoordinateCleaner's province centroids come from. The column `extension`
 #' marks the 516 Natural Earth country polygon centroids and label points,
 #' which CoordinateCleaner's table does not hold; passing the points with
 #' `extension` FALSE as `gazetteers = list(centroid = ...)` leaves them out.
@@ -128,9 +129,11 @@ NULL
 #'   for Macedonia and one for Guinea, at sea at 10 W 5 N, are not returned by
 #'   GEOLocate today; eight (Aland, Caribbean Netherlands, DR Congo, Kuwait,
 #'   Martinique, Monaco, Saint Martin, San Marino) lie 5 m to 68 km from a
-#'   default point. Its province centroids are the admin-1
-#'   label points of an older Natural Earth release, 96 of whose codes no
-#'   longer exist.
+#'   default point. Its province centroids are the admin-1 label points of
+#'   older Natural Earth releases (4,566 of 4,645 rows match release 3.3.0,
+#'   4.0.0 or 4.1.0 exactly); 4,591 are default points at distance 0, and 50
+#'   lie more than 10 km from any, where Natural Earth has since changed the
+#'   unit or the row matches no tagged release.
 #' @section Custom gazetteer: `gazetteers = list(centroid = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
