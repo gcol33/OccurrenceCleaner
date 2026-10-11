@@ -213,7 +213,7 @@ On a data frame `duplicate` is evaluated over the whole table, as `cc_dupl()` is
 
 ### Gazetteers
 
-With the default `reference = "natural_earth"` the gazetteers are rebuilt from the original sources of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s tables, so they hold the same kinds of points but not the same coordinates; the reference-data article lists the sources and measures the differences. Points from sources CoordinateCleaner does not use, such as Wikidata institutions and Natural Earth capitals, carry `extension` `TRUE` and are used by default; passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources. `reference = "CoordinateCleaner"` uses CoordinateCleaner's tables and reproduces its flags up to the differences above.
+With the default `reference = "natural_earth"` the gazetteers are rebuilt from the original sources of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s tables, so they hold the same kinds of points but not the same coordinates; the reference-data article lists the sources and measures the differences. Points from sources CoordinateCleaner does not use, such as Wikidata institutions and Natural Earth capitals, carry `extension` `TRUE` and are used by default; passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources ([Extension points](reference-data.html#extension-points)). `reference = "CoordinateCleaner"` uses CoordinateCleaner's tables and reproduces its flags up to the differences above.
 
 ## Speed
 

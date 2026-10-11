@@ -525,6 +525,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 - job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: BGCI gardens with BGCI's own coordinates where CoordinateCleaner geocoded them, with measured coverage; Wikipedia and GeoNames rows rebuilt from their sources), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
+### ref.extension  [A1 A5]  (section)
+- idea: extension points, on by default
+- job: Lists the points from sources CoordinateCleaner does not use (capitals, country centroids, institutions, with counts), says they are used by default and shows how leaving them out unflags Cape Town, Sucre and Naypyidaw.
+- leaves: `extension` column; `gazetteers = list(capital = g[!g$extension, ])` restricts to CC's sources
+
 ### ref.land-scale  [A1 A5]  (section)
 - idea: 1:110m vs 1:50m on the Danish coast
 - job: Measures where the two land scales disagree and how to get 1:10m.

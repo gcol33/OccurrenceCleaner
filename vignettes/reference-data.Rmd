@@ -105,6 +105,24 @@ data.frame(city = x$city,
 
 Cape Town, Sucre and Naypyidaw are flagged only through the Natural Earth extension points; Pretoria, La Paz and Yangon under both. Which list is right depends on what an error looks like: a herbarium sheet in Cape Town georeferenced to the city is as wrong under either reference, and only the extension points catch it.
 
+## Extension points
+
+The capital, country centroid and institution tables also hold points from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
+
+- capitals: 243 Natural Earth capitals, alternative capitals and capitals of dependent territories;
+- country centroids: 516 Natural Earth polygon centroids and label points;
+- institutions: 7,665 points, the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata beyond the museums of the English Wikipedia list, and the museums of the Arabic, Dutch, Esperanto, French, German and Portuguese lists.
+
+The tests use them by default. Passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources; for the capitals above, that leaves Cape Town, Sucre and Naypyidaw unflagged:
+
+```{r extension, eval = has_cc}
+g <- reference_points("capital")
+data.frame(city = x$city,
+           all = flag_occurrences(x, tests = "capital")$flag_capital,
+           cc_sources = flag_occurrences(x, tests = "capital",
+                                         gazetteers = list(capital = g[!g$extension, ]))$flag_capital)
+```
+
 ## Land scale and the `sea` test
 
 The `sea` test flags records outside the land polygons. The coarse 1:110m layer, the default of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()` (its `clean_coordinates()` uses 1:50m), smooths the coast and drops small islands; the 1:50m layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
