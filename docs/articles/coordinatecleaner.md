@@ -30,77 +30,59 @@ library(OccurrenceCleaner)
 
 ## Function mapping
 
-| CoordinateCleaner | OccurrenceCleaner |
-|:---|:---|
-| cc_val() | invalid |
-| cc_zero() | zero |
-| cc_equ() | equal |
-| cc_cap() | capital |
-| cc_cen() | centroid |
-| cc_inst() | institution |
-| cc_gbif() | gbif_headquarters |
-| cc_sea() | sea |
-| cc_urb() | urban |
-| cc_coun() | country_mismatch |
-| cc_dupl() | duplicate |
-| cf_equal() | age_equal |
-| cc_outl() | outlier |
-| cf_age() | age_outlier |
-| cf_outl() | spatiotemporal_outlier |
-| cf_range(method = “quantile” or “mad”) | age_range_outlier |
-| cd_ddmm() | dataset_ddmm |
-| cd_round() | dataset_rounded |
-| cc_iucn() | range |
-| cc_aohi() | aohi |
-| write_pyrate() | export_pyrate() |
-| cc_outl(sampling_thresh = …) | settings = list(outlier = list(sampling_thresh = …)) with gazetteers = list(sampling = …) |
-| clean_coordinates(), clean_fossils(), clean_dataset() | flag_occurrences(x, tests = …) |
-| buffer arguments (capitals_rad, …) | buffers = list(capital = …) |
-| method, mltpl, size_thresh, replicates, … of the outlier and dataset tests | settings = list(outlier = list(method = …), …) |
-| ref arguments (cc_cap(ref = …), cc_sea(ref = …), …) | gazetteers = list(capital = …, sea = …) |
-| cf_range(method = “time”, max_range = …) | tally_flags(bins = …) on max_ma - min_ma |
-| additions (cc_dupl) | duplicate_by |
-| seas_scale (default 50) | land_scale (default 110, as cc_sea()) |
-| value = “clean” | x\[!has_flag(x\$flags, rule), \] |
-| value = “flagged” / “spatialvalid” | the flag\_ columns; as_spatialvalid(f) for the spatialvalid layout |
-
 OccurrenceCleaner has one flagging function,
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
-and its `tests` argument chooses which tests run. It has no `cc_*`
-functions, so attaching both packages hides none of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s.
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+Each test function of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) is a
+test name here, passed in `tests`, and the arguments of those functions
+are entries of a few list arguments. There are no `cc_*` functions, so
+attaching both packages hides none of CoordinateCleaner’s.
 
-CoordinateCleaner’s
+### Tests
+
+| CoordinateCleaner function | name in clean\_\*() | test here |
+|:---|:---|:---|
+| [`cc_val()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_val.html) | always runs; `validity` in [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html) | `invalid` |
+| [`cc_zero()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html) | `zeros` | `zero` |
+| [`cc_equ()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_equ.html) | `equal` | `equal` |
+| [`cc_cap()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_cap.html) | `capitals` | `capital` |
+| [`cc_cen()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html) | `centroids` | `centroid` |
+| [`cc_inst()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html) | `institutions` | `institution` |
+| [`cc_gbif()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_gbif.html) | `gbif` | `gbif_headquarters` |
+| [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html) | `seas` | `sea` |
+| [`cc_urb()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_urb.html) | `urban` | `urban` |
+| [`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html) | `countries` | `country_mismatch` |
+| [`cc_dupl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html) | `duplicates` | `duplicate` |
+| [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html) | `outliers` | `outlier` |
+| [`cc_iucn()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_iucn.html) | `range` | `range` |
+| [`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html) | `aohi` | `aohi` |
+| [`cf_equal()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html) | `agesequal` | `age_equal` |
+| [`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html) | not in [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html) | `age_outlier` |
+| [`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html) | `spatiotemp` | `spatiotemporal_outlier` |
+| `cf_range(method = "quantile")` or `"mad"` | `temprange` | `age_range_outlier` |
+| [`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html) | `ddmm` in [`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html) | `dataset_ddmm` |
+| [`cd_round()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html) | `periodicity` in [`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html) | `dataset_rounded` |
+
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-and
-[`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)
-also choose tests by name, but the names differ:
+always checks for missing or out-of-range coordinates first, and if any
+coordinate fails, it stops and returns that result alone. Here that
+check is the `invalid` test, and the other tests still run on the
+records that pass it.
+
+### Arguments and output
 
 | CoordinateCleaner | OccurrenceCleaner |
 |:---|:---|
-| capitals | capital |
-| centroids | centroid |
-| countries | country_mismatch |
-| duplicates | duplicate |
-| equal | equal |
-| gbif | gbif_headquarters |
-| institutions | institution |
-| seas | sea |
-| urban | urban |
-| zeros | zero |
-| outliers | outlier |
-| agesequal ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | age_equal |
-| spatiotemp ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | spatiotemporal_outlier |
-| temprange ([`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)) | age_range_outlier |
-| ddmm ([`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html)) | dataset_ddmm |
-| periodicity ([`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html)) | dataset_rounded |
-
-The check for missing or out-of-range coordinates has no name in
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
-It always runs first, and if any coordinate fails it,
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-stops and returns that result alone. Here it is the `invalid` test, and
-the other tests still run on the records that pass it.
+| [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html), [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html), [`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html) | `flag_occurrences(x, tests = ...)` |
+| `capitals_rad`, `centroids_rad`, `inst_rad`, … | `buffers = list(capital = ..., centroid = ..., institution = ...)` |
+| `method`, `mltpl`, `size_thresh`, `replicates`, … of the outlier and dataset tests | `settings = list(outlier = list(method = ...), ...)` |
+| `cc_outl(sampling_thresh = ...)` | `settings = list(outlier = list(sampling_thresh = ...))` with `gazetteers = list(sampling = ...)` |
+| `cc_cap(ref = ...)`, `cc_sea(ref = ...)`, …; `capitals_ref`, `seas_ref`, … in [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html) | `gazetteers = list(capital = ..., sea = ...)` |
+| `seas_scale` (default 50) | `land_scale` (default 110, as [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)) |
+| `cc_dupl(additions = ...)` | `duplicate_by` |
+| `cf_range(method = "time", max_range = ...)` | `tally_flags(bins = ...)` on `max_ma - min_ma` |
+| `value = "clean"` | `x[!has_flag(x$flags, rule), ]` |
+| `value = "flagged"` or `"spatialvalid"` | the `flag_<test>` columns; `as_spatialvalid(f)` for the `spatialvalid` layout |
 
 ## Side by side
 

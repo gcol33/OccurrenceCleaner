@@ -214,25 +214,25 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### cc.install  (section)
 
-### cc.mapping  [A1]  (table)
-- idea: function to test map
-- job: Maps each CoordinateCleaner function and argument to its counterpart here.
-- leaves: the name map, including the two land-scale defaults
-
-### cc.no-cc-names  [A1]
-- idea: one verb, no cc_* names
-- job: Explains that tests are chosen by name and no `cc_*` function is masked.
+### cc.mapping  [A1]
+- idea: one verb; functions become test names, arguments become list entries
+- job: Says there is one flagging function, that each CoordinateCleaner test function is a test name in `tests` and its arguments are list-argument entries, and that no `cc_*` function is masked.
 - leaves: both packages can be attached together
 
-### cc.test-names  [A1]  (table)
-- idea: plural to singular test names
-- job: Maps CoordinateCleaner's plural test names, and `clean_fossils()`'s "agesequal", to the names here.
+### cc.mapping-tests  [A1]  (table)
+- idea: function, clean_*() name, test name
+- job: Maps each CoordinateCleaner test function and its name in `clean_coordinates()`, `clean_fossils()` or `clean_dataset()` to the test here.
 - leaves: the `tests` vocabulary of both packages
 
 ### cc.validity  [A1]
 - idea: validity is a named test that does not stop the run
 - job: Says `clean_coordinates()` runs an unnamed coordinate check first and stops on failure, while `invalid` here is one test among the others.
 - leaves: invalid records do not stop a run here
+
+### cc.mapping-args  [A1]  (table)
+- idea: arguments and output
+- job: Maps the entry functions, buffer, option, reference, land-scale, duplicate and `value` arguments to their counterparts here.
+- leaves: `buffers`, `settings`, `gazetteers`, `land_scale` (110 vs 50), `duplicate_by`, flags subset instead of `value = "clean"`
 
 ### cc.pipe  [A1 A3]  (section)
 - idea: filter-as-you-go vs flag and subset

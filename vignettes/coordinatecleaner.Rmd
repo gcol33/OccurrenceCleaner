@@ -30,54 +30,60 @@ library(OccurrenceCleaner)
 
 ## Function mapping
 
-```{r mapping, echo = FALSE}
-m <- data.frame(
-  CoordinateCleaner = c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()", "cc_inst()",
-                        "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()", "cc_dupl()", "cf_equal()",
-                        "cc_outl()", "cf_age()", "cf_outl()", "cf_range(method = \"quantile\" or \"mad\")",
-                        "cd_ddmm()", "cd_round()", "cc_iucn()", "cc_aohi()", "write_pyrate()",
-                        "cc_outl(sampling_thresh = ...)",
-                        "clean_coordinates(), clean_fossils(), clean_dataset()",
-                        "buffer arguments (capitals_rad, ...)",
-                        "method, mltpl, size_thresh, replicates, ... of the outlier and dataset tests",
-                        "ref arguments (cc_cap(ref = ...), cc_sea(ref = ...), ...)",
-                        "cf_range(method = \"time\", max_range = ...)",
-                        "additions (cc_dupl)", "seas_scale (default 50)", "value = \"clean\"",
-                        "value = \"flagged\" / \"spatialvalid\""),
-  OccurrenceCleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
-                        "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate", "age_equal",
-                        "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
-                        "dataset_ddmm", "dataset_rounded", "range", "aohi", "export_pyrate()",
-                        "settings = list(outlier = list(sampling_thresh = ...)) with gazetteers = list(sampling = ...)",
-                        "flag_occurrences(x, tests = ...)",
-                        "buffers = list(capital = ...)",
-                        "settings = list(outlier = list(method = ...), ...)",
-                        "gazetteers = list(capital = ..., sea = ...)",
-                        "tally_flags(bins = ...) on max_ma - min_ma",
-                        "duplicate_by", "land_scale (default 110, as cc_sea())",
-                        "x[!has_flag(x$flags, rule), ]",
-                        "the flag_<test> columns; as_spatialvalid(f) for the spatialvalid layout"))
-knitr::kable(m)
-```
+OccurrenceCleaner has one flagging function, `flag_occurrences()`. Each test function of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) is a test name here, passed in `tests`, and the arguments of those functions are entries of a few list arguments. There are no `cc_*` functions, so attaching both packages hides none of CoordinateCleaner's.
 
-OccurrenceCleaner has one flagging function, `flag_occurrences()`, and its `tests` argument chooses which tests run. It has no `cc_*` functions, so attaching both packages hides none of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s.
+### Tests
 
-CoordinateCleaner's `clean_coordinates()` and `clean_fossils()` also choose tests by name, but the names differ:
-
-```{r test-names, echo = FALSE}
+```{r mapping-tests, echo = FALSE}
+code <- function(x) paste0("`", x, "`")
 knitr::kable(data.frame(
-  CoordinateCleaner = c("capitals", "centroids", "countries", "duplicates", "equal",
-                        "gbif", "institutions", "seas", "urban", "zeros", "outliers",
-                        "agesequal (`clean_fossils()`)", "spatiotemp (`clean_fossils()`)",
-                        "temprange (`clean_fossils()`)", "ddmm (`clean_dataset()`)",
-                        "periodicity (`clean_dataset()`)"),
-  OccurrenceCleaner = c("capital", "centroid", "country_mismatch", "duplicate", "equal",
-                        "gbif_headquarters", "institution", "sea", "urban", "zero", "outlier",
-                        "age_equal", "spatiotemporal_outlier", "age_range_outlier", "dataset_ddmm",
-                        "dataset_rounded")))
+  `CoordinateCleaner function` = c(code(c("cc_val()", "cc_zero()", "cc_equ()", "cc_cap()", "cc_cen()",
+                                          "cc_inst()", "cc_gbif()", "cc_sea()", "cc_urb()", "cc_coun()",
+                                          "cc_dupl()", "cc_outl()", "cc_iucn()", "cc_aohi()", "cf_equal()",
+                                          "cf_age()", "cf_outl()")),
+                                   '`cf_range(method = "quantile")` or `"mad"`',
+                                   code(c("cd_ddmm()", "cd_round()"))),
+  `name in clean_*()` = c("always runs; `validity` in `clean_fossils()`",
+                          code(c("zeros", "equal", "capitals", "centroids", "institutions", "gbif",
+                                 "seas", "urban", "countries", "duplicates", "outliers", "range",
+                                 "aohi", "agesequal")),
+                          "not in `clean_fossils()`",
+                          code(c("spatiotemp", "temprange")),
+                          "`ddmm` in `clean_dataset()`", "`periodicity` in `clean_dataset()`"),
+  `test here` = code(c("invalid", "zero", "equal", "capital", "centroid", "institution",
+                       "gbif_headquarters", "sea", "urban", "country_mismatch", "duplicate", "outlier",
+                       "range", "aohi", "age_equal", "age_outlier", "spatiotemporal_outlier",
+                       "age_range_outlier", "dataset_ddmm", "dataset_rounded")),
+  check.names = FALSE))
 ```
 
-The check for missing or out-of-range coordinates has no name in `clean_coordinates()`. It always runs first, and if any coordinate fails it, `clean_coordinates()` stops and returns that result alone. Here it is the `invalid` test, and the other tests still run on the records that pass it.
+`clean_coordinates()` always checks for missing or out-of-range coordinates first, and if any coordinate fails, it stops and returns that result alone. Here that check is the `invalid` test, and the other tests still run on the records that pass it.
+
+### Arguments and output
+
+```{r mapping-args, echo = FALSE}
+knitr::kable(data.frame(
+  CoordinateCleaner = c("`clean_coordinates()`, `clean_fossils()`, `clean_dataset()`",
+                        "`capitals_rad`, `centroids_rad`, `inst_rad`, ...",
+                        "`method`, `mltpl`, `size_thresh`, `replicates`, ... of the outlier and dataset tests",
+                        "`cc_outl(sampling_thresh = ...)`",
+                        "`cc_cap(ref = ...)`, `cc_sea(ref = ...)`, ...; `capitals_ref`, `seas_ref`, ... in `clean_coordinates()`",
+                        "`seas_scale` (default 50)",
+                        "`cc_dupl(additions = ...)`",
+                        '`cf_range(method = "time", max_range = ...)`',
+                        '`value = "clean"`',
+                        '`value = "flagged"` or `"spatialvalid"`'),
+  OccurrenceCleaner = c("`flag_occurrences(x, tests = ...)`",
+                        "`buffers = list(capital = ..., centroid = ..., institution = ...)`",
+                        "`settings = list(outlier = list(method = ...), ...)`",
+                        "`settings = list(outlier = list(sampling_thresh = ...))` with `gazetteers = list(sampling = ...)`",
+                        "`gazetteers = list(capital = ..., sea = ...)`",
+                        "`land_scale` (default 110, as `cc_sea()`)",
+                        "`duplicate_by`",
+                        "`tally_flags(bins = ...)` on `max_ma - min_ma`",
+                        "`x[!has_flag(x$flags, rule), ]`",
+                        "the `flag_<test>` columns; `as_spatialvalid(f)` for the `spatialvalid` layout")))
+```
 
 ## Side by side
 

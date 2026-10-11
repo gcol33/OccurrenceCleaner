@@ -124,10 +124,153 @@ up.</p>
 <div class="section level2">
 <h2 id="function-mapping">Function mapping<a class="anchor" aria-label="anchor" href="#function-mapping"></a>
 </h2>
+<p>OccurrenceCleaner has one flagging function,
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>. Each test function of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+is a test name here, passed in <code>tests</code>, and the arguments of
+those functions are entries of a few list arguments. There are no
+<code>cc_*</code> functions, so attaching both packages hides none of
+CoordinateCleaner’s.</p>
+<div class="section level3">
+<h3 id="tests">Tests<a class="anchor" aria-label="anchor" href="#tests"></a>
+</h3>
 <table class="table">
 <colgroup>
-<col width="45%">
-<col width="54%">
+<col width="38%">
+<col width="39%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">CoordinateCleaner function</th>
+<th align="left">name in clean_*()</th>
+<th align="left">test here</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_val.html" class="external-link">cc_val()</a></code></td>
+<td align="left">always runs; <code>validity</code> in
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>
+</td>
+<td align="left"><code>invalid</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html" class="external-link">cc_zero()</a></code></td>
+<td align="left"><code>zeros</code></td>
+<td align="left"><code>zero</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_equ.html" class="external-link">cc_equ()</a></code></td>
+<td align="left"><code>equal</code></td>
+<td align="left"><code>equal</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cap.html" class="external-link">cc_cap()</a></code></td>
+<td align="left"><code>capitals</code></td>
+<td align="left"><code>capital</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html" class="external-link">cc_cen()</a></code></td>
+<td align="left"><code>centroids</code></td>
+<td align="left"><code>centroid</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html" class="external-link">cc_inst()</a></code></td>
+<td align="left"><code>institutions</code></td>
+<td align="left"><code>institution</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_gbif.html" class="external-link">cc_gbif()</a></code></td>
+<td align="left"><code>gbif</code></td>
+<td align="left"><code>gbif_headquarters</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code></td>
+<td align="left"><code>seas</code></td>
+<td align="left"><code>sea</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_urb.html" class="external-link">cc_urb()</a></code></td>
+<td align="left"><code>urban</code></td>
+<td align="left"><code>urban</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code></td>
+<td align="left"><code>countries</code></td>
+<td align="left"><code>country_mismatch</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html" class="external-link">cc_dupl()</a></code></td>
+<td align="left"><code>duplicates</code></td>
+<td align="left"><code>duplicate</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code></td>
+<td align="left"><code>outliers</code></td>
+<td align="left"><code>outlier</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_iucn.html" class="external-link">cc_iucn()</a></code></td>
+<td align="left"><code>range</code></td>
+<td align="left"><code>range</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html" class="external-link">cc_aohi()</a></code></td>
+<td align="left"><code>aohi</code></td>
+<td align="left"><code>aohi</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal()</a></code></td>
+<td align="left"><code>agesequal</code></td>
+<td align="left"><code>age_equal</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code></td>
+<td align="left">not in <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>
+</td>
+<td align="left"><code>age_outlier</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code></td>
+<td align="left"><code>spatiotemp</code></td>
+<td align="left"><code>spatiotemporal_outlier</code></td>
+</tr>
+<tr class="even">
+<td align="left">
+<code>cf_range(method = "quantile")</code> or
+<code>"mad"</code>
+</td>
+<td align="left"><code>temprange</code></td>
+<td align="left"><code>age_range_outlier</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html" class="external-link">cd_ddmm()</a></code></td>
+<td align="left">
+<code>ddmm</code> in <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>
+</td>
+<td align="left"><code>dataset_ddmm</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html" class="external-link">cd_round()</a></code></td>
+<td align="left">
+<code>periodicity</code> in
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>
+</td>
+<td align="left"><code>dataset_rounded</code></td>
+</tr>
+</tbody>
+</table>
+<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> always checks for missing or
+out-of-range coordinates first, and if any coordinate fails, it stops
+and returns that result alone. Here that check is the
+<code>invalid</code> test, and the other tests still run on the records
+that pass it.</p>
+</div>
+<div class="section level3">
+<h3 id="arguments-and-output">Arguments and output<a class="anchor" aria-label="anchor" href="#arguments-and-output"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="51%">
+<col width="48%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">CoordinateCleaner</th>
@@ -135,221 +278,74 @@ up.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">cc_val()</td>
-<td align="left">invalid</td>
+<td align="left">
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>,
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>
+</td>
+<td align="left"><code>flag_occurrences(x, tests = ...)</code></td>
 </tr>
 <tr class="even">
-<td align="left">cc_zero()</td>
-<td align="left">zero</td>
+<td align="left">
+<code>capitals_rad</code>, <code>centroids_rad</code>,
+<code>inst_rad</code>, …</td>
+<td align="left"><code>buffers = list(capital = ..., centroid = ..., institution = ...)</code></td>
 </tr>
 <tr class="odd">
-<td align="left">cc_equ()</td>
-<td align="left">equal</td>
+<td align="left">
+<code>method</code>, <code>mltpl</code>,
+<code>size_thresh</code>, <code>replicates</code>, … of the outlier and
+dataset tests</td>
+<td align="left"><code>settings = list(outlier = list(method = ...), ...)</code></td>
 </tr>
 <tr class="even">
-<td align="left">cc_cap()</td>
-<td align="left">capital</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_cen()</td>
-<td align="left">centroid</td>
-</tr>
-<tr class="even">
-<td align="left">cc_inst()</td>
-<td align="left">institution</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_gbif()</td>
-<td align="left">gbif_headquarters</td>
-</tr>
-<tr class="even">
-<td align="left">cc_sea()</td>
-<td align="left">sea</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_urb()</td>
-<td align="left">urban</td>
-</tr>
-<tr class="even">
-<td align="left">cc_coun()</td>
-<td align="left">country_mismatch</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_dupl()</td>
-<td align="left">duplicate</td>
-</tr>
-<tr class="even">
-<td align="left">cf_equal()</td>
-<td align="left">age_equal</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_outl()</td>
-<td align="left">outlier</td>
-</tr>
-<tr class="even">
-<td align="left">cf_age()</td>
-<td align="left">age_outlier</td>
-</tr>
-<tr class="odd">
-<td align="left">cf_outl()</td>
-<td align="left">spatiotemporal_outlier</td>
-</tr>
-<tr class="even">
-<td align="left">cf_range(method = “quantile” or “mad”)</td>
-<td align="left">age_range_outlier</td>
-</tr>
-<tr class="odd">
-<td align="left">cd_ddmm()</td>
-<td align="left">dataset_ddmm</td>
-</tr>
-<tr class="even">
-<td align="left">cd_round()</td>
-<td align="left">dataset_rounded</td>
-</tr>
-<tr class="odd">
-<td align="left">cc_iucn()</td>
-<td align="left">range</td>
-</tr>
-<tr class="even">
-<td align="left">cc_aohi()</td>
-<td align="left">aohi</td>
-</tr>
-<tr class="odd">
-<td align="left">write_pyrate()</td>
-<td align="left">export_pyrate()</td>
-</tr>
-<tr class="even">
-<td align="left">cc_outl(sampling_thresh = …)</td>
-<td align="left">settings = list(outlier = list(sampling_thresh = …))
-with gazetteers = list(sampling = …)</td>
-</tr>
-<tr class="odd">
-<td align="left">clean_coordinates(), clean_fossils(),
-clean_dataset()</td>
-<td align="left">flag_occurrences(x, tests = …)</td>
-</tr>
-<tr class="even">
-<td align="left">buffer arguments (capitals_rad, …)</td>
-<td align="left">buffers = list(capital = …)</td>
-</tr>
-<tr class="odd">
-<td align="left">method, mltpl, size_thresh, replicates, … of the
-outlier and dataset tests</td>
-<td align="left">settings = list(outlier = list(method = …), …)</td>
-</tr>
-<tr class="even">
-<td align="left">ref arguments (cc_cap(ref = …), cc_sea(ref = …),
-…)</td>
-<td align="left">gazetteers = list(capital = …, sea = …)</td>
-</tr>
-<tr class="odd">
-<td align="left">cf_range(method = “time”, max_range = …)</td>
-<td align="left">tally_flags(bins = …) on max_ma - min_ma</td>
-</tr>
-<tr class="even">
-<td align="left">additions (cc_dupl)</td>
-<td align="left">duplicate_by</td>
-</tr>
-<tr class="odd">
-<td align="left">seas_scale (default 50)</td>
-<td align="left">land_scale (default 110, as cc_sea())</td>
-</tr>
-<tr class="even">
-<td align="left">value = “clean”</td>
-<td align="left">x[!has_flag(x$flags, rule), ]</td>
-</tr>
-<tr class="odd">
-<td align="left">value = “flagged” / “spatialvalid”</td>
-<td align="left">the flag_<test> columns; as_spatialvalid(f) for the
-spatialvalid layout</test>
+<td align="left"><code>cc_outl(sampling_thresh = ...)</code></td>
+<td align="left">
+<code>settings = list(outlier = list(sampling_thresh = ...))</code>
+with <code>gazetteers = list(sampling = ...)</code>
 </td>
 </tr>
-</tbody>
-</table>
-<p>OccurrenceCleaner has one flagging function,
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, and its <code>tests</code> argument
-chooses which tests run. It has no <code>cc_*</code> functions, so
-attaching both packages hides none of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s.</p>
-<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> and
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code> also choose tests by name, but the names
-differ:</p>
-<table class="table">
-<thead><tr class="header">
-<th align="left">CoordinateCleaner</th>
-<th align="left">OccurrenceCleaner</th>
-</tr></thead>
-<tbody>
 <tr class="odd">
-<td align="left">capitals</td>
-<td align="left">capital</td>
+<td align="left">
+<code>cc_cap(ref = ...)</code>,
+<code>cc_sea(ref = ...)</code>, …; <code>capitals_ref</code>,
+<code>seas_ref</code>, … in <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>
+</td>
+<td align="left"><code>gazetteers = list(capital = ..., sea = ...)</code></td>
 </tr>
 <tr class="even">
-<td align="left">centroids</td>
-<td align="left">centroid</td>
+<td align="left">
+<code>seas_scale</code> (default 50)</td>
+<td align="left">
+<code>land_scale</code> (default 110, as
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code>)</td>
 </tr>
 <tr class="odd">
-<td align="left">countries</td>
-<td align="left">country_mismatch</td>
+<td align="left"><code>cc_dupl(additions = ...)</code></td>
+<td align="left"><code>duplicate_by</code></td>
 </tr>
 <tr class="even">
-<td align="left">duplicates</td>
-<td align="left">duplicate</td>
+<td align="left"><code>cf_range(method = "time", max_range = ...)</code></td>
+<td align="left">
+<code>tally_flags(bins = ...)</code> on
+<code>max_ma - min_ma</code>
+</td>
 </tr>
 <tr class="odd">
-<td align="left">equal</td>
-<td align="left">equal</td>
+<td align="left"><code>value = "clean"</code></td>
+<td align="left"><code>x[!has_flag(x$flags, rule), ]</code></td>
 </tr>
 <tr class="even">
-<td align="left">gbif</td>
-<td align="left">gbif_headquarters</td>
-</tr>
-<tr class="odd">
-<td align="left">institutions</td>
-<td align="left">institution</td>
-</tr>
-<tr class="even">
-<td align="left">seas</td>
-<td align="left">sea</td>
-</tr>
-<tr class="odd">
-<td align="left">urban</td>
-<td align="left">urban</td>
-</tr>
-<tr class="even">
-<td align="left">zeros</td>
-<td align="left">zero</td>
-</tr>
-<tr class="odd">
-<td align="left">outliers</td>
-<td align="left">outlier</td>
-</tr>
-<tr class="even">
-<td align="left">agesequal (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>)</td>
-<td align="left">age_equal</td>
-</tr>
-<tr class="odd">
-<td align="left">spatiotemp (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>)</td>
-<td align="left">spatiotemporal_outlier</td>
-</tr>
-<tr class="even">
-<td align="left">temprange (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>)</td>
-<td align="left">age_range_outlier</td>
-</tr>
-<tr class="odd">
-<td align="left">ddmm (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>)</td>
-<td align="left">dataset_ddmm</td>
-</tr>
-<tr class="even">
-<td align="left">periodicity (<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>)</td>
-<td align="left">dataset_rounded</td>
+<td align="left">
+<code>value = "flagged"</code> or
+<code>"spatialvalid"</code>
+</td>
+<td align="left">the <code>flag_&lt;test&gt;</code> columns;
+<code>as_spatialvalid(f)</code> for the <code>spatialvalid</code>
+layout</td>
 </tr>
 </tbody>
 </table>
-<p>The check for missing or out-of-range coordinates has no name in
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>. It always runs first, and if any
-coordinate fails it, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> stops and returns
-that result alone. Here it is the <code>invalid</code> test, and the
-other tests still run on the records that pass it.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="side-by-side">Side by side<a class="anchor" aria-label="anchor" href="#side-by-side"></a>
