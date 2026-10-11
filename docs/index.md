@@ -34,8 +34,9 @@ the Paleobiology Database (for example from
 [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole
 GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning
 is not part of the package; names are matched beforehand, for example
-with [taxize](https://cran.r-project.org/package=taxize). The kept
-records go on to species distribution models such as
+with [taxify](https://cran.r-project.org/package=taxify) or
+[taxize](https://cran.r-project.org/package=taxize). The kept records go
+on to species distribution models such as
 [dismo](https://cran.r-project.org/package=dismo) or
 [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses
 on phylogenies with
@@ -64,7 +65,17 @@ reading Parquet files in chunks.
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler:
+
+- Windows: install
+  [Rtools](https://cran.r-project.org/bin/windows/Rtools/), the version
+  matching your R.
+- macOS: run `xcode-select --install` in a terminal.
+- Linux: install R’s development package, for example
+  `sudo apt install r-base-dev` on Debian or Ubuntu.
+
+`pkgbuild::has_build_tools(debug = TRUE)` checks that R finds the
+compiler.
 
 ## Flag a data frame
 

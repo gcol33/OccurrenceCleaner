@@ -18,7 +18,9 @@ disk, and the one test whose result depends on how the input is split.
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler;
+[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+shows how to set one up.
 
 ``` r
 

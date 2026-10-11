@@ -22,7 +22,7 @@ This article runs the whole cleaning workflow on a table shaped like a GBIF down
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up.
 
 ```{r setup, eval = TRUE, message = FALSE}
 library(OccurrenceCleaner)

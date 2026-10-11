@@ -23,8 +23,9 @@ recorded with the flags.
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows). The polygon examples also need
-sf.
+Needs a C++ compiler;
+[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+shows how to set one up. The polygon examples also need sf.
 
 ``` r
 

@@ -12,7 +12,7 @@ It also reads three fields GBIF fills for each record: the quality warnings GBIF
 
 Records are flagged and kept, and users choose afterwards which flags to filter on.
 
-The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from [rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from the Paleobiology Database (for example from [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
+The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from [rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from the Paleobiology Database (for example from [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole GBIF snapshot, or another aggregator's export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with [taxify](https://cran.r-project.org/package=taxify) or [taxize](https://cran.r-project.org/package=taxize). The kept records go on to species distribution models such as [dismo](https://cran.r-project.org/package=dismo) or [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses on phylogenies with [phytools](https://cran.r-project.org/package=phytools), to IUCN Red List assessments with [red](https://cran.r-project.org/package=red), or, for fossils, to PyRate through `export_pyrate()`.
 
 The tests are reimplemented with CoordinateCleaner's definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in [Coming from CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 
@@ -25,7 +25,13 @@ Data frames containing a few million records are flagged in seconds ([timings](h
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler:
+
+- Windows: install [Rtools](https://cran.r-project.org/bin/windows/Rtools/), the version matching your R.
+- macOS: run `xcode-select --install` in a terminal.
+- Linux: install R's development package, for example `sudo apt install r-base-dev` on Debian or Ubuntu.
+
+`pkgbuild::has_build_tools(debug = TRUE)` checks that R finds the compiler.
 
 ## Flag a data frame
 

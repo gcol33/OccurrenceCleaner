@@ -28,7 +28,9 @@ fossil outlier tests are shown in the fossil article.
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler;
+[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+shows how to set one up.
 
 ``` r
 
@@ -186,7 +188,7 @@ big <- data.frame(species = "Rhododendron ferrugineum",
                   decimalLatitude = c(rnorm(15000, 46.8, 0.6), 40.4))
 system.time(fb <- flag_occurrences(big, tests = "outlier"))
 #>    user  system elapsed 
-#>    0.03    0.00    0.04
+#>    0.01    0.01    0.03
 which(fb$flag_outlier)
 #> [1] 15001
 ```

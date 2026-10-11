@@ -48,7 +48,7 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### readme.input  [A2 A3]
 - idea: what goes in, what is out of scope, where the kept records go
-- job: Places the package in the workflow: its inputs with the packages they come from (rgbif, paleobioDB), name matching left to other packages (taxize), and where the kept records go (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
+- job: Places the package in the workflow: its inputs with the packages they come from (rgbif, paleobioDB), name matching left to other packages (taxify, taxize), and where the kept records go (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
 - leaves: a GBIF download, a PBDB table, a snapshot or any Darwin Core table works; names are cleaned elsewhere; where the package sits between data sources and analyses
 
 ### readme.equivalence  [A1]

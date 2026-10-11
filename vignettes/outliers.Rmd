@@ -22,7 +22,7 @@ Six tests compare a record with the other records of its species or its dataset 
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler (Rtools on Windows).
+Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up.
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
