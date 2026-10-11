@@ -25,8 +25,10 @@ required; there is no shipped range layer.
 ## CoordinateCleaner
 
 Equivalent to `cc_iucn()`; identical flags without a buffer. With a
-buffer CoordinateCleaner buffers the polygons with terra, so records
-very close to the buffer edge may differ.
+buffer
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+buffers the polygons with [terra](https://rspatial.github.io/terra/), so
+records very close to the buffer edge may differ.
 
 ## See also
 

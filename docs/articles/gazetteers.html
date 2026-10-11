@@ -107,12 +107,12 @@ hotspots) and four with polygons (land, urban areas, countries, species
 ranges); the two habitat tests read the land together with a table of
 genus habitats. The package ships its own pinned layers for all but the
 species ranges, which only a user can supply, and
-<code>reference = "CoordinateCleaner"</code> swaps in
-CoordinateCleaner’s. The <code>gazetteers</code> argument of
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> replaces the layer of single tests with
-a user’s own, as the <code>ref</code> arguments of CoordinateCleaner’s
-<code>cc_*()</code> functions do. This article filters and extends the
-shipped point tables, builds polygon layers with sf, replaces the genus
+<code>reference = "CoordinateCleaner"</code> swaps in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s.
+The <code>gazetteers</code> argument of <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>
+replaces the layer of single tests with a user’s own, as the
+<code>ref</code> arguments of CoordinateCleaner’s <code>cc_*()</code>
+functions do. This article filters and extends the shipped point tables,
+builds polygon layers with <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a>, replaces the genus
 habitats, and shows how a custom layer is recorded with the flags.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -121,7 +121,7 @@ habitats, and shows how a custom layer is recorded with the flags.</p>
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
 <p>Needs a C++ compiler; <a href="../index.html#installation">Installation</a> shows how to set one
-up. The polygon examples also need sf.</p>
+up. The polygon examples also need <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -172,11 +172,11 @@ entries, where GBIF took the entry from (Index Herbariorum, GRSciColl
 itself, or the GBIF registry), and for the Wikipedia museums that the
 list places only by town, where the town’s coordinates come from.
 <code>extension</code> is <code>TRUE</code> for the points from sources
-CoordinateCleaner’s own table does not draw on (Wikidata beyond the
-museums of the English list, and the other language editions); the rows
-with <code>extension</code> <code>FALSE</code>, passed as the
-institution gazetteer, restrict the test to CoordinateCleaner’s
-sources.</p>
+<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+own table does not draw on (Wikidata beyond the museums of the English
+list, and the other language editions); the rows with
+<code>extension</code> <code>FALSE</code>, passed as the institution
+gazetteer, restrict the test to CoordinateCleaner’s sources.</p>
 </div>
 <div class="section level2">
 <h2 id="a-filtered-point-gazetteer">A filtered point gazetteer<a class="anchor" aria-label="anchor" href="#a-filtered-point-gazetteer"></a>
@@ -217,8 +217,9 @@ next to the herbaria.</p>
 </h2>
 <p>The two capital tables differ: the shipped table holds the Factbook
 capitals unrounded and adds Natural Earth’s alternative and official
-capitals, while CoordinateCleaner’s has one point per country, rounded
-to 0.01 degrees. Their union flags records near either:</p>
+capitals, while <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+has one point per country, rounded to 0.01 degrees. Their union flags
+records near either:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">both</span><span class="op">)</span></span>
@@ -440,11 +441,11 @@ reference_points(“aohi”))</td>
 </tr>
 </tbody>
 </table>
-<p>CoordinateCleaner’s point references need its own column names
-(<code>capital.lon</code>, <code>centroid.lon</code>,
-<code>decimalLongitude</code>); here the longitude and latitude columns
-are found by name in any of the common spellings. Its
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> reads one code column chosen with
+<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+point references need its own column names (<code>capital.lon</code>,
+<code>centroid.lon</code>, <code>decimalLongitude</code>); here the
+longitude and latitude columns are found by name in any of the common
+spellings. Its <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> reads one code column chosen with
 <code>ref_col</code>; here every code column present is matched. With
 the same reference points and polygons the two packages give the same
 flags, up to the buffer-polygon band described in the article Coming

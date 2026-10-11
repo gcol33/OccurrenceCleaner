@@ -34,7 +34,8 @@ rounded to 0.1 degrees and ages are tested once) and `seed` (1).
 Equivalent to `cf_age()` at taxon level; identical flags when no age has
 to be drawn (every range of zero width). Otherwise both draw ages at
 random and the flags agree in distribution, not record by record:
-CoordinateCleaner draws from the session's random stream in input order.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws
+from the session's random stream in input order.
 
 ## See also
 

@@ -101,15 +101,15 @@
 
     
     
-<p>OccurrenceCleaner runs the tests of CoordinateCleaner (Zizka et
-al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with the
-same definitions and default settings, and writes the result as flags
-instead of filtering. This article maps each CoordinateCleaner function
-to its test here, runs both packages on the same records, lists every
-case where the flags differ and why, and names the parts of
-CoordinateCleaner that have no counterpart. The chunks that call
-CoordinateCleaner run only when it is installed; it is a suggested
-package, not a dependency.</p>
+<p>OccurrenceCleaner runs the tests of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+(Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with the same
+definitions and default settings, and writes the result as flags instead
+of filtering. This article maps each CoordinateCleaner function to its
+test here, runs both packages on the same records, lists every case
+where the flags differ and why, and names the parts of CoordinateCleaner
+that have no counterpart. The chunks that call CoordinateCleaner run
+only when it is installed; it is a suggested package, not a
+dependency.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -269,7 +269,7 @@ spatialvalid layout</test>
 <p>OccurrenceCleaner has one flagging function,
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, and its <code>tests</code> argument
 chooses which tests run. It has no <code>cc_*</code> functions, so
-attaching both packages hides none of CoordinateCleaner’s.</p>
+attaching both packages hides none of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s.</p>
 <p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> and
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code> also choose tests by name, but the names
 differ:</p>
@@ -354,8 +354,9 @@ other tests still run on the records that pass it.</p>
 <div class="section level2">
 <h2 id="side-by-side">Side by side<a class="anchor" aria-label="anchor" href="#side-by-side"></a>
 </h2>
-<p>A typical CoordinateCleaner pipeline filters as it goes, each
-<code>cc_*()</code> call dropping the records it flags:</p>
+<p>A typical <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+pipeline filters as it goes, each <code>cc_*()</code> call dropping the
+records it flags:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a></span><span class="op">)</span></span>
 <span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">|&gt;</span></span>
@@ -490,11 +491,11 @@ and requires the differences to be only those documented below.</p>
 <div class="section level3">
 <h3 id="buffer-circles">Buffer circles<a class="anchor" aria-label="anchor" href="#buffer-circles"></a>
 </h3>
-<p>CoordinateCleaner builds each buffer as a polygon with its vertices
-on the circle (72 vertices for capitals, centroids and the GBIF
-headquarters, 40 for institutions) and tests whether a record lies
-inside that polygon. Between two vertices the polygon edge lies inside
-the circle, at
+<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+builds each buffer as a polygon with its vertices on the circle (72
+vertices for capitals, centroids and the GBIF headquarters, 40 for
+institutions) and tests whether a record lies inside that polygon.
+Between two vertices the polygon edge lies inside the circle, at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mrow><mi mathvariant="normal">cos</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>π</mi><mi>/</mi><mi>n</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r \cos(\pi / n)</annotation></semantics></math>
 from the centre at mid-edge: 99.9 % of the buffer for 72 vertices, 99.7
 % for 40. OccurrenceCleaner tests the geodesic distance against the
@@ -520,11 +521,12 @@ headquarters edge, 0.31 m of the 100 m institution edge.</p>
 <div class="section level3">
 <h3 id="the-zero-buffer">The zero buffer<a class="anchor" aria-label="anchor" href="#the-zero-buffer"></a>
 </h3>
-<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html" class="external-link">cc_zero()</a></code> documents a 0.5-degree
-buffer around (0, 0). In version 3.0.1 the buffer point is created
-without a coordinate reference system, terra assumes longitude and
-latitude, and <code>terra::buffer(width = 0.5)</code> then buffers 0.5
-<strong>metres</strong> (<a href="https://github.com/ropensci/CoordinateCleaner/issues/114" class="external-link">CoordinateCleaner
+<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html" class="external-link">cc_zero()</a></code> documents a 0.5-degree buffer around (0, 0). In
+version 3.0.1 the buffer point is created without a coordinate reference
+system, <a href="https://rspatial.github.io/terra/" class="external-link">terra</a> assumes
+longitude and latitude, and <code>terra::buffer(width = 0.5)</code> then
+buffers 0.5 <strong>metres</strong> (<a href="https://github.com/ropensci/CoordinateCleaner/issues/114" class="external-link">CoordinateCleaner
 issue 114</a>). Only records with a longitude or latitude of exactly
 zero are flagged:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -551,21 +553,21 @@ first. <code>country_mismatch</code> accepts alpha-2, alpha-3 and
 Natural Earth’s <code>ADM0_A3</code> code, and reads the ISO codes from
 Natural Earth’s <code>ISO_A2_EH</code> and <code>ISO_A3_EH</code>
 columns, which are filled where <code>ISO_A2</code> and
-<code>ISO_A3</code> hold <code>-99</code>: in CoordinateCleaner’s layer
-that is France, Norway and Kosovo, so <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> flags every
-record that falls in them. For records whose code is alpha-3 and present
-in Natural Earth, the two tests agree.</p>
+<code>ISO_A3</code> hold <code>-99</code>: in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+layer that is France, Norway and Kosovo, so <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> flags
+every record that falls in them. For records whose code is alpha-3 and
+present in Natural Earth, the two tests agree.</p>
 </div>
 <div class="section level3">
 <h3 id="records-without-valid-coordinates">Records without valid coordinates<a class="anchor" aria-label="anchor" href="#records-without-valid-coordinates"></a>
 </h3>
-<p>For rows with missing or out-of-range coordinates,
-CoordinateCleaner’s spatial tests return <code>NA</code>
-(<code>cc_zero</code>, <code>cc_equ</code>) or “clean”
-(<code>cc_cap</code>), and <code>cc_dupl</code> flags the second of two
-such rows. Here such a record gets the <code>invalid</code> bit and no
-other spatial bit, so a rule that holds <code>invalid</code> removes it
-and a rule without <code>invalid</code> sees no spatial flag on it.</p>
+<p>For rows with missing or out-of-range coordinates, <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+spatial tests return <code>NA</code> (<code>cc_zero</code>,
+<code>cc_equ</code>) or “clean” (<code>cc_cap</code>), and
+<code>cc_dupl</code> flags the second of two such rows. Here such a
+record gets the <code>invalid</code> bit and no other spatial bit, so a
+rule that holds <code>invalid</code> removes it and a rule without
+<code>invalid</code> sees no spatial flag on it.</p>
 </div>
 <div class="section level3">
 <h3 id="outliers-of-large-species">Outliers of large species<a class="anchor" aria-label="anchor" href="#outliers-of-large-species"></a>
@@ -574,10 +576,11 @@ and a rule without <code>invalid</code> sees no spatial flag on it.</p>
 every species with <code>thinning = TRUE</code>, on a raster
 approximation: it counts records per cell of a 0.5-degree grid, computes
 the distance statistics between cells, and selects the outlier cells. In
-CoordinateCleaner 3.0.1 the last step, which turns the outlier cells
-back into records, compares a data frame with the cell numbers as a
-whole and matches nothing, so that path never flags a record. Twenty
-records 1,000 km from the other 11,980 of their species show it:</p>
+<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+3.0.1 the last step, which turns the outlier cells back into records,
+compares a data frame with the cell numbers as a whole and matches
+nothing, so that path never flags a record. Twenty records 1,000 km from
+the other 11,980 of their species show it:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">12000</span></span>
@@ -597,13 +600,13 @@ flags.</p>
 </h3>
 <p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code> draw one age from
 each record’s range, repeat the test five times and keep the majority.
-CoordinateCleaner draws from the session’s random stream in the order of
-the input, so its flags change with the seed and the row order.
-<code>age_outlier</code> and <code>spatiotemporal_outlier</code> draw
-from a stream seeded per taxon
-(<code>settings = list(age_outlier = list(seed = ...))</code>) in an
-order fixed by the records’ content, so the same records give the same
-flags in any order and split into any files. Both follow the same
+<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+draws from the session’s random stream in the order of the input, so its
+flags change with the seed and the row order. <code>age_outlier</code>
+and <code>spatiotemporal_outlier</code> draw from a stream seeded per
+taxon (<code>settings = list(age_outlier = list(seed = ...))</code>) in
+an order fixed by the records’ content, so the same records give the
+same flags in any order and split into any files. Both follow the same
 distribution; when every age range has zero width nothing is drawn and
 the flags are identical.</p>
 </div>
@@ -630,10 +633,15 @@ the files the right units for that.</p>
 <h3 id="gazetteers">Gazetteers<a class="anchor" aria-label="anchor" href="#gazetteers"></a>
 </h3>
 <p>With the default <code>reference = "natural_earth"</code> the
-gazetteers are rebuilt from the original sources (Natural Earth, GBIF’s
-registry of collections), not copied from CoordinateCleaner, whose code
-and data are GPL-3. They hold the same kinds of points but not the same
-coordinates; the reference-data article measures the differences.
+gazetteers are rebuilt from the original sources of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+tables, so they hold the same kinds of points but not the same
+coordinates; the reference-data article lists the sources and measures
+the differences. Points from sources CoordinateCleaner does not use,
+such as Wikidata institutions and Natural Earth capitals, carry
+<code>extension</code> <code>TRUE</code> and are used by default;
+passing the rows with <code>extension</code> <code>FALSE</code> through
+<code>gazetteers</code> restricts a test to CoordinateCleaner’s sources
+(<a href="reference-data.html#extension-points">Extension points</a>).
 <code>reference = "CoordinateCleaner"</code> uses CoordinateCleaner’s
 tables and reproduces its flags up to the differences above.</p>
 </div>
@@ -642,11 +650,12 @@ tables and reproduces its flags up to the differences above.</p>
 <h2 id="speed">Speed<a class="anchor" aria-label="anchor" href="#speed"></a>
 </h2>
 <p>The proximity tests are where the two packages differ most, because
-CoordinateCleaner builds a polygon per reference point and tests each
-record against all of them, while this package queries a kd-tree.
-Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1,
-OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1), single process, both
-reading CoordinateCleaner’s gazetteers, in seconds:</p>
+<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+builds a polygon per reference point and tests each record against all
+of them, while this package queries a kd-tree. Measured on one machine
+(AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.1.0,
+CoordinateCleaner 3.0.1), single process, both reading
+CoordinateCleaner’s gazetteers, in seconds:</p>
 <table class="table">
 <colgroup>
 <col width="25%">
@@ -746,8 +755,8 @@ the source repository.</p>
 <div class="section level2">
 <h2 id="functions-around-the-tests">Functions around the tests<a class="anchor" aria-label="anchor" href="#functions-around-the-tests"></a>
 </h2>
-<p>Every function of CoordinateCleaner 3.0.1 has a counterpart here.
-Besides the tests:</p>
+<p>Every function of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+3.0.1 has a counterpart here. Besides the tests:</p>
 <table class="table">
 <colgroup>
 <col width="15%">

@@ -6,14 +6,15 @@ hotspots) and four with polygons (land, urban areas, countries, species
 ranges); the two habitat tests read the land together with a table of
 genus habitats. The package ships its own pinned layers for all but the
 species ranges, which only a user can supply, and
-`reference = "CoordinateCleaner"` swaps in CoordinateCleaner’s. The
-`gazetteers` argument of
+`reference = "CoordinateCleaner"` swaps in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s.
+The `gazetteers` argument of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 replaces the layer of single tests with a user’s own, as the `ref`
 arguments of CoordinateCleaner’s `cc_*()` functions do. This article
 filters and extends the shipped point tables, builds polygon layers with
-sf, replaces the genus habitats, and shows how a custom layer is
-recorded with the flags.
+[sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and
+shows how a custom layer is recorded with the flags.
 
 ## Installation
 
@@ -25,7 +26,8 @@ pak::pak("gcol33/OccurrenceCleaner")
 
 Needs a C++ compiler;
 [Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
-shows how to set one up. The polygon examples also need sf.
+shows how to set one up. The polygon examples also need
+[sf](https://r-spatial.github.io/sf/).
 
 ``` r
 
@@ -81,10 +83,11 @@ point comes from, `type` what kind of institution it is, and
 (Index Herbariorum, GRSciColl itself, or the GBIF registry), and for the
 Wikipedia museums that the list places only by town, where the town’s
 coordinates come from. `extension` is `TRUE` for the points from sources
-CoordinateCleaner’s own table does not draw on (Wikidata beyond the
-museums of the English list, and the other language editions); the rows
-with `extension` `FALSE`, passed as the institution gazetteer, restrict
-the test to CoordinateCleaner’s sources.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s own
+table does not draw on (Wikidata beyond the museums of the English list,
+and the other language editions); the rows with `extension` `FALSE`,
+passed as the institution gazetteer, restrict the test to
+CoordinateCleaner’s sources.
 
 ## A filtered point gazetteer
 
@@ -126,8 +129,10 @@ next to the herbaria.
 
 The two capital tables differ: the shipped table holds the Factbook
 capitals unrounded and adds Natural Earth’s alternative and official
-capitals, while CoordinateCleaner’s has one point per country, rounded
-to 0.01 degrees. Their union flags records near either:
+capitals, while
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s has
+one point per country, rounded to 0.01 degrees. Their union flags
+records near either:
 
 ``` r
 
@@ -338,10 +343,10 @@ two gazetteers.
 | cc_aohi(taxa = …) | gazetteers = list(aohi = subset of reference_points(“aohi”)) |
 | (none) | gazetteers = list(habitat = genera) |
 
-CoordinateCleaner’s point references need its own column names
-(`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude
-and latitude columns are found by name in any of the common spellings.
-Its
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+point references need its own column names (`capital.lon`,
+`centroid.lon`, `decimalLongitude`); here the longitude and latitude
+columns are found by name in any of the common spellings. Its
 [`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
 reads one code column chosen with `ref_col`; here every code column
 present is matched. With the same reference points and polygons the two

@@ -106,11 +106,11 @@ its dataset instead of with reference data: <code>outlier</code>
 (geographic outliers within a species), the three fossil outlier tests,
 and the two dataset tests <code>dataset_ddmm</code> and
 <code>dataset_rounded</code>, which look for conversion and gridding
-errors in a dataset’s coordinates as a whole. They are
-CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>,
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html" class="external-link">cd_ddmm()</a></code>
-and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html" class="external-link">cd_round()</a></code>. Because a group has to be complete before
-any of its records can be judged, these tests run in a pass of their own
+errors in a dataset’s coordinates as a whole. They are <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code>,
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html" class="external-link">cd_ddmm()</a></code> and
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html" class="external-link">cd_round()</a></code>. Because a group has to be complete before any
+of its records can be judged, these tests run in a pass of their own
 over the whole input before the record tests. This article runs the
 geographic and dataset tests on a simulated table of alpine plants, adds
 the artificial-hotspot test <code>aohi</code>, and shows how the group
@@ -185,13 +185,13 @@ published on the centres of a quarter-degree grid:</p>
 <span><span class="co">#&gt;   grid    300    0</span></span></code></pre></div>
 <p>Three of the four far records are flagged and no clean record is. For
 each species the test takes every record’s mean distance to the species’
-other records and flags those above Q75 + 5 x IQR of these means,
-CoordinateCleaner’s default. The <em>Gentiana verna</em> record in Paris
-stays below that fence: the simulated <em>Gentiana</em> records spread
-over about 2 degrees of longitude around 10 E, so a point 7.6 degrees
-west raises the mean distance less than the fence allows. <em>Salix
-retusa</em>, with 6 distinct points, is below <code>min_occs = 7</code>
-and is not tested.</p>
+other records and flags those above Q75 + 5 x IQR of these means, <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+default. The <em>Gentiana verna</em> record in Paris stays below that
+fence: the simulated <em>Gentiana</em> records spread over about 2
+degrees of longitude around 10 E, so a point 7.6 degrees west raises the
+mean distance less than the fence allows. <em>Salix retusa</em>, with 6
+distinct points, is below <code>min_occs = 7</code> and is not
+tested.</p>
 <p>The fence and the statistic are set through <code>settings</code>.
 With <code>method = "mad"</code> the fence is median + 5 x MAD, with
 <code>method = "distance"</code> a record is flagged when its nearest
@@ -1923,10 +1923,10 @@ by size and checksum.</p>
 <h2 id="species-with-many-records">Species with many records<a class="anchor" aria-label="anchor" href="#species-with-many-records"></a>
 </h2>
 <p>For a species with 10,000 records or more the pairwise distances are
-replaced by a raster approximation, as in CoordinateCleaner: records are
-counted on a 0.5-degree grid spanning the whole input, the statistic is
-computed between grid cells with distances weighted by the cell counts,
-and the records of the outlier cells are flagged.
+replaced by a raster approximation, as in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>:
+records are counted on a 0.5-degree grid spanning the whole input, the
+statistic is computed between grid cells with distances weighted by the
+cell counts, and the records of the outlier cells are flagged.
 <code>settings = list(outlier = list(thinning = TRUE))</code> uses the
 grid for every species, and <code>thinning_res</code> sets the cell
 size. A species of 15,001 records with one record in Madrid:</p>
@@ -1936,7 +1936,7 @@ size. A species of 15,001 records with one record in Madrid:</p>
 <span>                  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">15000</span>, <span class="fl">46.8</span>, <span class="fl">0.6</span><span class="op">)</span>, <span class="fl">40.4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">fb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">big</span>, tests <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;    0.01    0.01    0.03</span></span>
+<span><span class="co">#&gt;    0.03    0.00    0.04</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">fb</span><span class="op">$</span><span class="va">flag_outlier</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 15001</span></span></code></pre></div>
 <p>The Madrid record is the only one flagged. CoordinateCleaner 3.0.1

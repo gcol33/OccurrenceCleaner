@@ -11,9 +11,10 @@ spaces.
 
 ## CoordinateCleaner
 
-No equivalent; additions of this package. CoordinateCleaner's fossil
-tests (`cf_*()`) test fossil ages and ranges, which this package does
-not.
+No equivalent; additions of this package.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+fossil tests (`cf_*()`) test fossil ages and ranges, which this package
+does not.
 
 ## See also
 

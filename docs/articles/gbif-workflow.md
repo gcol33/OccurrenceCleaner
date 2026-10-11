@@ -110,8 +110,9 @@ table(occ$truth)
 ```
 
 The `issue` column holds GBIF’s issue names separated by `;`, which is
-how both the simple-format download and the snapshot read through vectra
-deliver them; a list column of character vectors works too.
+how both the simple-format download and the snapshot read through
+[vectra](https://gillescolling.com/vectra/) deliver them; a list column
+of character vectors works too.
 
 ## Flagging every test once
 
@@ -290,7 +291,9 @@ rule keeps or loses depending on whether that one test is in it.
 A cleaning rule is a set of tests. Five rules, from loose to strict,
 show the range of choices on the same flags:
 
-- `cc`: the CoordinateCleaner defaults of
+- `cc`: the
+  [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+  defaults of
   [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
   without the outlier test (zero, equal, capital, centroid, institution,
   GBIF headquarters, sea);
@@ -461,9 +464,10 @@ can see. The 20 records with a fuzzy taxon match are removed through
 
 - **`country_mismatch` needs a country code and flags records without
   one.** A record with no code, or one that falls at sea, is flagged, as
-  in CoordinateCleaner. In a GBIF table where many records lack
-  `countrycode`, that test alone can flag a large share; the tally per
-  test shows it before it goes into a rule.
+  in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/).
+  In a GBIF table where many records lack `countrycode`, that test alone
+  can flag a large share; the tally per test shows it before it goes
+  into a rule.
 
 - **`sea` depends on the land scale.** The default 1:110m land is
   coarse: in the example the GBIF headquarters are on land at that scale

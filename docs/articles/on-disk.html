@@ -104,10 +104,10 @@
 <p>A GBIF snapshot holds billions of records in a directory of Parquet
 files, far more than fits in memory. <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>
 takes such a directory, a single file or a vectra query in place of a
-data frame, reads it in chunks through <a href="https://cran.r-project.org/package=vectra" class="external-link">vectra</a>, and writes
-the flags to disk next to the columns kept for grouping. This article
-walks through the output layout, resuming an interrupted run, tallying
-from disk, and the one test whose result depends on how the input is
+data frame, reads it in chunks through <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a>, and writes the
+flags to disk next to the columns kept for grouping. This article walks
+through the output layout, resuming an interrupted run, tallying from
+disk, and the one test whose result depends on how the input is
 split.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -187,7 +187,7 @@ reference, the columns and the package version:</p>
 <span><span class="co">#&gt;  $ n              : num 9000</span></span>
 <span><span class="co">#&gt;  $ units          : chr [1:3] "occurrence-1" "occurrence-2" "occurrence-3"</span></span>
 <span><span class="co">#&gt;  $ package_version: chr "0.1.0"</span></span></code></pre></div>
-<p>Memory use is set by the chunk size of vectra and by
+<p>Memory use is set by the chunk size of <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> and by
 <code>part_rows</code>, not by the size of the input: one input chunk
 and the buffered output rows (the identifier, the <code>keep</code>
 columns and a four-byte flag word per record) are held at a time.</p>
@@ -345,10 +345,10 @@ that was not kept is an error that names it:</p>
 <div class="section level2">
 <h2 id="reading-the-flags">Reading the flags<a class="anchor" aria-label="anchor" href="#reading-the-flags"></a>
 </h2>
-<p><code><a href="../reference/read_flagged.html">flagged_table()</a></code> opens all parts as one vectra table.
-vectra verbs run on it lazily, and <code><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">vectra::collect()</a></code> brings
-the result into memory. A vectra query runs once, so each use starts
-from a fresh <code><a href="../reference/read_flagged.html">flagged_table()</a></code>:</p>
+<p><code><a href="../reference/read_flagged.html">flagged_table()</a></code> opens all parts as one <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> table. vectra verbs
+run on it lazily, and <code><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">vectra::collect()</a></code> brings the result
+into memory. A vectra query runs once, so each use starts from a fresh
+<code><a href="../reference/read_flagged.html">flagged_table()</a></code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ft</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_flagged.html">flagged_table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">collect</a></span><span class="op">(</span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ft</span>, <span class="va">flags</span> <span class="op">!=</span> <span class="fl">0L</span><span class="op">)</span><span class="op">)</span></span>
@@ -410,8 +410,8 @@ them, where it sees all of them at once.</p>
 <h2 id="selecting-before-flagging">Selecting before flagging<a class="anchor" aria-label="anchor" href="#selecting-before-flagging"></a>
 </h2>
 <p>A <code>vectra_node</code> is flagged as one unit, which makes it the
-way to flag a subset without writing it out first. vectra pushes the
-filter down into the scan:</p>
+way to flag a subset without writing it out first. <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> pushes the filter
+down into the scan:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">node</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"occurrence-1.vtr"</span><span class="op">)</span><span class="op">)</span>, <span class="va">kingdom</span> <span class="op">==</span> <span class="st">"Plantae"</span><span class="op">)</span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">node</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"flags-plants"</span><span class="op">)</span>, keep <span class="op">=</span> <span class="st">"kingdom"</span>,</span>
@@ -443,15 +443,15 @@ record pass:</p>
 <span>            bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1900</span>, <span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2010</span><span class="op">)</span>,</span>
 <span>                        coordinateuncertaintyinmeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="va">cc</span>, cc_country <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cc</span>, <span class="st">"country_mismatch"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Read through vectra, the snapshot’s <code>issue</code> column arrives
-as a string of issue names separated by <code>;</code>, which the issue
-tests read directly. The in-memory speed of the nine default tests was
-17.8 s for ten million records on an AMD Ryzen 7 5700G
-(<code>bench/benchmark.R</code> in the source repository); a streamed
-run adds the Parquet reading and the writing of the parts, which were
-not part of that benchmark. Since each Parquet file is one resumable
-unit, a run over a snapshot can be stopped and restarted at any point
-and loses at most the file in progress.</p>
+<p>Read through <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a>,
+the snapshot’s <code>issue</code> column arrives as a string of issue
+names separated by <code>;</code>, which the issue tests read directly.
+The in-memory speed of the nine default tests was 17.8 s for ten million
+records on an AMD Ryzen 7 5700G (<code>bench/benchmark.R</code> in the
+source repository); a streamed run adds the Parquet reading and the
+writing of the parts, which were not part of that benchmark. Since each
+Parquet file is one resumable unit, a run over a snapshot can be stopped
+and restarted at any point and loses at most the file in progress.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

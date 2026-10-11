@@ -110,7 +110,9 @@ Cape Town, Sucre and Naypyidaw are flagged only through the Natural Earth extens
 The capital, country centroid and institution tables also hold points from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
 
 - capitals: 243 Natural Earth capitals, alternative capitals and capitals of dependent territories;
+
 - country centroids: 516 Natural Earth polygon centroids and label points;
+
 - institutions: 7,665 points, the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata beyond the museums of the English Wikipedia list, and the museums of the Arabic, Dutch, Esperanto, French, German and Portuguese lists.
 
 The tests use them by default. Passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources; for the capitals above, that leaves Cape Town, Sucre and Naypyidaw unflagged:

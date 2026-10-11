@@ -361,10 +361,9 @@ dark part <code>pct_only</code>.</p>
 <h3 id="comparing-rules">Comparing rules<a class="anchor" aria-label="anchor" href="#comparing-rules"></a>
 </h3>
 <p>Candidate rules go into <code>rules</code> as a named list. Here
-<code>strict</code> uses all the tests, <code>cc</code> the
-CoordinateCleaner tests without the duplicate test, and
-<code>minimal</code> only the tests for coordinates that cannot be
-right.</p>
+<code>strict</code> uses all the tests, <code>cc</code> the <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+tests without the duplicate test, and <code>minimal</code> only the
+tests for coordinates that cannot be right.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">tests</span>,</span>
 <span>              cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>

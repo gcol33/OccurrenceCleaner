@@ -1,13 +1,15 @@
 # Coming from CoordinateCleaner
 
-OccurrenceCleaner runs the tests of CoordinateCleaner (Zizka et
-al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the same
-definitions and default settings, and writes the result as flags instead
-of filtering. This article maps each CoordinateCleaner function to its
-test here, runs both packages on the same records, lists every case
-where the flags differ and why, and names the parts of CoordinateCleaner
-that have no counterpart. The chunks that call CoordinateCleaner run
-only when it is installed; it is a suggested package, not a dependency.
+OccurrenceCleaner runs the tests of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the
+same definitions and default settings, and writes the result as flags
+instead of filtering. This article maps each CoordinateCleaner function
+to its test here, runs both packages on the same records, lists every
+case where the flags differ and why, and names the parts of
+CoordinateCleaner that have no counterpart. The chunks that call
+CoordinateCleaner run only when it is installed; it is a suggested
+package, not a dependency.
 
 ## Installation
 
@@ -65,7 +67,8 @@ library(OccurrenceCleaner)
 OccurrenceCleaner has one flagging function,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
 and its `tests` argument chooses which tests run. It has no `cc_*`
-functions, so attaching both packages hides none of CoordinateCleaner’s.
+functions, so attaching both packages hides none of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s.
 
 CoordinateCleaner’s
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
@@ -101,8 +104,10 @@ the other tests still run on the records that pass it.
 
 ## Side by side
 
-A typical CoordinateCleaner pipeline filters as it goes, each `cc_*()`
-call dropping the records it flags:
+A typical
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+pipeline filters as it goes, each `cc_*()` call dropping the records it
+flags:
 
 ``` r
 
@@ -197,15 +202,16 @@ differences to be only those documented below.
 
 ### Buffer circles
 
-CoordinateCleaner builds each buffer as a polygon with its vertices on
-the circle (72 vertices for capitals, centroids and the GBIF
-headquarters, 40 for institutions) and tests whether a record lies
-inside that polygon. Between two vertices the polygon edge lies inside
-the circle, at $`r \cos(\pi / n)`$ from the centre at mid-edge: 99.9 %
-of the buffer for 72 vertices, 99.7 % for 40. OccurrenceCleaner tests
-the geodesic distance against the buffer itself. A record due north of
-Kabul’s capital point (a vertex direction) and one at a bearing of 2.5
-degrees (mid-edge), each at 9,995 m:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+builds each buffer as a polygon with its vertices on the circle (72
+vertices for capitals, centroids and the GBIF headquarters, 40 for
+institutions) and tests whether a record lies inside that polygon.
+Between two vertices the polygon edge lies inside the circle, at
+$`r \cos(\pi / n)`$ from the centre at mid-edge: 99.9 % of the buffer
+for 72 vertices, 99.7 % for 40. OccurrenceCleaner tests the geodesic
+distance against the buffer itself. A record due north of Kabul’s
+capital point (a vertex direction) and one at a bearing of 2.5 degrees
+(mid-edge), each at 9,995 m:
 
 ``` r
 
@@ -228,12 +234,13 @@ edge, 0.31 m of the 100 m institution edge.
 
 ### The zero buffer
 
-CoordinateCleaner’s
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cc_zero()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html)
 documents a 0.5-degree buffer around (0, 0). In version 3.0.1 the buffer
-point is created without a coordinate reference system, terra assumes
-longitude and latitude, and `terra::buffer(width = 0.5)` then buffers
-0.5 **metres** ([CoordinateCleaner issue
+point is created without a coordinate reference system,
+[terra](https://rspatial.github.io/terra/) assumes longitude and
+latitude, and `terra::buffer(width = 0.5)` then buffers 0.5 **metres**
+([CoordinateCleaner issue
 114](https://github.com/ropensci/CoordinateCleaner/issues/114)). Only
 records with a longitude or latitude of exactly zero are flagged:
 
@@ -261,15 +268,17 @@ polygon only. GBIF’s `countryCode` is alpha-2, so a GBIF table needs
 converting first. `country_mismatch` accepts alpha-2, alpha-3 and
 Natural Earth’s `ADM0_A3` code, and reads the ISO codes from Natural
 Earth’s `ISO_A2_EH` and `ISO_A3_EH` columns, which are filled where
-`ISO_A2` and `ISO_A3` hold `-99`: in CoordinateCleaner’s layer that is
-France, Norway and Kosovo, so
+`ISO_A2` and `ISO_A3` hold `-99`: in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+layer that is France, Norway and Kosovo, so
 [`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
 flags every record that falls in them. For records whose code is alpha-3
 and present in Natural Earth, the two tests agree.
 
 ### Records without valid coordinates
 
-For rows with missing or out-of-range coordinates, CoordinateCleaner’s
+For rows with missing or out-of-range coordinates,
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 spatial tests return `NA` (`cc_zero`, `cc_equ`) or “clean” (`cc_cap`),
 and `cc_dupl` flags the second of two such rows. Here such a record gets
 the `invalid` bit and no other spatial bit, so a rule that holds
@@ -282,11 +291,12 @@ on it.
 tests species of 10,000 records or more, and every species with
 `thinning = TRUE`, on a raster approximation: it counts records per cell
 of a 0.5-degree grid, computes the distance statistics between cells,
-and selects the outlier cells. In CoordinateCleaner 3.0.1 the last step,
-which turns the outlier cells back into records, compares a data frame
-with the cell numbers as a whole and matches nothing, so that path never
-flags a record. Twenty records 1,000 km from the other 11,980 of their
-species show it:
+and selects the outlier cells. In
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
+the last step, which turns the outlier cells back into records, compares
+a data frame with the cell numbers as a whole and matches nothing, so
+that path never flags a record. Twenty records 1,000 km from the other
+11,980 of their species show it:
 
 ``` r
 
@@ -311,10 +321,11 @@ computes exact distances, the two give identical flags.
 and
 [`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
 draw one age from each record’s range, repeat the test five times and
-keep the majority. CoordinateCleaner draws from the session’s random
-stream in the order of the input, so its flags change with the seed and
-the row order. `age_outlier` and `spatiotemporal_outlier` draw from a
-stream seeded per taxon
+keep the majority.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws
+from the session’s random stream in the order of the input, so its flags
+change with the seed and the row order. `age_outlier` and
+`spatiotemporal_outlier` draw from a stream seeded per taxon
 (`settings = list(age_outlier = list(seed = ...))`) in an order fixed by
 the records’ content, so the same records give the same flags in any
 order and split into any files. Both follow the same distribution; when
@@ -344,21 +355,28 @@ for that.
 ### Gazetteers
 
 With the default `reference = "natural_earth"` the gazetteers are
-rebuilt from the original sources (Natural Earth, GBIF’s registry of
-collections), not copied from CoordinateCleaner, whose code and data are
-GPL-3. They hold the same kinds of points but not the same coordinates;
-the reference-data article measures the differences.
+rebuilt from the original sources of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+tables, so they hold the same kinds of points but not the same
+coordinates; the reference-data article lists the sources and measures
+the differences. Points from sources CoordinateCleaner does not use,
+such as Wikidata institutions and Natural Earth capitals, carry
+`extension` `TRUE` and are used by default; passing the rows with
+`extension` `FALSE` through `gazetteers` restricts a test to
+CoordinateCleaner’s sources ([Extension
+points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 `reference = "CoordinateCleaner"` uses CoordinateCleaner’s tables and
 reproduces its flags up to the differences above.
 
 ## Speed
 
 The proximity tests are where the two packages differ most, because
-CoordinateCleaner builds a polygon per reference point and tests each
-record against all of them, while this package queries a kd-tree.
-Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1,
-OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1), single process, both
-reading CoordinateCleaner’s gazetteers, in seconds:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+builds a polygon per reference point and tests each record against all
+of them, while this package queries a kd-tree. Measured on one machine
+(AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.1.0,
+CoordinateCleaner 3.0.1), single process, both reading
+CoordinateCleaner’s gazetteers, in seconds:
 
 | test | OccurrenceCleaner, 1e6 | CoordinateCleaner, 1e6 | OccurrenceCleaner, 1e7 | CoordinateCleaner, 1e7 |
 |:---|---:|---:|---:|---:|
@@ -383,8 +401,9 @@ repository.
 
 ## Functions around the tests
 
-Every function of CoordinateCleaner 3.0.1 has a counterpart here.
-Besides the tests:
+Every function of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
+has a counterpart here. Besides the tests:
 
 | CoordinateCleaner | what it does | OccurrenceCleaner |
 |:---|:---|:---|

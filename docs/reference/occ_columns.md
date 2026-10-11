@@ -45,8 +45,9 @@ occ_columns(
 - issue:
 
   GBIF issue flags, either a character column with the issue names
-  separated by `;` (as the GBIF snapshot read through vectra gives) or a
-  list column of character vectors.
+  separated by `;` (as the GBIF snapshot read through
+  [vectra](https://gillescolling.com/vectra/) gives) or a list column of
+  character vectors.
 
 - basis:
 

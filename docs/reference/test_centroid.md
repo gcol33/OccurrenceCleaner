@@ -3,12 +3,13 @@
 Flags records within 1 km of a country or province centroid (WGS84
 geodesic distance, closed ball), where records georeferenced to a
 country or province name end up. The default gazetteer holds the country
-points of the three sources CoordinateCleaner's table is compiled from,
-each taken from the source: the "Geographic coordinates" of the CIA
-World Factbook (public domain; 275 points, through the factbook.json
-mirror retrieved 2026-10-11), the label points of the
-thematicmapping.org World Borders Dataset 0.3 (Bjorn Sandvik, CC BY-SA;
-246 points), and every point the GEOLocate georeferencing service
+points of the three sources
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+table is compiled from, each taken from the source: the "Geographic
+coordinates" of the CIA World Factbook (public domain; 275 points,
+through the factbook.json mirror retrieved 2026-10-11), the label points
+of the thematicmapping.org World Borders Dataset 0.3 (Bjorn Sandvik, CC
+BY-SA; 246 points), and every point the GEOLocate georeferencing service
 (geo-locate.org) returns for a country name, queried 2026-10-11 (548
 points; a place of that name more than 100 km away inside another
 country is left out). Province centroids are the Natural Earth 5.1.1

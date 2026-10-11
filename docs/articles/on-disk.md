@@ -5,10 +5,10 @@ files, far more than fits in memory.
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 takes such a directory, a single file or a vectra query in place of a
 data frame, reads it in chunks through
-[vectra](https://cran.r-project.org/package=vectra), and writes the
-flags to disk next to the columns kept for grouping. This article walks
-through the output layout, resuming an interrupted run, tallying from
-disk, and the one test whose result depends on how the input is split.
+[vectra](https://gillescolling.com/vectra/), and writes the flags to
+disk next to the columns kept for grouping. This article walks through
+the output layout, resuming an interrupted run, tallying from disk, and
+the one test whose result depends on how the input is split.
 
 ## Installation
 
@@ -101,7 +101,8 @@ str(m[c("tests", "layout_version", "reference", "keep", "n", "units", "package_v
 #>  $ package_version: chr "0.1.0"
 ```
 
-Memory use is set by the chunk size of vectra and by `part_rows`, not by
+Memory use is set by the chunk size of
+[vectra](https://gillescolling.com/vectra/) and by `part_rows`, not by
 the size of the input: one input chunk and the buffered output rows (the
 identifier, the `keep` columns and a four-byte flag word per record) are
 held at a time.
@@ -180,7 +181,8 @@ tally_flags(out, by = "species")
 ## Reading the flags
 
 [`flagged_table()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)
-opens all parts as one vectra table. vectra verbs run on it lazily, and
+opens all parts as one [vectra](https://gillescolling.com/vectra/)
+table. vectra verbs run on it lazily, and
 [`vectra::collect()`](https://gillescolling.com/vectra/reference/collect.html)
 brings the result into memory. A vectra query runs once, so each use
 starts from a fresh
@@ -259,7 +261,8 @@ where it sees all of them at once.
 ## Selecting before flagging
 
 A `vectra_node` is flagged as one unit, which makes it the way to flag a
-subset without writing it out first. vectra pushes the filter down into
+subset without writing it out first.
+[vectra](https://gillescolling.com/vectra/) pushes the filter down into
 the scan:
 
 ``` r
@@ -297,11 +300,12 @@ tally_flags(f, by = c("kingdom", "class"),
             rules = list(cc = cc, cc_country = c(cc, "country_mismatch")))
 ```
 
-Read through vectra, the snapshot’s `issue` column arrives as a string
-of issue names separated by `;`, which the issue tests read directly.
-The in-memory speed of the nine default tests was 17.8 s for ten million
-records on an AMD Ryzen 7 5700G (`bench/benchmark.R` in the source
-repository); a streamed run adds the Parquet reading and the writing of
-the parts, which were not part of that benchmark. Since each Parquet
-file is one resumable unit, a run over a snapshot can be stopped and
-restarted at any point and loses at most the file in progress.
+Read through [vectra](https://gillescolling.com/vectra/), the snapshot’s
+`issue` column arrives as a string of issue names separated by `;`,
+which the issue tests read directly. The in-memory speed of the nine
+default tests was 17.8 s for ten million records on an AMD Ryzen 7 5700G
+(`bench/benchmark.R` in the source repository); a streamed run adds the
+Parquet reading and the writing of the parts, which were not part of
+that benchmark. Since each Parquet file is one resumable unit, a run
+over a snapshot can be stopped and restarted at any point and loses at
+most the file in progress.

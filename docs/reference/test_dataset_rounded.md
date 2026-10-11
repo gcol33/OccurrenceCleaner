@@ -23,7 +23,8 @@ distinct coordinates are not tested.
 
 ## CoordinateCleaner
 
-Equivalent to `cd_round()`; identical flags. In CoordinateCleaner 3.0.1
+Equivalent to `cd_round()`; identical flags. In
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
 an input with several datasets of which one is below
 `min_unique_ds_size` stops with an error; here that dataset is not
 tested. Records without a dataset key are not flagged.

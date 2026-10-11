@@ -19,7 +19,8 @@ flagged_table(x)
 ## Value
 
 The `occ_flagged` metadata (`read_flagged()`), or a `vectra_node` over
-all parts (`flagged_table()`), to be used with vectra verbs and
+all parts (`flagged_table()`), to be used with
+[vectra](https://gillescolling.com/vectra/) verbs and
 [`vectra::collect()`](https://gillescolling.com/vectra/reference/collect.html).
 
 ## Examples

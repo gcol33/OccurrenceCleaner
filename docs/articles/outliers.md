@@ -5,7 +5,7 @@ dataset instead of with reference data: `outlier` (geographic outliers
 within a species), the three fossil outlier tests, and the two dataset
 tests `dataset_ddmm` and `dataset_rounded`, which look for conversion
 and gridding errors in a dataset’s coordinates as a whole. They are
-CoordinateCleaner’s
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html),
 [`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html),
 [`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html),
@@ -103,11 +103,12 @@ table(truth = f$truth, outlier = f$flag_outlier)
 Three of the four far records are flagged and no clean record is. For
 each species the test takes every record’s mean distance to the species’
 other records and flags those above Q75 + 5 x IQR of these means,
-CoordinateCleaner’s default. The *Gentiana verna* record in Paris stays
-below that fence: the simulated *Gentiana* records spread over about 2
-degrees of longitude around 10 E, so a point 7.6 degrees west raises the
-mean distance less than the fence allows. *Salix retusa*, with 6
-distinct points, is below `min_occs = 7` and is not tested.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+default. The *Gentiana verna* record in Paris stays below that fence:
+the simulated *Gentiana* records spread over about 2 degrees of
+longitude around 10 E, so a point 7.6 degrees west raises the mean
+distance less than the fence allows. *Salix retusa*, with 6 distinct
+points, is below `min_occs = 7` and is not tested.
 
 The fence and the statistic are set through `settings`. With
 `method = "mad"` the fence is median + 5 x MAD, with
@@ -173,10 +174,11 @@ recorded in the reference label by size and checksum.
 ## Species with many records
 
 For a species with 10,000 records or more the pairwise distances are
-replaced by a raster approximation, as in CoordinateCleaner: records are
-counted on a 0.5-degree grid spanning the whole input, the statistic is
-computed between grid cells with distances weighted by the cell counts,
-and the records of the outlier cells are flagged.
+replaced by a raster approximation, as in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/):
+records are counted on a 0.5-degree grid spanning the whole input, the
+statistic is computed between grid cells with distances weighted by the
+cell counts, and the records of the outlier cells are flagged.
 `settings = list(outlier = list(thinning = TRUE))` uses the grid for
 every species, and `thinning_res` sets the cell size. A species of
 15,001 records with one record in Madrid:
@@ -188,7 +190,7 @@ big <- data.frame(species = "Rhododendron ferrugineum",
                   decimalLatitude = c(rnorm(15000, 46.8, 0.6), 40.4))
 system.time(fb <- flag_occurrences(big, tests = "outlier"))
 #>    user  system elapsed 
-#>    0.01    0.01    0.03
+#>    0.03    0.00    0.04
 which(fb$flag_outlier)
 #> [1] 15001
 ```

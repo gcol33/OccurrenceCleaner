@@ -1,8 +1,9 @@
 # Quick start
 
-OccurrenceCleaner is an extension of CoordinateCleaner (Zizka et
-al. [2019](https://doi.org/10.1111/2041-210X.13152)) tailored to
-large-scale occurrence data. It flags errors in species occurrence
+OccurrenceCleaner is an extension of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) tailored
+to large-scale occurrence data. It flags errors in species occurrence
 records and keeps every record. Each test sets one bit in an integer
 flag word, so deciding which records to drop is a query over the flags,
 made after the pass and changed without rerunning it.
@@ -102,10 +103,11 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "equivalent")])
 | 28 | sea_nonmarine | outside the land polygons, and the genus does not live in the sea | NA |
 | 29 | land_marine | inside the land polygons, and the genus lives only in the sea | NA |
 
-The tests with an `equivalent` are CoordinateCleaner’s record tests with
-its default buffers, up to the differences listed in the article Coming
-from CoordinateCleaner; the others read GBIF’s `issue`, `basisOfRecord`
-and `establishmentMeans` fields.
+The tests with an `equivalent` are
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+record tests with its default buffers, up to the differences listed in
+the article Coming from CoordinateCleaner; the others read GBIF’s
+`issue`, `basisOfRecord` and `establishmentMeans` fields.
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
 names the tests that need only coordinates and a species.
 
@@ -167,9 +169,10 @@ knitr::kable(t[, c("year_bin", "n", "removed_strict", "kept_strict")])
 
 ## Buffers, reference data and scale
 
-The buffers default to CoordinateCleaner’s (10 km capitals, 1 km
-centroids, 100 m institutions, 1 km GBIF headquarters, 0.5 degrees
-around the origin) and can be changed per test:
+The buffers default to
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s (10
+km capitals, 1 km centroids, 100 m institutions, 1 km GBIF headquarters,
+0.5 degrees around the origin) and can be changed per test:
 
 ``` r
 
@@ -219,11 +222,11 @@ uses 50), 50, or 10; the 1:10m layer is downloaded once on first use.
 
 ## A table on disk
 
-The same verb streams an on-disk table through vectra: a directory of
-Parquet parts such as a GBIF snapshot, a `.vtr` file, or a delimited
-file. Each input file is one unit of work; the flags are written as
-`.vtr` parts next to the columns kept for grouping, and a rerun skips
-finished units.
+The same verb streams an on-disk table through
+[vectra](https://gillescolling.com/vectra/): a directory of Parquet
+parts such as a GBIF snapshot, a `.vtr` file, or a delimited file. Each
+input file is one unit of work; the flags are written as `.vtr` parts
+next to the columns kept for grouping, and a rerun skips finished units.
 
 ``` r
 
@@ -238,7 +241,7 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpOcULnL\flags54e46ec74855
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp2PwOss\flags301c5fe352c1
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v4
 #>   reference: natural_earth (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)

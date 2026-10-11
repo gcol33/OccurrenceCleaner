@@ -170,8 +170,10 @@ plot(f)
 ### Comparing rules
 
 Candidate rules go into `rules` as a named list. Here `strict` uses all
-the tests, `cc` the CoordinateCleaner tests without the duplicate test,
-and `minimal` only the tests for coordinates that cannot be right.
+the tests, `cc` the
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) tests
+without the duplicate test, and `minimal` only the tests for coordinates
+that cannot be right.
 
 ``` r
 

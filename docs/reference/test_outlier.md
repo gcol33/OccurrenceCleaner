@@ -19,7 +19,7 @@ counted on a grid of `thinning_res` degrees spanning all valid records
 the records of the outlier cells are flagged. Without thinning,
 distances are weighted by the product of the cell counts and a cell's
 distance to itself counts as 100 x `thinning_res` / 2 km, as in
-CoordinateCleaner.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/).
 
 The test needs every record of a species, so it runs in a group pass
 over the whole input before the record tests; on streamed input that

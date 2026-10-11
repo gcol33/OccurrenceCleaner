@@ -46,11 +46,12 @@ key, Wikidata item, the Wikipedia list language, revision and line, or
 the GeoNames or BGCI id with its prefix; for Wikipedia rows `city` is
 the place they are located by and `master_source` where its coordinates
 come from; `extension` is TRUE for points from sources
-CoordinateCleaner's table does not draw on, for capitals, centroids and
-institutions alike); `id`, `taxon` (the group the hotspot was found in:
-Aves, Insecta, Mammalia, Plantae), `frequency` (records at the point),
-`category`, `determination` (TRUE for a real observation site, FALSE for
-an artificial aggregate of records) and `notes` for the inventory. For
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+table does not draw on, for capitals, centroids and institutions alike);
+`id`, `taxon` (the group the hotspot was found in: Aves, Insecta,
+Mammalia, Plantae), `frequency` (records at the point), `category`,
+`determination` (TRUE for a real observation site, FALSE for an
+artificial aggregate of records) and `notes` for the inventory. For
 `reference = "CoordinateCleaner"` the columns are `lon` and `lat` only.
 
 ## Examples

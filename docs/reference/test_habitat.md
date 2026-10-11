@@ -46,8 +46,9 @@ optionally `kingdom`; `gazetteers = list(sea = <sf>)` replaces the land.
 
 ## CoordinateCleaner
 
-Not in CoordinateCleaner, whose `cc_sea()` flags every record off the
-land, marine or not.
+Not in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/),
+whose `cc_sea()` flags every record off the land, marine or not.
 
 ## See also
 

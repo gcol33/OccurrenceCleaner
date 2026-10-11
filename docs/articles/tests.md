@@ -3,9 +3,10 @@
 This article goes through the record tests that read coordinates and
 GBIF fields: what each computes, which fields it reads, where its edge
 lies, and how its result can be changed through an argument. Eleven are
-the record tests of CoordinateCleaner (Zizka et
-al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default
-buffers, up to the differences listed in the article Coming from
+the record tests of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its
+default buffers, up to the differences listed in the article Coming from
 CoordinateCleaner, eight read GBIF fields, and two compare the land test
 with the habitat of the record’s genus; these ten are additions of this
 package. The other nine tests of the layout are covered elsewhere: the
@@ -38,7 +39,8 @@ library(OccurrenceCleaner)
 
 Every test owns one bit of an integer.
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
-lists the layout, the fields each test needs and its CoordinateCleaner
+lists the layout, the fields each test needs and its
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 counterpart:
 
 ``` r
@@ -124,7 +126,9 @@ default_tests()
 
 A coordinate is invalid when it is missing, not a number, or outside
 \[-180, 180\] x \[-90, 90\]. Text columns are coerced to numbers first,
-as in CoordinateCleaner’s `cc_val`:
+as in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+`cc_val`:
 
 ``` r
 
@@ -185,8 +189,9 @@ flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 0))$flag_zero
 ```
 
 With `zero = 0` only exact zeros are flagged, which is what
-CoordinateCleaner 3.0.1 does in practice; the comparison article
-explains why its documented 0.5-degree buffer is not applied there.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
+does in practice; the comparison article explains why its documented
+0.5-degree buffer is not applied there.
 
 ## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
 
@@ -221,10 +226,12 @@ data.frame(distance_m = d, flag = flag_occurrences(x, tests = "gbif_headquarters
 ```
 
 The flag switches between 999.9 m and 1000.1 m, at the same distance in
-every direction. CoordinateCleaner draws each buffer as a polygon with
-vertices on the circle, so its edge lies between 99.7 % and 100 % of the
-buffer depending on the bearing; records in that thin band are the only
-difference between the two packages for these tests.
+every direction.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws
+each buffer as a polygon with vertices on the circle, so its edge lies
+between 99.7 % and 100 % of the buffer depending on the bearing; records
+in that thin band are the only difference between the two packages for
+these tests.
 
 Buffers are changed per test, in metres:
 
@@ -278,7 +285,7 @@ reports directly.
 
 `sea` flags records outside the land polygons of Natural Earth. The land
 layer comes at three scales: 1:110m (the default, as in
-CoordinateCleaner’s
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
 its
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
@@ -351,7 +358,8 @@ apart.
 `urban` flags records inside the Natural Earth 1:50m urban-area
 polygons. It is not in
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
-as in CoordinateCleaner’s
+as in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html),
 because records in cities are often correct; it is useful as a separate
 column, for example to remove garden and street-tree records of plants:
@@ -379,9 +387,10 @@ third is in rural Styria.
 country named by their country code, using the Natural Earth 1:50m
 country polygons. The record’s code is compared with the polygon’s ISO
 alpha-2 code (as GBIF’s `countryCode` gives it), its ISO alpha-3 code
-(as CoordinateCleaner expects), and Natural Earth’s own `ADM0_A3` code,
-which is filled where ISO has none. Matching is case-insensitive and
-ignores surrounding spaces:
+(as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+expects), and Natural Earth’s own `ADM0_A3` code, which is filled where
+ISO has none. Matching is case-insensitive and ignores surrounding
+spaces:
 
 ``` r
 
@@ -424,10 +433,11 @@ f$flag_duplicate
 ```
 
 Two arguments change what counts as the same record. `duplicate_by` adds
-columns that must also match, as CoordinateCleaner’s `additions`, so
-repeat visits on different dates are kept apart. `duplicate_cell` bins
-coordinates to a grid of that size in degrees first, so records in the
-same cell count as duplicates:
+columns that must also match, as
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+`additions`, so repeat visits on different dates are kept apart.
+`duplicate_cell` bins coordinates to a grid of that size in degrees
+first, so records in the same cell count as duplicates:
 
 ``` r
 

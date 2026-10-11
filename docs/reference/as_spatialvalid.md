@@ -1,6 +1,7 @@
 # Convert flags to CoordinateCleaner's spatialvalid format
 
-Returns flagged records in the layout that CoordinateCleaner's
+Returns flagged records in the layout that
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
 `clean_coordinates()` and `clean_fossils()` return with
 `value = "spatialvalid"`, so code written for that object (its
 [`summary()`](https://rdrr.io/r/base/summary.html) and

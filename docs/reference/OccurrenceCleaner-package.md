@@ -1,10 +1,11 @@
 # OccurrenceCleaner: fast quality flags for species occurrence records
 
-An extension of CoordinateCleaner (Zizka et al. 2019) tailored to
-large-scale occurrence data: it runs that package's record tests with
-the same definitions and default buffers, and keeps every record. Each
-test writes one flag per record, so a cleaning rule is chosen afterwards
-as a query over the flags. See
+An extension of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(Zizka et al. 2019) tailored to large-scale occurrence data: it runs
+that package's record tests with the same definitions and default
+buffers, and keeps every record. Each test writes one flag per record,
+so a cleaning rule is chosen afterwards as a query over the flags. See
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 to flag a data frame or an on-disk table,
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)

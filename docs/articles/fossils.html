@@ -180,7 +180,7 @@ or more:</p>
 <h2 id="flagging">Flagging<a class="anchor" aria-label="anchor" href="#flagging"></a>
 </h2>
 <p><code><a href="../reference/occ_columns.html">occ_columns()</a></code> maps the PBDB names onto the fields the
-tests read. The tests are the record tests of CoordinateCleaner’s
+tests read. The tests are the record tests of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>, whose defaults are <code>agesequal</code>,
 <code>centroids</code>, <code>equal</code>, <code>gbif</code>,
 <code>institutions</code>, <code>validity</code> and <code>zeros</code>
@@ -331,11 +331,11 @@ cost on real data.</p>
 <div class="section level2">
 <h2 id="the-width-of-the-age-range">The width of the age range<a class="anchor" aria-label="anchor" href="#the-width-of-the-age-range"></a>
 </h2>
-<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code> with
-<code>method = "time"</code> flags records whose range is wider than
-<code>max_range</code> Ma. That is a threshold on a numeric field, so
-here it stays a raw column and is cut when tallying, which lets one flag
-pass serve any threshold:</p>
+<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html" class="external-link">cf_range()</a></code> with <code>method = "time"</code> flags records
+whose range is wider than <code>max_range</code> Ma. That is a threshold
+on a numeric field, so here it stays a raw column and is cut when
+tallying, which lets one flag pass serve any threshold:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">$</span><span class="va">max_ma</span> <span class="op">-</span> <span class="va">f</span><span class="op">$</span><span class="va">min_ma</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">15</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -615,12 +615,12 @@ many draws, so <code>age_outlier</code> flags 8 of the 40 and
 <code>spatiotemporal_outlier</code> 3. None of the three flags a clean
 record. The museum records are not outliers in space here, because every
 genus in the simulated table occurs in all three regions.</p>
-<p>The options are set per test through <code>settings</code>, with
-CoordinateCleaner’s defaults: <code>method</code>
-(<code>"quantile"</code> or <code>"mad"</code>), <code>mltpl</code> (5),
-<code>size_thresh</code> (7 records per taxon), <code>replicates</code>
-(5) and <code>seed</code>. A stricter fence for the range test and a
-different seed for the draws:</p>
+<p>The options are set per test through <code>settings</code>, with <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+defaults: <code>method</code> (<code>"quantile"</code> or
+<code>"mad"</code>), <code>mltpl</code> (5), <code>size_thresh</code> (7
+records per taxon), <code>replicates</code> (5) and <code>seed</code>. A
+stricter fence for the range test and a different seed for the
+draws:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">fos</span>, tests <span class="op">=</span> <span class="va">otests</span>, columns <span class="op">=</span> <span class="va">cols</span>,</span>
 <span>                       settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age_range_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mltpl <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
@@ -670,9 +670,9 @@ extant taxa, and replicates of ages drawn from each record’s range:</p>
 <span><span class="co">#&gt; array([61.451626,43.567439,53.239993,36.508009,48.022104,25.227798,55.610048,41.251745,32.</span></span>
 <span><span class="co">#&gt; array([42.789702,34.184511,54.431699,45.102043,49.554542,28.78179,24.916285,56.789188,30.0</span></span></code></pre></div>
 <p>The draws are seeded, so the same call writes the same file;
-<code>random = FALSE</code> uses the midpoints of the ranges instead.
-CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> writes the same layout;
-the package tests compare the two files.</p>
+<code>random = FALSE</code> uses the midpoints of the ranges instead. <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link">write_pyrate()</a></code> writes the same layout; the package tests
+compare the two files.</p>
 </div>
 <div class="section level2">
 <h2 id="fossils-in-gbif-data">Fossils in GBIF data<a class="anchor" aria-label="anchor" href="#fossils-in-gbif-data"></a>

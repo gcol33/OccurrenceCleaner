@@ -16,7 +16,9 @@ once by
 Equivalent to `cc_sea()` with its default `scale = 110`
 (`clean_coordinates()` uses `seas_scale = 50`, which is
 `land_scale = 50` here); identical flags on the same layer.
-CoordinateCleaner downloads the layer through rnaturalearth at run time;
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+downloads the layer through
+[rnaturalearth](https://docs.ropensci.org/rnaturalearth/) at run time;
 here it is bundled and pinned.
 
 ## Custom gazetteer

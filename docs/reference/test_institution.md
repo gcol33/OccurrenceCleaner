@@ -17,10 +17,10 @@ Wikidata coordinates; 700 further museums of those lists placed at the
 place the list gives for them, by its Wikidata coordinates or the
 GeoNames populated place of that name (`source` "Wikipedia",
 `master_source` says which); the three GeoNames places (CC BY 4.0) of
-CoordinateCleaner's table; and 3,652 gardens of Botanic Gardens
-Conservation International (BGCI) GardenSearch, retrieved 2026-10-10,
-used under the BGCI terms (https://www.bgci.org/terms-and-conditions/).
-The `source` column of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+table; and 3,652 gardens of Botanic Gardens Conservation International
+(BGCI) GardenSearch, retrieved 2026-10-10, used under the BGCI terms
+(https://www.bgci.org/terms-and-conditions/). The `source` column of
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
 tells them apart.
 

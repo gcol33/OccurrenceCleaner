@@ -6,8 +6,10 @@ institutions, artificial hotspots) and polygons (land, urban areas,
 countries). The ninth, `range`, needs species range polygons, which the
 user supplies (see the article on custom gazetteers). This article lists
 where each layer comes from, how the package’s own gazetteers compare
-with CoordinateCleaner’s, how much the choice of land scale changes the
-`sea` test, and how the reference version is recorded with the flags.
+with
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s,
+how much the choice of land scale changes the `sea` test, and how the
+reference version is recorded with the flags.
 
 ## Installation
 
@@ -71,10 +73,12 @@ file and the licence. The tests read these layers:
 | sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
 
 The capitals are the capital “geographic coordinates” of the CIA World
-Factbook, the source of CoordinateCleaner’s capitals, read from the same
-factbook.json mirror: one point per country profile, 232 in all. The
-Natural Earth admin-0 capitals, alternative capitals and capitals of
-dependent territories (243) are added with `extension` `TRUE`.
+Factbook, the source of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+capitals, read from the same factbook.json mirror: one point per country
+profile, 232 in all. The Natural Earth admin-0 capitals, alternative
+capitals and capitals of dependent territories (243) are added with
+`extension` `TRUE`.
 
 The country centroids come from the three sources CoordinateCleaner’s
 table is compiled from, each taken from the source itself: the
@@ -159,13 +163,12 @@ points, and the others differ in a few bird points and one plant
 coordinate (42.26 N there, 42.20 N in the deposit).
 
 The layers are rebuilt from the sources CoordinateCleaner itself draws
-on, by the scripts in `data-raw/` of the source repository;
-CoordinateCleaner’s code and data are GPL-3, and nothing is copied from
-them.
+on, by the scripts in `data-raw/` of the source repository.
 
 ## How the gazetteers differ from CoordinateCleaner’s
 
-The package gazetteers describe the same places as CoordinateCleaner
+The package gazetteers describe the same places as
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 3.0.1’s `countryref` and `institutions` tables, but they are not the
 same tables. Measured on 2026-10-09:
 
@@ -264,10 +267,48 @@ list is right depends on what an error looks like: a herbarium sheet in
 Cape Town georeferenced to the city is as wrong under either reference,
 and only the extension points catch it.
 
+## Extension points
+
+The capital, country centroid and institution tables also hold points
+from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
+
+- capitals: 243 Natural Earth capitals, alternative capitals and
+  capitals of dependent territories;
+
+- country centroids: 516 Natural Earth polygon centroids and label
+  points;
+
+- institutions: 7,665 points, the botanical gardens, natural history
+  museums, zoos, aquaria and herbaria of Wikidata beyond the museums of
+  the English Wikipedia list, and the museums of the Arabic, Dutch,
+  Esperanto, French, German and Portuguese lists.
+
+The tests use them by default. Passing the rows with `extension` `FALSE`
+through `gazetteers` restricts a test to CoordinateCleaner’s sources;
+for the capitals above, that leaves Cape Town, Sucre and Naypyidaw
+unflagged:
+
+``` r
+
+g <- reference_points("capital")
+data.frame(city = x$city,
+           all = flag_occurrences(x, tests = "capital")$flag_capital,
+           cc_sources = flag_occurrences(x, tests = "capital",
+                                         gazetteers = list(capital = g[!g$extension, ]))$flag_capital)
+#>        city  all cc_sources
+#> 1  Pretoria TRUE       TRUE
+#> 2 Cape Town TRUE      FALSE
+#> 3    La Paz TRUE       TRUE
+#> 4     Sucre TRUE      FALSE
+#> 5    Yangon TRUE       TRUE
+#> 6 Naypyidaw TRUE      FALSE
+```
+
 ## Land scale and the `sea` test
 
 The `sea` test flags records outside the land polygons. The coarse
-1:110m layer, the default of CoordinateCleaner’s
+1:110m layer, the default of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
 (its
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
@@ -331,9 +372,9 @@ once per machine.
 ## Buffers
 
 The buffers are the other half of every proximity test. They default to
-CoordinateCleaner’s (10 km for capitals, 1 km for centroids and the GBIF
-headquarters, 100 m for institutions, 0.5 degrees around (0, 0)) and are
-changed per test:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s (10
+km for capitals, 1 km for centroids and the GBIF headquarters, 100 m for
+institutions, 0.5 degrees around (0, 0)) and are changed per test:
 
 ``` r
 
@@ -362,7 +403,8 @@ attr(f, "occ_layout_version")
 #> [1] 4
 ```
 
-`reference = "CoordinateCleaner"` stamps the installed CoordinateCleaner
+`reference = "CoordinateCleaner"` stamps the installed
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 version instead. For streamed input the same label is written to the
 output directory, and a rerun into that directory with a different
 reference, land scale, set of tests or layout stops with an error, so
@@ -374,12 +416,14 @@ one output directory never mixes flags from two references.
   has a version and checksum for every layer, and uses current Natural
   Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
-- `reference = "CoordinateCleaner"` gives CoordinateCleaner’s flags up
-  to the differences listed in the article Coming from
+- `reference = "CoordinateCleaner"` gives
+  [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+  flags up to the differences listed in the article Coming from
   CoordinateCleaner, for example to compare with a published analysis
-  that used it. It needs CoordinateCleaner installed, and rnaturalearth
-  for the polygon tests, which downloads the Natural Earth layers at run
-  time as CoordinateCleaner does.
+  that used it. It needs CoordinateCleaner installed, and
+  [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) for the
+  polygon tests, which downloads the Natural Earth layers at run time as
+  CoordinateCleaner does.
 
 Both references use the same buffers and the same geodesic distance, so
 the difference between them is in the points and polygons only.

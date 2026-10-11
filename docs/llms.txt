@@ -29,14 +29,14 @@ filter on.
 
 The input is any table of records with Darwin Core coordinate and
 species columns: a GBIF download (for example from
-[rgbif](https://cran.r-project.org/package=rgbif)), a fossil table from
-the Paleobiology Database (for example from
+[rgbif](https://docs.ropensci.org/rgbif/)), a fossil table from the
+Paleobiology Database (for example from
 [paleobioDB](https://cran.r-project.org/package=paleobioDB)), a whole
 GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning
 is not part of the package; names are matched beforehand, for example
-with [taxify](https://cran.r-project.org/package=taxify) or
-[taxize](https://cran.r-project.org/package=taxize). The kept records go
-on to species distribution models such as
+with [taxify](https://gillescolling.com/taxify/) or
+[taxize](https://docs.ropensci.org/taxize/). The kept records go on to
+species distribution models such as
 [dismo](https://cran.r-project.org/package=dismo) or
 [sdm](https://cran.r-project.org/package=sdm), to biogeographic analyses
 on phylogenies with
@@ -125,7 +125,9 @@ columns and are cut at tally time with `bins`.
 The outlier and dataset tests judge a record against the rest of its
 species or dataset, so they run in a pass over the whole input before
 the record tests, streamed input included. Their options go in
-`settings`, with CoordinateCleaner’s defaults:
+`settings`, with
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+defaults:
 
 ``` r
 
@@ -147,8 +149,8 @@ flag_occurrences(pbdb, tests = c("invalid", "zero", "centroid", "institution", "
 ## A whole GBIF snapshot
 
 The same verb streams an on-disk table through
-[vectra](https://cran.r-project.org/package=vectra): a directory of
-Parquet parts (a GBIF snapshot), a `.vtr` file, a delimited file or any
+[vectra](https://gillescolling.com/vectra/): a directory of Parquet
+parts (a GBIF snapshot), a `.vtr` file, a delimited file or any
 `vectra_node`. Each input file is one resumable unit, and the flags are
 written as `.vtr` parts next to the columns you keep for grouping:
 
@@ -176,7 +178,9 @@ already finished.
   the one flagging verb. Data frame in, data frame out; path or
   `vectra_node` in, flag parts on disk out. `buffers` sets the proximity
   distances and `settings` the options of the outlier and dataset tests,
-  both with CoordinateCleaner’s defaults.
+  both with
+  [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+  defaults.
 - **[`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)**:
   per group, the number of records each test flags and each rule removes
   and keeps, with bins and named rules.
@@ -214,7 +218,8 @@ already finished.
   Register of Marine and Nonmarine Genera.
 - **[`read_flagged()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**,
   **[`flagged_table()`](https://gillescolling.com/OccurrenceCleaner/reference/read_flagged.md)**:
-  open on-disk flag output as a vectra table.
+  open on-disk flag output as a
+  [vectra](https://gillescolling.com/vectra/) table.
 - **[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)**:
   write fossil records as PyRate input files.
 
@@ -258,9 +263,16 @@ The gazetteers are rebuilt from the original public sources (Natural
 Earth, public domain; the CIA World Factbook, public domain, for
 capitals and country centroids; the World Borders Dataset by Bjorn
 Sandvik, thematicmapping.org, CC BY-SA, and the GEOLocate service for
-country centroids; GBIF GRSciColl and Wikidata for institutions; the
-Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus
-habitats), each pinned to a version and checksum.
+country centroids; GBIF GRSciColl, Wikidata, Wikipedia’s lists of
+natural history museums, GeoNames and BGCI GardenSearch for
+institutions; the Interim Register of Marine and Nonmarine Genera, CC BY
+4.0, for genus habitats), each pinned to a version and checksum. Points
+from sources CoordinateCleaner’s tables do not draw on (Natural Earth
+capitals and country centroids, Wikidata institutions beyond the museums
+of the English Wikipedia list, the museums of the non-English Wikipedia
+lists) are marked `extension` and used by default; the rows without the
+mark restrict a test to CoordinateCleaner’s sources ([Extension
+points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 `reference = "CoordinateCleaner"` reads that package’s own tables
 instead and gives its flags up to the documented differences, which
 [`?flag_occurrences`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
@@ -315,17 +327,19 @@ Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeaco
 ## Acknowledgements
 
 The tests, their default buffers and the options of the outlier and
-dataset tests come from CoordinateCleaner by Alexander Zizka and
-co-authors (Zizka et al. 2019), an rOpenSci package. Its documented
-definitions are what the equivalence tests check against, and the
-gazetteers here are rebuilt from the public sources it draws on.
+dataset tests come from
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) by
+Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package.
+Its documented definitions are what the equivalence tests check against,
+and the gazetteers here are rebuilt from the public sources it draws on.
 
 ## License
 
-MIT. CoordinateCleaner (GPL-3) is a suggested package used by the
-equivalence tests and by `reference = "CoordinateCleaner"`; none of its
-code or data is bundled. The country centroid points from the World
-Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.
+MIT. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+(GPL-3) is a suggested package used by the equivalence tests and by
+`reference = "CoordinateCleaner"`; none of its code or data is bundled.
+The country centroid points from the World Borders Dataset (Bjorn
+Sandvik, thematicmapping.org) are under CC BY-SA.
 
 ## Citation
 

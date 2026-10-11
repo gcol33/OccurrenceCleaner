@@ -27,9 +27,13 @@ World Borders Dataset and the GEOLocate service, and biodiversity
 institutions from GBIF's Global Registry of Scientific Collections
 (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With
 `reference = "CoordinateCleaner"` the point gazetteers are read from the
-user's CoordinateCleaner installation (`countryref`, `institutions`) and
-the polygon layers are downloaded through rnaturalearth exactly as that
-package does, which gives its flags up to the differences documented in
+user's
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+installation (`countryref`, `institutions`) and the polygon layers are
+downloaded through
+[rnaturalearth](https://docs.ropensci.org/rnaturalearth/) exactly as
+that package does, which gives its flags up to the differences
+documented in
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
 
 ## Examples

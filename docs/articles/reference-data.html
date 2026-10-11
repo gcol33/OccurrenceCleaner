@@ -107,9 +107,9 @@ biodiversity institutions, artificial hotspots) and polygons (land,
 urban areas, countries). The ninth, <code>range</code>, needs species
 range polygons, which the user supplies (see the article on custom
 gazetteers). This article lists where each layer comes from, how the
-package’s own gazetteers compare with CoordinateCleaner’s, how much the
-choice of land scale changes the <code>sea</code> test, and how the
-reference version is recorded with the flags.</p>
+package’s own gazetteers compare with <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s,
+how much the choice of land scale changes the <code>sea</code> test, and
+how the reference version is recorded with the flags.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -355,10 +355,10 @@ Register of Marine and Nonmarine Genera</td>
 </tbody>
 </table>
 <p>The capitals are the capital “geographic coordinates” of the CIA
-World Factbook, the source of CoordinateCleaner’s capitals, read from
-the same factbook.json mirror: one point per country profile, 232 in
-all. The Natural Earth admin-0 capitals, alternative capitals and
-capitals of dependent territories (243) are added with
+World Factbook, the source of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+capitals, read from the same factbook.json mirror: one point per country
+profile, 232 in all. The Natural Earth admin-0 capitals, alternative
+capitals and capitals of dependent territories (243) are added with
 <code>extension</code> <code>TRUE</code>.</p>
 <p>The country centroids come from the three sources CoordinateCleaner’s
 table is compiled from, each taken from the source itself: the
@@ -439,13 +439,12 @@ share 303 points, and the others differ in a few bird points and one
 plant coordinate (42.26 N there, 42.20 N in the deposit).</p>
 <p>The layers are rebuilt from the sources CoordinateCleaner itself
 draws on, by the scripts in <code>data-raw/</code> of the source
-repository; CoordinateCleaner’s code and data are GPL-3, and nothing is
-copied from them.</p>
+repository.</p>
 </div>
 <div class="section level2">
 <h2 id="how-the-gazetteers-differ-from-coordinatecleaners">How the gazetteers differ from CoordinateCleaner’s<a class="anchor" aria-label="anchor" href="#how-the-gazetteers-differ-from-coordinatecleaners"></a>
 </h2>
-<p>The package gazetteers describe the same places as CoordinateCleaner
+<p>The package gazetteers describe the same places as <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 3.0.1’s <code>countryref</code> and <code>institutions</code> tables,
 but they are not the same tables. Measured on 2026-10-09:</p>
 <table class="table">
@@ -575,15 +574,50 @@ Cape Town georeferenced to the city is as wrong under either reference,
 and only the extension points catch it.</p>
 </div>
 <div class="section level2">
+<h2 id="extension-points">Extension points<a class="anchor" aria-label="anchor" href="#extension-points"></a>
+</h2>
+<p>The capital, country centroid and institution tables also hold points
+from sources CoordinateCleaner does not use, marked
+<code>extension</code> <code>TRUE</code>:</p>
+<ul>
+<li><p>capitals: 243 Natural Earth capitals, alternative capitals and
+capitals of dependent territories;</p></li>
+<li><p>country centroids: 516 Natural Earth polygon centroids and label
+points;</p></li>
+<li><p>institutions: 7,665 points, the botanical gardens, natural
+history museums, zoos, aquaria and herbaria of Wikidata beyond the
+museums of the English Wikipedia list, and the museums of the Arabic,
+Dutch, Esperanto, French, German and Portuguese lists.</p></li>
+</ul>
+<p>The tests use them by default. Passing the rows with
+<code>extension</code> <code>FALSE</code> through
+<code>gazetteers</code> restricts a test to CoordinateCleaner’s sources;
+for the capitals above, that leaves Cape Town, Sucre and Naypyidaw
+unflagged:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">city</span>,</span>
+<span>           all <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span>,</span>
+<span>           cc_sources <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span>,</span>
+<span>                                         gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="va">g</span><span class="op">[</span><span class="op">!</span><span class="va">g</span><span class="op">$</span><span class="va">extension</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        city  all cc_sources</span></span>
+<span><span class="co">#&gt; 1  Pretoria TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 2 Cape Town TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 3    La Paz TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 4     Sucre TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 5    Yangon TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 6 Naypyidaw TRUE      FALSE</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="land-scale-and-the-sea-test">Land scale and the <code>sea</code> test<a class="anchor" aria-label="anchor" href="#land-scale-and-the-sea-test"></a>
 </h2>
 <p>The <code>sea</code> test flags records outside the land polygons.
-The coarse 1:110m layer, the default of CoordinateCleaner’s
+The coarse 1:110m layer, the default of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code> (its <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> uses 1:50m),
 smooths the coast and drops small islands; the 1:50m layer follows the
 coast more closely. A grid of points over Denmark and the western Baltic
 shows where the two disagree:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">7.5</span>, <span class="fl">15.5</span>, by <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>,</span>
 <span>                 decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">54</span>, <span class="fl">58</span>, by <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">g</span><span class="op">$</span><span class="va">species</span> <span class="op">&lt;-</span> <span class="st">"a"</span></span>
@@ -595,7 +629,7 @@ shows where the two disagree:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       land at both sea at 1:110m only  sea at 1:50m only        sea at both </span></span>
 <span><span class="co">#&gt;               5765                519                783               5974</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">g</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">decimalLongitude</span>, <span class="va">decimalLatitude</span>, fill <span class="op">=</span> <span class="va">verdict</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -13752,7 +13786,7 @@ at 1:50m (dark). For coastal and island taxa the scale therefore changes
 a share of the <code>sea</code> flags large enough to see in a tally.
 The 1:10m layer is the most detailed of the three and is downloaded on
 first use:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_reference.html">download_reference</a></span><span class="op">(</span><span class="st">"land_10"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"sea"</span>, land_scale <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The download is checked against the SHA-256 in
@@ -13765,10 +13799,11 @@ downloaded once per machine.</p>
 <h2 id="buffers">Buffers<a class="anchor" aria-label="anchor" href="#buffers"></a>
 </h2>
 <p>The buffers are the other half of every proximity test. They default
-to CoordinateCleaner’s (10 km for capitals, 1 km for centroids and the
-GBIF headquarters, 100 m for institutions, 0.5 degrees around (0, 0))
-and are changed per test:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+to <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+(10 km for capitals, 1 km for centroids and the GBIF headquarters, 100 m
+for institutions, 0.5 degrees around (0, 0)) and are changed per
+test:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.45</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
 <span><span class="co">#&gt; [1] TRUE TRUE</span></span>
@@ -13784,18 +13819,17 @@ metres.</p>
 </h2>
 <p>Every flagged data frame carries the reference that produced it, with
 the version of each layer:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "natural_earth (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
-<p><code>reference = "CoordinateCleaner"</code> stamps the installed
-CoordinateCleaner version instead. For streamed input the same label is
-written to the output directory, and a rerun into that directory with a
-different reference, land scale, set of tests or layout stops with an
-error, so one output directory never mixes flags from two
-references.</p>
+<p><code>reference = "CoordinateCleaner"</code> stamps the installed <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+version instead. For streamed input the same label is written to the
+output directory, and a rerun into that directory with a different
+reference, land scale, set of tests or layout stops with an error, so
+one output directory never mixes flags from two references.</p>
 </div>
 <div class="section level2">
 <h2 id="choosing-a-reference">Choosing a reference<a class="anchor" aria-label="anchor" href="#choosing-a-reference"></a>
@@ -13805,12 +13839,12 @@ references.</p>
 other package, has a version and checksum for every layer, and uses
 current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI
 data.</p></li>
-<li><p><code>reference = "CoordinateCleaner"</code> gives
-CoordinateCleaner’s flags up to the differences listed in the article
-Coming from CoordinateCleaner, for example to compare with a published
-analysis that used it. It needs CoordinateCleaner installed, and
-rnaturalearth for the polygon tests, which downloads the Natural Earth
-layers at run time as CoordinateCleaner does.</p></li>
+<li><p><code>reference = "CoordinateCleaner"</code> gives <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+flags up to the differences listed in the article Coming from
+CoordinateCleaner, for example to compare with a published analysis that
+used it. It needs CoordinateCleaner installed, and <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> for
+the polygon tests, which downloads the Natural Earth layers at run time
+as CoordinateCleaner does.</p></li>
 </ul>
 <p>Both references use the same buffers and the same geodesic distance,
 so the difference between them is in the points and polygons only.</p>

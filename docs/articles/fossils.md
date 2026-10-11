@@ -89,7 +89,8 @@ table(fos$truth)
 
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 maps the PBDB names onto the fields the tests read. The tests are the
-record tests of CoordinateCleaner’s
+record tests of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html),
 whose defaults are `agesequal`, `centroids`, `equal`, `gbif`,
 `institutions`, `validity` and `zeros` plus two outlier tests
@@ -179,7 +180,7 @@ cost on real data.
 
 ## The width of the age range
 
-CoordinateCleaner’s
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cf_range()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html)
 with `method = "time"` flags records whose range is wider than
 `max_range` Ma. That is a threshold on a numeric field, so here it stays
@@ -271,10 +272,10 @@ space here, because every genus in the simulated table occurs in all
 three regions.
 
 The options are set per test through `settings`, with
-CoordinateCleaner’s defaults: `method` (`"quantile"` or `"mad"`),
-`mltpl` (5), `size_thresh` (7 records per taxon), `replicates` (5) and
-`seed`. A stricter fence for the range test and a different seed for the
-draws:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+defaults: `method` (`"quantile"` or `"mad"`), `mltpl` (5), `size_thresh`
+(7 records per taxon), `replicates` (5) and `seed`. A stricter fence for
+the range test and a different seed for the draws:
 
 ``` r
 
@@ -340,7 +341,7 @@ cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
 
 The draws are seeded, so the same call writes the same file;
 `random = FALSE` uses the midpoints of the ranges instead.
-CoordinateCleaner’s
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html)
 writes the same layout; the package tests compare the two files.
 

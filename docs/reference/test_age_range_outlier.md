@@ -5,9 +5,10 @@ the upper fence of the ranges of the other records of their taxon (Q75 +
 `mltpl` x IQR, or median + `mltpl` x MAD). A record dated only to a long
 period among records dated to stages is the typical case. With
 `level = "all"` the fence is taken over the whole input instead of per
-taxon, as in CoordinateCleaner's dataset-level `cf_range(taxon = "")`. A
-fixed limit in million years needs no test: the range stays a raw column
-and is cut in
+taxon, as in
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+dataset-level `cf_range(taxon = "")`. A fixed limit in million years
+needs no test: the range stays a raw column and is cut in
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
 
 ## Fields
