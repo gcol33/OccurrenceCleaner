@@ -12,7 +12,8 @@
 #
 # Run from the package root:  Rscript data-raw/aohi.R
 
-cache <- "data-raw/cache/aohi"
+source("data-raw/utils.R")
+cache <-"data-raw/cache/aohi"
 dir.create(cache, showWarnings = FALSE, recursive = TRUE)
 retrieved <- "2026-10-10"
 base <- "https://zenodo.org/api/records/7268229/files/"
@@ -47,11 +48,7 @@ parts <- lapply(names(files), function(taxon) {
 aohi <- do.call(rbind, parts)
 rownames(aohi) <- NULL
 
-sha256 <- function(path) {
-  if (requireNamespace("digest", quietly = TRUE)) return(digest::digest(path, algo = "sha256", file = TRUE))
-  tolower(strsplit(system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)[2], " ")[[1]][1])
-}
-meta <- data.frame(layer = "aohi", source = "Park et al. 2023, AHOI (Dryad doi:10.5061/dryad.v41ns1s0p)",
+meta <-data.frame(layer = "aohi", source = "Park et al. 2023, AHOI (Dryad doi:10.5061/dryad.v41ns1s0p)",
                    file = paste(files, collapse = ", "), version = "2022-10-10",
                    url = "https://doi.org/10.5061/dryad.v41ns1s0p",
                    sha256 = paste(vapply(file.path(cache, files), sha256, ""), collapse = ", "),

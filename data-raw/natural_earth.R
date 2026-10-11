@@ -9,6 +9,7 @@
 # Needs sf and digest only here; neither is a package dependency.
 
 suppressMessages({library(sf)})
+source("data-raw/utils.R")
 sf_use_s2(FALSE)
 cache <- "data-raw/cache"
 dir.create(cache, showWarnings = FALSE, recursive = TRUE)
@@ -25,12 +26,7 @@ layers <- data.frame(
 layers$file <- paste0(basename(layers$path), ".zip")
 layers$url <- paste0("https://naciscdn.org/naturalearth/", layers$path, ".zip")
 
-sha256 <- function(path) {
-  if (requireNamespace("digest", quietly = TRUE)) return(digest::digest(path, algo = "sha256", file = TRUE))
-  tolower(strsplit(system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)[2], " ")[[1]][1])
-}
-
-fetch <- function(i) {
+fetch <-function(i) {
   z <- file.path(cache, layers$file[i])
   if (!file.exists(z)) download.file(layers$url[i], z, mode = "wb", quiet = TRUE)
   d <- file.path(tempdir(), sub(".zip", "", layers$file[i], fixed = TRUE))

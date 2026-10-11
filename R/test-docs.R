@@ -63,17 +63,29 @@ NULL
 #' flagged). Candidates are found with a kd-tree on the unit sphere and
 #' decided with the Vincenty inverse formula.
 #'
-#' The default gazetteer holds 243 Natural Earth populated places of the
-#' classes admin-0 capital, alternative capital and admin-0 region capital
-#' (dependent territories); see [reference_info()].
+#' The default gazetteer holds the capital "geographic coordinates" of the
+#' CIA World Factbook (public domain; 232 points, one per country profile,
+#' through the factbook.json mirror retrieved 2026-10-11), the source
+#' CoordinateCleaner's capitals are taken from. The column `extension` marks
+#' the 243 Natural Earth populated places of the classes admin-0 capital,
+#' alternative capital and admin-0 region capital (dependent territories),
+#' which add the second capitals of countries that have several (Cape Town,
+#' Sucre, Naypyidaw); passing the points with `extension` FALSE as
+#' `gazetteers = list(capital = ...)` leaves them out. See [reference_info()].
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section Buffer: `buffers = list(capital = 10000)`, in metres.
 #' @section CoordinateCleaner: Equivalent to `cc_cap()`. CoordinateCleaner
 #'   draws the buffer as a 72-gon with vertices on the circle, whose edge lies
 #'   at 99.9 % of the buffer between vertices; records in that band (within
-#'   9.5 m of the 10 km edge) are flagged here and may not be there. With
-#'   `reference = "CoordinateCleaner"` its `countryref` capitals are used.
+#'   9.5 m of the 10 km edge) are flagged here and may not be there. Of its
+#'   225 capital points, 221 are Factbook points of the default gazetteer
+#'   rounded to 0.01 degree, which moves them by up to 523 m. The other four
+#'   hold values the Factbook has since revised: Bujumbura for Burundi, whose
+#'   capital it now gives as Gitega; Buenos Aires at 58 40 W, 27 km west of
+#'   the city, now 58 22 W; Melekeok for Palau, now Ngerulmud; and Rangoon,
+#'   1.8 km from its present coordinates. With `reference = "CoordinateCleaner"`
+#'   its `countryref` capitals are used.
 #' @section Custom gazetteer: `gazetteers = list(capital = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].
 #' @family tests
@@ -82,6 +94,9 @@ NULL
 #' x <- data.frame(decimalLongitude = c(16.37, 16.51), decimalLatitude = c(48.21, 48.25))
 #' flag_occurrences(x, tests = "capital")$flag_capital
 #' flag_occurrences(x, tests = "capital", buffers = list(capital = 20000))$flag_capital
+#' g <- reference_points("capital")
+#' flag_occurrences(x, tests = "capital",
+#'                  gazetteers = list(capital = g[!g$extension, ]))$flag_capital
 #' @name test_capital
 NULL
 

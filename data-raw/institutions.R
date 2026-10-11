@@ -13,7 +13,8 @@
 #
 # Run from the package root:  Rscript data-raw/institutions.R
 
-cache <- "data-raw/cache"
+source("data-raw/utils.R")
+cache <-"data-raw/cache"
 dir.create(cache, showWarnings = FALSE, recursive = TRUE)
 retrieved <- "2026-10-09"
 url <- "https://api.gbif.org/v1/grscicoll/institution/export?format=TSV"
@@ -405,7 +406,8 @@ for (lang in wp_lists$lang) {
   f <- file.path(cache, sprintf("wikidata_search_%s.csv", lang))
   have <- if (file.exists(f)) read.csv(f, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8", colClasses = "character")
           else data.frame(name = character(), item = character())
-  for (n in setdiff(nm, have$name)) {
+  todo <- setdiff(nm[!is.na(nm) & nzchar(nm)], have$name)
+  for (n in todo) {
     tf <- tempfile()
     download.file(paste0("https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&type=item",
                          "&limit=20&language=", lang, "&search=", utils::URLencode(n, reserved = TRUE)),
@@ -415,7 +417,7 @@ for (lang in wp_lists$lang) {
     hit <- unique(hit[!is.na(hit)])
     have <- rbind(have, data.frame(name = n, item = if (length(hit)) hit else NA_character_))
   }
-  write.csv(have, f, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+  if (length(todo) || !file.exists(f)) write.csv(have, f, row.names = FALSE, na = "", fileEncoding = "UTF-8")
   wp_search_files <- c(wp_search_files, f)
   wp_search[[lang]] <- have
 }
@@ -576,10 +578,6 @@ institutions <- institutions[!ext_dup, ]
 institutions <- institutions[order(institutions$country, institutions$name), ]
 rownames(institutions) <- NULL
 
-sha256 <- function(path) {
-  if (requireNamespace("digest", quietly = TRUE)) return(digest::digest(path, algo = "sha256", file = TRUE))
-  tolower(strsplit(system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)[2], " ")[[1]][1])
-}
 wp_all_files <- c(wp_files, wp_flag_files, wp_title_files, it_file, inst_file, wp_search_files, wp_gn_files)
 meta <- rbind(
   data.frame(layer = "institutions", source = "GBIF GRSciColl", file = basename(tsv),

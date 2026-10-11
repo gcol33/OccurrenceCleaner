@@ -18,7 +18,8 @@
 #
 # Run from the package root:  Rscript data-raw/habitat.R
 
-cache <- "data-raw/cache"
+source("data-raw/utils.R")
+cache <-"data-raw/cache"
 dir.create(cache, showWarnings = FALSE, recursive = TRUE)
 retrieved <- "2026-10-10"
 version <- "2026-10-06"
@@ -58,11 +59,7 @@ habitat <- data.frame(kingdom = key[, 1], genus = key[, 2], marine = unname(res)
 habitat <- habitat[order(habitat$kingdom, habitat$genus), ]
 rownames(habitat) <- NULL
 
-sha256 <- function(path) {
-  if (requireNamespace("digest", quietly = TRUE)) return(digest::digest(path, algo = "sha256", file = TRUE))
-  tolower(strsplit(system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)[2], " ")[[1]][1])
-}
-meta <- data.frame(layer = "habitat",
+meta <-data.frame(layer = "habitat",
                    source = "IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera",
                    file = basename(zip), version = version, url = url, sha256 = sha256(zip),
                    retrieved = retrieved, licence = "CC BY 4.0", stringsAsFactors = FALSE)

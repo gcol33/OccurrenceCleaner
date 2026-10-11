@@ -63,7 +63,7 @@ Each record lies about 0.005 degrees (a few hundred metres) east of an instituti
 
 ## An extended point gazetteer
 
-The two capital tables differ: the Natural Earth table lists alternative and official capitals, CoordinateCleaner's has one point per country, rounded to 0.01 degrees. Their union flags records near either:
+The two capital tables differ: the shipped table holds the Factbook capitals unrounded and adds Natural Earth's alternative and official capitals, while CoordinateCleaner's has one point per country, rounded to 0.01 degrees. Their union flags records near either:
 
 ```{r union, eval = has_cc}
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))

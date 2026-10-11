@@ -19,7 +19,9 @@ reference_points(
 \value{
 A data frame with columns \code{lon} and \code{lat} and, for the package's
 own gazetteers, the attributes of each point: \code{name}, \code{country},
-\code{adm0_a3}, \code{iso_a2}, \code{class} for capitals; \code{name}, \code{adm0_a3}, \code{code},
+\code{adm0_a3}, \code{iso_a2}, \code{class}, \code{source}, \code{key}, \code{extension} for capitals
+(\code{source} is CIA World Factbook or Natural Earth, \code{key} the Factbook code
+or the Natural Earth country code and name with its prefix); \code{name}, \code{adm0_a3}, \code{code},
 \code{type}, \code{method}, \code{source}, \code{key}, \code{extension} for centroids (\code{source} is
 CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, \code{key}
 the Factbook code, ISO3 code or GEOLocate query with its prefix); \code{key}, \code{code}, \code{name}, \code{country}, \code{city},
@@ -30,7 +32,7 @@ language, revision and line, or the GeoNames or BGCI id with its prefix;
 for Wikipedia rows \code{city} is the place they are located by and
 \code{master_source} where its coordinates come from; \code{extension} is TRUE for
 points from sources CoordinateCleaner's table does not draw on, for
-centroids and institutions alike); \code{id},
+capitals, centroids and institutions alike); \code{id},
 \code{taxon} (the group the hotspot was found in: Aves, Insecta, Mammalia,
 Plantae), \code{frequency} (records at the point), \code{category},
 \code{determination} (TRUE for a real observation site, FALSE for an

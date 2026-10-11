@@ -17,78 +17,25 @@
 #
 # Run from the package root after natural_earth.R:  Rscript data-raw/centroids.R
 
-suppressMessages(library(sf))
-cache <- "data-raw/cache"
-retrieved <- "2026-10-11"
-
-sha256 <- function(path) {
-  if (requireNamespace("digest", quietly = TRUE)) return(digest::digest(path, algo = "sha256", file = TRUE))
-  tolower(strsplit(system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)[2], " ")[[1]][1])
-}
-get <- function(url, file) {
-  if (!file.exists(file)) download.file(url, file, mode = "wb", quiet = TRUE)
-  file
-}
-
+source("data-raw/utils.R")
+source("data-raw/country_sources.R")
 ne <- readRDS(file.path(cache, "natural_earth_layers.rds"))
-d0 <- file.path(tempdir(), "admin0_10")
-unzip(file.path(cache, "ne_10m_admin_0_countries.zip"), exdir = d0)
-a0_sf <- st_make_valid(st_read(list.files(d0, "[.]shp$", full.names = TRUE), quiet = TRUE))
-a0 <- st_drop_geometry(a0_sf)
-fips_a3 <- setNames(a0$ADM0_A3, a0$FIPS_10)[a0$FIPS_10 != "-99"]
-# Natural Earth country whose polygon holds each point (NA at sea).
-in_country <- function(lon, lat) {
-  hit <- st_intersects(st_as_sf(data.frame(lon = lon, lat = lat), coords = c("lon", "lat"), crs = 4326), a0_sf)
-  vapply(hit, function(i) if (length(i)) a0$ADM0_A3[i[1]] else NA_character_, character(1))
-}
 
-# thematicmapping World Borders 0.3
-tm_commit <- "8875a24e51da04da23d51c31808fa01339f9b7a8"
-tm_url <- paste0("https://raw.githubusercontent.com/jeffaudi/world-borders-geojson/", tm_commit,
-                 "/TM_WORLD_BORDERS-0.3/geojson/WORLD.json")
-tm_file <- get(tm_url, file.path(cache, "tm_world_borders_0.3.json"))
-tm <- jsonlite::fromJSON(tm_file, simplifyVector = TRUE)$features$properties
-tm_a3 <- ifelse(tm$ISO3 %in% a0$ADM0_A3, tm$ISO3, in_country(tm$LON, tm$LAT))
-tm_a3 <- ifelse(is.na(tm_a3), tm$ISO3, tm_a3)
+# thematicmapping World Borders 0.3 label points
 cen_tm <- data.frame(name = tm$NAME, adm0_a3 = tm_a3, code = tm$ISO3, type = "country",
                      method = "label point", lon = tm$LON, lat = tm$LAT, source = "thematicmapping",
                      key = paste0("tm:", tm$ISO3), extension = FALSE, stringsAsFactors = FALSE)
 
-# CIA World Factbook, factbook.json mirror; one file per Factbook (GEC) code.
-fb_commit <- "144d6977b2b01ac1cbd220de754c0a005616760b"
-fb_url <- paste0("https://github.com/factbook/factbook.json/archive/", fb_commit, ".zip")
-fb_file <- get(fb_url, file.path(cache, "factbook_json.zip"))
-fb_files <- utils::unzip(fb_file, list = TRUE)$Name
-fb_files <- fb_files[grepl("/[a-z-]+/[a-z0-9]{2}[.]json$", fb_files) & !grepl("/(oceans|world)/", fb_files)]
-fb_dir <- file.path(tempdir(), "factbook")
-utils::unzip(fb_file, files = fb_files, exdir = fb_dir)
-dms <- "([0-9]+) ([0-9]+) ([NS]), ([0-9]+) ([0-9]+) ([EW])"
-cen_fb <- do.call(rbind, lapply(fb_files, function(f) {
-  j <- jsonlite::fromJSON(file.path(fb_dir, f), simplifyVector = FALSE)
-  txt <- j$Geography$`Geographic coordinates`$text
-  if (is.null(txt)) return(NULL)
-  m <- regmatches(txt, gregexpr(dms, txt))[[1]]
-  if (!length(m)) return(NULL)
-  p <- do.call(rbind, regmatches(m, regexec(dms, m)))
-  gec <- toupper(sub("[.]json$", "", basename(f)))
-  nm <- j$Government$`Country name`$`conventional short form`$text
-  if (is.null(nm) || nm == "none") nm <- j$Government$`Country name`$`conventional long form`$text
-  if (is.null(nm) || nm == "none") nm <- gec
-  nm <- trimws(sub("[(].*", "", xml2::xml_text(xml2::read_html(paste0("<p>", nm, "</p>")))))
-  data.frame(name = nm, adm0_a3 = unname(fips_a3[gec]), code = gec, type = "country",
-             method = "Factbook geographic coordinates",
-             lon = (as.numeric(p[, 5]) + as.numeric(p[, 6]) / 60) * ifelse(p[, 7] == "W", -1, 1),
-             lat = (as.numeric(p[, 2]) + as.numeric(p[, 3]) / 60) * ifelse(p[, 4] == "S", -1, 1),
+# CIA World Factbook "Geographic coordinates", every pair a profile gives.
+cen_fb <- do.call(rbind, Map(function(j, gec) {
+  p <- fb_dms(j$Geography$`Geographic coordinates`$text)
+  if (is.null(p)) return(NULL)
+  data.frame(name = fb_country(j, gec), adm0_a3 = NA_character_, code = gec, type = "country",
+             method = "Factbook geographic coordinates", lon = p$lon, lat = p$lat,
              source = "CIA World Factbook", key = paste0("factbook:", gec), extension = FALSE,
              stringsAsFactors = FALSE)
-}))
-# Factbook (GEC) codes Natural Earth gives no FIPS code for: the thematicmapping
-# FIPS/ISO3 pair, else the Natural Earth country holding the point.
-tm_fips_a3 <- setNames(tm_a3, tm$FIPS)
-miss <- is.na(cen_fb$adm0_a3)
-cen_fb$adm0_a3[miss] <- unname(tm_fips_a3[cen_fb$code[miss]])
-miss <- is.na(cen_fb$adm0_a3)
-cen_fb$adm0_a3[miss] <- in_country(cen_fb$lon[miss], cen_fb$lat[miss])
+}, fb_profiles, names(fb_profiles)))
+cen_fb$adm0_a3 <- gec_a3(cen_fb$code, cen_fb$lon, cen_fb$lat)
 
 # GEOLocate: every country name of the three tables (Natural Earth with its
 # short, sort, alternative, formal, geounit and subunit names), as country and
@@ -166,14 +113,8 @@ centroids <- centroids[order(centroids$type, centroids$adm0_a3, centroids$source
 rownames(centroids) <- NULL
 
 meta <- rbind(
-  data.frame(layer = "centroids_factbook", source = "CIA World Factbook (factbook.json)", file = basename(fb_file),
-             version = paste("factbook.json", fb_commit), url = fb_url, sha256 = sha256(fb_file),
-             retrieved = retrieved, licence = "public domain (mirror CC0 1.0)", stringsAsFactors = FALSE),
-  data.frame(layer = "centroids_thematicmapping", source = "thematicmapping.org World Borders Dataset",
-             file = basename(tm_file), version = "0.3 (2008-07-30)", url = tm_url, sha256 = sha256(tm_file),
-             retrieved = retrieved, licence = "CC BY-SA, Bjorn Sandvik, thematicmapping.org",
-             stringsAsFactors = FALSE),
-  data.frame(layer = "centroids_geolocate", source = "GEOLocate web service", file = "geolocate/*.json",
+  fb_meta, tm_meta,
+  data.frame(layer = "geolocate", source = "GEOLocate web service", file = "geolocate/*.json",
              version = retrieved, url = paste0(glc_base, "?Country=<name>&Locality=<name>&fmt=geojson"),
              sha256 = digest::digest(paste(vapply(glc_files, sha256, character(1)), collapse = ""),
                                      algo = "sha256", serialize = FALSE),

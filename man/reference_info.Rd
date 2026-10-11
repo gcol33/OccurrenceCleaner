@@ -16,10 +16,11 @@ retrieval date, and the flag output records which reference produced it.
 }
 \details{
 With \code{reference = "natural_earth"} (the default of \code{\link[=flag_occurrences]{flag_occurrences()}}) the
-package uses its own gazetteers built in \verb{data-raw/}: capitals, province
-centroids, land, urban areas and country polygons from Natural Earth
-(public domain), country centroids from the CIA World Factbook, the
-thematicmapping.org World Borders Dataset and the GEOLocate service, and
+package uses its own gazetteers built in \verb{data-raw/}: capitals from the
+CIA World Factbook and Natural Earth, province centroids, land, urban areas
+and country polygons from Natural Earth (public domain), country centroids
+from the CIA World Factbook, the thematicmapping.org World Borders Dataset
+and the GEOLocate service, and
 biodiversity institutions from GBIF's Global Registry of
 Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With \code{reference = "CoordinateCleaner"} the
 point gazetteers are read from the user's CoordinateCleaner installation
