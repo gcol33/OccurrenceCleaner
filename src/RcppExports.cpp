@@ -155,6 +155,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_lag_cov
+NumericVector cpp_lag_cov(NumericVector f, int max_lag);
+RcppExport SEXP _OccurrenceCleaner_cpp_lag_cov(SEXP fSEXP, SEXP max_lagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_lag_cov(f, max_lag));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_window_outlier_counts
+IntegerVector cpp_window_outlier_counts(NumericVector gam, int win, double t1);
+RcppExport SEXP _OccurrenceCleaner_cpp_window_outlier_counts(SEXP gamSEXP, SEXP winSEXP, SEXP t1SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type gam(gamSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_window_outlier_counts(gam, win, t1));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_spatiotemporal_mean
 NumericVector cpp_spatiotemporal_mean(NumericVector lon, NumericVector lat, NumericVector age, bool euclid);
 RcppExport SEXP _OccurrenceCleaner_cpp_spatiotemporal_mean(SEXP lonSEXP, SEXP latSEXP, SEXP ageSEXP, SEXP euclidSEXP) {
@@ -182,6 +207,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_OccurrenceCleaner_cpp_hash_strings", (DL_FUNC) &_OccurrenceCleaner_cpp_hash_strings, 1},
     {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 2},
     {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 5},
+    {"_OccurrenceCleaner_cpp_lag_cov", (DL_FUNC) &_OccurrenceCleaner_cpp_lag_cov, 2},
+    {"_OccurrenceCleaner_cpp_window_outlier_counts", (DL_FUNC) &_OccurrenceCleaner_cpp_window_outlier_counts, 3},
     {"_OccurrenceCleaner_cpp_spatiotemporal_mean", (DL_FUNC) &_OccurrenceCleaner_cpp_spatiotemporal_mean, 4},
     {NULL, NULL, 0}
 };

@@ -45,6 +45,14 @@ cpp_cell_dist <- function(cx, cy, count, weighted, same_km) {
     .Call(`_OccurrenceCleaner_cpp_cell_dist`, cx, cy, count, weighted, same_km)
 }
 
+cpp_lag_cov <- function(f, max_lag) {
+    .Call(`_OccurrenceCleaner_cpp_lag_cov`, f, max_lag)
+}
+
+cpp_window_outlier_counts <- function(gam, win, t1) {
+    .Call(`_OccurrenceCleaner_cpp_window_outlier_counts`, gam, win, t1)
+}
+
 cpp_spatiotemporal_mean <- function(lon, lat, age, euclid) {
     .Call(`_OccurrenceCleaner_cpp_spatiotemporal_mean`, lon, lat, age, euclid)
 }

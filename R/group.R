@@ -224,17 +224,10 @@ axis_periodic <- function(f, mids, s) {
   if (mr < 12) return(FALSE)
   g0 <- stats::var(f[1:mr])
   if (!is.finite(g0) || g0 == 0) return(FALSE)
-  gam <- vapply(seq_len(mr), function(k) stats::cov(f[-(1:k)], f[-((length(f) - k + 1):length(f))]) / g0, 0)
-  coords <- mids[1:mr]
-  win <- 10
-  hits <- numeric(0); at <- numeric(0)
-  for (k in seq_len(mr - win)) {
-    sub <- gam[k:(k + win)]
-    hits <- c(hits, sub > stats::quantile(sub, 0.75, na.rm = TRUE, names = FALSE) + stats::IQR(sub, na.rm = TRUE) * s$T1)
-    at <- c(at, coords[k:(k + win)])
-  }
-  tot <- tapply(hits, at, sum)
-  outl <- as.numeric(names(tot)[tot >= 6])
+  gam <- cpp_lag_cov(as.numeric(f), mr) / g0
+  tot <- cpp_window_outlier_counts(gam, 10L, s$T1)
+  # Positions as CoordinateCleaner reads them back from table labels: 15 significant digits.
+  outl <- as.numeric(as.character(mids[1:mr][tot >= 6]))
   if (length(outl) < 2) return(FALSE)
   dm <- round(stats::dist(round(outl, 2)), 2)
   dm[dm > 2] <- NA
@@ -393,8 +386,7 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
             v <- stats::setNames(integer(length(all)), all)
             v[names(cur)] <- v[names(cur)] + cur
             v[names(add)] <- v[names(add)] + add
-            pts <- unique(rbind(if (!is.null(e)) e$pts, cbind(lon[big][spb == k], lat[big][spb == k])))
-            if (nrow(pts) > so$min_occs) pts <- pts[seq_len(so$min_occs), , drop = FALSE]
+            pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon[big][spb == k], lat[big][spb == k]), so$min_occs)
             cells[[k]] <- list(counts = v, pts = pts)
           }
         }
@@ -506,6 +498,19 @@ country_areas_km2 <- function(layer) {
   tapply(as.numeric(feat)[ok], code[ok], sum)
 }
 
+# The first k distinct rows of rbind(prev, m), reading m in growing prefixes so
+# that a large m is not deduplicated in full once k rows are found.
+first_unique <- function(prev, m, k) {
+  take <- 1024L
+  repeat {
+    n <- min(take, nrow(m))
+    u <- unique(rbind(prev, m[seq_len(n), , drop = FALSE]))
+    if (nrow(u) >= k || n == nrow(m)) break
+    take <- take * 8L
+  }
+  if (nrow(u) > k) u[seq_len(k), , drop = FALSE] else u
+}
+
 valid_coords <- function(lon, lat) {
   is.finite(lon) & is.finite(lat) & lon >= -180 & lon <= 180 & lat >= -90 & lat <= 90
 }
@@ -515,16 +520,16 @@ valid_coords <- function(lon, lat) {
 ds_pass0 <- function(ds, key, lon, lat, ok) {
   ok <- ok & !is.na(key)
   if (!any(ok)) return(invisible())
-  for (k in unique(key[ok])) {
-    i <- ok & key == k
+  rows <- split(which(ok), key[ok])
+  for (k in names(rows)) {
+    i <- rows[[k]]
     e <- ds[[k]]
     x <- lon[i]; y <- lat[i]
     r <- c(min(x), max(x), min(y), max(y), min(abs(x)), max(abs(x)), min(abs(y)), max(abs(y)))
     if (!is.null(e)) r <- c(min(e$r[1], r[1]), max(e$r[2], r[2]), min(e$r[3], r[3]), max(e$r[4], r[4]),
                             min(e$r[5], r[5]), max(e$r[6], r[6]), min(e$r[7], r[7]), max(e$r[8], r[8]))
-    pts <- unique(rbind(if (!is.null(e)) e$pts, cbind(x, y)))
-    if (nrow(pts) > 4L) pts <- pts[1:4, , drop = FALSE]
-    ds[[k]] <- list(r = r, pts = pts, cells = integer(), flon = NULL, flat = NULL)
+    pts <- first_unique(if (!is.null(e)) e$pts, cbind(x, y), 4L)
+    ds[[k]] <-list(r = r, pts = pts, cells = integer(), flon = NULL, flat = NULL)
   }
   invisible()
 }
@@ -532,8 +537,9 @@ ds_pass0 <- function(ds, key, lon, lat, ok) {
 ds_pass1 <- function(ds, key, lon, lat, ok, s) {
   ok <- ok & !is.na(key)
   if (!any(ok)) return(invisible())
-  for (k in unique(key[ok])) {
-    i <- ok & key == k
+  rows <- split(which(ok), key[ok])
+  for (k in names(rows)) {
+    i <- rows[[k]]
     e <- ds[[k]]
     x <- lon[i]; y <- lat[i]
     e$cells <- unique(c(e$cells, ddmm_cells(x, y, s$dataset_ddmm$mat_size)))

@@ -129,6 +129,23 @@ test_that("histogram counts equal graphics::hist", {
   expect_identical(OccurrenceCleaner:::bin_counts(v, b), graphics::hist(v, breaks = 3000, plot = FALSE)$counts)
 })
 
+test_that("rounding kernels equal stats::cov and the windowed quantile fence", {
+  set.seed(6)
+  f <- c(rpois(400, 3), rep(c(0L, 0L, 9L), 300))
+  mr <- round(length(f) * 0.9)
+  gam <- vapply(seq_len(mr), function(k) stats::cov(f[-(1:k)], f[-((length(f) - k + 1):length(f))]), 0)
+  expect_identical(OccurrenceCleaner:::cpp_lag_cov(as.numeric(f), mr), gam)
+  gam <- gam / stats::var(f[1:mr])
+  hits <- numeric(0); at <- integer(0)
+  for (k in seq_len(mr - 10)) {
+    sub <- gam[k:(k + 10)]
+    hits <- c(hits, sub > stats::quantile(sub, 0.75, names = FALSE) + stats::IQR(sub) * 3)
+    at <- c(at, k:(k + 10))
+  }
+  expect_identical(OccurrenceCleaner:::cpp_window_outlier_counts(gam, 10L, 3),
+                   as.integer(tapply(hits, at, sum)))
+})
+
 test_that("small datasets and records without a dataset are not flagged", {
   y <- data.frame(datasetKey = c(rep("small", 3), rep(NA, 5)), decimalLongitude = c(1.1, 2.2, 3.3, 1:5),
                   decimalLatitude = c(1.1, 2.2, 3.3, 1:5))
