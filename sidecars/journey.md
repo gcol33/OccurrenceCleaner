@@ -398,33 +398,33 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: flag, compare per test and rule, compare by group, select
 
 ### rules.example-data  [A3]  (section)
-- idea: simulated European records with planted errors
-- job: Builds records on land with GBIF fields, then plants capital, zero, sea and duplicate errors.
-- leaves: an input with known errors
+- idea: simulated terrestrial European records with planted errors
+- job: Builds terrestrial records (each species in one kingdom, four-decimal coordinates) with GBIF fields; says older records were simulated with larger uncertainty and more `COORDINATE_ROUNDED`, so later age and uncertainty patterns follow from that; then moves disjoint sets of records to capitals, (0, 0) and the Atlantic and adds exact copies.
+- leaves: an input with planted problems and stated simulation assumptions
 
 ### rules.flag-once  [A3]
 - idea: the CoordinateCleaner tests plus issue and fossil tests, named
-- job: Names the twelve tests the article compares (`cc_tests` plus three) and says the default would run every test the columns allow; flags the records.
-- leaves: the `occ_flags` object `summary()` and `plot()` dispatch on
+- job: Names the twelve tests the article compares (`cc_tests` plus three) and says the default would run every test the columns allow; flags the records and lists the added columns.
+- leaves: `f` with `flags` and one `flag_<test>` column per test
 
 ### rules.per-test  [A3]  (section)
 - idea: pct and only
-- job: Explains `flagged`, `pct` and `only`, and why per-test shares add up to more than the rule.
-- leaves: how often a problem occurs vs how much loss a test alone causes
+- job: Explains `flagged`, `pct` and `only`, why per-test shares add up to more than the rule, and that the rule's `pct` minus the sum of `pct_only` is the share flagged by more than one test.
+- leaves: how often a test flags vs how much loss a test alone causes
 
 ### rules.compare  [A3]  (section)
-- idea: three candidate rules
-- job: Compares three rules and shows which tests are the sole reason for removals.
+- idea: three candidate rules, named for this article
+- job: Defines `strict`, `coordinatecleaner` (the eight `clean_coordinates()` defaults in this set; its outlier test left out, duplicates not in its default) and `minimal` (screening for terrestrial records; `sea` removes valid marine records); limits `coordinatecleaner` to this plot and the kingdom comparison.
 - leaves: named rules in `summary()`; records failing several tests count under no `only`
 
 ### rules.by-group  [A3]  (section)
 - idea: by kingdom
-- job: Splits the shares by group and draws the grid.
+- job: Splits the shares by group (each percentage out of its own group) and draws the grid.
 - leaves: `by` in `summary()` and `plot()`
 
 ### rules.bins  [A3]  (section)
 - idea: year and uncertainty cut at tally time
-- job: Bins year and uncertainty at tally time and says when to keep the tally rather than the summary.
+- job: Bins year and coordinate uncertainty at tally time, states closed-left classes, the `<first`/`>=last`/`missing` classes and per-class denominators, ties each pattern back to the simulation, and says when to keep the tally rather than the summary.
 - leaves: `bins`; `<column>_bin`; missing values get their own class
 
 ### rules.map  [A3]  (section)
@@ -433,13 +433,13 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `plot(type = "map")`
 
 ### rules.apply  [A3]  (section)
-- idea: complement of has_flag
-- job: Applies the chosen rule and shows a raw-column cut beside it.
-- leaves: the cleaned table; no re-flagging for another rule
+- idea: purpose, then complement of has_flag
+- job: States the example's use (species map on a 10 km grid) and why `coordinatecleaner` fits it and duplicates may stay; lists tests other analyses add (duplicate key = species and coordinates); sources `COORDINATE_ROUNDED` to GBIF; applies the rule; shows a year and uncertainty cut with explicit missing-value handling; says which changes reuse `f` and which need reflagging; ends on what a comparison with `clean_coordinates()` must align (outlier test, `land_scale = 50`, `reference = "CoordinateCleaner"`).
+- leaves: the cleaned table; reuse condition for `f`
 
 ### rules.math  [A3]  (section)
-- idea: bit arithmetic of the counts
-- job: Gives the three bit conditions behind every count.
+- idea: object classes and bit arithmetic of the counts
+- job: Names the `occ_flags`/`occ_summary` classes methods dispatch on; defines $w$, $m_t$, $m_T$ and bitwise AND; gives the three bit conditions and the overlap identity.
 - leaves: the bit mask of a rule; one pass per group
 
 ## Large tables on disk (how-to, A2 home)

@@ -85,7 +85,7 @@
 <text x='316.59' y='96.60' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
 <text x='411.22' y='81.35' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.30</text>
 <text x='423.43' y='66.10' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.47</text>
-<text x='312.54' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc_gbif removes 7.3 % of 2,276 records</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner_gbif removes 7.3 % of 2,276 records</text>
 </g>
 <defs>
   <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwyMTIuNDA='>

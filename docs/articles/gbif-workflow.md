@@ -48,13 +48,13 @@ occ$kingdom <- ifelse(grepl("Quercus|Fagus", occ$species), "Plantae",
                       ifelse(occ$species == "Amanita muscaria", "Fungi", "Animalia"))
 ```
 
-To these I add 236 records with the errors that the tests target, each
-group labelled in a column `truth` so the flags can be checked against
-it afterwards. Herbarium sheets georeferenced to the capital where they
-are kept, coordinates typed as zeros, the GBIF headquarters in
-Copenhagen as a default location, swapped and negated coordinates,
-coordinates entered at whole degrees, botanic-garden specimens and
-cultivated plants, plus 40 exact copies of clean records:
+Add 236 records with the errors that the tests target, each group
+labelled in a column `truth` so the flags can be checked against it
+afterwards. Herbarium sheets georeferenced to the capital where they are
+kept, coordinates typed as zeros, the GBIF headquarters in Copenhagen as
+a default location, swapped and negated coordinates, coordinates entered
+at whole degrees, botanic-garden specimens and cultivated plants, plus
+40 exact copies of clean records:
 
 ``` r
 
@@ -324,41 +324,47 @@ loses depending on whether that one test is in it.
 A cleaning rule is a set of tests. Five rules, from loose to strict,
 show the range of choices on the same flags:
 
-- `cc`: the
+- `coordinatecleaner`: the
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
   defaults of
   [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
   without the outlier test (zero, equal, capital, centroid, institution,
   GBIF headquarters, sea);
 
-- `cc_country`: `cc` plus the country check;
+- `coordinatecleaner_country`: `coordinatecleaner` plus the country
+  check;
 
-- `cc_gbif`: `cc_country` plus GBIF’s coordinate and taxon warnings;
+- `coordinatecleaner_gbif`: `coordinatecleaner_country` plus GBIF’s
+  coordinate and taxon warnings;
 
-- `wild`: `cc_gbif` plus living specimens and cultivated or managed
-  individuals;
+- `wild`: `coordinatecleaner_gbif` plus living specimens and cultivated
+  or managed individuals;
 
 - `strict`: every test, including duplicates and GBIF’s rounding note.
 
 ``` r
 
 rules <- list(
-  cc = c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea"))
-rules$cc_country <- c(rules$cc, "country_mismatch")
-rules$cc_gbif <- c(rules$cc_country, "issue_coordinate", "issue_taxon")
-rules$wild <- c(rules$cc_gbif, "basis_living", "establishment_managed")
+  coordinatecleaner = c("zero", "equal", "capital", "centroid", "institution",
+                        "gbif_headquarters", "sea"))
+rules$coordinatecleaner_country <- c(rules$coordinatecleaner,
+                                     "country_mismatch")
+rules$coordinatecleaner_gbif <- c(rules$coordinatecleaner_country,
+                                  "issue_coordinate", "issue_taxon")
+rules$wild <- c(rules$coordinatecleaner_gbif,
+                "basis_living", "establishment_managed")
 rules$strict <- all_tests
 t_all <- tally_flags(f, rules = rules)
 knitr::kable(t_all[, c("n", paste0("removed_", names(rules)))])
 ```
 
-| n | removed_cc | removed_cc_country | removed_cc_gbif | removed_wild | removed_strict |
+| n | removed_coordinatecleaner | removed_coordinatecleaner_country | removed_coordinatecleaner_gbif | removed_wild | removed_strict |
 |---:|---:|---:|---:|---:|---:|
 | 2276 | 125 | 146 | 166 | 207 | 274 |
 
-The ladder removes 125 records under `cc` and 274 under `strict`. The
-country check adds 21, the GBIF warnings 20 and the living and
-cultivated records 41. `strict` adds the remaining 67 through
+The ladder removes 125 records under `coordinatecleaner` and 274 under
+`strict`. The country check adds 21, the GBIF warnings 20 and the living
+and cultivated records 41. `strict` adds the remaining 67 through
 `duplicate` (42 records, 40 of them the injected copies), `urban` (20)
 and `aohi` (6), some records carrying more than one; the 20 records with
 `issue_rounded` are already removed through `issue_taxon`.
@@ -371,7 +377,7 @@ mostly flags records that other tests in the rule remove anyway:
 
 ``` r
 
-plot(summary(f, rules = rules["cc_gbif"]))
+plot(summary(f, rules = rules["coordinatecleaner_gbif"]))
 ```
 
 ![](gbif-workflow_files/figure-html/rule-bars-1.svg)
@@ -388,11 +394,11 @@ t_k[paste0("share_", names(rules))] <- round(t_k[paste0("removed_", names(rules)
 knitr::kable(t_k[, c("kingdom", "n", paste0("share_", names(rules)))])
 ```
 
-| kingdom  |   n | share_cc | share_cc_country | share_cc_gbif | share_wild | share_strict |
-|:---------|----:|---------:|-----------------:|--------------:|-----------:|-------------:|
-| Animalia | 897 |    0.062 |            0.072 |         0.085 |      0.109 |        0.132 |
-| Fungi    | 461 |    0.028 |            0.035 |         0.043 |      0.063 |        0.102 |
-| Plantae  | 918 |    0.061 |            0.071 |         0.076 |      0.087 |        0.119 |
+| kingdom | n | share_coordinatecleaner | share_coordinatecleaner_country | share_coordinatecleaner_gbif | share_wild | share_strict |
+|:---|---:|---:|---:|---:|---:|---:|
+| Animalia | 897 | 0.062 | 0.072 | 0.085 | 0.109 | 0.132 |
+| Fungi | 461 | 0.028 | 0.035 | 0.043 | 0.063 | 0.102 |
+| Plantae | 918 | 0.061 | 0.071 | 0.076 | 0.087 | 0.119 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
 
@@ -425,17 +431,19 @@ removes most:
 
 ``` r
 
-t_y <- tally_flags(f, bins = list(year = c(1900, 1950, 2000)), rules = rules["cc_country"])
-t_y$share <- round(t_y$removed_cc_country / t_y$n, 3)
-knitr::kable(t_y[, c("year_bin", "n", "flagged_capital", "removed_cc_country", "share")])
+t_y <- tally_flags(f, bins = list(year = c(1900, 1950, 2000)),
+                   rules = rules["coordinatecleaner_country"])
+t_y$share <- round(t_y$removed_coordinatecleaner_country / t_y$n, 3)
+knitr::kable(t_y[, c("year_bin", "n", "flagged_capital",
+                     "removed_coordinatecleaner_country", "share")])
 ```
 
-| year_bin  |   n | flagged_capital | removed_cc_country | share |
-|:----------|----:|----------------:|-------------------:|------:|
-| \<1900    | 267 |              31 |                 37 | 0.139 |
-| 1900-1950 | 605 |              34 |                 53 | 0.088 |
-| 1950-2000 | 846 |               7 |                 38 | 0.045 |
-| \>=2000   | 558 |               3 |                 18 | 0.032 |
+| year_bin  |   n | flagged_capital | removed_coordinatecleaner_country | share |
+|:----------|----:|----------------:|----------------------------------:|------:|
+| \<1900    | 267 |              31 |                                37 | 0.139 |
+| 1900-1950 | 605 |              34 |                                53 | 0.088 |
+| 1950-2000 | 846 |               7 |                                38 | 0.045 |
+| \>=2000   | 558 |               3 |                                18 | 0.032 |
 
 The rule removes 13.9 % of the records before 1900 and 3.2 % of those
 from 2000 on, because the capital-georeferenced herbarium sheets were
@@ -445,16 +453,18 @@ records without a stated uncertainty form the group `"missing"`:
 ``` r
 
 t_u <- tally_flags(f, bins = list(coordinateuncertaintyinmeters = c(100, 1000)),
-                   rules = rules["cc_country"])
-knitr::kable(t_u[, c("coordinateuncertaintyinmeters_bin", "n", "removed_cc_country", "kept_cc_country")])
+                   rules = rules["coordinatecleaner_country"])
+knitr::kable(t_u[, c("coordinateuncertaintyinmeters_bin", "n",
+                     "removed_coordinatecleaner_country",
+                     "kept_coordinatecleaner_country")])
 ```
 
-| coordinateuncertaintyinmeters_bin |   n | removed_cc_country | kept_cc_country |
-|:----------------------------------|----:|-------------------:|----------------:|
-| \<100                             | 775 |                 59 |             716 |
-| 100-1000                          | 370 |                 23 |             347 |
-| \>=1000                           | 736 |                 36 |             700 |
-| missing                           | 395 |                 28 |             367 |
+| coordinateuncertaintyinmeters_bin | n | removed_coordinatecleaner_country | kept_coordinatecleaner_country |
+|:---|---:|---:|---:|
+| \<100 | 775 | 59 | 716 |
+| 100-1000 | 370 | 23 | 347 |
+| \>=1000 | 736 | 36 | 700 |
+| missing | 395 | 28 | 367 |
 
 A threshold on uncertainty is then a filter on the raw column next to
 the rule, for example keeping records with a stated uncertainty of at
@@ -462,7 +472,7 @@ most 1 km:
 
 ``` r
 
-keep <- !has_flag(f$flags, rules$cc_country) &
+keep <- !has_flag(f$flags, rules$coordinatecleaner_country) &
   !is.na(f$coordinateuncertaintyinmeters) & f$coordinateuncertaintyinmeters <= 1000
 c(records = nrow(f), kept = sum(keep))
 #> records    kept 

@@ -178,7 +178,7 @@ The range test still flags the same 20 records: their 43 Ma ranges exceed the th
 
 ## Export to PyRate
 
-PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. Here, we select records from `g` that are unflagged by any of the tests run and have an age range of at most 15 Ma:
+PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. Select the records from `g` that are not flagged by any of the tests run and have an age range of at most 15 Ma:
 
 ```{r final}
 final_rule <- c(tests, otests)

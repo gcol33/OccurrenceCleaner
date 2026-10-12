@@ -224,6 +224,16 @@ plot.occ_flagged <- function(x, rules = NULL, ...) {
 .col_only <- "#2C5D73"
 .col_removed <- "#B5442F"
 
+# Title centred on the figure rather than the plot region, so a wide left
+# margin of test names does not push it past the right edge, and shrunk when
+# it is wider than the figure.
+plot_title <- function(main) {
+  at <- graphics::grconvertX(0.5, "nfc", "user")
+  fig_w <- diff(graphics::grconvertX(c(0, 1), "nfc", "inches"))
+  shrink <- min(1, 0.96 * fig_w / graphics::strwidth(main, units = "inches"))
+  graphics::mtext(main, side = 3, line = 1.2, at = at, cex = graphics::par("cex") * shrink, font = 1)
+}
+
 share_label <- function(p) ifelse(is.na(p), "", sprintf(if (any(p > 0 & p < 0.1, na.rm = TRUE)) "%.2f" else "%.1f", p))
 
 plot_share_bars <- function(d, total, rule) {
@@ -236,8 +246,8 @@ plot_share_bars <- function(d, total, rule) {
   graphics::barplot(d$pct_only, horiz = TRUE, col = .col_only, border = NA, add = TRUE, axes = FALSE)
   graphics::axis(2, at = mid, labels = d$test, las = 1, tick = FALSE, gap.axis = -1, line = -0.6)
   graphics::text(d$pct, mid, share_label(d$pct), pos = 4, xpd = TRUE)
-  graphics::title(main = sprintf("rule %s removes %s %% of %s records", rule, share_label(total$pct[1]),
-                                 format(total$n[1], big.mark = ",")), font.main = 1, cex.main = 1)
+  plot_title(sprintf("rule %s removes %s %% of %s records", rule, share_label(total$pct[1]),
+                     format(total$n[1], big.mark = ",")))
   graphics::legend("bottomright", c("flagged", "only reason"), fill = c(.col_flagged, .col_only),
                    border = NA, bty = "n")
 }
@@ -263,7 +273,7 @@ plot_share_grid <- function(d, total, by, rule) {
   graphics::axis(2, seq_along(rows), rev(rows), las = 1, tick = FALSE, gap.axis = -1)
   graphics::abline(h = 1.5, col = "white", lwd = 3)
   graphics::text(xy$x, xy$y, share_label(z))
-  graphics::title(main = "% of records flagged", font.main = 1, cex.main = 1)
+  plot_title("% of records flagged")
 }
 
 plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
@@ -297,9 +307,8 @@ plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   graphics::axis(1, ticks(xr, 180))
   graphics::axis(2, ticks(yr, 90), las = 1)
   graphics::box(col = "grey70")
-  graphics::title(main = sprintf("rule %s: %s of %s records removed", rule,
-                                 format(sum(removed & ok), big.mark = ","), format(sum(ok), big.mark = ",")),
-                  font.main = 1, cex.main = 1)
+  plot_title(sprintf("rule %s: %s of %s records removed", rule,
+                     format(sum(removed & ok), big.mark = ","), format(sum(ok), big.mark = ",")))
   graphics::legend("bottomleft", c("kept", "removed"), pch = 16, col = c("#4D4D4D", .col_removed),
                    bty = "n", bg = "white")
 }

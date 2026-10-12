@@ -38,68 +38,68 @@
 <rect x='0.00' y='-0.000000000000057' width='468.00' height='273.60' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
 </g>
 <defs>
-  <clipPath id='cpNzguNDJ8MzQ0LjkxfDguNDd8MjA5LjQ4'>
-    <rect x='78.42' y='8.47' width='266.48' height='201.01' />
+  <clipPath id='cpNzguNDJ8MzQ0LjkxfDguNDd8MTU1LjI4'>
+    <rect x='78.42' y='8.47' width='266.48' height='146.81' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpNzguNDJ8MzQ0LjkxfDguNDd8MjA5LjQ4)'>
-<rect x='78.42' y='8.47' width='266.48' height='201.01' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-<polyline points='78.42,183.65 344.91,183.65 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,139.72 344.91,139.72 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,95.80 344.91,95.80 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,51.87 344.91,51.87 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,205.62 344.91,205.62 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,161.69 344.91,161.69 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,117.76 344.91,117.76 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,73.83 344.91,73.83 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='78.42,29.91 344.91,29.91 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='109.17,209.48 109.17,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='160.42,209.48 160.42,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='211.66,209.48 211.66,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='262.91,209.48 262.91,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='314.16,209.48 314.16,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='109.17,140.60 160.42,123.03 211.66,100.19 262.91,58.02 314.16,17.61 ' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
-<polyline points='109.17,200.35 160.42,188.05 211.66,173.99 262.91,138.85 314.16,70.32 ' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<polyline points='109.17,142.36 160.42,124.79 211.66,116.00 262.91,96.68 314.16,40.45 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
-<circle cx='109.17' cy='140.60' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<polygon points='109.17,195.35 113.50,202.85 104.84,202.85 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='105.95,145.58 112.38,145.58 112.38,139.15 105.95,139.15 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
-<circle cx='160.42' cy='123.03' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<polygon points='160.42,183.05 164.75,190.55 156.09,190.55 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='157.20,128.00 163.63,128.00 163.63,121.57 157.20,121.57 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
-<circle cx='211.66' cy='100.19' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<polygon points='211.66,168.99 215.99,176.49 207.33,176.49 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='208.45,119.22 214.88,119.22 214.88,112.79 208.45,112.79 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
-<circle cx='262.91' cy='58.02' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<polygon points='262.91,133.85 267.24,141.35 258.58,141.35 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='259.70,99.89 266.13,99.89 266.13,93.46 259.70,93.46 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
-<circle cx='314.16' cy='17.61' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<polygon points='314.16,65.32 318.49,72.82 309.83,72.82 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='310.94,43.66 317.37,43.66 317.37,37.23 310.94,37.23 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<g clip-path='url(#cpNzguNDJ8MzQ0LjkxfDguNDd8MTU1LjI4)'>
+<rect x='78.42' y='8.47' width='266.48' height='146.81' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<polyline points='78.42,136.41 344.91,136.41 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,104.33 344.91,104.33 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,72.25 344.91,72.25 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,40.17 344.91,40.17 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,152.46 344.91,152.46 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,120.37 344.91,120.37 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,88.29 344.91,88.29 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,56.21 344.91,56.21 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='78.42,24.12 344.91,24.12 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='109.17,155.28 109.17,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='160.42,155.28 160.42,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='211.66,155.28 211.66,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='262.91,155.28 262.91,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='314.16,155.28 314.16,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
+<polyline points='109.17,104.97 160.42,92.14 211.66,75.46 262.91,44.66 314.16,15.14 ' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
+<polyline points='109.17,148.61 160.42,139.62 211.66,129.36 262.91,103.69 314.16,53.64 ' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
+<polyline points='109.17,106.26 160.42,93.42 211.66,87.01 262.91,72.89 314.16,31.82 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
+<circle cx='109.17' cy='104.97' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<polygon points='109.17,143.61 113.50,151.11 104.84,151.11 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<polygon points='105.95,109.47 112.38,109.47 112.38,103.04 105.95,103.04 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<circle cx='160.42' cy='92.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<polygon points='160.42,134.62 164.75,142.12 156.09,142.12 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<polygon points='157.20,96.64 163.63,96.64 163.63,90.21 157.20,90.21 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<circle cx='211.66' cy='75.46' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<polygon points='211.66,124.36 215.99,131.86 207.33,131.86 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<polygon points='208.45,90.22 214.88,90.22 214.88,83.79 208.45,83.79 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<circle cx='262.91' cy='44.66' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<polygon points='262.91,98.69 267.24,106.19 258.58,106.19 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<polygon points='259.70,76.11 266.13,76.11 266.13,69.68 259.70,69.68 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<circle cx='314.16' cy='15.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<polygon points='314.16,48.64 318.49,56.14 309.83,56.14 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<polygon points='310.94,35.04 317.37,35.04 317.37,28.61 310.94,28.61 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNzMuNjA=)'>
-<text x='70.80' y='210.48' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>
-<text x='70.80' y='166.56' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5 %</text>
-<text x='70.80' y='122.63' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>7.5 %</text>
-<text x='70.80' y='78.70' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>10 %</text>
-<text x='70.80' y='34.77' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>12.5 %</text>
-<text transform='translate(114.75,225.08) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc</text>
-<text transform='translate(166.00,225.08) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc_country</text>
-<text transform='translate(217.25,225.08) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>cc_gbif</text>
-<text transform='translate(268.49,225.08) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>wild</text>
-<text transform='translate(319.74,225.08) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>strict</text>
-<text transform='translate(20.64,108.98) rotate(-90)' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>records removed</text>
-<rect x='361.84' y='58.16' width='97.69' height='101.64' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-<text x='370.31' y='80.59' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>kingdom</text>
-<line x1='372.33' y1='100.93' x2='388.45' y2='100.93' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
-<circle cx='380.39' cy='100.93' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
-<line x1='372.33' y1='121.09' x2='388.45' y2='121.09' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<polygon points='380.39,116.09 384.72,123.59 376.06,123.59 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<line x1='372.33' y1='141.25' x2='388.45' y2='141.25' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
-<polygon points='377.18,144.46 383.61,144.46 383.61,138.03 377.18,138.03 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
-<text x='398.94' y='105.79' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Animalia</text>
-<text x='398.94' y='125.95' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Fungi</text>
-<text x='398.94' y='146.11' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Plantae</text>
+<text x='70.80' y='157.32' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>
+<text x='70.80' y='125.24' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5 %</text>
+<text x='70.80' y='93.16' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>7.5 %</text>
+<text x='70.80' y='61.07' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>10 %</text>
+<text x='70.80' y='28.99' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>12.5 %</text>
+<text transform='translate(114.75,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>coordinatecleaner</text>
+<text transform='translate(166.00,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>coordinatecleaner_country</text>
+<text transform='translate(217.25,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>coordinatecleaner_gbif</text>
+<text transform='translate(268.49,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>wild</text>
+<text transform='translate(319.74,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>strict</text>
+<text transform='translate(20.64,81.87) rotate(-90)' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>records removed</text>
+<rect x='361.84' y='31.05' width='97.69' height='101.64' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<text x='370.31' y='53.49' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>kingdom</text>
+<line x1='372.33' y1='73.82' x2='388.45' y2='73.82' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
+<circle cx='380.39' cy='73.82' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
+<line x1='372.33' y1='93.98' x2='388.45' y2='93.98' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
+<polygon points='380.39,88.98 384.72,96.48 376.06,96.48 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
+<line x1='372.33' y1='114.14' x2='388.45' y2='114.14' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
+<polygon points='377.18,117.36 383.61,117.36 383.61,110.93 377.18,110.93 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<text x='398.94' y='78.69' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Animalia</text>
+<text x='398.94' y='98.85' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Fungi</text>
+<text x='398.94' y='119.01' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Plantae</text>
 </g>
 </g>
 </svg>

@@ -317,8 +317,8 @@ gives 14 flagged records, compared with 12 under the default seed.
 ## Export to PyRate
 
 PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006))
-estimates speciation and extinction rates from fossil occurrences. Here,
-we select records from `g` that are unflagged by any of the tests run
+estimates speciation and extinction rates from fossil occurrences.
+Select the records from `g` that are not flagged by any of the tests run
 and have an age range of at most 15 Ma:
 
 ``` r
