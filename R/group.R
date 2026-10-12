@@ -347,9 +347,11 @@ each_group <- function(p, k, f, cap = 5e6, depth = 0L) {
 # the last checkpoint. The steps: count the rows of each unit, pass 0 (extent,
 # records per species, dataset ranges), pass 1 (rows into buckets, raster
 # cell counts, dataset histograms), the decision over each store's buckets,
-# and the final per-species and per-dataset decisions.
+# and the final per-species and per-dataset decisions. `rows` are the rows of
+# each unit when the caller has counted them; `progress` (from new_progress()
+# over group_steps(cfg)) is advanced through the steps.
 group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verbose = FALSE,
-                       flush_rows = NULL) {
+                       flush_rows = NULL, rows = NULL, progress = NULL) {
   tests <- intersect(cfg$tests, .group_tests)
   s <- cfg$settings
   want_outlier <- "outlier" %in% tests
@@ -372,7 +374,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   say <- function(...) if (verbose) message("group tests: ", ...)
 
   if (st$stage == "count") {
-    st$unit_rows <- vapply(units, unit_rows, 0)
+    st$unit_rows <- rows %||% vapply(units, unit_rows, 0)
     # In memory one bucket holds everything; on disk a bucket holds about
     # four million records.
     st$n_buckets <- if (disk) max(64, ceiling(sum(st$unit_rows) / 4e6)) else 1
@@ -389,6 +391,13 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   for (k in names(stores)) parts_restore(stores[[k]], st$stores[[k]] %||% stats::setNames(numeric(), character()))
   ds <- list2env(st$ds)
   cells <- list2env(st$cells)
+  steps <- group_steps(cfg)
+  n_rows <- sum(st$unit_rows)
+  for (k in intersect(c("pass0", "pass1"), steps)) progress_size(progress, k, n_rows)
+  store_step <- c(decide_duplicate = "dup", decide_outlier = "sp", decide_taxon = "tx")
+  for (k in intersect(names(store_step), steps))
+    progress_size(progress, k, if (st$stage %in% c("count", "pass0", "pass1")) n_rows else
+      sum(stores[[store_step[[k]]]]$rows))
   last <- Sys.time()
   checkpoint <- function(force = FALSE) {
     if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible())
@@ -403,8 +412,12 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     if (st$stage != stage) return(invisible())
     say("reading ", length(units) - st$unit + 1L, " file(s)",
         if (want_outlier || length(want_ds)) paste0(" (pass ", if (stage == "pass0") 1 else 2, " of 2)"))
+    progress_start(progress, stage, done = sum(st$unit_rows[seq_len(st$unit - 1L)]))
     while (st$unit <= length(units)) {
-      each_chunk(units, f, read_cols, which = st$unit)
+      each_chunk(units, function(chunk, u, first) {
+        f(chunk, u, first)
+        progress_tick(progress, NROW(chunk))
+      }, read_cols, which = st$unit)
       st$unit <<- st$unit + 1L
       checkpoint()
     }
@@ -416,10 +429,15 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   run_buckets <- function(stage, next_stage, store, f, resumable = TRUE) {
     if (st$stage != stage) return(invisible())
     keys <- if (is.null(store)) character() else as.character(sort(as.numeric(parts_keys(store))))
-    if (!is.null(store)) say(sub("decide_", "", stage), ": ", length(keys) - st$decided, " bucket(s)")
+    if (!is.null(store)) {
+      say(sub("decide_", "", stage), ": ", length(keys) - st$decided, " bucket(s)")
+      progress_size(progress, stage, sum(store$rows))
+      progress_start(progress, stage, done = sum(store$rows[keys[seq_len(st$decided)]]))
+    }
     for (i in seq_along(keys)) {
       if (i <= st$decided) next
       f(keys[i])
+      progress_tick(progress, store$rows[[keys[i]]])
       if (resumable) {
         st$decided <<- i
         checkpoint()
@@ -560,7 +578,10 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
       hits_add(stores$hits, g$unit[hit], g$row[hit], "age_range_outlier")
     }
     if (want_outlier) {
+      progress_size(progress, "final", length(st$raster_sp))
+      progress_start(progress, "final")
       for (k in st$raster_sp) {
+        progress_tick(progress, 1)
         e <- cells[[k]]
         if (is.null(e) || nrow(e$pts) < so$min_occs) next
         fc <- outlier_cells(as.numeric(names(e$counts)), e$counts, st$grid, so)
@@ -576,7 +597,18 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     cells <- new.env()
     checkpoint(force = TRUE)
   }
+  progress_end(progress)
   group_result(st, dir, stores$hits)
+}
+
+# The progress steps of the group stage for the tests of `cfg`, in run order.
+group_steps <- function(cfg) {
+  tests <- intersect(cfg$tests, .group_tests)
+  if (!length(tests)) return(character())
+  outlier <- "outlier" %in% tests
+  c(if (outlier || any(tests %in% .dataset_tests)) "pass0", "pass1",
+    if ("duplicate" %in% tests) "decide_duplicate", if (outlier) "decide_outlier",
+    if (any(tests %in% .taxon_tests)) "decide_taxon", if (outlier) "final")
 }
 
 # The lookup of a finished group stage.

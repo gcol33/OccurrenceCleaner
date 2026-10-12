@@ -22,6 +22,13 @@ stream_units <- function(x) {
   })
 }
 
+# Whether the rows of a unit are read from the table metadata rather than
+# counted by a scan.
+counted_rows <- function(u) isTRUE(u$reopen) && !tolower(tools::file_ext(u$path)) %in% c("csv", "gz", "tsv", "txt")
+
+# Bytes of the unit files; a vectra_node given by the user counts as 0.
+unit_bytes <- function(units) vapply(units, function(u) if (is.null(u$path)) 0 else file.size(u$path), 0)
+
 # Column names of an on-disk table, read from its first row.
 table_names <- function(node) names(vectra::collect(vectra::slice_head(node, n = 1)))
 
@@ -51,6 +58,12 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
   done_markers <- file.path(out, paste0(vapply(units, `[[`, "", "name"), ".done"))
   gdir <- file.path(out, ".group")
   group <- NULL
+  run_group <- any(cfg$tests %in% .group_tests) && !all(file.exists(done_markers))
+  rows <- if (run_group || all(vapply(units, counted_rows, TRUE))) vapply(units, unit_rows, 0)
+  progress <- new_progress(c(if (run_group) group_steps(cfg), if (is.null(rows)) "record_bytes" else "record"),
+                           file = file.path(out, "progress.txt"), verbose = verbose)
+  progress_size(progress, if (is.null(rows)) "record_bytes" else "record",
+                if (is.null(rows)) sum(unit_bytes(units)) else sum(rows))
   if (any(cfg$tests %in% .group_tests)) {
     if (!all(vapply(units, `[[`, TRUE, "reopen")))
       stop("the grouped tests (", paste(intersect(cfg$tests, .group_tests), collapse = ", "),
@@ -60,12 +73,14 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
       check_stream_columns(avail, keep, cfg$duplicate_by)
       cols0 <- resolve_test_columns(cfg$columns, avail, cfg$tests)
       t0 <- Sys.time()
-      group <- group_pass(units, cfg, cols0, dir = gdir, checkpoint_secs = checkpoint_secs, verbose = verbose)
+      group <- group_pass(units, cfg, cols0, dir = gdir, checkpoint_secs = checkpoint_secs, verbose = verbose,
+                          rows = rows, progress = progress)
       if (verbose) message("group tests: done [", format(round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)), " s]")
     }
   }
   total <- 0
   parts <- character()
+  progress_start(progress, if (is.null(rows)) "record_bytes" else "record")
   for (ui in seq_along(units)) {
     u <- units[[ui]]
     done_marker <- done_markers[ui]
@@ -73,6 +88,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
       info <- readRDS(done_marker)
       total <- total + info$n
       parts <- c(parts, info$parts)
+      progress_credit(progress, if (is.null(rows)) unit_bytes(units[ui]) else info$n)
       if (verbose) message(u$name, ": done (", info$n, " rows), skipped")
       next
     }
@@ -113,6 +129,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
       acc$n_buf <- acc$n_buf + nrow(o)
       acc$n <- acc$n + nrow(o)
       if (acc$n_buf >= part_rows) acc <- flush_part(acc, out, u$name)
+      if (!is.null(rows)) progress_tick(progress, nrow(o))
       acc
     }, .init = list(buf = list(), n_buf = 0, n = 0, k = 0L, parts = character(), cols = rc$cols, id = rc$id,
                     cfg = cfg))
@@ -120,6 +137,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
     if (is.null(cfg$tests)) stop("the input has no rows, so no test could be chosen; name them with `tests`")
     if (acc$n_buf > 0 || acc$k == 0L) acc <- flush_part(acc, out, u$name)
     save_atomic(list(n = acc$n, parts = acc$parts), done_marker)
+    if (is.null(rows)) progress_tick(progress, unit_bytes(units[ui]))
     total <- total + acc$n
     parts <- c(parts, acc$parts)
     if (verbose) message(u$name, ": ", acc$n, " rows in ", length(acc$parts), " part(s) [",
@@ -127,6 +145,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
   }
   if (is.null(cfg$tests)) cfg <- c(cfg[setdiff(names(cfg), c("tests", "plan"))],
                                    readRDS(file.path(out, "flags_config.rds"))[c("tests", "plan")])
+  progress_end(progress)
   unlink(gdir, recursive = TRUE)
   meta <- list(out = normalizePath(out), tests = cfg$tests, test_plan = cfg$plan,
                layout_version = cfg$layout_version,
@@ -197,7 +216,7 @@ check_config <- function(out, rec) {
 
 # Remove the output of an earlier run from `out`.
 clear_output <- function(out) {
-  unlink(list.files(out, "^part-.*[.]vtr$|[.]done$|^flags_(meta|config)[.]rds$", full.names = TRUE))
+  unlink(list.files(out, "^part-.*[.]vtr$|[.]done$|^flags_(meta|config)[.]rds$|^progress[.]txt$", full.names = TRUE))
   unlink(file.path(out, ".group"), recursive = TRUE)
   invisible()
 }
@@ -220,15 +239,22 @@ repair_duplicates <- function(out, x, checkpoint_secs = 300, verbose = TRUE) {
   avail <- table_names(units[[1]]$open())
   check_stream_columns(avail, NULL, cfg$duplicate_by)
   cols <- resolve_test_columns(cfg$columns, avail, cfg$tests)
+  rows <- vapply(units, unit_rows, 0)
+  progress <- new_progress(c(group_steps(cfg), "repair"), file = file.path(rdir, "progress.txt"), verbose = verbose)
+  progress_size(progress, "repair", sum(rows))
   g <- group_pass(units, cfg, cols, dir = file.path(rdir, "group"), checkpoint_secs = checkpoint_secs,
-                  verbose = verbose)
+                  verbose = verbose, rows = rows, progress = progress)
+  progress_start(progress, "repair")
   mask <- flag_mask("duplicate")
   for (ui in seq_along(units)) {
     name <- units[[ui]]$name
     marker <- file.path(rdir, paste0(name, ".fixed"))
-    if (file.exists(marker)) next
+    if (file.exists(marker)) {
+      progress_credit(progress, rows[ui])
+      next
+    }
     info <- readRDS(file.path(out, paste0(name, ".done")))
-    n_in <- unit_rows(units[[ui]])
+    n_in <- rows[ui]
     if (info$n != n_in) stop("unit ", name, " has ", n_in, " input rows but ", info$n, " flagged rows")
     reader <- hits_reader(g$hits)
     first <- 1L
@@ -240,10 +266,12 @@ repair_duplicates <- function(out, x, checkpoint_secs = 300, verbose = TRUE) {
       vectra::write_vtr(d, tmp, col_types = c(flags = "int32"))
       if (!file.rename(tmp, p)) stop("could not replace ", p)
       first <- first + nrow(d)
+      progress_tick(progress, nrow(d))
     }
     save_atomic(TRUE, marker)
     if (verbose) message(name, ": duplicate bit recomputed")
   }
+  progress_end(progress)
   m$duplicate_repair <- list(package_version = as.character(utils::packageVersion("OccurrenceCleaner")),
                              finished = Sys.time())
   m$out <- NULL
