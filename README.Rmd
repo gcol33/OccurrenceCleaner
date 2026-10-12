@@ -130,10 +130,10 @@ keep <- c("kingdom", "year", "coordinateuncertaintyinmeters")
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
                       out = "flags", keep = keep)
 
-cc <- c("zero", "equal", "capital", "centroid", "institution",
-        "gbif_headquarters", "sea")
+coordinatecleaner <- c("zero", "equal", "capital", "centroid", "institution",
+                       "gbif_headquarters", "sea")
 tally_flags(f, by = "kingdom", bins = list(year = c(1950, 1970, 1990, 2000)),
-            rules = list(cc = cc))
+            rules = list(coordinatecleaner = coordinatecleaner))
 ```
 
 See [Large tables on disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html) for details on output files, memory use and resuming interrupted runs.
