@@ -32,6 +32,7 @@
 #' summary(f, rules = list(strict = c("zero", "capital", "duplicate")), by = "kingdom")
 #' @export
 summary.occ_flags <- function(object, ...) {
+  if (!"flags" %in% names(object)) return(NextMethod())
   summary(tally_flags(object, ...))
 }
 
@@ -94,6 +95,7 @@ print.occ_flags <- function(x, n = 10L, ...) {
 #' @export
 print.occ_tally <- function(x, ...) {
   rules <- attr(x, "occ_rules")
+  if (is.null(rules) || !all(paste0("removed_", names(rules)) %in% names(x))) return(NextMethod())
   by <- attr(x, "occ_by") %||% character()
   cat("<occ_tally> ", format(sum(x$n), big.mark = ","), " records", sep = "")
   if (length(by)) cat(" in ", nrow(x), " groups of ", paste(by, collapse = ", "), sep = "")

@@ -1,6 +1,6 @@
 Package: OccurrenceCleaner
 Title: Fast Quality Flags for Species Occurrence Records at Any Scale
-Version: 0.1.0
+Version: 0.2.0
 Authors@R:
     person("Gilles", "Colling", , "gilles.colling051@gmail.com",
            role = c("aut", "cre", "cph"),
@@ -47,5 +47,6 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0

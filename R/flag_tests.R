@@ -110,12 +110,16 @@ default_tests <- function() {
 #' that rule removes.
 #'
 #' @param tests Character vector of test names from [flag_tests()].
-#' @param flags Integer flag words as returned by [flag_occurrences()].
-#' @return `flag_mask()`: a single integer. `has_flag()`: a logical vector the
-#'   length of `flags`; `NA` flags give `NA`.
+#' @param flags Integer flag words, or a data frame returned by
+#'   [flag_occurrences()], whose `flags` column is then used.
+#' @return `flag_mask()`: a single integer. `has_flag()`: a logical vector, one
+#'   element per flag word (per row of a data frame); `NA` flags give `NA`.
 #' @examples
 #' flag_mask(c("capital", "centroid"))
 #' has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
+#' x <- data.frame(decimalLongitude = c(16.37, 0), decimalLatitude = c(48.21, 0))
+#' f <- flag_occurrences(x, tests = c("zero", "capital"))
+#' f[!has_flag(f, "zero"), ]
 #' @export
 flag_mask <- function(tests) {
   tests <- check_tests(tests)
@@ -128,6 +132,10 @@ flag_mask <- function(tests) {
 #' @rdname flag_mask
 #' @export
 has_flag <- function(flags, tests) {
+  if (is.data.frame(flags)) {
+    if (!"flags" %in% names(flags)) stop("`flags` is a data frame without a `flags` column; run flag_occurrences() first")
+    flags <- flags[["flags"]]
+  }
   bitwAnd(as.integer(flags), flag_mask(tests)) != 0L
 }
 

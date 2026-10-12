@@ -12,11 +12,12 @@ has_flag(flags, tests)
 \arguments{
 \item{tests}{Character vector of test names from \code{\link[=flag_tests]{flag_tests()}}.}
 
-\item{flags}{Integer flag words as returned by \code{\link[=flag_occurrences]{flag_occurrences()}}.}
+\item{flags}{Integer flag words, or a data frame returned by
+\code{\link[=flag_occurrences]{flag_occurrences()}}, whose \code{flags} column is then used.}
 }
 \value{
-\code{flag_mask()}: a single integer. \code{has_flag()}: a logical vector the
-length of \code{flags}; \code{NA} flags give \code{NA}.
+\code{flag_mask()}: a single integer. \code{has_flag()}: a logical vector, one
+element per flag word (per row of a data frame); \code{NA} flags give \code{NA}.
 }
 \description{
 \code{flag_mask()} turns test names into the integer with those bits set;
@@ -27,4 +28,7 @@ that rule removes.
 \examples{
 flag_mask(c("capital", "centroid"))
 has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
+x <- data.frame(decimalLongitude = c(16.37, 0), decimalLatitude = c(48.21, 0))
+f <- flag_occurrences(x, tests = c("zero", "capital"))
+f[!has_flag(f, "zero"), ]
 }
