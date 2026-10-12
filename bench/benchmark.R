@@ -1,6 +1,7 @@
 # Benchmark OccurrenceCleaner against CoordinateCleaner on random records near
 # the gazetteers. Each test runs `reps` times per size on the same records; the
-# fastest repetition is kept. Writes <out>/bench-cc.csv and <out>/ENVIRONMENT.txt.
+# fastest repetition is kept. Writes <out>/bench-cc.csv, <out>/bench-auto.csv and
+# <out>/ENVIRONMENT.txt.
 #
 #   Rscript bench/benchmark.R [out dir] [max n] [reps]
 #
@@ -14,8 +15,9 @@ max_n <- if (length(args) >= 2) as.numeric(args[2]) else 1e7
 reps <- if (length(args) >= 3) as.integer(args[3]) else 3L
 cc_budget <- 600
 # The tests clean_coordinates() runs by default that need only coordinates and
-# a species name, timed together as one call.
-cc_default <- c("invalid", "zero", "equal", "capital", "centroid", "institution",
+# a species name, timed together as one call with OccurrenceCleaner's own
+# reference data (row "coordinatecleaner_nine_tests" in bench-cc.csv).
+coordinatecleaner_nine <- c("invalid", "zero", "equal", "capital", "centroid", "institution",
                 "gbif_headquarters", "sea", "duplicate")
 sizes <- c(1e5, 1e6, 1e7)
 sizes <- sizes[sizes <= max_n]
@@ -47,7 +49,7 @@ tests <- c(capital = "cc_cap", centroid = "cc_cen", institution = "cc_inst",
 invisible(flag_occurrences(make_records(1000), tests = "sea", reference = "CoordinateCleaner"))
 invisible(suppressWarnings(suppressMessages(cc_sea(make_records(1000), value = "flagged", verbose = FALSE))))
 
-rows <- list()
+rows <- list(); auto <- list()
 cc_ok <- setNames(rep(TRUE, length(tests)), names(tests))
 for (n in sizes) {
   x <- make_records(n)
@@ -67,13 +69,21 @@ for (n in sizes) {
                                            coordinatecleaner_s = t_cc, agreement = agree)
     cat(sprintf("n=%.0e %-18s occ %8.3f s   cc %8.1f s   agree %s\n", n, t, t_occ, t_cc, format(agree)))
   }
-  t_all <- best_of(flag_occurrences(x, tests = cc_default), reps)
-  rows[[length(rows) + 1]] <- data.frame(n = n, test = "cc_default", occurrencecleaner_s = t_all,
+  t_all <- best_of(flag_occurrences(x, tests = coordinatecleaner_nine), reps)
+  rows[[length(rows) + 1]] <- data.frame(n = n, test = "coordinatecleaner_nine_tests",
+                                         occurrencecleaner_s = t_all,
                                          coordinatecleaner_s = NA_real_, agreement = NA_real_)
-  cat(sprintf("n=%.0e cc_default tests %.2f s\n", n, t_all))
+  cat(sprintf("n=%.0e coordinatecleaner_nine_tests %.2f s\n", n, t_all))
+  # Automatic selection: no `tests`, so every test the columns allow runs.
+  t_auto <- best_of(f_auto <- flag_occurrences(x), reps)
+  plan <- test_plan(f_auto)
+  auto[[length(auto) + 1]] <- data.frame(n = n, seconds = t_auto, n_tests = sum(plan$run),
+                                         tests = paste(plan$test[plan$run], collapse = ";"))
+  cat(sprintf("n=%.0e automatic selection, %d tests %.2f s\n", n, sum(plan$run), t_auto))
 }
 res <- do.call(rbind, rows)
 write.csv(res, file.path(out, "bench-cc.csv"), row.names = FALSE)
+write.csv(do.call(rbind, auto), file.path(out, "bench-auto.csv"), row.names = FALSE)
 cpu_name <- function() {
   sys <- Sys.info()[["sysname"]]
   if (sys == "Windows")
