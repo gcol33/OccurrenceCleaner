@@ -408,6 +408,29 @@ reference_label <- function(reference, land_scale, custom = NULL) {
   if (is.null(custom)) base else paste0(base, "; custom: ", custom)
 }
 
+#' Reference data behind a set of flags
+#'
+#' Returns the label [flag_occurrences()] records with its flags: the
+#' package version, the land scale, the version of every reference layer, and
+#' for each user gazetteer passed through `gazetteers` its size and MD5
+#' checksum. Store it next to any cleaned table that goes into an analysis.
+#'
+#' @param x A data frame returned by [flag_occurrences()], an `occ_flagged`
+#'   object, or the output directory of a streamed run.
+#' @return A character string.
+#' @examples
+#' x <- data.frame(decimalLongitude = c(16.37, 0), decimalLatitude = c(48.21, 0))
+#' flag_reference(flag_occurrences(x, tests = c("zero", "capital")))
+#' @export
+flag_reference <- function(x) {
+  if (is.data.frame(x)) {
+    label <- attr(x, "occ_reference")
+    if (is.null(label)) stop("`x` carries no reference label; pass the data frame flag_occurrences() returned")
+    return(label)
+  }
+  read_flagged(x)$reference
+}
+
 # One-line form of a reference label for print methods: package, version and
 # land scale; reference_info() lists the layer versions.
 reference_short <- function(label) {

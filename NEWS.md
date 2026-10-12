@@ -3,6 +3,7 @@
 * `gentiana`: the 33,025 GBIF records of the genus *Gentiana* in Austria under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples and the case study of the package paper.
 * `print()` methods for `occ_flags` (a header and the first records, with the tests each failed), `occ_tally` (records removed and kept per rule) and `occ_columns`; `occ_flagged` prints its reference on one line. `summary()` stays the full per-test report.
 * `has_flag()` takes a flagged data frame as well as the flag words.
+* `flag_reference()` returns the reference label recorded with a set of flags, in memory or on disk.
 * `print()` and `summary()` of a flagged data frame or tally subset to other columns fall back to the data frame methods.
 
 # OccurrenceCleaner 0.1.0

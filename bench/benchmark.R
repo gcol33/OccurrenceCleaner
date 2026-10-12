@@ -55,7 +55,7 @@ for (n in sizes) {
       fn <- get(tests[[t]], asNamespace("CoordinateCleaner"))
       run_cc <- function() !suppressWarnings(suppressMessages(fn(x, value = "flagged", verbose = FALSE)))
       t_first <- system.time(theirs <- run_cc())[["elapsed"]]
-      t_cc <- if (t_first * reps > cc_budget) t_first else min(t_first, best_of(run_cc(), reps - 1L))
+      t_cc <- if (reps == 1L || t_first * reps > cc_budget) t_first else min(t_first, best_of(run_cc(), reps - 1L))
       agree <- mean(theirs == f[[paste0("flag_", t)]], na.rm = TRUE)
       if (t_cc > cc_budget) cc_ok[[t]] <- FALSE
     }
@@ -70,7 +70,15 @@ for (n in sizes) {
 }
 res <- do.call(rbind, rows)
 write.csv(res, file.path(out, "bench-cc.csv"), row.names = FALSE)
-cpu <- tryCatch(trimws(system("wmic cpu get name", intern = TRUE)[2]), error = function(e) NA)
+cpu_name <- function() {
+  sys <- Sys.info()[["sysname"]]
+  if (sys == "Windows")
+    return(trimws(system2("powershell", c("-NoProfile", "-Command",
+                                          shQuote("(Get-CimInstance Win32_Processor).Name")), stdout = TRUE)[1]))
+  if (sys == "Darwin") return(system2("sysctl", c("-n", "machdep.cpu.brand_string"), stdout = TRUE)[1])
+  sub("^model name\\s*:\\s*", "", grep("^model name", readLines("/proc/cpuinfo"), value = TRUE)[1])
+}
+cpu <- cpu_name()
 writeLines(c(paste("date:", Sys.time()), paste("cpu:", cpu),
              paste("platform:", R.version$platform), paste("os:", utils::osVersion),
              paste("R:", R.version.string), paste("BLAS:", extSoftVersion()[["BLAS"]]),

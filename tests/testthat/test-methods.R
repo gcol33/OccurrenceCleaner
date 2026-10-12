@@ -69,6 +69,8 @@ test_that("print is short: header, first records, failed tests by name", {
   expect_output(print(t[, c("kingdom", "n", "flagged_zero")]), "flagged_zero")
   expect_identical(has_flag(f, "zero"), has_flag(f$flags, "zero"))
   expect_error(has_flag(data.frame(a = 1), "zero"), "without a `flags` column")
+  expect_identical(flag_reference(f), attr(f, "occ_reference"))
+  expect_error(flag_reference(data.frame(a = 1)), "no reference label")
   expect_output(print(occ_columns(lon = "x")), "lon +x")
 })
 

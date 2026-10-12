@@ -85,6 +85,7 @@ reference:
 - title: Reference data
   contents:
   - reference_info
+  - flag_reference
   - reference_points
   - reference_habitat
   - download_reference
