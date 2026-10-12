@@ -28,12 +28,12 @@ lat_lim <- c(-60, 84)
 # Test groups in drawing order; a record flagged by several groups counts in
 # the last of them.
 groups <- list(
-  zero        = list(tests = c("zero", "equal"),                     label = "zero or equal coordinates",
-                     colour = "#7a4fa3"),
-  centroid    = list(tests = c("centroid", "capital"),               label = "country centroids, capitals",
-                     colour = "#d9792b"),
-  institution = list(tests = c("institution", "gbif_headquarters"), label = "museums, herbaria, gardens",
-                     colour = "#c0392b")
+  institution = list(tests = c("institution", "gbif_headquarters"), label = "institutions",
+                     colour = "#0072B2"),
+  centroid    = list(tests = c("centroid", "capital"),               label = "centroids, capitals",
+                     colour = "#D55E00"),
+  zero        = list(tests = c("zero", "equal"),                     label = "zero, equal",
+                     colour = "#8E3B9E")
 )
 tests <- c("invalid", unlist(lapply(groups, `[[`, "tests"), use.names = FALSE))
 
@@ -103,15 +103,16 @@ flagged <- do.call(rbind, lapply(names(groups), function(g) {
 flagged$group <- factor(flagged$group, names(groups))
 flagged <- flagged[order(flagged$group, flagged$n), ]
 
-# Shares written in open ocean, placed as fractions of the frame (x from the
-# left, y from the bottom).
-label_at <- rbind(zero = c(0.15, 0.34), centroid = c(0.16, 0.10), institution = c(0.72, 0.36))
+# Shares written in open ocean on two short lines, placed as fractions of the
+# frame (x from the left, y from the bottom), large enough for phone width.
+label_at <- rbind(institution = c(0.098, 0.665), zero = c(0.115, 0.30), centroid = c(0.67, 0.10))
 key <- data.frame(
   x = label_at[names(groups), 1] * nx,
   y = label_at[names(groups), 2] * ny,
   group = factor(names(groups), names(groups)),
-  label = sprintf("%s %s %%", vapply(groups, `[[`, "", "label"),
-                  formatC(share[names(groups)], format = "f", digits = if (min(share) < 0.1) 2 else 1))
+  label = sprintf("%s
+%s %%", vapply(groups, `[[`, "", "label"),
+                  sprintf(ifelse(share[names(groups)] < 1, "%.2f", "%.1f"), share[names(groups)]))
 )
 
 cols <- vapply(groups, `[[`, "", "colour")
@@ -119,8 +120,8 @@ p <- ggplot() +
   annotation_raster(density, 0, nx, 0, ny, interpolate = FALSE) +
   geom_point(data = flagged, aes(x, y, colour = group, size = n), alpha = 0.75) +
   scale_size_area(max_size = 2.6, trans = "sqrt", guide = "none") +
-  geom_text(data = key, aes(x, y, label = label, colour = group), size = 7.5,
-            fontface = "bold", hjust = 0.5) +
+  geom_text(data = key, aes(x, y, label = label, colour = group), size = 11,
+            fontface = "bold", hjust = 0.5, lineheight = 0.85) +
   scale_colour_manual(values = cols, guide = "none") +
   coord_equal(xlim = c(0, nx), ylim = c(0, ny), expand = FALSE) +
   theme_void() +

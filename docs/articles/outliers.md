@@ -18,8 +18,9 @@ judged, these tests run in a pass of their own over the whole input
 before the record tests. This article runs the geographic and dataset
 tests on a simulated table of alpine plants, adds the artificial-hotspot
 test `aohi`, and shows how the group pass works on streamed input. The
-fossil outlier tests are shown in the fossil article. Installation is
-covered in [Get
+fossil outlier tests are shown in [Cleaning fossil
+records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md).
+Installation is covered in [Get
 started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
@@ -188,7 +189,9 @@ which(fb$flag_outlier)
 The Madrid record is the only one flagged. CoordinateCleaner 3.0.1
 computes the same cell statistics but never flags a record on this path,
 because its mapping from the outlier cells back to records returns none;
-the article Coming from CoordinateCleaner shows the comparison.
+[Coming from
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
+shows the comparison.
 
 ## Dataset tests
 

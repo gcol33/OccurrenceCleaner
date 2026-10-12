@@ -33,6 +33,11 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
+### readme.hero  [A2 A3]  (figure)
+- idea: where flagged records pile up, on real GBIF data
+- job: Shows 145 million records of the GBIF snapshot of 2026-10-01 as a grey density map with the records flagged near institutions, at country centroids or capitals, and with zero or equal coordinates drawn over it, each group's share written beside it. Built by `data-raw/hero.R`.
+- leaves: the kinds of problem the tests find, at snapshot scale, before any word of text
+
 ### readme.claim  [A3]
 - idea: what the package checks
 - job: Says what the package checks records for, with examples (one sentence).

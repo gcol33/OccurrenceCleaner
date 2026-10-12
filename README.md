@@ -12,6 +12,11 @@ coverage](https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg)](https
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
+<p align="center">
+
+<img src="man/figures/OccurrenceCleaner-hero.png" alt="World map of 145 million GBIF records from the snapshot of 2026-10-01 in grey, with the records flagged near museums, herbaria and gardens (0.33 %), at country centroids or capitals (2.1 %) and with zero or equal coordinates (0.09 %) drawn as coloured dots; the zero and equal records form lines along the equator, the prime meridian and the diagonals where latitude equals longitude" width="100%">
+</p>
+
 OccurrenceCleaner checks species occurrence records for potential
 problems, such as coordinates at country centroids or museums, in the
 sea, or far from other records of the same species.

@@ -102,6 +102,8 @@
 <p><em>Check occurrence records, at any scale</em></p>
 <!-- badges: start -->
 
+<p align="center">
+<img src="reference/figures/OccurrenceCleaner-hero.png" alt="World map of 145 million GBIF records from the snapshot of 2026-10-01 in grey, with the records flagged near museums, herbaria and gardens (0.33 %), at country centroids or capitals (2.1 %) and with zero or equal coordinates (0.09 %) drawn as coloured dots; the zero and equal records form lines along the equator, the prime meridian and the diagonals where latitude equals longitude" width="100%"></p>
 <p>OccurrenceCleaner checks species occurrence records for potential problems, such as coordinates at country centroids or museums, in the sea, or far from other records of the same species.</p>
 <p>The package extends the occurrence checks in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019), adding tests, expanding the reference data and processing datasets as large as a full snapshot of the Global Biodiversity Information Facility (GBIF). Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. It supports:</p>
 <ul>
@@ -288,12 +290,12 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>If you use OccurrenceCleaner, please cite the package and</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">CoordinateCleaner</span> (Zizka et al. <span class="dv">2019</span>), which provides the test</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>definitions and default buffers.</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">CoordinateCleaner</span> (Zizka et al. <span class="dv">2019</span>, doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>which provides the test definitions and default buffers.</span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species</span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  Occurrence Records_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner<span class="sc">&gt;</span>.</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span><span class="er">&gt;</span>.</span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
@@ -302,28 +304,8 @@
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
 <span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner},</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler</span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  D, Farooq H, Herdean A, Ariza M, Scharn R, Svantesson S, Wengstrom N,</span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  Zizka V, Antonelli <span class="fu">A</span> (<span class="dv">2019</span>). <span class="st">"CoordinateCleaner: standardized</span></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="st">  cleaning of occurrence records from biological collection databases."</span></span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  _Methods <span class="cf">in</span> Ecology and Evolution_, <span class="sc">*</span><span class="dv">10</span><span class="sc">*</span>, <span class="dv">744</span><span class="fl">-751.</span></span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span></span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span><span class="sc">&gt;</span>.</span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a></span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a></span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  <span class="sc">@</span>Article{zizka2019coordinatecleaner,</span>
-<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    title <span class="ot">=</span> {CoordinateCleaner<span class="sc">:</span> standardized cleaning of occurrence records from biological collection databases},</span>
-<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    author <span class="ot">=</span> {Alexander Zizka and Daniele Silvestro and Tobias Andermann and Josue Azevedo and Camila {Duarte Ritter} and Daniel Edler and Harith Farooq and Andrei Herdean and Maria Ariza and Ruud Scharn and Sten Svantesson and Niklas Wengstrom and Vera Zizka and Alexandre Antonelli},</span>
-<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    journal <span class="ot">=</span> {Methods <span class="cf">in</span> Ecology and Evolution},</span>
-<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2019</span>},</span>
-<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    volume <span class="ot">=</span> {<span class="dv">10</span>},</span>
-<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    pages <span class="ot">=</span> {<span class="dv">744</span><span class="sc">--</span><span class="dv">751</span>},</span>
-<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>},</span>
-<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>  }</span></code></pre></div>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span>},</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

@@ -526,8 +526,9 @@ through `issue_taxon`, although their coordinates are fine.
   coarse: in the example the GBIF headquarters are on land at that scale
   and at sea on the 1:50 million coast. For coastal or island taxa,
   `land_scale = 50` or `10` changes the result for records within a few
-  kilometres of the coast; the reference-data article shows the size of
-  the difference.
+  kilometres of the coast; [Reference
+  data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
+  shows the size of the difference.
 
 - **`duplicate` depends on what counts as the same record.** By default
   it is the same coordinates and the same `species` value. Adding

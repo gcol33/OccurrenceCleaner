@@ -483,32 +483,60 @@ and requires the differences to be only those documented below.</p>
 <div class="section level3">
 <h3 id="buffer-circles">Buffer circles<a class="anchor" aria-label="anchor" href="#buffer-circles"></a>
 </h3>
-<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
-builds each buffer as a polygon with its vertices on the circle (72
-vertices for capitals, centroids and the GBIF headquarters, 40 for
-institutions) and tests whether a record lies inside that polygon.
-Between two vertices the polygon edge lies inside the circle, at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mrow><mi mathvariant="normal">cos</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>π</mi><mi>/</mi><mi>n</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r \cos(\pi / n)</annotation></semantics></math>
-from the centre at mid-edge: 99.9 % of the buffer for 72 vertices, 99.7
-% for 40. OccurrenceCleaner tests the geodesic distance against the
-buffer itself. A record due north of Kabul’s capital point (a vertex
-direction) and one at a bearing of 2.5 degrees (mid-edge), each at 9,995
-m:</p>
+<p>The packages draw the boundary around a reference location
+differently:</p>
+<ul>
+<li><p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+approximates the circle with a polygon.</p></li>
+<li><p>OccurrenceCleaner measures the distance from the reference
+location directly.</p></li>
+</ul>
+<p>The polygon’s edges pass slightly inside the circle. A record close
+to the boundary can therefore fall inside the distance limit and outside
+the polygon.</p>
+<p>This example places two records 9,995 metres from the same capital
+reference point in Kabul. Both are inside the 10,000-metre limit. One
+lies toward a polygon vertex; the other lies halfway between two vertex
+directions.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>; <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"countryref"</span>, package <span class="op">=</span> <span class="st">"CoordinateCleaner"</span>, envir <span class="op">=</span> <span class="va">e</span><span class="op">)</span></span>
-<span><span class="va">kabul</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">countryref</span><span class="op">[</span><span class="va">e</span><span class="op">$</span><span class="va">countryref</span><span class="op">$</span><span class="va">iso3</span> <span class="op">==</span> <span class="st">"AFG"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital.lon"</span>, <span class="st">"capital.lat"</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"countryref"</span>, package <span class="op">=</span> <span class="st">"CoordinateCleaner"</span>, envir <span class="op">=</span> <span class="va">e</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kabul</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span></span>
+<span>  <span class="va">e</span><span class="op">$</span><span class="va">countryref</span><span class="op">[</span></span>
+<span>    <span class="va">e</span><span class="op">$</span><span class="va">countryref</span><span class="op">$</span><span class="va">iso3</span> <span class="op">==</span> <span class="st">"AFG"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital.lon"</span>, <span class="st">"capital.lat"</span><span class="op">)</span></span>
+<span>  <span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">geosphere</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">destPoint</a></span><span class="op">(</span><span class="va">kabul</span>, b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span><span class="op">)</span>, d <span class="op">=</span> <span class="fl">9995</span><span class="op">)</span></span>
-<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, decimalLatitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>bearing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span><span class="op">)</span>, distance_m <span class="op">=</span> <span class="fl">9995</span>,</span>
-<span>           cc_flagged <span class="op">=</span> <span class="op">!</span><span class="fu">CoordinateCleaner</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cap.html" class="external-link">cc_cap</a></span><span class="op">(</span><span class="va">y</span>, value <span class="op">=</span> <span class="st">"flagged"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>           oc_flagged <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">y</span>, tests <span class="op">=</span> <span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  species <span class="op">=</span> <span class="st">"a"</span>,</span>
+<span>  decimalLongitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>,</span>
+<span>  decimalLatitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  bearing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
+<span>  distance_m <span class="op">=</span> <span class="fl">9995</span>,</span>
+<span>  cc_flagged <span class="op">=</span> <span class="op">!</span><span class="fu">CoordinateCleaner</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cap.html" class="external-link">cc_cap</a></span><span class="op">(</span></span>
+<span>    <span class="va">y</span>, value <span class="op">=</span> <span class="st">"flagged"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  oc_flagged <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span></span>
+<span>    <span class="va">y</span>,</span>
+<span>    tests <span class="op">=</span> <span class="st">"capital"</span>,</span>
+<span>    reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span></span>
+<span>  <span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt;   bearing distance_m cc_flagged oc_flagged</span></span>
 <span><span class="co">#&gt; 1     0.0       9995       TRUE       TRUE</span></span>
 <span><span class="co">#&gt; 2     2.5       9995      FALSE       TRUE</span></span></code></pre></div>
-<p>So every record CoordinateCleaner flags is flagged here, and the
-extra flags are records between 99.7 % and 100 % of a buffer: within 9.5
-m of the 10 km capital edge, 0.95 m of the 1 km centroid and
-headquarters edge, 0.31 m of the 100 m institution edge.</p>
+<p>Both packages flag the first record. OccurrenceCleaner also flags the
+second, which lies just outside CoordinateCleaner’s polygon.</p>
+<p>Using the same reference point and buffer radius isolates this
+boundary effect. It explains how records near the edge can receive
+different flags.</p>
 </div>
 <div class="section level3">
 <h3 id="the-zero-buffer">The zero buffer<a class="anchor" aria-label="anchor" href="#the-zero-buffer"></a>
@@ -626,13 +654,13 @@ disk.</p>
 <p>With the default <code>reference = "OccurrenceCleaner"</code> the
 gazetteers are rebuilt from the original sources of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 tables, so they hold the same kinds of points but not the same
-coordinates; the reference-data article lists the sources and measures
-the differences. Points from sources CoordinateCleaner does not use,
-such as Wikidata institutions and Natural Earth capitals, carry
-<code>extension</code> <code>TRUE</code> and are used by default;
-passing the rows with <code>extension</code> <code>FALSE</code> through
-<code>gazetteers</code> restricts a test to CoordinateCleaner’s sources
-(<a href="reference-data.html#extension-points">Extension points</a>).
+coordinates; <a href="reference-data.html">Reference data</a> lists the
+sources and measures the differences. Points from sources
+CoordinateCleaner does not use, such as Wikidata institutions and
+Natural Earth capitals, carry <code>extension</code> <code>TRUE</code>
+and are used by default; passing the rows with <code>extension</code>
+<code>FALSE</code> through <code>gazetteers</code> restricts a test to
+CoordinateCleaner’s sources (<a href="reference-data.html#extension-points">Extension points</a>).
 <code>reference = "CoordinateCleaner"</code> uses CoordinateCleaner’s
 tables and reproduces its flags up to the differences above.</p>
 </div>

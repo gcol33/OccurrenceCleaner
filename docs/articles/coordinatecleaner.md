@@ -173,35 +173,66 @@ differences to be only those documented below.
 
 ### Buffer circles
 
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-builds each buffer as a polygon with its vertices on the circle (72
-vertices for capitals, centroids and the GBIF headquarters, 40 for
-institutions) and tests whether a record lies inside that polygon.
-Between two vertices the polygon edge lies inside the circle, at
-$`r \cos(\pi / n)`$ from the centre at mid-edge: 99.9 % of the buffer
-for 72 vertices, 99.7 % for 40. OccurrenceCleaner tests the geodesic
-distance against the buffer itself. A record due north of Kabul’s
-capital point (a vertex direction) and one at a bearing of 2.5 degrees
-(mid-edge), each at 9,995 m:
+The packages draw the boundary around a reference location differently:
+
+- [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+  approximates the circle with a polygon.
+
+- OccurrenceCleaner measures the distance from the reference location
+  directly.
+
+The polygon’s edges pass slightly inside the circle. A record close to
+the boundary can therefore fall inside the distance limit and outside
+the polygon.
+
+This example places two records 9,995 metres from the same capital
+reference point in Kabul. Both are inside the 10,000-metre limit. One
+lies toward a polygon vertex; the other lies halfway between two vertex
+directions.
 
 ``` r
 
-e <- new.env(); utils::data("countryref", package = "CoordinateCleaner", envir = e)
-kabul <- unlist(e$countryref[e$countryref$iso3 == "AFG", c("capital.lon", "capital.lat")][1, ])
+e <- new.env()
+utils::data("countryref", package = "CoordinateCleaner", envir = e)
+
+kabul <- unlist(
+  e$countryref[
+    e$countryref$iso3 == "AFG",
+    c("capital.lon", "capital.lat")
+  ][1, ]
+)
+
 p <- geosphere::destPoint(kabul, b = c(0, 2.5), d = 9995)
-y <- data.frame(species = "a", decimalLongitude = p[, 1], decimalLatitude = p[, 2])
-data.frame(bearing = c(0, 2.5), distance_m = 9995,
-           cc_flagged = !CoordinateCleaner::cc_cap(y, value = "flagged", verbose = FALSE),
-           oc_flagged = flag_occurrences(y, tests = "capital", reference = "CoordinateCleaner")$flag_capital)
+
+y <- data.frame(
+  species = "a",
+  decimalLongitude = p[, 1],
+  decimalLatitude = p[, 2]
+)
+
+data.frame(
+  bearing = c(0, 2.5),
+  distance_m = 9995,
+  cc_flagged = !CoordinateCleaner::cc_cap(
+    y, value = "flagged", verbose = FALSE
+  ),
+  oc_flagged = flag_occurrences(
+    y,
+    tests = "capital",
+    reference = "CoordinateCleaner"
+  )$flag_capital
+)
 #>   bearing distance_m cc_flagged oc_flagged
 #> 1     0.0       9995       TRUE       TRUE
 #> 2     2.5       9995      FALSE       TRUE
 ```
 
-So every record CoordinateCleaner flags is flagged here, and the extra
-flags are records between 99.7 % and 100 % of a buffer: within 9.5 m of
-the 10 km capital edge, 0.95 m of the 1 km centroid and headquarters
-edge, 0.31 m of the 100 m institution edge.
+Both packages flag the first record. OccurrenceCleaner also flags the
+second, which lies just outside CoordinateCleaner’s polygon.
+
+Using the same reference point and buffer radius isolates this boundary
+effect. It explains how records near the edge can receive different
+flags.
 
 ### The zero buffer
 
@@ -327,12 +358,13 @@ With the default `reference = "OccurrenceCleaner"` the gazetteers are
 rebuilt from the original sources of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 tables, so they hold the same kinds of points but not the same
-coordinates; the reference-data article lists the sources and measures
-the differences. Points from sources CoordinateCleaner does not use,
-such as Wikidata institutions and Natural Earth capitals, carry
-`extension` `TRUE` and are used by default; passing the rows with
-`extension` `FALSE` through `gazetteers` restricts a test to
-CoordinateCleaner’s sources ([Extension
+coordinates; [Reference
+data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
+lists the sources and measures the differences. Points from sources
+CoordinateCleaner does not use, such as Wikidata institutions and
+Natural Earth capitals, carry `extension` `TRUE` and are used by
+default; passing the rows with `extension` `FALSE` through `gazetteers`
+restricts a test to CoordinateCleaner’s sources ([Extension
 points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 `reference = "CoordinateCleaner"` uses CoordinateCleaner’s tables and
 reproduces its flags up to the differences above.

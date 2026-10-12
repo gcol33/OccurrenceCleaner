@@ -341,5 +341,6 @@ columns are found by name in any of the common spellings. Its
 reads one code column chosen with `ref_col`; here every code column
 present is matched. With the same reference points and polygons the two
 packages give the same flags, up to the buffer-polygon band described in
-the article Coming from CoordinateCleaner; the package tests check this
-for `institution`, `sea` and `range`.
+[Coming from
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md);
+the package tests check this for `institution`, `sea` and `range`.

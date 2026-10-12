@@ -17,6 +17,8 @@ options(width = 80)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
+<p align="center"><img src="man/figures/OccurrenceCleaner-hero.png" alt="World map of 145 million GBIF records from the snapshot of 2026-10-01 in grey, with the records flagged near museums, herbaria and gardens (0.33 %), at country centroids or capitals (2.1 %) and with zero or equal coordinates (0.09 %) drawn as coloured dots; the zero and equal records form lines along the equator, the prime meridian and the diagonals where latitude equals longitude" width="100%"></p>
+
 OccurrenceCleaner checks species occurrence records for potential problems, such as coordinates at country centroids or museums, in the sea, or far from other records of the same species.
 
 The package extends the occurrence checks in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), adding tests, expanding the reference data and processing datasets as large as a full snapshot of the Global Biodiversity Information Facility (GBIF). Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. It supports:
