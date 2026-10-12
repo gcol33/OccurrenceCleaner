@@ -1,46 +1,53 @@
 # OccurrenceCleaner
 
-*quality flags for occurrence records, at any scale*
+*Check occurrence records, at any scale*
 
-Occurrence cleaning tools flag species records with suspect coordinates,
-such as points at country centroids or museums, in the sea, or far from
-all other records of the same species. OccurrenceCleaner extends
+OccurrenceCleaner checks species occurrence records for potential
+problems, such as coordinates at country centroids or museums, in the
+sea, or far from other records of the same species.
+
+The package extends the occurrence checks in
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. 2019) to large datasets, running the same tests fast
-enough to process an entire GBIF snapshot. All records are retained with
-their flags, so users can decide afterwards which to exclude. It is
-built for:
+(Zizka et al. 2019), adding tests, expanding the reference data and
+processing datasets as large as a full snapshot of the Global
+Biodiversity Information Facility (GBIF). Each test stores its result as
+a flag alongside the record. All records remain available, so you can
+inspect their flags, compare how different combinations of tests affect
+the dataset, and choose which records to exclude. It supports:
 
-- **Large tables.** The proximity tests are nearest-neighbour queries in
-  C++: ten million records go through the capital test in 1.4 s on a
-  desktop machine
+- **Large tables.** Ten million records go through the capital proximity
+  test in 1.4 seconds on a desktop machine
   ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)).
-  A GBIF snapshot of billions of records is streamed from its Parquet
-  files, one resumable file at a time.
-- **Comparing cleaning rules.** The flags are computed once;
-  [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
-  then reports what each rule removes per taxon, period or precision
-  class, ready for a methods section or a data paper.
+  A GBIF snapshot containing billions of records is processed from its
+  Parquet files, with progress saved so processing can resume.
+- **Comparing cleaning rules.** Compute the flags once, then choose
+  which tests determine whether to exclude a record.
+  [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html)
+  reports how many records each rule removes per taxon, period or
+  precision class, providing counts for a methods section or data paper.
 - **An extended list of institutions.** Records are checked against
-  18,245 museum, herbarium and botanic garden locations to flag
+  18,245 museum, herbarium and botanic garden locations to identify
   coordinates that may refer to the institution holding the specimen.
-  The list combines GBIF’s collection registry (GRSciColl), Wikidata,
-  Wikipedia’s natural history museum lists in seven languages, GeoNames
-  and BGCI’s botanic gardens. Of these locations, 7,665 come from
-  sources not used by CoordinateCleaner. These additional locations are
-  included by default but can be excluded to restrict the test to
-  CoordinateCleaner’s sources ([Extension
+  The list combines the GBIF Registry of Scientific Collections
+  (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in
+  seven languages, GeoNames and Botanic Gardens Conservation
+  International (BGCI). It includes 7,665 locations from sources beyond
+  those used by CoordinateCleaner. These additional locations are
+  included by default; you can restrict the test to CoordinateCleaner’s
+  sources ([Extension
   points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
-- **Checks based on GBIF metadata.** Tests use GBIF’s issue warnings,
-  basis of record and establishment means. The recorded genus’s habitat
-  helps distinguish marine from terrestrial taxa.
+- **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
+  the type of record, and whether the organism is recorded as native or
+  introduced. Habitat information for the recorded genus helps
+  distinguish marine from terrestrial taxa.
 
-Results stay comparable with CoordinateCleaner, so a methods section can
-cite its tests. The tests are reimplemented with its definitions and
-default buffers, and the test suite runs CoordinateCleaner on sampled
-records and requires the same flags, up to the differences listed in
-[Coming from
+The tests follow CoordinateCleaner’s definitions and default buffers,
+with documented differences in [Coming from
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
+Automated checks run both packages on sampled records and require
+matching flags for the shared behaviour. A methods section can cite
+CoordinateCleaner for the original tests and describe the tests and
+settings used in OccurrenceCleaner.
 
 ## Installation
 

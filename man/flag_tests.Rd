@@ -12,7 +12,7 @@ A data frame with columns \code{bit} (0-based), \code{test}, \code{definition},
 \code{spatialvalid} (the column \code{clean_coordinates()} or \code{clean_fossils()}
 writes for the test, used by \code{\link[=as_spatialvalid]{as_spatialvalid()}}, or \code{NA}) and \code{needs}
 (the record fields the test reads, as names of \code{\link[=occ_columns]{occ_columns()}}).
-The attribute \code{layout_version} holds the layout version.
+The attribute \code{layout_version} gives the layout version.
 }
 \description{
 Every record flagged by \code{\link[=flag_occurrences]{flag_occurrences()}} carries an integer flag word in

@@ -7,9 +7,10 @@ decided with the Vincenty inverse formula.
 
 ## Details
 
-The default gazetteer holds the capital "geographic coordinates" of the
-CIA World Factbook (public domain; 232 points, one per country profile,
-through the factbook.json mirror retrieved 2026-10-11), the source
+The default gazetteer contains the capital "geographic coordinates" of
+the CIA World Factbook (public domain; 232 points, one per country
+profile, through the factbook.json mirror retrieved 2026-10-11), the
+source
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
 capitals are taken from. The column `extension` marks the 243 Natural
 Earth populated places of the classes admin-0 capital, alternative

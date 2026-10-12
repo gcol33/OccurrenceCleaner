@@ -20,7 +20,7 @@
 #'   `spatialvalid` (the column `clean_coordinates()` or `clean_fossils()`
 #'   writes for the test, used by [as_spatialvalid()], or `NA`) and `needs`
 #'   (the record fields the test reads, as names of [occ_columns()]).
-#'   The attribute `layout_version` holds the layout version.
+#'   The attribute `layout_version` gives the layout version.
 #' @examples
 #' flag_tests()
 #' @export

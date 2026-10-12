@@ -23,7 +23,7 @@
 #'   was run), one column `flagged_<test>` per test, per rule `removed_<rule>`
 #'   and `kept_<rule>`, and per rule and test of the rule `only_<rule>_<test>`:
 #'   the records that test is the sole reason the rule removes. The attribute
-#'   `occ_rules` holds the rules and `occ_by` the grouping columns.
+#'   `occ_rules` lists the rules and `occ_by` the grouping columns.
 #'   [summary()][summary.occ_tally] turns the counts into percentages and
 #'   [plot()][plot.occ_tally] draws them.
 #' @examples

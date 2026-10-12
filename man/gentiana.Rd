@@ -34,7 +34,7 @@ their datasets, identified by \code{datasetkey} (\verb{https://www.gbif.org/data
 gentiana
 }
 \description{
-The occurrence records of the genus \emph{Gentiana} that GBIF holds with the
+The occurrence records of the genus \emph{Gentiana} that GBIF publishes with the
 country code \code{AT} (Austria) and a CC0 1.0 or CC BY 4.0 licence, taken from
 the GBIF snapshot of 1 October 2026. Specimens from herbaria and
 observations from surveys and citizen science, from the 18th century to

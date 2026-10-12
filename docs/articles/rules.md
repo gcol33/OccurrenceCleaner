@@ -1,25 +1,26 @@
 # Choosing a cleaning rule
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-writes one flag per record and test and removes nothing. A cleaning rule
-is a set of tests: a record is dropped when it carries any of them. This
-article flags a set of records once, measures what share each test and
-each candidate rule would remove, overall and by group, and then applies
-the chosen rule. All of the comparisons below reuse the flags from that
-single pass.
+stores each test’s result alongside each record. All records remain in
+the table. A cleaning rule specifies which tests to use when filtering:
+a record is excluded if any test in the rule flags it.
 
-1.  **Flag** the records once with every test of interest,
+This article compares how individual tests and cleaning rules affect the
+dataset, then applies a chosen rule:
+
+1.  Flag the records with every test of interest using
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
 
-2.  **Measure** the share each test and rule removes,
+2.  Compare the share of records flagged by each test and rule using
     [`summary()`](https://rdrr.io/r/base/summary.html) and
     [`plot()`](https://rdrr.io/r/graphics/plot.default.html).
 
-3.  **Break it down** by taxon, record age and coordinate precision,
+3.  Compare these shares by taxon, record age and coordinate precision
+    using
     [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
     with `by` and `bins`.
 
-4.  **Apply** the chosen rule,
+4.  Select records using the chosen rule with
     [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
 
 ## Installation
@@ -74,9 +75,8 @@ x$issue <- ifelse(runif(n) < ifelse(old, 0.3, 0.03), "COORDINATE_ROUNDED", "")
 x$issue[sample(n, 40)] <- "TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"
 ```
 
-Then the errors are planted: records placed within 3 km of five
-capitals, records at (0, 0), records in the Atlantic and exact copies of
-earlier records.
+Then we add records within 3 km of five capitals, at (0, 0), and in the
+Atlantic, along with exact copies of earlier records.
 
 ``` r
 
@@ -331,8 +331,8 @@ nrow(clean)
 
 The removed records keep their flags, and a different rule only needs a
 different set of tests in the same call; the records never have to be
-flagged again. A cut on record age or uncertainty is an ordinary filter
-on the raw columns, for example `clean[clean$year >= 1950, ]`.
+flagged again. A cut on record age or uncertainty is a filter on the raw
+columns, for example `clean[clean$year >= 1950, ]`.
 
 ## How the shares are computed
 

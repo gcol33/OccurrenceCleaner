@@ -9,7 +9,7 @@ so a cleaning rule is chosen afterwards as a query over the flags. See
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 to flag a data frame or an on-disk table,
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
-for which bit holds which test, and
+for the bit each test sets, and
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 to count what each test and rule removes.
 

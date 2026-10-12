@@ -33,20 +33,28 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
-### readme.claim  [A1 A2 A3]
-- idea: kind of tool · extension of CC · same tests, scale, kept records
-- job: Says what occurrence cleaning tools do (one sentence), names the package as an extension of CoordinateCleaner to large datasets running the same tests at snapshot scale (one sentence), and says every record is kept with its flags so the exclusion is decided afterwards (one sentence).
-- leaves: the category, the parent, scale, and that records are kept
+### readme.claim  [A3]
+- idea: what the package checks
+- job: Says what the package checks records for, with examples (one sentence).
+- leaves: the domain and the kinds of problem
+
+### readme.extends  [A1 A2 A3]
+- idea: builds on CC · additions · the flag mechanism · records kept, reader decides
+- job: Says the package builds on CoordinateCleaner's checks, adding tests, reference data and larger datasets (one sentence), defines a flag as the result each test stores alongside the record (one sentence), and says every record remains available so the reader inspects flags, compares test combinations and chooses the exclusion (one sentence, ending on the decision).
+- leaves: the parent, what is added, what a flag is, and that the reader decides
+
+### readme.supports  (lead-in)
+- job: "OccurrenceCleaner supports:" introduces the list; the first item expands GBIF.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four uses the package is built for, each with its reason: large tables with the mechanism (nearest-neighbour queries) and the measured capital-test time, and streaming, rule comparison with `tally_flags()`, 18,245 institution locations, their sources and the 7,665 extension points (included by default, removable), GBIF fields and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and resumable processing of Parquet files, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 18,245 institution locations, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
-- idea: comparable with CC; reimplemented; tested
-- job: Says results stay comparable with CoordinateCleaner, then why: reimplemented definitions and defaults, equivalence tests, documented differences.
-- leaves: a methods section can cite CoordinateCleaner's tests; where the exceptions are listed
+- idea: CC definitions; documented differences; tested; what to cite
+- job: Says the tests follow CoordinateCleaner's definitions and default buffers with the differences documented, that automated checks run both packages and require matching flags for the shared behaviour, and what a methods section cites from each package.
+- leaves: a methods section can cite CoordinateCleaner for the original tests; where the exceptions are listed
 
 ### readme.install  (section)
 
@@ -157,8 +165,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.opener  [A1 A3]
 - idea: what the tutorial does and where it ends; relation to CC
-- job: Says the article flags records, keeps those passing a rule and counts what two rules exclude; states the assumed starting point (basic R, data frames); names the later sections and the CoordinateCleaner relation.
-- leaves: the end point (retained records) and the parent package
+- job: Says the article flags records, keeps those passing a rule and counts what two rules exclude; states the assumed starting point (basic R, data frames) and the CoordinateCleaner relation, linking the documented differences.
+- leaves: the end point (retained records), the parent package, where the differences are listed
 
 ### gs.steps  (list)
 - idea: flag, inspect, keep, compare
@@ -169,8 +177,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.data
 - idea: example records
-- job: Introduces seven records of four species with an identifier, coordinates in decimal degrees under Darwin Core names.
-- leaves: the example `x`
+- job: Introduces seven records of four species with an identifier, coordinates in decimal degrees; defines Darwin Core as the standard set of field names for biodiversity data.
+- leaves: the example `x`, Darwin Core
 
 ### gs.first-tests  (list)
 - idea: three tests without reference data
@@ -179,7 +187,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.flag-result  [A1]
 - idea: reading the flags
-- job: States the output contract (same rows, same order, input columns unchanged, flag columns added), explains `flagged_by` and which record each test flags, and that a record without a flag passed only the tests run (record 3 in Vienna).
+- job: States the output contract (same rows, same order, input columns unchanged, flag columns added), says `flagged_by` belongs to the printed display only (not a column of the object), which record each test flags, and that a record without a flag passed only the tests run (record 3 in Vienna).
 - leaves: the contract; absence of a flag is relative to the tests run
 
 ### gs.flag-columns
@@ -189,28 +197,28 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.keep  [A3]  (section)
 - idea: a rule; any listed test; retained records
-- job: Defines a cleaning rule, says `has_flag()` matches any test of the rule, and prints the retained records.
+- job: Defines a cleaning rule, removes records flagged by any test of the rule with `has_flag()`, says it stops when a named test was not run, and prints the retained records.
 - leaves: `cleaned`, one copy of each duplicate kept
 
 ### gs.reference-tests  [A1 A5]  (section)
 - idea: default tests against reference data
-- job: Runs the default tests and explains which records the capital and sea tests flag; two records pass every test.
+- job: Runs the default tests (GBIF expanded at its first mention) and explains which records the capital and sea tests flag; two records pass every test run here.
 - leaves: `default_tests()`; the land scale (1:110 million default) changes `sea` near coasts, linked to Reference data
 
 ### gs.valid  [A3]
 - idea: a flag may mark a valid record; summary
-- job: Says a flagged record may be valid and users choose the tests; shows `summary()` and that a rule excludes each record once (per-test counts 8, excluded 5).
-- leaves: `summary()`, the `only` column, overlapping flags counted once
+- job: Says a flagged record may be valid and users choose the tests; before `summary()`, explains the default rule `all` (every test run) and that summary only counts; then shows that a rule excludes each record once (per-test counts 8, excluded 5).
+- leaves: `summary()`, the rule `all`, the `only` column, overlapping flags counted once
 
 ### gs.rules  [A3]  (section)
 - idea: compare rules on the same flags
 - job: Compares a strict and a mild rule per species with `tally_flags()`, without rerunning the tests; points to bins in the rules article.
-- leaves: `tally_flags(rules =)`, `flagged_<test>`, `removed_<rule>` (table rendered by a hidden kable)
+- leaves: `tally_flags(rules =)`, `removed_<rule>`, `kept_<rule>` (shown by the print method)
 
 ### gs.buffers  [A1]  (section)
 - idea: distances are part of a test
 - job: Shows that changing a distance means flagging again, with `buffers = list(capital = 200)` (the Vienna point lies between 500 m and 1 km of the capital point).
-- leaves: `buffers` in metres; defaults in `?flag_occurrences`
+- leaves: the capital distance in metres (`zero` in degrees); defaults in `?flag_occurrences`
 
 ### gs.own-data  (section)
 - idea: bridge to own data
@@ -219,18 +227,18 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.errors  (section)
 - idea: common errors and their fixes
-- job: Shows three real error messages (missing column, unknown test, rule naming a test not run), each with its fix.
-- leaves: `occ_columns()`, `flag_tests()`, rerun or drop the test
+- job: Opens with the situation (other column names; `y` holds `lon`, `lat`, `taxon`; `columns` maps them), then shows three real error messages (missing column, unknown test, rule naming a test not run), each followed by the corrected call and its result.
+- leaves: `occ_columns()` (linked back to Flagging other data), `flag_tests()`, rerun or drop the test
 
 ### gs.metadata  [A4]  (section)
 - idea: tests on GBIF fields
-- job: Shows `basis_fossil` on `basisOfRecord` and links the GBIF workflow.
+- job: Shows `basis_fossil` on `basisOfRecord`, added to a copy `xb` so `x` stays the seven records; links the GBIF workflow.
 - leaves: that some tests read GBIF fields
 
 ### gs.disk  [A2]  (section)
 - idea: a table on disk
-- job: Flags a two-file directory (setup collapsed), says the result for a path describes the output directory instead of a data frame, tallies it, says a rerun skips flagged files, links the on-disk article.
-- leaves: `out`, `keep`, resuming
+- job: Writes the seven records to two `.vtr` files (setup visible; vectra introduced), flags the directory with the identifier mapped (`occ_columns(id = "id")`, default `gbifID`), says the result for a path describes the output directory, tallies it (same counts as the data frame), says duplicates are found within each file only and the two beech records share a file, says a rerun skips flagged files, links the on-disk article.
+- leaves: `out`, `keep`, the id mapping, per-file duplicates, resuming
 
 ### gs.next  (list)
 - idea: routing
@@ -298,9 +306,9 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 
 ### cc.speed  [A2]  (section)
-- idea: kd-tree vs polygons; timings
-- job: Explains why proximity tests are faster and gives timings with machine and versions.
-- leaves: the speed ratio per test and the benchmark script
+- idea: timings per test at two sizes; method; where CoordinateCleaner is faster
+- job: States what is timed (seconds per call, lower is faster, both on CoordinateCleaner's reference points, fastest of three, single runs over 200 s, reference reading included, 0.01 s timer), the machine and versions; one table per input size (1e6, 1e7); names the largest differences and the two tests where CoordinateCleaner is faster; the mechanism (buffer polygons vs kd-tree) in its own paragraph; the default-tests timing on own reference data in its own subsection; chunked on-disk reading as a link; the benchmark script and results.
+- leaves: the speed per test and the benchmark script; no claim about input size beyond the link
 
 ### cc.around-tests  [A1]  (section)
 - idea: every function has a counterpart; the functions around the tests
@@ -384,9 +392,9 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ## Choosing a cleaning rule (how-to, A3 home)
 
 ### rules.opener  [A3]
-- idea: flag once; four steps
-- job: States the approach and lists the four steps the article follows.
-- leaves: flag, measure, break down, apply
+- idea: results stored per record; what a rule is; four steps
+- job: Says `flag_occurrences()` stores each test's result alongside each record and all records remain, defines a cleaning rule (tests used when filtering; excluded if any flags it), then says what the article compares and lists the four steps, each naming its function.
+- leaves: flag, compare per test and rule, compare by group, select
 
 ### rules.install  (section)
 
@@ -645,50 +653,60 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### fossil.opener  [A1 A3]
 - idea: fossils carry an age range too
-- job: Says what fossil records add (a minimum and maximum age) and what the article covers.
-- leaves: the age test, the range as a raw column, fossils in GBIF data
+- job: Says what fossil records add (an age range in Ma) and where the article ends (PyRate export); links Get started for installation; names CoordinateCleaner as the extra package for the comparison section.
+- leaves: the age test, the range as a raw column, outliers per taxon, PyRate
 
-### fossil.install  (section)
+### fossil.steps  (list)
+- idea: flag, keep, cut, test, export
+- leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()`, the outlier tests, `export_pyrate()`
 
 ### fossil.data  [A3]  (section)
-- idea: simulated PBDB table with planted coordinate and age errors
-- job: Builds a PBDB-shaped table and plants centroid, museum, zero and three kinds of age errors.
-- leaves: PBDB column names; the `truth` column
+- idea: nine synthetic records in PBDB columns, one case each
+- job: Names the PBDB columns; says `min_ma` and `max_ma` give the youngest and oldest possible ages in millions of years before the present; builds nine records and says what each one tests: 1 and 9 pass every test (ordered ages, Wyoming coordinates matching `US`), 2 equal ages, 3 reversed ages, 4 a 43-million-year span, 5 a missing minimum, 6 zero coordinates; places records 7 and 8 on and 3 km from the Germany polygon centroid of `reference_points("centroid")`.
+- leaves: `fos`; the centroid records' distances are known
 
 ### fossil.flag  [A1]  (section)
-- idea: clean_fossils' record tests; age_equal defined
-- job: Maps the PBDB columns, runs CoordinateCleaner's fossil record tests, defines `age_equal` and explains what each test caught and missed.
-- leaves: copied and swapped ages are caught only by `age_equal`; period-dated ranges are valid
+- idea: clean_fossils' record tests; what age_equal flags
+- job: Maps the PBDB columns, runs the record tests; says `age_equal` flags min >= max (records 2, 3), that the flag records the comparison and the records need review, and that missing ages are not flagged; record 6 fails zero, equal, country_mismatch; record 7 fails centroid.
+- leaves: `age_equal` is a comparison, not a verdict on the age
+
+### fossil.keep  [A3]  (section)
+- idea: one rule, has_flag on the flagged table
+- job: Removes records flagged by any test in `tests` with `has_flag(f, rule)`; says `has_flag()` stops when a named test was not run; says record 5 stays because a missing age carries no `age_equal` flag, and how to require both ages.
+- leaves: `kept`
 
 ### fossil.buffers  [A1]  (section)
-- idea: clean_fossils' wider buffers in degrees
-- job: Converts `clean_fossils()`'s degree buffers to metres and shows what the wider centroid buffer adds and costs.
-- leaves: `buffers = list(centroid = 5600, institution = 111)`
+- idea: a wider centroid buffer, chosen for the demonstration
+- job: States the defaults (1 km centroids, 100 m institutions, you can change these with `buffers`); shows a 5 km buffer flagging record 8 as well; comparison note: these differ from CoordinateCleaner 3.0.1, whose `clean_fossils()` passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer` of `cc_cen()`/`cc_inst()`, read in metres.
+- leaves: `buffers = list(centroid = 5000)`
 
 ### fossil.range  [A3]  (section)
-- idea: range width is a raw column cut at tally time
-- job: Replaces `cf_range(method = "time")` with a binned raw column and a cut next to the rule.
-- leaves: one flag pass serves any range threshold
+- idea: filter by age-range width; comparison at the end
+- job: Computes `max_ma - min_ma`, counts flagged and retained records per range group with `tally_flags()`, applies an illustrative 15 Ma limit (changeable without rerunning the tests); comparison note last: CoordinateCleaner's `cf_range(method = "time")` flags ranges wider than `max_range`.
+- leaves: one flagging run serves any range threshold
 
 ### fossil.outliers  [A1 A6]  (section)
-- idea: three per-taxon tests; seeded draws; settings
-- job: Runs `age_range_outlier`, `age_outlier` and `spatiotemporal_outlier` on the genera, explains what each catches and shows `settings`.
-- leaves: the range test catches the period-dated records; the draw tests catch fewer; another seed gives other draws
+- idea: three per-taxon tests on a larger synthetic table
+- job: Lists the three tests in one line each; explains the threshold (75th percentile + mltpl x IQR, mltpl 5) and the seven-record minimum; explains the age sampling (five draws, majority, seeded per taxon) before any result; describes the 600 synthetic records and the injected cases; runs coordinate, age and outlier tests together; reports what each test flags, without speculating on the counts; shows `settings` (mltpl 2, seed 7) and the result.
+- leaves: `g`; none of the tests flags a background record
+
+### fossil.pyrate  [A1 A3]  (section)
+- idea: one final rule over `g`, then PyRate
+- job: Says what PyRate does, selects from `g` the records unflagged by every test run with an age range of at most 15 Ma, exports them, and says what each of the two files contains.
+- leaves: `export_pyrate()`, `status`, `replicates`, `seed`, `random = FALSE`; same layout as `write_pyrate()`, compared in the tests
 
 ### fossil.vs-cc  [A1]  (section)
 - idea: identical flags with CoordinateCleaner's fossil tests
-- job: Shows identical flags with `cf_equal()` and says where the outlier tests are compared with `cf_age()`, `cf_outl()` and `cf_range()`.
+- job: Shows `age_equal` and `cf_equal()` side by side on the small table and says where the outlier tests are compared with `cf_age()`, `cf_outl()` and `cf_range()`.
 - leaves: `age_range_outlier` identical; the draw tests identical only when nothing is drawn
-
-### fossil.pyrate  [A1 A3]  (section)
-- idea: kept records to PyRate input
-- job: Says what PyRate is and writes the records a rule keeps as PyRate input with seeded age draws.
-- leaves: `export_pyrate()`, `status`, `replicates`, `seed`, `random = FALSE`; same layout as `write_pyrate()`, compared in the tests
 
 ### fossil.gbif  [A4]  (section)
 - idea: basis_fossil in GBIF data
-- job: Shows how fossil specimens are separated in GBIF data.
+- job: Flags fossil specimens in GBIF records and shows both selections (without and with the flag).
 - leaves: `basis_fossil`
+
+### fossil.refs  (section)
+- leaves: Silvestro et al. 2014
 
 ## Using custom gazetteers (how-to, A5)
 

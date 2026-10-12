@@ -6,7 +6,7 @@
 \description{
 Flags records within 1 km of a country or province centroid (WGS84
 geodesic distance, closed ball), where records georeferenced to a country
-or province name end up. The default gazetteer holds the country points of
+or province name end up. The default gazetteer contains the country points of
 the three sources \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s table is compiled from, each taken
 from the source: the "Geographic coordinates" of the CIA World Factbook
 (public domain; 275 points, through the factbook.json mirror retrieved

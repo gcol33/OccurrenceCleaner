@@ -188,7 +188,7 @@ This package applies the documented 0.5-degree radius. `buffers = list(zero = 0)
 
 ### Records without valid coordinates
 
-For rows with missing or out-of-range coordinates, [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s spatial tests return `NA` (`cc_zero`, `cc_equ`) or "clean" (`cc_cap`), and `cc_dupl` flags the second of two such rows. Here such a record gets the `invalid` bit and no other spatial bit, so a rule that holds `invalid` removes it and a rule without `invalid` sees no spatial flag on it.
+For rows with missing or out-of-range coordinates, [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s spatial tests return `NA` (`cc_zero`, `cc_equ`) or "clean" (`cc_cap`), and `cc_dupl` flags the second of two such rows. Here such a record gets the `invalid` bit and no other spatial bit, so a rule that includes `invalid` removes it and a rule without `invalid` sees no spatial flag on it.
 
 ### Outliers of large species
 
@@ -223,22 +223,49 @@ With the default `reference = "OccurrenceCleaner"` the gazetteers are rebuilt fr
 
 ## Speed
 
-The proximity tests are where the two packages differ most, because [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) tests records against a buffer polygon around each reference point, while this package queries a kd-tree. Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.2.0, CoordinateCleaner 3.0.1), single process, both reading CoordinateCleaner's gazetteers, fastest of three runs, in seconds:
+The tables give the elapsed time in seconds of one call per test, on one million and on ten million records; lower values mean faster runs. In both packages the call used [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s reference points. The records were placed at random, a tenth of them within 30 km of a capital.
 
-```{r bench, echo = FALSE}
-b <- data.frame(
-  test = c("capital", "centroid", "institution", "gbif_headquarters", "sea", "zero", "equal",
-           "invalid", "duplicate", "default_tests() (own reference)"),
-  oc_1e6 = c(0.14, 0.16, 0.15, 0.08, 0.06, 0.05, 0.03, 0.02, 1.12, 1.91),
-  cc_1e6 = c(24.6, 33.8, 0.9, 0.6, 5.6, 0.6, 0, 4.7, 1.2, NA),
-  oc_1e7 = c(1.44, 1.63, 1.68, 0.80, 0.66, 0.47, 0.37, 0.31, 12.07, 19.45),
-  cc_1e7 = c(238.7, 245.4, 7.4, 6.4, 58.4, 6.5, 0.1, 43.3, 11.2, NA))
-options(knitr.kable.NA = "not run")
-knitr::kable(b, col.names = c("test", "OccurrenceCleaner, 1e6", "CoordinateCleaner, 1e6",
-                              "OccurrenceCleaner, 1e7", "CoordinateCleaner, 1e7"))
-```
+Each time is the fastest of three runs. A CoordinateCleaner test whose single run took longer than 200 s was run once, which applies to the capital and centroid tests at ten million records. Each timing covers the whole call, including reading the reference points; the land polygons of both packages were loaded before timing started. The timer resolves 0.01 s.
 
-At ten million records the capital test takes 1.4 s here and 239 s in CoordinateCleaner, the centroid test 1.6 s and 245 s. The equal and duplicate tests are plain vector operations in both packages and take about the same time. Beyond memory, an on-disk table is streamed in chunks (see the on-disk article), so the input size is bounded by disk space only. The benchmark script is `bench/benchmark.R` in the source repository.
+The machine was an AMD Ryzen 7 5700G with 64 GB of memory, running Windows 11 and R 4.6.1, with one process, OccurrenceCleaner 0.2.0 and CoordinateCleaner 3.0.1.
+
+### One million records
+
+| Test | OccurrenceCleaner (s) | CoordinateCleaner (s) |
+|:---|---:|---:|
+| `capital` | 0.14 | 24.64 |
+| `centroid` | 0.16 | 33.80 |
+| `institution` | 0.15 | 0.92 |
+| `gbif_headquarters` | 0.08 | 0.58 |
+| `sea` | 0.06 | 5.62 |
+| `zero` | 0.05 | 0.59 |
+| `equal` | 0.03 | < 0.01 |
+| `invalid` | 0.02 | 4.72 |
+| `duplicate` | 1.12 | 1.17 |
+
+### Ten million records
+
+| Test | OccurrenceCleaner (s) | CoordinateCleaner (s) |
+|:---|---:|---:|
+| `capital` | 1.44 | 238.68 |
+| `centroid` | 1.63 | 245.39 |
+| `institution` | 1.68 | 7.38 |
+| `gbif_headquarters` | 0.80 | 6.35 |
+| `sea` | 0.66 | 58.43 |
+| `zero` | 0.47 | 6.50 |
+| `equal` | 0.37 | 0.06 |
+| `invalid` | 0.31 | 43.33 |
+| `duplicate` | 12.07 | 11.15 |
+
+The largest differences are in the capital and centroid tests: at ten million records they take 1.44 s and 1.63 s here, and 238.68 s and 245.39 s in CoordinateCleaner. CoordinateCleaner is faster on the `equal` test (0.06 s against 0.37 s) and on the `duplicate` test (11.15 s against 12.07 s).
+
+For the proximity tests, CoordinateCleaner tests the records against a buffer polygon around the reference points, and this package looks up each record's nearest reference point in a kd-tree.
+
+### All default tests
+
+With its own reference data, `flag_occurrences()` runs all of `default_tests()` in one call in 1.91 s on one million records and 19.45 s on ten million. The benchmark times this call for OccurrenceCleaner only.
+
+[Large tables on disk](on-disk.html) shows how a table on disk is read in chunks. The benchmark script is `bench/benchmark.R` in the source repository, and its results are in `bench/results/`.
 
 ## Functions around the tests
 

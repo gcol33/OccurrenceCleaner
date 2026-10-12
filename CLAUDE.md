@@ -95,4 +95,7 @@ recompiles.
 - Branch `main`, commit directly.
 - Roxygen and Rd text ASCII only.
 - CI workflows trigger on `push`, `pull_request` and `workflow_dispatch`; no `schedule:`.
-- README follows the house skeleton (gitRPak / readme-aura skills).
+- Docs follow the house docs skills (`docs-style` with `docs-readme` or `docs-articles`);
+  `sidecars/` holds story, journey and information. Session handoff and the next docs tasks:
+  `dev_notes/current.md` (local, git-ignored); decisions and lessons:
+  `dev_notes/docs_overhaul.md`.

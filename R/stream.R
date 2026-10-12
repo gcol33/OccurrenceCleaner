@@ -45,7 +45,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
     old <- readRDS(meta_path)
     if (!identical(old$tests, cfg$tests) || !identical(old$layout_version, cfg$layout_version) ||
         !identical(old$reference, cfg$reference_label))
-      stop("`out` holds flags produced with different tests, layout or reference; use a new directory")
+      stop("`out` contains flags produced with different tests, layout or reference; use a new directory")
   }
   group <- NULL
   if (any(cfg$tests %in% .group_tests)) {

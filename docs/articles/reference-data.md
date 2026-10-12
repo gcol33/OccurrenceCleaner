@@ -59,7 +59,7 @@ ri <- reference_info()
 The factbook version is the commit of the factbook.json mirror,
 shortened here;
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
-holds the full hash. The Wikipedia lists are pinned by page revision: en
+gives the full hash. The Wikipedia lists are pinned by page revision: en
 1376233148; de 267938927; fr 240149609; nl 69876533; pt 71307420; ar
 76691072; eo 9165115. IRMNG is cited as Rees, T. (compiler) (2026), The
 Interim Register of Marine and Nonmarine Genera, available from
@@ -70,7 +70,7 @@ the inventory’s own abbreviation is AHOI.
 
 Each row of
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
-also holds the file name, the download URL, the SHA-256 checksum of the
+also gives the file name, the download URL, the SHA-256 checksum of the
 source file and the licence. The tests read these layers:
 
 | test | reference data |
@@ -361,7 +361,8 @@ ggplot(g, aes(decimalLongitude, decimalLatitude, fill = verdict)) +
                                `sea at 1:110 million only` = "#C0392B", `sea at 1:50 million only` = "#2C3E50")) +
   coord_quickmap(expand = FALSE) +
   labs(x = "longitude", y = "latitude", fill = NULL) +
-  theme_minimal() +
+  theme_minimal(base_size = 17) +
+  theme(legend.position = "bottom", legend.direction = "vertical") +
   theme(panel.background = element_rect(fill = "transparent", colour = NA),
         plot.background = element_rect(fill = "transparent", colour = NA))
 ```

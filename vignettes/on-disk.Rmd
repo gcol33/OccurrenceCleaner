@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-A GBIF snapshot holds billions of records in a directory of Parquet files, far more than fits in memory. `flag_occurrences()` takes such a directory, a single file or a vectra query in place of a data frame, reads it in chunks through [vectra](https://gillescolling.com/vectra/), and writes the flags to disk next to the columns kept for grouping. This article walks through the output layout, resuming an interrupted run, tallying from disk, and the one test whose result depends on how the input is split.
+A GBIF snapshot has billions of records in a directory of Parquet files, far more than fits in memory. `flag_occurrences()` takes such a directory, a single file or a vectra query in place of a data frame, reads it in chunks through [vectra](https://gillescolling.com/vectra/), and writes the flags to disk next to the columns kept for grouping. This article walks through the output layout, resuming an interrupted run, tallying from disk, and the one test whose result depends on how the input is split.
 
 ## Installation
 
@@ -28,7 +28,7 @@ library(OccurrenceCleaner)
 
 ## Example input
 
-Three `.vtr` files stand in for the parts of a snapshot. Each holds 3,000 records with GBIF's lower-case column names:
+Three `.vtr` files stand in for the parts of a snapshot. Each contains 3,000 records with GBIF's lower-case column names:
 
 ```{r input}
 set.seed(7)
@@ -115,7 +115,7 @@ nrow(flagged)
 head(flagged)
 ```
 
-The flag word is an ordinary integer column, so `has_flag()` applies to it after collecting:
+The flag word is an integer column, so `has_flag()` applies to it after collecting:
 
 ```{r read-has}
 table(kingdom = flagged$kingdom, capital = has_flag(flagged$flags, "capital"))
@@ -160,7 +160,7 @@ h$n
 
 ## A GBIF snapshot
 
-GBIF's Parquet snapshot (the `occurrence.parquet` directory) holds the Darwin Core terms in lower case, which the case-insensitive defaults of `occ_columns()` find. A pass over every test the snapshot supports, which is all but the fossil tests and the range test, keeping the columns a loss analysis groups by. The grouped tests (`outlier` and the two dataset tests, which read `datasetkey`) add a pass over all files before the record pass:
+GBIF's Parquet snapshot (the `occurrence.parquet` directory) names the Darwin Core columns in lower case, which the case-insensitive defaults of `occ_columns()` find. A pass over every test the snapshot supports, which is all but the fossil tests and the range test, keeping the columns a loss analysis groups by. The grouped tests (`outlier` and the two dataset tests, which read `datasetkey`) add a pass over all files before the record pass:
 
 ```{r snapshot, eval = FALSE}
 f <- flag_occurrences(

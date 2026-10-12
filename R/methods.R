@@ -72,6 +72,20 @@ summary.occ_tally <- function(object, ...) {
   out
 }
 
+.occ_flag_attrs <- c("occ_tests", "occ_layout_version", "occ_reference", "occ_columns")
+
+#' @export
+`[.occ_flags` <- function(x, ...) {
+  out <- NextMethod()
+  if (!is.data.frame(out)) return(out)
+  if (!"flags" %in% names(out)) {
+    class(out) <- setdiff(class(out), "occ_flags")
+    return(out)
+  }
+  for (a in .occ_flag_attrs) attr(out, a) <- attr(x, a)
+  out
+}
+
 #' @export
 print.occ_flags <- function(x, n = 10L, ...) {
   if (!"flags" %in% names(x)) return(NextMethod())
@@ -82,7 +96,7 @@ print.occ_flags <- function(x, n = 10L, ...) {
   cat("\n")
   d <- as.data.frame(unclass(x), stringsAsFactors = FALSE)
   d <- utils::head(d[setdiff(names(d), paste0("flag_", tests))], n)
-  attributes(d)[c("occ_tests", "occ_layout_version", "occ_reference", "occ_columns")] <- NULL
+  attributes(d)[.occ_flag_attrs] <- NULL
   d$flagged_by <- vapply(d$flags, function(f) {
     paste(tests[vapply(tests, function(t) isTRUE(has_flag(f, t)), logical(1))], collapse = ",")
   }, "")
@@ -217,16 +231,12 @@ plot_share_bars <- function(d, total, rule) {
   mid <- graphics::barplot(d$pct, horiz = TRUE, names.arg = FALSE, col = .col_flagged,
                            border = NA, xlim = lim, xlab = "% of records")
   graphics::barplot(d$pct_only, horiz = TRUE, col = .col_only, border = NA, add = TRUE, axes = FALSE)
-  # Label size from the height one bar gets, so every test keeps its label.
-  bar_pt <- graphics::par("pin")[2] * 72 / max(1, nrow(d))
-  cex <- max(0.4, min(0.9, bar_pt / 13))
-  graphics::axis(2, at = mid, labels = d$test, las = 1, tick = FALSE, cex.axis = cex,
-                 gap.axis = -1, line = -0.6)
-  graphics::text(d$pct, mid, share_label(d$pct), pos = 4, cex = 0.9 * cex, xpd = TRUE)
+  graphics::axis(2, at = mid, labels = d$test, las = 1, tick = FALSE, gap.axis = -1, line = -0.6)
+  graphics::text(d$pct, mid, share_label(d$pct), pos = 4, xpd = TRUE)
   graphics::title(main = sprintf("rule %s removes %s %% of %s records", rule, share_label(total$pct[1]),
                                  format(total$n[1], big.mark = ",")), font.main = 1, cex.main = 1)
   graphics::legend("bottomright", c("flagged", "only reason"), fill = c(.col_flagged, .col_only),
-                   border = NA, bty = "n", cex = 0.8)
+                   border = NA, bty = "n")
 }
 
 plot_share_grid <- function(d, total, by, rule) {
@@ -237,17 +247,19 @@ plot_share_grid <- function(d, total, by, rule) {
   rows <- c(tests, paste0("rule ", rule))
   op <- graphics::par(mar = c(max(4, max(nchar(group)) * 0.5 + 1), max(4, max(nchar(rows)) * 0.55 + 1), 3, 1))
   on.exit(graphics::par(op))
-  pal <- grDevices::colorRampPalette(c("#F4F7F8", .col_only))(100)
-  z <- t(m)[, rev(seq_along(rows)), drop = FALSE]
+  # The ramp ends at a light shade so dark cell labels stay readable on every cell.
+  pal <- grDevices::colorRampPalette(c("#F4F7F8", .col_flagged))(100)
+  z <- as.vector(t(m)[, rev(seq_along(rows)), drop = FALSE])
   zmax <- max(c(m, 1), na.rm = TRUE)
-  graphics::image(seq_along(group), seq_along(rows), z, col = pal, zlim = c(0, zmax), axes = FALSE,
-                  xlab = "", ylab = "")
-  graphics::axis(1, seq_along(group), group, las = 2, tick = FALSE, cex.axis = 0.8, gap.axis = -1)
-  graphics::axis(2, seq_along(rows), rev(rows), las = 1, tick = FALSE, cex.axis = 0.8, gap.axis = -1)
-  graphics::abline(h = 1.5, col = "white", lwd = 3)
+  fill <- pal[pmax(1L, ceiling(ifelse(is.na(z), 0, z) / zmax * 100))]
+  graphics::plot.new()
+  graphics::plot.window(c(0.5, length(group) + 0.5), c(0.5, length(rows) + 0.5), xaxs = "i", yaxs = "i")
   xy <- expand.grid(x = seq_along(group), y = seq_along(rows))
-  graphics::text(xy$x, xy$y, share_label(as.vector(z)), cex = 0.75,
-                 col = ifelse(as.vector(z) > zmax * 0.55, "white", "black"))
+  graphics::rect(xy$x - 0.5, xy$y - 0.5, xy$x + 0.5, xy$y + 0.5, col = fill, border = NA)
+  graphics::axis(1, seq_along(group), group, las = 2, tick = FALSE, gap.axis = -1)
+  graphics::axis(2, seq_along(rows), rev(rows), las = 1, tick = FALSE, gap.axis = -1)
+  graphics::abline(h = 1.5, col = "white", lwd = 3)
+  graphics::text(xy$x, xy$y, share_label(z))
   graphics::title(main = "% of records flagged", font.main = 1, cex.main = 1)
 }
 
@@ -263,11 +275,12 @@ plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   }
   xr <- xlim %||% xr; yr <- ylim %||% yr
   ok <- ok & lon >= xr[1] & lon <= xr[2] & lat >= yr[1] & lat <= yr[2]
-  op <- graphics::par(mar = c(2.5, 2.5, 3, 1))
+  op <- graphics::par(mar = c(3, 3.5, 3, 1))
   on.exit(graphics::par(op))
   graphics::plot.new()
   graphics::plot.window(xr, yr, asp = 1 / cos(mean(yr) * pi / 180))
-  graphics::rect(-180, -90, 180, 90, col = "#EEF3F6", border = NA)
+  usr <- graphics::par("usr")
+  graphics::rect(usr[1], usr[3], usr[2], usr[4], col = "#EEF3F6", border = NA)
   land <- ref_land_110
   starts <- land$ring_start
   idx <- unlist(lapply(seq_len(length(starts) - 1L), function(i) c(NA, seq.int(starts[i] + 1L, starts[i + 1L]))))[-1L]
@@ -278,12 +291,12 @@ plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   graphics::points(lon[ok & removed], lat[ok & removed], pch = 16, cex = 0.7,
                    col = grDevices::adjustcolor(.col_removed, 0.6))
   ticks <- function(r, lim) { p <- pretty(r); p[p >= -lim & p <= lim] }
-  graphics::axis(1, ticks(xr, 180), cex.axis = 0.8)
-  graphics::axis(2, ticks(yr, 90), las = 1, cex.axis = 0.8)
+  graphics::axis(1, ticks(xr, 180))
+  graphics::axis(2, ticks(yr, 90), las = 1)
   graphics::box(col = "grey70")
   graphics::title(main = sprintf("rule %s: %s of %s records removed", rule,
                                  format(sum(removed & ok), big.mark = ","), format(sum(ok), big.mark = ",")),
                   font.main = 1, cex.main = 1)
   graphics::legend("bottomleft", c("kept", "removed"), pch = 16, col = c("#4D4D4D", .col_removed),
-                   bty = "n", cex = 0.8, bg = "white")
+                   bty = "n", bg = "white")
 }

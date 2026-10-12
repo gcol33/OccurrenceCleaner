@@ -63,7 +63,7 @@ NULL
 #' flagged). Candidates are found with a kd-tree on the unit sphere and
 #' decided with the Vincenty inverse formula.
 #'
-#' The default gazetteer holds the capital "geographic coordinates" of the
+#' The default gazetteer contains the capital "geographic coordinates" of the
 #' CIA World Factbook (public domain; 232 points, one per country profile,
 #' through the factbook.json mirror retrieved 2026-10-11), the source
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s capitals are taken from. The column `extension` marks
@@ -104,7 +104,7 @@ NULL
 #'
 #' Flags records within 1 km of a country or province centroid (WGS84
 #' geodesic distance, closed ball), where records georeferenced to a country
-#' or province name end up. The default gazetteer holds the country points of
+#' or province name end up. The default gazetteer contains the country points of
 #' the three sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table is compiled from, each taken
 #' from the source: the "Geographic coordinates" of the CIA World Factbook
 #' (public domain; 275 points, through the factbook.json mirror retrieved
@@ -152,7 +152,7 @@ NULL
 #' Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 #' distance, closed ball): herbaria, museums, botanic gardens, zoos and
 #' universities holding collections, where specimens are often georeferenced
-#' to the institution. The default gazetteer holds 18,245 points: the 6,080
+#' to the institution. The default gazetteer contains 18,245 points: the 6,080
 #' institutions with coordinates in GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), less five whose coordinates the `zero` test flags
 #' (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding

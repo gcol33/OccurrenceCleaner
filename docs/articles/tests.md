@@ -271,10 +271,10 @@ share <- vapply(radii, function(r)
   mean(flag_occurrences(x, tests = "capital", buffers = list(capital = r))$flag_capital), numeric(1))
 library(ggplot2)
 ggplot(data.frame(km = radii / 1000, share = share), aes(km, share)) +
-  geom_line() + geom_point() +
+  geom_line(linewidth = 1) + geom_point(size = 2.5) +
   scale_y_continuous(labels = function(v) paste0(100 * v, " %")) +
   labs(x = "capital buffer (km)", y = "records flagged") +
-  theme_minimal() +
+  theme_minimal(base_size = 17) +
   theme(panel.background = element_rect(fill = "transparent", colour = NA),
         plot.background = element_rect(fill = "transparent", colour = NA))
 ```

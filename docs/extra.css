@@ -228,7 +228,9 @@ svg.inline-svg .svglite polyline[style*="stroke: #ffffff"] {
 [data-bs-theme="dark"] svg.inline-svg .svglite line[style*="stroke: #EBEBEB"],
 [data-bs-theme="dark"] svg.inline-svg .svglite line[style*="stroke: #ebebeb"],
 [data-bs-theme="dark"] svg.inline-svg .svglite polyline[style*="stroke: #EBEBEB"],
-[data-bs-theme="dark"] svg.inline-svg .svglite polyline[style*="stroke: #ebebeb"] {
+[data-bs-theme="dark"] svg.inline-svg .svglite polyline[style*="stroke: #ebebeb"],
+[data-bs-theme="dark"] svg.inline-svg .svglite polyline[style*="stroke: #DFD7CA"],
+[data-bs-theme="dark"] svg.inline-svg .svglite polyline[style*="stroke: #dfd7ca"] {
   stroke: #495057 !important;
 }
 

@@ -1,7 +1,7 @@
 # Large tables on disk
 
-A GBIF snapshot holds billions of records in a directory of Parquet
-files, far more than fits in memory.
+A GBIF snapshot has billions of records in a directory of Parquet files,
+far more than fits in memory.
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 takes such a directory, a single file or a vectra query in place of a
 data frame, reads it in chunks through
@@ -29,7 +29,7 @@ library(OccurrenceCleaner)
 
 ## Example input
 
-Three `.vtr` files stand in for the parts of a snapshot. Each holds
+Three `.vtr` files stand in for the parts of a snapshot. Each contains
 3,000 records with GBIF’s lower-case column names:
 
 ``` r
@@ -136,7 +136,7 @@ flag layout stops instead of mixing flags:
 
 flag_occurrences(src, out = out, tests = c("invalid", "zero"), keep = c("kingdom", "year"))
 #> Error in `flag_stream()`:
-#> ! `out` holds flags produced with different tests, layout or reference; use a new directory
+#> ! `out` contains flags produced with different tests, layout or reference; use a new directory
 ```
 
 ## Tallying from disk
@@ -204,7 +204,7 @@ head(flagged)
 #> 6     18 Plantae 1994   128
 ```
 
-The flag word is an ordinary integer column, so
+The flag word is an integer column, so
 [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
 applies to it after collecting:
 
@@ -276,8 +276,9 @@ h$n
 
 ## A GBIF snapshot
 
-GBIF’s Parquet snapshot (the `occurrence.parquet` directory) holds the
-Darwin Core terms in lower case, which the case-insensitive defaults of
+GBIF’s Parquet snapshot (the `occurrence.parquet` directory) names the
+Darwin Core columns in lower case, which the case-insensitive defaults
+of
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 find. A pass over every test the snapshot supports, which is all but the
 fossil tests and the range test, keeping the columns a loss analysis

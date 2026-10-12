@@ -8,7 +8,8 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4,
+                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
 has_sf <- requireNamespace("sf", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
@@ -63,7 +64,7 @@ Each record lies about 0.005 degrees (a few hundred metres) east of an instituti
 
 ## An extended point gazetteer
 
-The two capital tables differ: the shipped table holds the Factbook capitals unrounded and adds Natural Earth's alternative and official capitals, while [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s has one point per country, rounded to 0.01 degrees. Their union flags records near either:
+The two capital tables differ: the shipped table has the Factbook capitals unrounded and adds Natural Earth's alternative and official capitals, while [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s has one point per country, rounded to 0.01 degrees. Their union flags records near either:
 
 ```{r union, eval = has_cc}
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))

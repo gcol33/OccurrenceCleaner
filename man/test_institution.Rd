@@ -7,7 +7,7 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often georeferenced
-to the institution. The default gazetteer holds 18,245 points: the 6,080
+to the institution. The default gazetteer contains 18,245 points: the 6,080
 institutions with coordinates in GBIF's Global Registry of Scientific
 Collections (GRSciColl), less five whose coordinates the \code{zero} test flags
 (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding

@@ -52,6 +52,21 @@ test_that("summary of a row subset falls back to the flag columns", {
   expect_identical(unique(s$test[s$test != "(any)"]), c("zero", "capital", "equal"))
 })
 
+test_that("a column subset keeping flags keeps the tests run and the reference", {
+  f <- flag_occurrences(records(), tests = c("zero", "capital", "gbif_headquarters"))
+  sub <- f[, c("species", "flags")]
+  expect_s3_class(sub, "occ_flags")
+  expect_identical(attr(sub, "occ_tests"), attr(f, "occ_tests"))
+  expect_identical(attr(sub, "occ_reference"), attr(f, "occ_reference"))
+  expect_identical(has_flag(sub, c("zero", "gbif_headquarters")),
+                   has_flag(f, c("zero", "gbif_headquarters")))
+  expect_output(print(sub), "<occ_flags> 6 records, 3 tests, reference")
+  plain <- f[, c("species", "decimalLongitude")]
+  expect_false(inherits(plain, "occ_flags"))
+  expect_null(attr(plain, "occ_tests"))
+  expect_identical(f[["flags"]], f$flags)
+})
+
 test_that("print is short: header, first records, failed tests by name", {
   f <- flag_occurrences(records(), tests = c("zero", "capital"))
   out <- capture.output(print(f, n = 3))

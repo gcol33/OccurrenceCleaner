@@ -8,18 +8,21 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4.5,
+                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
 ```
 
-`flag_occurrences()` writes one flag per record and test and removes nothing. A cleaning rule is a set of tests: a record is dropped when it carries any of them. This article flags a set of records once, measures what share each test and each candidate rule would remove, overall and by group, and then applies the chosen rule. All of the comparisons below reuse the flags from that single pass.
+`flag_occurrences()` stores each test's result alongside each record. All records remain in the table. A cleaning rule specifies which tests to use when filtering: a record is excluded if any test in the rule flags it.
 
-1. **Flag** the records once with every test of interest, `flag_occurrences()`.
+This article compares how individual tests and cleaning rules affect the dataset, then applies a chosen rule:
 
-2. **Measure** the share each test and rule removes, `summary()` and `plot()`.
+1. Flag the records with every test of interest using `flag_occurrences()`.
 
-3. **Break it down** by taxon, record age and coordinate precision, `tally_flags()` with `by` and `bins`.
+2. Compare the share of records flagged by each test and rule using `summary()` and `plot()`.
 
-4. **Apply** the chosen rule, `has_flag()`.
+3. Compare these shares by taxon, record age and coordinate precision using `tally_flags()` with `by` and `bins`.
+
+4. Select records using the chosen rule with `has_flag()`.
 
 ## Installation
 
@@ -64,7 +67,7 @@ x$issue <- ifelse(runif(n) < ifelse(old, 0.3, 0.03), "COORDINATE_ROUNDED", "")
 x$issue[sample(n, 40)] <- "TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"
 ```
 
-Then the errors are planted: records placed within 3 km of five capitals, records at (0, 0), records in the Atlantic and exact copies of earlier records.
+Then we add records within 3 km of five capitals, at (0, 0), and in the Atlantic, along with exact copies of earlier records.
 
 ```{r}
 capitals <- data.frame(lon = c(16.37, 2.35, 13.40, -3.70, 12.50),
@@ -107,7 +110,7 @@ A record can fail several tests at once. The 40 records at (0, 0) are flagged by
 
 The same numbers as a plot: the full bar is `pct`, the dark part `pct_only`.
 
-```{r}
+```{r, fig.height = 6}
 plot(f)
 ```
 
@@ -142,7 +145,7 @@ s[s$test %in% c("capital", "sea", "(any)"), ]
 
 With grouping, `plot()` shows a grid of tests by groups, shaded by the share each test flags in each group, with the rule itself in the bottom row.
 
-```{r}
+```{r, fig.height = 5.5}
 plot(f, rules = rules["cc"], by = "kingdom")
 ```
 
@@ -160,7 +163,7 @@ s[s$rule == "strict" & s$test %in% c("issue_rounded", "(any)"),
 
 `tally_flags()` returns the counts; `summary()` on its result gives the percentages, and `plot()` the grid. The tally is the one to keep when the counts will be summed or merged later.
 
-```{r}
+```{r, fig.height = 7.5}
 plot(t, rule = "strict")
 ```
 
@@ -191,7 +194,7 @@ clean <- f[!has_flag(f$flags, rules$cc), ]
 nrow(clean)
 ```
 
-The removed records keep their flags, and a different rule only needs a different set of tests in the same call; the records never have to be flagged again. A cut on record age or uncertainty is an ordinary filter on the raw columns, for example `clean[clean$year >= 1950, ]`.
+The removed records keep their flags, and a different rule only needs a different set of tests in the same call; the records never have to be flagged again. A cut on record age or uncertainty is a filter on the raw columns, for example `clean[clean$year >= 1950, ]`.
 
 ## How the shares are computed
 

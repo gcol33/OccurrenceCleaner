@@ -52,15 +52,15 @@ x$datasetKey <- sample(c("survey-a", "survey-b", "herbarium"), nrow(x), TRUE)
 x$truth <- "clean"
 ```
 
-The table holds 961 records of four alpine plants around the Eastern
-Alps, spread over three datasets; *Salix retusa* has only 6 records.
-Into it go four herbarium records placed on the wrong continent or far
-outside the species’ area (New York, Sydney, Paris, Moscow), one more
-*Pinus mugo* record inside its area as a control, and two datasets of
-300 records each with the errors the dataset tests look for: an atlas
-whose coordinates were converted from degrees and minutes as if they
-were decimals, so that no decimal part exceeds .59, and an atlas
-published on the centres of a quarter-degree grid:
+The table has 961 records of four alpine plants around the Eastern Alps,
+spread over three datasets; *Salix retusa* has only 6 records. Into it
+go four herbarium records placed on the wrong continent or far outside
+the species’ area (New York, Sydney, Paris, Moscow), one more *Pinus
+mugo* record inside its area as a control, and two datasets of 300
+records each with the errors the dataset tests look for: an atlas whose
+coordinates were converted from degrees and minutes as if they were
+decimals, so that no decimal part exceeds .59, and an atlas published on
+the centres of a quarter-degree grid:
 
 ``` r
 
@@ -232,12 +232,15 @@ dec <- data.frame(dataset = x$datasetKey,
                   lon = x$decimalLongitude %% 1, lat = x$decimalLatitude %% 1)
 dec <- dec[dec$dataset %in% c("survey-a", "atlas-ddmm", "atlas-grid"), ]
 ggplot(dec, aes(lon, lat)) +
-  geom_point(size = 0.6, colour = "#2C5D73") +
+  geom_point(size = 0.8, colour = "#2E6F9E") +
   facet_wrap(~dataset) +
   coord_equal() +
+  scale_x_continuous(breaks = c(0, 0.5, 1)) +
+  scale_y_continuous(breaks = c(0, 0.5, 1)) +
   labs(x = "decimal part of longitude", y = "decimal part of latitude") +
-  theme_minimal() +
-  theme(panel.background = element_rect(fill = "transparent", colour = NA),
+  theme_minimal(base_size = 17) +
+  theme(panel.spacing = unit(2, "lines"),
+        panel.background = element_rect(fill = "transparent", colour = NA),
         plot.background = element_rect(fill = "transparent", colour = NA))
 ```
 

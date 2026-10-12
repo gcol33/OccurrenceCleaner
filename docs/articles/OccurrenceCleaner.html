@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Get started • OccurrenceCleaner</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -91,8 +96,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Get started</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Get started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/vignettes/OccurrenceCleaner.Rmd" class="external-link"><code>vignettes/OccurrenceCleaner.Rmd</code></a></small>
@@ -101,19 +105,20 @@
 
     
     
-<p>This article flags a small set of species records, keeps the records
-that pass a chosen cleaning rule, and counts what two different rules
-exclude. It assumes basic R and data frames. Later sections change the
-distance a test uses, read data with other column names, fix common
-errors and flag a table on disk. The coordinate tests follow <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+<p>This article flags a small set of species records, removes the
+records a chosen cleaning rule flags, and counts what two different
+rules exclude. It assumes basic R and data frames. The coordinate tests
+follow <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 (Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>), with the same
-definitions and default distances.</p>
+definitions and default distances. The documented differences are listed
+in <a href="coordinatecleaner.html#where-the-flags-differ">Where the
+flags differ</a>.</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Flag</strong> the records with
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>.</p></li>
 <li><p><strong>Inspect</strong> the flags with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</p></li>
-<li><p><strong>Keep</strong> the records that pass a rule, using
+<li><p><strong>Filter</strong> out flagged records, using
 <code><a href="../reference/flag_mask.html">has_flag()</a></code>.</p></li>
 <li><p><strong>Compare</strong> rules with
 <code><a href="../reference/tally_flags.html">tally_flags()</a></code>.</p></li>
@@ -133,8 +138,9 @@ shows how to set one up.</p>
 <h2 id="flagging-a-data-frame">Flagging a data frame<a class="anchor" aria-label="anchor" href="#flagging-a-data-frame"></a>
 </h2>
 <p>The example has seven records of four tree species, each with an
-identifier. Coordinates are longitude and latitude in decimal degrees,
-in columns with their Darwin Core names.</p>
+identifier. Coordinates are longitude and latitude in decimal degrees.
+The column names follow Darwin Core, the standard set of field names for
+biodiversity data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">7</span>,</span>
@@ -167,27 +173,30 @@ coordinates as an earlier record.</p></li>
 <span><span class="co">#&gt; 6  6     Pinus nigra           -30.00           40.00     0           </span></span>
 <span><span class="co">#&gt; 7  7     Picea abies            13.06           47.08     0</span></span></code></pre></div>
 <p>The result is <code>x</code> with the same rows in the same order and
-its columns unchanged, plus the flag columns described below. Printing
-it adds a <code>flagged_by</code> column that names the tests flagging
-each record. Record 2 has zero coordinates, record 4 repeats record 3,
-and record 5 has a longitude of 200 degrees.</p>
+its columns unchanged, plus the flag columns described below. The
+printed display also shows a <code>flagged_by</code> column naming the
+tests that flag each record; the object itself has no such column.
+Record 2 has zero coordinates, record 4 repeats record 3, and record 5
+has a longitude of 200 degrees.</p>
 <p>A record without a flag has passed only the tests that were run.
 Record 3 lies in Vienna but carries no flag, because no test against
 capitals has run yet.</p>
 <p>Each test also has a logical column, <code>flag_&lt;test&gt;</code>,
 which is <code>TRUE</code> where the test flagged the record. The
-<code>flags</code> column holds all tests of a record in one integer; <a href="tests.html">The tests in detail</a> explains the encoding.</p>
+<code>flags</code> column combines the results of all tests for a record
+into one integer; <a href="tests.html">The tests in detail</a> explains
+the encoding.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span><span class="op">$</span><span class="va">flag_duplicate</span></span>
 <span><span class="co">#&gt; [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="keeping-the-records-that-pass">Keeping the records that pass<a class="anchor" aria-label="anchor" href="#keeping-the-records-that-pass"></a>
+<h2 id="filtering-records">Filtering records<a class="anchor" aria-label="anchor" href="#filtering-records"></a>
 </h2>
-<p>A cleaning rule is the set of tests whose flags exclude a record.
-<code><a href="../reference/flag_mask.html">has_flag()</a></code> is <code>TRUE</code> for every record flagged by
-at least one test of the rule, so the retained records are the
-others:</p>
+<p>A cleaning rule is the set of tests whose flags exclude a record. Use
+<code><a href="../reference/flag_mask.html">has_flag()</a></code> to remove records flagged by any test in the
+rule. <code><a href="../reference/flag_mask.html">has_flag()</a></code> also checks that every named test was run
+on the flagged table, and stops with an error if one was not:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rule</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
 <span><span class="va">cleaned</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rule</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -206,8 +215,8 @@ test flags only the repeats, so one copy of each record remains.</p>
 <p>Without <code>tests</code>, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> runs the
 default tests listed by <code><a href="../reference/default_tests.html">default_tests()</a></code>. They add checks
 against reference points and polygons: country capitals, country
-centroids, biodiversity institutions, the GBIF headquarters, and the
-land.</p>
+centroids, biodiversity institutions, the headquarters of the Global
+Biodiversity Information Facility (GBIF), and the land.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="va">f</span></span>
@@ -222,15 +231,18 @@ land.</p>
 <span><span class="co">#&gt; 7  7     Picea abies            13.06           47.08     0</span></span></code></pre></div>
 <p>Records 3 and 4 lie in Vienna, within 10 km of a capital. Record 6 is
 in the Atlantic. Record 2, at (0, 0), is also at sea and has equal
-longitude and latitude. Records 1 and 7 pass every test.</p>
+longitude and latitude. Records 1 and 7 pass every test run here.</p>
 <p>The <code>sea</code> test compares each record with land polygons
 from Natural Earth, at the 1:110 million scale by default. Near coasts
 and on small islands a finer scale (<code>land_scale = 50</code> or
 <code>10</code>) can change the flag; <a href="reference-data.html">Reference data</a> maps the difference.</p>
 <p>A flagged record may still be valid: a beech can grow within 10 km of
-a capital, so users decide which tests suit their analysis.
-<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> counts the records each test flags, and in the
-<code>only</code> column the records that test alone flags:</p>
+a capital, so users decide which tests suit their analysis.</p>
+<p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> counts the records each test flags, and in the
+<code>only</code> column the records that test alone flags. Without a
+rule, it counts under one rule named <code>all</code> that lists every
+test that was run. It only counts: <code>f</code> still contains all
+seven records.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 7 records</span></span>
@@ -262,68 +274,15 @@ counts, per species, the records each rule removes:</p>
 <code class="sourceCode R"><span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"capital"</span>, <span class="st">"sea"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
 <span><span class="va">mild</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>,</span>
-<span>                 rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">t</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"n"</span>, <span class="st">"flagged_capital"</span>, <span class="st">"flagged_sea"</span>,</span>
-<span>      <span class="st">"flagged_duplicate"</span>, <span class="st">"removed_strict"</span>, <span class="st">"removed_mild"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="17%">
-<col width="3%">
-<col width="17%">
-<col width="12%">
-<col width="19%">
-<col width="16%">
-<col width="13%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">species</th>
-<th align="right">n</th>
-<th align="right">flagged_capital</th>
-<th align="right">flagged_sea</th>
-<th align="right">flagged_duplicate</th>
-<th align="right">removed_strict</th>
-<th align="right">removed_mild</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Fagus sylvatica</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">2</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">Picea abies</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">Pinus nigra</td>
-<td align="right">2</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">2</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">Quercus robur</td>
-<td align="right">2</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-</tbody>
-</table>
+<span>                 rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">t</span></span>
+<span><span class="co">#&gt; &lt;occ_tally&gt; 7 records in 4 groups of species, rules: strict, mild</span></span>
+<span><span class="co">#&gt;          species n removed_strict kept_strict removed_mild kept_mild</span></span>
+<span><span class="co">#&gt;  Fagus sylvatica 2              2           0            1         1</span></span>
+<span><span class="co">#&gt;      Picea abies 1              0           1            0         1</span></span>
+<span><span class="co">#&gt;      Pinus nigra 2              2           0            1         1</span></span>
+<span><span class="co">#&gt;    Quercus robur 2              1           1            1         1</span></span>
+<span><span class="co">#&gt; # summary() for the share each test flags</span></span></code></pre></div>
 <p>Under the strict rule both beech records go; under the mild rule one
 stays. <code><a href="../reference/tally_flags.html">tally_flags()</a></code> also cuts numeric columns such as the
 record year into bins, which <a href="rules.html">Choosing a cleaning
@@ -335,15 +294,16 @@ rule</a> shows.</p>
 <p>The distances are part of the tests, so changing one means flagging
 again. The <code>capital</code> test flags records within 10 km of a
 capital by default. With 200 m, the Vienna records pass it:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f500</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">f500</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f200</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>capital <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f200</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt; &lt;occ_flags&gt; 2 records, 9 tests, reference OccurrenceCleaner 0.2.0, land 110</span></span>
 <span><span class="co">#&gt;   id         species decimalLongitude decimalLatitude flags flagged_by</span></span>
 <span><span class="co">#&gt; 1  3 Fagus sylvatica            16.37           48.21     0           </span></span>
 <span><span class="co">#&gt; 2  4 Fagus sylvatica            16.37           48.21  1024  duplicate</span></span></code></pre></div>
-<p><code>buffers</code> takes distances in metres; the help page of
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> lists the default of each test.</p>
+<p>The capital distance is given in metres, as are the other proximity
+distances; the <code>zero</code> distance is in degrees. The help page
+of <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> lists the default of each test.</p>
 </div>
 <div class="section level2">
 <h2 id="flagging-other-data">Flagging other data<a class="anchor" aria-label="anchor" href="#flagging-other-data"></a>
@@ -352,16 +312,17 @@ capital by default. With 200 m, the Vienna records pass it:</p>
 example below writes the records to a CSV file with the columns
 <code>taxon</code>, <code>lon</code> and <code>lat</code>, then reads it
 back as any CSV file would be read:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxon <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">species</span>, lon <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">decimalLongitude</span>,</span>
 <span>                     lat <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">decimalLatitude</span><span class="op">)</span>,</span>
 <span>          <span class="va">csv</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">csv</span><span class="op">)</span></span></code></pre></div>
-<p>Columns are found by their Darwin Core names in any case. Other names
-are set with <code><a href="../reference/occ_columns.html">occ_columns()</a></code>, and for another file only the
-<code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code> path and these names change:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>Columns are found by their Darwin Core names regardless of
+capitalisation. Other names are set with <code><a href="../reference/occ_columns.html">occ_columns()</a></code>, and
+for another file only the <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code> path and these names
+change:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lon"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"taxon"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">y</span>, columns <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_flags&gt; 7 records, 9 tests, reference OccurrenceCleaner 0.2.0, land 110</span></span>
@@ -377,14 +338,68 @@ are set with <code><a href="../reference/occ_columns.html">occ_columns()</a></co
 coordinates and the species.</p>
 </div>
 <div class="section level2">
+<h2 id="fixing-common-errors">Fixing common errors<a class="anchor" aria-label="anchor" href="#fixing-common-errors"></a>
+</h2>
+<p>Data often use other column names than the Darwin Core ones. In this
+example, <code>y</code> stores the coordinates as <code>lon</code> and
+<code>lat</code> and the species as <code>taxon</code>. The
+<code>columns</code> argument tells OccurrenceCleaner which columns to
+read.</p>
+<p>Running the tests without that mapping produces this error:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `resolve_columns()`:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> column `decimalLongitude` (field `lon`) not found in the input; set it with occ_columns()</span></span></code></pre></div>
+<p>The message names the missing column and points to
+<code><a href="../reference/occ_columns.html">occ_columns()</a></code>. Passing the mapping <code>cols</code> from
+<a href="#flagging-other-data">Flagging other data</a> fixes the
+call:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">y</span>, columns <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fy</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;occ_flags&gt; 7 records, 9 tests, reference OccurrenceCleaner 0.2.0, land 110</span></span>
+<span><span class="co">#&gt;             taxon   lon   lat flags     flagged_by</span></span>
+<span><span class="co">#&gt; 1   Quercus robur 14.05 47.85     0               </span></span>
+<span><span class="co">#&gt; 2   Quercus robur  0.00  0.00   134 zero,equal,sea</span></span>
+<span><span class="co">#&gt; 3 Fagus sylvatica 16.37 48.21     8        capital</span></span>
+<span><span class="co">#&gt; # ... 4 more records; summary() for the share each test flags</span></span></code></pre></div>
+<p>An unknown test name stops the call before any test runs:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capitals"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `check_tests()`:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> unknown test(s): capitals. See flag_tests().</span></span></code></pre></div>
+<p><code><a href="../reference/flag_tests.html">flag_tests()</a></code> lists the valid names; the capital test is
+called <code>capital</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span></span>
+<span><span class="va">fc</span><span class="op">$</span><span class="va">flag_capital</span></span>
+<span><span class="co">#&gt; [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE</span></span></code></pre></div>
+<p>A rule that names a test which was not run also stops with an error,
+because the rule would otherwise exclude no records for that test:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `check_tests_run()`:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> test(s) not run on these flags: sea; run flag_occurrences() with them, or drop them from the rule</span></span></code></pre></div>
+<p>The fix is to run <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> with the test, or
+to drop it from the rule. Here the <code>sea</code> test is added:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="checks-based-on-gbif-metadata">Checks based on GBIF metadata<a class="anchor" aria-label="anchor" href="#checks-based-on-gbif-metadata"></a>
 </h2>
 <p>Some tests read GBIF fields instead of the coordinates.
 <code>basis_fossil</code> flags records whose basis of record is a
-fossil specimen:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span><span class="op">$</span><span class="va">basisOfRecord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="fl">6</span><span class="op">)</span>, <span class="st">"FOSSIL_SPECIMEN"</span><span class="op">)</span></span>
-<span><span class="va">fb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"basis_fossil"</span><span class="op">)</span></span>
+fossil specimen. The example adds a <code>basisOfRecord</code> column to
+a copy of the records, <code>xb</code>, and marks record 7 as a
+fossil:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">basis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="fl">6</span><span class="op">)</span>, <span class="st">"FOSSIL_SPECIMEN"</span><span class="op">)</span></span>
+<span><span class="va">xb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">x</span>, basisOfRecord <span class="op">=</span> <span class="va">basis</span><span class="op">)</span></span>
+<span><span class="va">fb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">xb</span>, tests <span class="op">=</span> <span class="st">"basis_fossil"</span><span class="op">)</span></span>
 <span><span class="va">fb</span><span class="op">$</span><span class="va">flag_basis_fossil</span></span>
 <span><span class="co">#&gt; [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</span></span></code></pre></div>
 <p><a href="gbif-workflow.html">Cleaning GBIF data</a> uses these tests
@@ -392,74 +407,48 @@ on a GBIF download, including the issue warnings and establishment
 means.</p>
 </div>
 <div class="section level2">
-<h2 id="fixing-common-errors">Fixing common errors<a class="anchor" aria-label="anchor" href="#fixing-common-errors"></a>
-</h2>
-<p>Each error message names the problem and the next step. Here a column
-the tests need is missing, because <code>y</code> uses other names and
-no <code>columns</code> were given:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `resolve_columns()`:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> column `decimalLongitude` (field `lon`) not found in the input; set it with occ_columns()</span></span></code></pre></div>
-<p>The fix is <code><a href="../reference/occ_columns.html">occ_columns()</a></code>, as in the previous section. A
-test name that does not exist stops before anything runs;
-<code><a href="../reference/flag_tests.html">flag_tests()</a></code> lists the valid names:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capitals"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `check_tests()`:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> unknown test(s): capitals. See flag_tests().</span></span></code></pre></div>
-<p>A rule that names a test which was not run stops with an error;
-otherwise it would exclude no records for that test. The fix is to run
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> with the test, or to drop it from the
-rule:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `check_tests_run()`:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> test(s) not run on these flags: sea; run flag_occurrences() with them, or drop them from the rule</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="flagging-a-table-on-disk">Flagging a table on disk<a class="anchor" aria-label="anchor" href="#flagging-a-table-on-disk"></a>
 </h2>
 <p><code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> also takes a path to a table on disk,
 such as the directory of Parquet files of a GBIF snapshot. Each file is
 flagged and written separately to <code>out</code>, and
-<code>keep</code> names the input columns copied next to the flags. The
-example directory <code>src</code> holds two files of random
-records.</p>
-<details><summary>
-Code that writes the example files
-</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code>keep</code> names the input columns copied next to the flags.</p>
+<p>The example writes the seven records to a directory <code>src</code>
+as two files. The files use the <code>.vtr</code> format of vectra, the
+column-store package OccurrenceCleaner reads and writes tables on disk
+with:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"records"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">src</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">5000</span></span>
-<span><span class="va">big</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  gbifID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Animalia"</span>, <span class="st">"Plantae"</span><span class="op">)</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">180</span>, <span class="fl">180</span><span class="op">)</span>,</span>
-<span>  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">60</span>, <span class="fl">70</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/write_vtr.html" class="external-link">write_vtr</a></span><span class="op">(</span><span class="va">big</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2500</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"part-1.vtr"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/write_vtr.html" class="external-link">write_vtr</a></span><span class="op">(</span><span class="va">big</span><span class="op">[</span><span class="fl">2501</span><span class="op">:</span><span class="va">n</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"part-2.vtr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/write_vtr.html" class="external-link">write_vtr</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"part-1.vtr"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/write_vtr.html" class="external-link">write_vtr</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">7</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"part-2.vtr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The call is the same as for a data frame, with the path and an output
+directory. The identifier is looked for under its GBIF name
+<code>gbifID</code> by default, so <code>columns</code> maps it to
+<code>id</code>:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"flags"</span><span class="op">)</span>,</span>
-<span>                        keep <span class="op">=</span> <span class="st">"kingdom"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>                        columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>,</span>
+<span>                        keep <span class="op">=</span> <span class="st">"species"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>For a path, the result describes the output directory instead of
-holding the records. The directory’s files hold the <code>id</code> and
+holding the records. The directory’s files hold the identifier, the
 <code>keep</code> columns and the flags of every record.
 <code><a href="../reference/tally_flags.html">tally_flags()</a></code> reads the directory like a data frame:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">t</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"n"</span>, <span class="st">"flagged_sea"</span>, <span class="st">"removed_strict"</span>, <span class="st">"kept_strict"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;    kingdom    n flagged_sea removed_strict kept_strict</span></span>
-<span><span class="co">#&gt; 1 Animalia 2449        1724           1724         725</span></span>
-<span><span class="co">#&gt; 2  Plantae 2551        1810           1810         741</span></span></code></pre></div>
-<p>Most random points fall in the sea, so the <code>sea</code> test
-flags most of them. A rerun into the same directory skips the files
-already flagged; <a href="on-disk.html">Large tables on disk</a> covers
-resuming and reading the flags back.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">t</span></span>
+<span><span class="co">#&gt; &lt;occ_tally&gt; 7 records in 4 groups of species, rules: strict</span></span>
+<span><span class="co">#&gt;          species n removed_strict kept_strict</span></span>
+<span><span class="co">#&gt;  Fagus sylvatica 2              2           0</span></span>
+<span><span class="co">#&gt;      Picea abies 1              0           1</span></span>
+<span><span class="co">#&gt;      Pinus nigra 2              2           0</span></span>
+<span><span class="co">#&gt;    Quercus robur 2              1           1</span></span>
+<span><span class="co">#&gt; # summary() for the share each test flags</span></span></code></pre></div>
+<p>The counts match the strict rule on the data frame above. On disk the
+<code>duplicate</code> test compares records within each file, so it
+finds record 4 here only because records 3 and 4 are in the same file. A
+rerun into the same directory skips the files already flagged. <a href="on-disk.html">Large tables on disk</a> covers resuming, duplicates
+across files and reading the flags back.</p>
 </div>
 <div class="section level2">
 <h2 id="where-next">Where next<a class="anchor" aria-label="anchor" href="#where-next"></a>

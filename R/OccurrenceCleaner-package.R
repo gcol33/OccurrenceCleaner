@@ -5,7 +5,7 @@
 #' same definitions and default buffers, and keeps every record. Each test
 #' writes one flag per record, so a cleaning rule is chosen afterwards as a
 #' query over the flags. See [flag_occurrences()] to flag a data frame or an
-#' on-disk table, [flag_tests()] for which bit holds which test, and
+#' on-disk table, [flag_tests()] for the bit each test sets, and
 #' [tally_flags()] to count what each test and rule removes.
 #'
 #' The tests, their default buffers and the options of the outlier and

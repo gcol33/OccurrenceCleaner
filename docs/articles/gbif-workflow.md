@@ -109,7 +109,7 @@ table(occ$truth)
 #>          20          25          30          25          20
 ```
 
-The `issue` column holds GBIF’s issue names separated by `;`, which is
+The `issue` column lists GBIF’s issue names separated by `;`, which is
 how both the simple-format download and the snapshot read through
 [vectra](https://gillescolling.com/vectra/) deliver them; a list column
 of character vectors works too.
@@ -278,7 +278,7 @@ knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tes
 | sea + country_mismatch + issue_coordinate                  |       9 |
 
 The most common combination is `capital + urban`: a capital lies inside
-its own urban area, so in a rule that already holds `capital`, adding
+its own urban area, so in a rule that already includes `capital`, adding
 `urban` removes only the city records more than 10 km from the capital
 point. 15 of the 20 zero-coordinate records carry five tests at once:
 the four above plus `duplicate`, since they share their coordinates and
@@ -366,13 +366,17 @@ The same table as a figure, one line per kingdom across the rule ladder:
 long <- do.call(rbind, lapply(names(rules), function(r)
   data.frame(kingdom = t_k$kingdom, rule = r, share = t_k[[paste0("share_", r)]])))
 long$rule <- factor(long$rule, levels = names(rules))
-ggplot(long, aes(rule, share, colour = kingdom, group = kingdom)) +
-  geom_line() + geom_point() +
+kingdom_cols <- c(Animalia = "#B5342B", Fungi = "#2E6F9E", Plantae = "#3F7A3D")
+ggplot(long, aes(rule, share, colour = kingdom, shape = kingdom, group = kingdom)) +
+  geom_line(linewidth = 1) + geom_point(size = 2.5) +
+  scale_colour_manual(values = kingdom_cols) +
   scale_y_continuous(labels = function(v) paste0(100 * v, " %")) +
   labs(x = NULL, y = "records removed") +
-  theme_minimal() +
-  theme(panel.background = element_rect(fill = "transparent", colour = NA),
-        plot.background = element_rect(fill = "transparent", colour = NA))
+  theme_minimal(base_size = 17) +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1),
+        panel.background = element_rect(fill = "transparent", colour = NA),
+        plot.background = element_rect(fill = "transparent", colour = NA),
+        legend.background = element_rect(fill = "transparent", colour = NA))
 ```
 
 ![](gbif-workflow_files/figure-html/rules-plot-1.svg)

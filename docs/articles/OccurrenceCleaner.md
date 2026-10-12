@@ -1,13 +1,13 @@
 # Get started
 
-This article flags a small set of species records, keeps the records
-that pass a chosen cleaning rule, and counts what two different rules
-exclude. It assumes basic R and data frames. Later sections change the
-distance a test uses, read data with other column names, fix common
-errors and flag a table on disk. The coordinate tests follow
+This article flags a small set of species records, removes the records a
+chosen cleaning rule flags, and counts what two different rules exclude.
+It assumes basic R and data frames. The coordinate tests follow
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)), with the
-same definitions and default distances.
+same definitions and default distances. The documented differences are
+listed in [Where the flags
+differ](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#where-the-flags-differ).
 
 1.  **Flag** the records with
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
@@ -16,7 +16,7 @@ same definitions and default distances.
     [`print()`](https://rdrr.io/r/base/print.html) and
     [`summary()`](https://rdrr.io/r/base/summary.html).
 
-3.  **Keep** the records that pass a rule, using
+3.  **Filter** out flagged records, using
     [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
 
 4.  **Compare** rules with
@@ -42,8 +42,9 @@ library(OccurrenceCleaner)
 ## Flagging a data frame
 
 The example has seven records of four tree species, each with an
-identifier. Coordinates are longitude and latitude in decimal degrees,
-in columns with their Darwin Core names.
+identifier. Coordinates are longitude and latitude in decimal degrees.
+The column names follow Darwin Core, the standard set of field names for
+biodiversity data.
 
 ``` r
 
@@ -85,18 +86,18 @@ f
 ```
 
 The result is `x` with the same rows in the same order and its columns
-unchanged, plus the flag columns described below. Printing it adds a
-`flagged_by` column that names the tests flagging each record. Record 2
-has zero coordinates, record 4 repeats record 3, and record 5 has a
-longitude of 200 degrees.
+unchanged, plus the flag columns described below. The printed display
+also shows a `flagged_by` column naming the tests that flag each record;
+the object itself has no such column. Record 2 has zero coordinates,
+record 4 repeats record 3, and record 5 has a longitude of 200 degrees.
 
 A record without a flag has passed only the tests that were run. Record
 3 lies in Vienna but carries no flag, because no test against capitals
 has run yet.
 
 Each test also has a logical column, `flag_<test>`, which is `TRUE`
-where the test flagged the record. The `flags` column holds all tests of
-a record in one integer; [The tests in
+where the test flagged the record. The `flags` column combines the
+results of all tests for a record into one integer; [The tests in
 detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.md)
 explains the encoding.
 
@@ -106,12 +107,14 @@ f$flag_duplicate
 #> [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
 ```
 
-## Keeping the records that pass
+## Filtering records
 
-A cleaning rule is the set of tests whose flags exclude a record.
+A cleaning rule is the set of tests whose flags exclude a record. Use
 [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-is `TRUE` for every record flagged by at least one test of the rule, so
-the retained records are the others:
+to remove records flagged by any test in the rule.
+[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
+also checks that every named test was run on the flagged table, and
+stops with an error if one was not:
 
 ``` r
 
@@ -135,8 +138,8 @@ Without `tests`,
 runs the default tests listed by
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md).
 They add checks against reference points and polygons: country capitals,
-country centroids, biodiversity institutions, the GBIF headquarters, and
-the land.
+country centroids, biodiversity institutions, the headquarters of the
+Global Biodiversity Information Facility (GBIF), and the land.
 
 ``` r
 
@@ -155,7 +158,7 @@ f
 
 Records 3 and 4 lie in Vienna, within 10 km of a capital. Record 6 is in
 the Atlantic. Record 2, at (0, 0), is also at sea and has equal
-longitude and latitude. Records 1 and 7 pass every test.
+longitude and latitude. Records 1 and 7 pass every test run here.
 
 The `sea` test compares each record with land polygons from Natural
 Earth, at the 1:110 million scale by default. Near coasts and on small
@@ -166,9 +169,12 @@ maps the difference.
 
 A flagged record may still be valid: a beech can grow within 10 km of a
 capital, so users decide which tests suit their analysis.
+
 [`summary()`](https://rdrr.io/r/base/summary.html) counts the records
 each test flags, and in the `only` column the records that test alone
-flags:
+flags. Without a rule, it counts under one rule named `all` that lists
+every test that was run. It only counts: `f` still contains all seven
+records.
 
 ``` r
 
@@ -206,20 +212,15 @@ strict <- c("invalid", "zero", "capital", "sea", "duplicate")
 mild <- c("invalid", "zero", "duplicate")
 t <- tally_flags(f, by = "species",
                  rules = list(strict = strict, mild = mild))
+t
+#> <occ_tally> 7 records in 4 groups of species, rules: strict, mild
+#>          species n removed_strict kept_strict removed_mild kept_mild
+#>  Fagus sylvatica 2              2           0            1         1
+#>      Picea abies 1              0           1            0         1
+#>      Pinus nigra 2              2           0            1         1
+#>    Quercus robur 2              1           1            1         1
+#> # summary() for the share each test flags
 ```
-
-``` r
-
-t[, c("species", "n", "flagged_capital", "flagged_sea",
-      "flagged_duplicate", "removed_strict", "removed_mild")]
-```
-
-| species | n | flagged_capital | flagged_sea | flagged_duplicate | removed_strict | removed_mild |
-|:---|---:|---:|---:|---:|---:|---:|
-| Fagus sylvatica | 2 | 2 | 0 | 1 | 2 | 1 |
-| Picea abies | 1 | 0 | 0 | 0 | 0 | 0 |
-| Pinus nigra | 2 | 0 | 1 | 0 | 2 | 1 |
-| Quercus robur | 2 | 0 | 1 | 0 | 1 | 1 |
 
 Under the strict rule both beech records go; under the mild rule one
 stays.
@@ -237,15 +238,16 @@ default. With 200 m, the Vienna records pass it:
 
 ``` r
 
-f500 <- flag_occurrences(x, buffers = list(capital = 200))
-f500[3:4, ]
+f200 <- flag_occurrences(x, buffers = list(capital = 200))
+f200[3:4, ]
 #> <occ_flags> 2 records, 9 tests, reference OccurrenceCleaner 0.2.0, land 110
 #>   id         species decimalLongitude decimalLatitude flags flagged_by
 #> 1  3 Fagus sylvatica            16.37           48.21     0           
 #> 2  4 Fagus sylvatica            16.37           48.21  1024  duplicate
 ```
 
-`buffers` takes distances in metres; the help page of
+The capital distance is given in metres, as are the other proximity
+distances; the `zero` distance is in degrees. The help page of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 lists the default of each test.
 
@@ -264,8 +266,8 @@ write.csv(data.frame(taxon = x$species, lon = x$decimalLongitude,
 y <- read.csv(csv)
 ```
 
-Columns are found by their Darwin Core names in any case. Other names
-are set with
+Columns are found by their Darwin Core names regardless of
+capitalisation. Other names are set with
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md),
 and for another file only the
 [`read.csv()`](https://rdrr.io/r/utils/read.table.html) path and these
@@ -289,29 +291,14 @@ flag_occurrences(y, columns = cols)
 Each test reads only the columns it needs: the default tests need the
 coordinates and the species.
 
-## Checks based on GBIF metadata
-
-Some tests read GBIF fields instead of the coordinates. `basis_fossil`
-flags records whose basis of record is a fossil specimen:
-
-``` r
-
-x$basisOfRecord <- c(rep("HUMAN_OBSERVATION", 6), "FOSSIL_SPECIMEN")
-fb <- flag_occurrences(x, tests = "basis_fossil")
-fb$flag_basis_fossil
-#> [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
-```
-
-[Cleaning GBIF
-data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md)
-uses these tests on a GBIF download, including the issue warnings and
-establishment means.
-
 ## Fixing common errors
 
-Each error message names the problem and the next step. Here a column
-the tests need is missing, because `y` uses other names and no `columns`
-were given:
+Data often use other column names than the Darwin Core ones. In this
+example, `y` stores the coordinates as `lon` and `lat` and the species
+as `taxon`. The `columns` argument tells OccurrenceCleaner which columns
+to read.
+
+Running the tests without that mapping produces this error:
 
 ``` r
 
@@ -320,12 +307,24 @@ flag_occurrences(y)
 #> ! column `decimalLongitude` (field `lon`) not found in the input; set it with occ_columns()
 ```
 
-The fix is
-[`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md),
-as in the previous section. A test name that does not exist stops before
-anything runs;
-[`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
-lists the valid names:
+The message names the missing column and points to
+[`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md).
+Passing the mapping `cols` from [Flagging other
+data](#flagging-other-data) fixes the call:
+
+``` r
+
+fy <- flag_occurrences(y, columns = cols)
+print(fy, n = 3)
+#> <occ_flags> 7 records, 9 tests, reference OccurrenceCleaner 0.2.0, land 110
+#>             taxon   lon   lat flags     flagged_by
+#> 1   Quercus robur 14.05 47.85     0               
+#> 2   Quercus robur  0.00  0.00   134 zero,equal,sea
+#> 3 Fagus sylvatica 16.37 48.21     8        capital
+#> # ... 4 more records; summary() for the share each test flags
+```
+
+An unknown test name stops the call before any test runs:
 
 ``` r
 
@@ -334,10 +333,18 @@ flag_occurrences(x, tests = "capitals")
 #> ! unknown test(s): capitals. See flag_tests().
 ```
 
-A rule that names a test which was not run stops with an error;
-otherwise it would exclude no records for that test. The fix is to run
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-with the test, or to drop it from the rule:
+[`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
+lists the valid names; the capital test is called `capital`:
+
+``` r
+
+fc <- flag_occurrences(x, tests = "capital")
+fc$flag_capital
+#> [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
+```
+
+A rule that names a test which was not run also stops with an error,
+because the rule would otherwise exclude no records for that test:
 
 ``` r
 
@@ -347,59 +354,94 @@ has_flag(f3, c("zero", "sea"))
 #> ! test(s) not run on these flags: sea; run flag_occurrences() with them, or drop them from the rule
 ```
 
+The fix is to run
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+with the test, or to drop it from the rule. Here the `sea` test is
+added:
+
+``` r
+
+f3 <- flag_occurrences(x, tests = c("invalid", "zero", "sea"))
+has_flag(f3, c("zero", "sea"))
+#> [1] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE
+```
+
+## Checks based on GBIF metadata
+
+Some tests read GBIF fields instead of the coordinates. `basis_fossil`
+flags records whose basis of record is a fossil specimen. The example
+adds a `basisOfRecord` column to a copy of the records, `xb`, and marks
+record 7 as a fossil:
+
+``` r
+
+basis <- c(rep("HUMAN_OBSERVATION", 6), "FOSSIL_SPECIMEN")
+xb <- data.frame(x, basisOfRecord = basis)
+fb <- flag_occurrences(xb, tests = "basis_fossil")
+fb$flag_basis_fossil
+#> [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+```
+
+[Cleaning GBIF
+data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md)
+uses these tests on a GBIF download, including the issue warnings and
+establishment means.
+
 ## Flagging a table on disk
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 also takes a path to a table on disk, such as the directory of Parquet
 files of a GBIF snapshot. Each file is flagged and written separately to
-`out`, and `keep` names the input columns copied next to the flags. The
-example directory `src` holds two files of random records.
+`out`, and `keep` names the input columns copied next to the flags.
 
-Code that writes the example files
+The example writes the seven records to a directory `src` as two files.
+The files use the `.vtr` format of vectra, the column-store package
+OccurrenceCleaner reads and writes tables on disk with:
 
 ``` r
 
 src <- tempfile("records")
 dir.create(src)
-set.seed(1)
-n <- 5000
-big <- data.frame(
-  gbifID = as.character(seq_len(n)),
-  kingdom = sample(c("Animalia", "Plantae"), n, replace = TRUE),
-  species = sample(letters, n, replace = TRUE),
-  decimalLongitude = runif(n, -180, 180),
-  decimalLatitude = runif(n, -60, 70)
-)
-vectra::write_vtr(big[1:2500, ], file.path(src, "part-1.vtr"))
-vectra::write_vtr(big[2501:n, ], file.path(src, "part-2.vtr"))
+vectra::write_vtr(x[1:4, ], file.path(src, "part-1.vtr"))
+vectra::write_vtr(x[5:7, ], file.path(src, "part-2.vtr"))
 ```
+
+The call is the same as for a data frame, with the path and an output
+directory. The identifier is looked for under its GBIF name `gbifID` by
+default, so `columns` maps it to `id`:
 
 ``` r
 
 out <- flag_occurrences(src, out = tempfile("flags"),
-                        keep = "kingdom", verbose = FALSE)
+                        columns = occ_columns(id = "id"),
+                        keep = "species", verbose = FALSE)
 ```
 
 For a path, the result describes the output directory instead of holding
-the records. The directory’s files hold the `id` and `keep` columns and
-the flags of every record.
+the records. The directory’s files hold the identifier, the `keep`
+columns and the flags of every record.
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 reads the directory like a data frame:
 
 ``` r
 
-t <- tally_flags(out, by = "kingdom", rules = list(strict = strict))
-t[, c("kingdom", "n", "flagged_sea", "removed_strict", "kept_strict")]
-#>    kingdom    n flagged_sea removed_strict kept_strict
-#> 1 Animalia 2449        1724           1724         725
-#> 2  Plantae 2551        1810           1810         741
+t <- tally_flags(out, by = "species", rules = list(strict = strict))
+t
+#> <occ_tally> 7 records in 4 groups of species, rules: strict
+#>          species n removed_strict kept_strict
+#>  Fagus sylvatica 2              2           0
+#>      Picea abies 1              0           1
+#>      Pinus nigra 2              2           0
+#>    Quercus robur 2              1           1
+#> # summary() for the share each test flags
 ```
 
-Most random points fall in the sea, so the `sea` test flags most of
-them. A rerun into the same directory skips the files already flagged;
-[Large tables on
+The counts match the strict rule on the data frame above. On disk the
+`duplicate` test compares records within each file, so it finds record 4
+here only because records 3 and 4 are in the same file. A rerun into the
+same directory skips the files already flagged. [Large tables on
 disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.md)
-covers resuming and reading the flags back.
+covers resuming, duplicates across files and reading the flags back.
 
 ## Where next
 

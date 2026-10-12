@@ -51,7 +51,7 @@ A data frame of class `occ_tally` with the `by` columns, `n` (records),
 one column `flagged_<test>` per test, per rule `removed_<rule>` and
 `kept_<rule>`, and per rule and test of the rule `only_<rule>_<test>`:
 the records that test is the sole reason the rule removes. The attribute
-`occ_rules` holds the rules and `occ_by` the grouping columns.
+`occ_rules` lists the rules and `occ_by` the grouping columns.
 [summary()](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
 turns the counts into percentages and
 [plot()](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)

@@ -127,7 +127,7 @@ next to the herbaria.
 
 ## An extended point gazetteer
 
-The two capital tables differ: the shipped table holds the Factbook
+The two capital tables differ: the shipped table has the Factbook
 capitals unrounded and adds Natural Earth’s alternative and official
 capitals, while
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s has

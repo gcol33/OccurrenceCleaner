@@ -8,196 +8,226 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
-has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4,
+                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Fossil occurrences, such as those downloaded from the Paleobiology Database (PBDB), carry the same coordinate errors as modern records and one more field to check: the age of the record, given as a stratigraphic range from a minimum to a maximum age in million years (Ma). This article flags a fossil table with the coordinate tests and the age test `age_equal`, keeps the width of the age range as a raw column to cut at tally time, and shows how fossil specimens are separated in GBIF data.
+Fossil occurrences, such as those downloaded from the Paleobiology Database (PBDB), can carry the same coordinate errors as modern records, and they have one more field to check: the age of the record, given as a range in million years (Ma). This article flags a small fossil table with the coordinate tests and the age test `age_equal`, filters records by the width of their age range, tests a larger table for outliers within a taxon, and exports the kept records to PyRate. [Get started](OccurrenceCleaner.html) covers installation; the comparison with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) at the end also needs that package installed.
 
-## Installation
+1. **Flag** a fossil table with `flag_occurrences()`.
 
-```{r, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
+2. **Filter** out flagged records, using `has_flag()`.
 
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
+3. **Filter** by the width of the age range, counting each group with `tally_flags()`.
+
+4. **Test** each taxon for outliers in age and space.
+
+5. **Export** the kept records with `export_pyrate()`.
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```
 
-## Example data
+## A small fossil table
 
-A PBDB download holds the taxon in `accepted_name`, coordinates in `lng` and `lat`, the country as an alpha-2 code in `cc`, and the age range in `min_ma` and `max_ma`. The simulated table has 1,500 Paleogene mammal occurrences from the interior of the western United States, Mongolia and Germany, with age ranges between 1 and 12 Ma:
+PBDB uses `accepted_name` for taxon names, `lng` and `lat` for coordinates, and `cc` for two-letter country codes. The columns `min_ma` and `max_ma` give the youngest and oldest possible ages in millions of years before the present.
+
+The example below contains nine synthetic records. Record 2 has equal minimum and maximum ages; record 3 has the ages reversed; record 4 spans 43 million years; record 5 is missing its minimum age; and record 6 has both coordinates set to zero. Records 1 and 9 have a minimum age below the maximum age, a span under 4 million years, and coordinates in Wyoming that match their country code `US`; they pass every test. Records 7 and 8 have a minimum age below the maximum age, a span of 1.2 million years, and the country code `DE`; their coordinates are missing in the table and set in the next chunk:
 
 ```{r data}
-set.seed(5)
-n <- 1500
-region <- sample(c("US", "MN", "DE"), n, TRUE, prob = c(0.5, 0.3, 0.2))
-box <- list(US = c(-112, -104, 38, 46), MN = c(98, 110, 43, 47), DE = c(7, 13, 49, 52))
-b <- t(sapply(region, function(r) box[[r]]))
-min_ma <- round(runif(n, 23, 60), 1)
 fos <- data.frame(
-  occurrence_no = seq_len(n),
-  accepted_name = sample(c("Hyracotherium", "Coryphodon", "Mesonyx", "Uintatherium", "Andrewsarchus"), n, TRUE),
-  lng = round(runif(n, b[, 1], b[, 2]), 3),
-  lat = round(runif(n, b[, 3], b[, 4]), 3),
-  cc = region,
-  min_ma = min_ma,
-  max_ma = min_ma + round(runif(n, 1, 12), 1),
-  truth = "clean")
+  occurrence_no = 1:9,
+  accepted_name = c("Coryphodon", "Coryphodon", "Hyracotherium", "Hyracotherium",
+                    "Hyracotherium", "Mesonyx", "Mesonyx", "Mesonyx", "Uintatherium"),
+  lng = c(-108.52, -108.40, -108.71, -107.95, -108.10, 0, NA, NA, -109.03),
+  lat = c(44.31, 44.05, 43.92, 44.60, 44.40, 0, NA, NA, 41.62),
+  cc = c("US", "US", "US", "US", "US", "US", "DE", "DE", "US"),
+  min_ma = c(53.0, 55.8, 56.0, 23.0, NA, 48.6, 47.8, 47.8, 46.2),
+  max_ma = c(56.0, 55.8, 52.5, 66.0, 54.0, 50.2, 49.0, 49.0, 48.6))
 ```
 
-Into it go the errors that the fossil tests target. Collections georeferenced to the centroid of their country, or roughly 3 km from it, specimens placed at the museum that holds them (the Senckenberg museum in Frankfurt, the Natural History Museum in London), zero coordinates, records whose minimum age was copied into the maximum or the two swapped, and records dated only to a whole period, with ranges of 40 Ma or more:
+Records 7 and 8 are placed relative to the centroid of Germany in the package's reference points, so their distance to it is known: record 7 sits on the point, record 8 lies 0.027 degrees of latitude (about 3 km) north of it.
 
-```{r errors}
-put <- function(i, truth, ...) {
-  v <- list(...)
-  for (nm in names(v)) fos[i, nm] <<- v[[nm]]
-  fos$truth[i] <<- truth
-}
-i <- sample(n, 140)
-put(i[1:20], "centroid", lng = rep(c(-112.4962, 103.0563, 10.3815), length.out = 20),
-    lat = rep(c(45.6881, 46.8258, 51.1064), length.out = 20), cc = rep(c("US", "MN", "DE"), length.out = 20))
-put(i[21:35], "museum", lng = rep(c(8.6517, -0.1764), length.out = 15),
-    lat = rep(c(50.1175, 51.4958), length.out = 15))
-put(i[36:45], "zero", lng = 0, lat = 0)
-put(i[46:70], "age_copied", max_ma = fos$min_ma[i[46:70]])
-put(i[71:90], "age_swapped", min_ma = fos$max_ma[i[71:90]], max_ma = fos$min_ma[i[71:90]])
-put(i[91:130], "age_period", min_ma = 23, max_ma = sample(c(66, 145), 40, TRUE))
-put(i[131:140], "centroid_near", lng = -112.4962, lat = 45.6881 + 0.027, cc = "US")
-table(fos$truth)
+```{r centroid}
+cen <- reference_points("centroid")
+de <- cen[cen$key == "ne:DEU" & cen$method == "polygon centroid", ]
+de[, c("name", "method", "lon", "lat")]
+fos[7:8, "lng"] <- de$lon
+fos[7:8, "lat"] <- de$lat + c(0, 0.027)
 ```
 
 ## Flagging
 
-`occ_columns()` maps the PBDB names onto the fields the tests read. The tests are the record tests of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_fossils()`, whose defaults are `agesequal`, `centroids`, `equal`, `gbif`, `institutions`, `validity` and `zeros` plus two outlier tests (`spatiotemp`, `temprange`) that the section on outliers below adds; here `age_equal` is its `agesequal`, and the country check runs too because the table has country codes:
+`occ_columns()` maps the PBDB names onto the fields the tests read. The coordinate tests are the record tests of [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html) in CoordinateCleaner; `age_equal` is its `agesequal` test, and the country check runs too because the table has country codes:
 
 ```{r flag}
-cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name", country = "cc",
-                    id = "occurrence_no")
-tests <- c("invalid", "zero", "equal", "centroid", "institution", "gbif_headquarters",
-           "country_mismatch", "age_equal")
+cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name",
+                    country = "cc", id = "occurrence_no")
+tests <- c("invalid", "zero", "equal", "centroid", "institution",
+           "gbif_headquarters", "country_mismatch", "age_equal")
 f <- flag_occurrences(fos, tests = tests, columns = cols)
+f[, c("occurrence_no", "accepted_name", "min_ma", "max_ma", "flags")]
 ```
 
-`age_equal` flags a record whose minimum age is equal to or greater than its maximum age. A zero-length range usually means one age was entered in both fields; an inverted one, that the two were swapped. Either way the age of the record is not usable as it stands. Per error type:
+`age_equal` flags a record whose minimum age is equal to or greater than its maximum age: here records 2 and 3. A zero-width range can come from one age copied into both fields, and an inverted one from swapped fields, but the flag only records the comparison; such records need a look at their source before they are corrected or dropped. A record with a missing age, such as record 5, is not flagged by this test.
 
-```{r truth}
-show <- c("zero", "centroid", "institution", "country_mismatch", "age_equal")
-tab <- aggregate(as.data.frame(f)[paste0("flag_", show)], by = list(truth = f$truth), FUN = sum)
-names(tab) <- c("truth", show)
-knitr::kable(tab)
+Record 6 fails `zero`, `equal` and `country_mismatch`, since (0, 0) lies in the Gulf of Guinea. Record 7 fails `centroid`: it lies within the default 1 km of the centroid of Germany.
+
+## Filtering records
+
+Use `has_flag()` to remove records flagged by any test in `tests`. `has_flag()` also checks that every named test was run on the flagged table, and stops with an error if one was not. The later sections reuse this rule as `rule`:
+
+```{r keep}
+rule <- tests
+kept <- f[!has_flag(f, rule), ]
+kept[, c("occurrence_no", "accepted_name", "min_ma", "max_ma")]
 ```
 
-The 45 copied or swapped ages are all caught by `age_equal`, and only by it. The period-dated records are not: a range from 23 to 66 Ma is wide, but valid. The zero coordinates also fail `country_mismatch`, since (0, 0) is in the Gulf of Guinea. The museum records kept the country code of their locality, so most of them also fail `country_mismatch`; the 7 at the London museum also lie within 1 km of the admin-1 label point of Kensington and Chelsea. The 10 clean records flagged by `country_mismatch` are real border cases: the German box reaches east into Czechia and, once, west into France. The 10 collections placed about 3 km from the centroid of the United States are not flagged at the default 1 km.
+Record 5 stays because `age_equal` cannot compare a missing age, so the record carries no flag. A study that needs both ages adds `!is.na(f$min_ma) & !is.na(f$max_ma)` to the selection.
 
-## Buffers for fossil data
+## A wider centroid buffer
 
-`clean_fossils()` uses wider buffers than `clean_coordinates()`, given in degrees: `centroids_rad = 0.05` and `inst_rad = 0.001`, about 5.6 km and 111 m of latitude. Fossil localities are often georeferenced coarsely, so a centroid buffer of a few kilometres catches collections placed near a centroid rather than on it. The buffers here are in metres:
+OccurrenceCleaner uses default buffers of 1 km around centroids and 100 m around institutions. You can change these with `buffers`.
+
+Fossil localities can be georeferenced coarsely, so a collection placed a few kilometres from a country centroid may still have been put there by the centroid. A wider buffer catches such records, at the cost of flagging any correct locality within the same distance. With a 5 km buffer, chosen here to reach record 8, both records near the centroid of Germany are flagged:
 
 ```{r buffers}
 f5 <- flag_occurrences(fos, tests = tests, columns = cols,
-                       buffers = list(centroid = 5600, institution = 111))
-c(centroid_1km = sum(f$flag_centroid), centroid_5.6km = sum(f5$flag_centroid))
+                       buffers = list(centroid = 5000))
+data.frame(occurrence_no = fos$occurrence_no,
+           centroid_1km = f$flag_centroid, centroid_5km = f5$flag_centroid)
 ```
 
-The wider buffer adds `r sum(f5$flag_centroid) - sum(f$flag_centroid)` records:
+These defaults differ from those in CoordinateCleaner. In version 3.0.1, `clean_fossils()` passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer` arguments of [`cc_cen()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html) and [`cc_inst()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html), respectively. Both functions interpret these values in metres.
 
-```{r buffers-gain}
-table(f$truth[f5$flag_centroid & !f$flag_centroid])
-```
+## Filtering by age range
 
-Clean records that happen to lie within 5.6 km of a centroid would be added too, so a wider buffer trades coarse georeferences caught against clean records lost; the per-test tally of the clean subset shows that cost on real data.
-
-## The width of the age range
-
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cf_range()` with `method = "time"` flags records whose range is wider than `max_range` Ma. That is a threshold on a numeric field, so here it stays a raw column and is cut when tallying, which lets one flag pass serve any threshold:
+Calculate the width of each record's age range as `max_ma - min_ma`. Use `tally_flags()` to count flagged and retained records in each age-range group:
 
 ```{r range}
 f$age_range <- f$max_ma - f$min_ma
-t <- tally_flags(f, bins = list(age_range = c(5, 15, 40)),
-                 rules = list(coords = c("zero", "centroid", "institution", "country_mismatch"),
-                              ages = "age_equal"))
-knitr::kable(t[, c("age_range_bin", "n", "removed_coords", "removed_ages")])
+tally_flags(f, bins = list(age_range = c(5, 15)), rules = list(all = rule))
 ```
 
-The 45 records with a zero or negative range fall into the lowest bin, where `age_equal` removes them; the 40 period-dated records form the top bin. The distribution shows where a cut would fall:
+Record 4 has an age range of 43 Ma and is the only record above 15 Ma. To retain unflagged records with an age range of at most 15 Ma, exclude missing ranges and apply the limit directly:
 
-```{r range-plot, eval = has_ggplot}
-library(ggplot2)
-ggplot(as.data.frame(f), aes(age_range)) +
-  geom_histogram(binwidth = 2, boundary = 0, fill = "#2C5D73") +
-  labs(x = "age range (Ma)", y = "records") +
-  theme_minimal() +
-  theme(panel.background = element_rect(fill = "transparent", colour = NA),
-        plot.background = element_rect(fill = "transparent", colour = NA))
+```{r cut}
+kept15 <- f[!has_flag(f, rule) & f$age_range <= 15 & !is.na(f$age_range), ]
+kept15$occurrence_no
 ```
 
-A cleaned table for a study at stage resolution then combines the rule with a cut on the raw column:
+The 15 Ma limit is illustrative; choose a limit appropriate for your study. You can change it without rerunning the flagging tests.
 
-```{r clean}
-keep <- !has_flag(f$flags, tests) & f$age_range <= 15
-table(f$truth[keep])
-```
+For comparison, CoordinateCleaner provides this filter through [`cf_range()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html) with `method = "time"`, which flags age ranges wider than `max_range` Ma.
 
 ## Outliers within a taxon
 
-Three tests compare a record with the other records of its taxon, here the genus in `accepted_name`. `age_range_outlier` flags age ranges far wider than the taxon's others, the `temprange` test of `clean_fossils()`. `age_outlier` flags ages far from the taxon's others, and `spatiotemporal_outlier` records far from the others in space and time together, the `spatiotemp` test. The last two draw an age from each record's range, repeat the test five times and keep the majority; the draws are seeded per taxon, so the flags are the same on every run:
+Three tests compare each record with others in the same taxon. Here, taxa are the genera in `accepted_name`:
+
+- `age_range_outlier` identifies unusually wide age ranges.
+
+- `age_outlier` identifies unusual ages.
+
+- `spatiotemporal_outlier` identifies unusual combinations of location and age.
+
+The tests use an upper threshold calculated within each taxon: the 75th percentile plus `mltpl` times the interquartile range, with `mltpl = 5` by default. Each test applies this threshold to its own measure of difference. Taxa need at least seven records to be tested.
+
+The two tests that use ages, `age_outlier` and `spatiotemporal_outlier`, sample one age from each record's range. They repeat this five times and flag records identified in a majority of runs. Sampling uses a seed for each taxon, making the results reproducible. You can change the seed through `settings`.
+
+Generate 600 synthetic records with PBDB column names. Locations fall within a region of Wyoming, ages span 46 to 60 Ma, and age ranges are 1 to 4 Ma wide. Genera are assigned independently of location and age.
+
+Then give 20 records a broad age range of 23 to 66 Ma and five records an age range of 99 to 101 Ma. The `injected_case` column labels these changes; unchanged records are labelled `background`.
+
+```{r big}
+set.seed(5)
+n <- 600
+big <- data.frame(
+  occurrence_no = 100 + seq_len(n),
+  accepted_name = sample(c("Coryphodon", "Hyracotherium", "Mesonyx"), n, TRUE),
+  lng = round(runif(n, -110, -106), 3), lat = round(runif(n, 42, 46), 3),
+  cc = "US", min_ma = round(runif(n, 46, 56), 1), injected_case = "background")
+big$max_ma <- big$min_ma + round(runif(n, 1, 4), 1)
+i <- sample(n, 25)
+big[i[1:20], c("min_ma", "max_ma", "injected_case")] <- list(23, 66, "broad_range")
+big[i[21:25], c("min_ma", "max_ma", "injected_case")] <- list(99, 101, "far_age")
+table(big$injected_case)
+```
+
+Run the outlier tests alongside the coordinate and age tests to collect their flags in one table:
 
 ```{r outliers}
 otests <- c("age_range_outlier", "age_outlier", "spatiotemporal_outlier")
-g <- flag_occurrences(fos, tests = otests, columns = cols)
-tab <- aggregate(as.data.frame(g)[paste0("flag_", otests)], by = list(truth = g$truth), FUN = sum)
-names(tab) <- c("truth", otests)
-knitr::kable(tab)
+g <- flag_occurrences(big, tests = c(tests, otests), columns = cols)
+aggregate(as.data.frame(g)[paste0("flag_", otests)],
+          by = list(injected_case = g$injected_case), FUN = sum)
 ```
 
-`age_range_outlier` flags all 40 period-dated records and no other. The two tests that draw ages flag fewer of them: an age drawn from 23 to 66 or 145 Ma lands among the genus's ages of 23 to 72 Ma in many draws, so `age_outlier` flags 8 of the 40 and `spatiotemporal_outlier` 3. None of the three flags a clean record. The museum records are not outliers in space here, because every genus in the simulated table occurs in all three regions.
+The range test flags all 20 broad-range records. The age test flags seven broad-range records and all five records near 100 Ma. The spatiotemporal test flags four of the five records near 100 Ma. All three tests leave the background records unflagged.
 
-The options are set per test through `settings`, with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s defaults: `method` (`"quantile"` or `"mad"`), `mltpl` (5), `size_thresh` (7 records per taxon), `replicates` (5) and `seed`. A stricter fence for the range test and a different seed for the draws:
+You can adjust the tests through `settings`. The call below lowers `mltpl` to 2 for the range test and changes the age test's seed to 7:
 
 ```{r outlier-settings}
-g2 <- flag_occurrences(fos, tests = otests, columns = cols,
+g2 <- flag_occurrences(big, tests = otests, columns = cols,
                        settings = list(age_range_outlier = list(mltpl = 2),
                                        age_outlier = list(seed = 7)))
 colSums(as.data.frame(g2)[paste0("flag_", otests)])
 ```
 
-The range test flags the same 40 records with the stricter fence, since their ranges are many times wider than the genus's others. Another seed gives other draws: with seed 7, `age_outlier` flags 10 of the period-dated records instead of 8.
-
-## Comparison with CoordinateCleaner
-
-`age_equal` and `cf_equal()` give identical flags:
-
-```{r cc, eval = has_cc}
-theirs <- !CoordinateCleaner::cf_equal(fos, value = "flagged", verbose = FALSE)
-identical(f$flag_age_equal, theirs)
-```
-
-The outlier tests above are compared with `cf_age()`, `cf_outl()` and `cf_range()` in the package's test suite: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
+The range test still flags the same 20 records: their 43 Ma ranges exceed the threshold under both settings. Changing the age test's seed gives 14 flagged records, compared with 12 under the default seed.
 
 ## Export to PyRate
 
-PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. `export_pyrate()` writes the records kept by a rule in its input format, with one array of ages per taxon, an extra age of 0 for extant taxa, and replicates of ages drawn from each record's range:
+PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. Here, we select records from `g` that are unflagged by any of the tests run and have an age range of at most 15 Ma:
 
-```{r pyrate}
-kept <- as.data.frame(f)[!has_flag(f$flags, tests) & f$age_range <= 15, ]
-paths <- export_pyrate(kept, file.path(tempdir(), "paleogene"), status = "extinct",
-                       columns = cols, replicates = 3, seed = 1)
-cat(substr(readLines(paths[1])[1:6], 1, 90), sep = "\n")
+```{r final}
+final_rule <- c(tests, otests)
+g$age_range <- g$max_ma - g$min_ma
+final <- g[!has_flag(g, final_rule) & g$age_range <= 15, ]
+nrow(final)
 ```
 
-The draws are seeded, so the same call writes the same file; `random = FALSE` uses the midpoints of the ranges instead. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `write_pyrate()` writes the same layout; the package tests compare the two files.
+`export_pyrate()` writes them in PyRate's input format: one array of ages per taxon, an extra age of 0 for extant taxa, and replicates of ages drawn from each record's range.
+
+```{r pyrate}
+paths <- export_pyrate(final, file.path(tempdir(), "wyoming"), status = "extinct",
+                       columns = cols, replicates = 3, seed = 1)
+basename(paths)
+```
+
+The `_PyRate.py` file contains the ages and is the input PyRate reads; the `_TaxonList.txt` file lists each taxon with its status. The draws are seeded, so the same call writes the same files; `random = FALSE` uses the midpoints of the ranges instead. CoordinateCleaner's `write_pyrate()` writes the same layout, and the package tests compare the two files.
+
+## Comparison with CoordinateCleaner
+
+`age_equal` and `cf_equal()` give the same flags on the small table:
+
+```{r cc, eval = has_cc}
+theirs <- !CoordinateCleaner::cf_equal(fos, value = "flagged", verbose = FALSE)
+data.frame(occurrence_no = fos$occurrence_no,
+           OccurrenceCleaner = f$flag_age_equal, CoordinateCleaner = theirs)
+```
+
+The package's test suite compares the outlier tests with `cf_age()`, `cf_outl()` and `cf_range()`: `age_range_outlier` gives identical flags, and the two tests that draw ages give identical flags when no age has to be drawn.
 
 ## Fossils in GBIF data
 
-GBIF holds fossil specimens alongside modern records, marked by `basisOfRecord = "FOSSIL_SPECIMEN"`, usually without PBDB-style age fields. `basis_fossil` flags them, so a study of living distributions drops them and a palaeontological one keeps only them:
+GBIF stores fossil specimens alongside modern records, marked by `basisOfRecord = "FOSSIL_SPECIMEN"`, usually without PBDB-style age fields. `basis_fossil` flags them:
 
 ```{r gbif}
-g <- data.frame(basisOfRecord = c("HUMAN_OBSERVATION", "FOSSIL_SPECIMEN", "PRESERVED_SPECIMEN"),
-                decimalLongitude = c(16.37, 11.2, 14.5), decimalLatitude = c(48.21, 50.1, 47.1))
-flag_occurrences(g, tests = c("invalid", "basis_fossil"))$flag_basis_fossil
+gb <- data.frame(
+  gbifID = 1:3,
+  basisOfRecord = c("HUMAN_OBSERVATION", "FOSSIL_SPECIMEN", "PRESERVED_SPECIMEN"),
+  decimalLongitude = c(16.37, 11.2, 14.5), decimalLatitude = c(48.21, 50.1, 47.1))
+fg <- flag_occurrences(gb, tests = c("invalid", "basis_fossil"))
 ```
+
+A study of present-day distributions keeps the records without the flag, and a palaeontological one keeps only the flagged records:
+
+```{r gbif-select}
+fg[!has_flag(fg, "basis_fossil"), c("gbifID", "basisOfRecord")]
+fg[has_flag(fg, "basis_fossil"), c("gbifID", "basisOfRecord")]
+```
+
+## References
+
+Silvestro, D., Schnitzler, J., Liow, L. H., Antonelli, A. and Salamin, N. (2014). Bayesian estimation of speciation and extinction from incomplete fossil occurrence data. *Systematic Biology* 63:349-367. https://doi.org/10.1093/sysbio/syu006

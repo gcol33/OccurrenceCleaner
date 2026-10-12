@@ -10,7 +10,7 @@ flagged). Candidates are found with a kd-tree on the unit sphere and
 decided with the Vincenty inverse formula.
 }
 \details{
-The default gazetteer holds the capital "geographic coordinates" of the
+The default gazetteer contains the capital "geographic coordinates" of the
 CIA World Factbook (public domain; 232 points, one per country profile,
 through the factbook.json mirror retrieved 2026-10-11), the source
 \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s capitals are taken from. The column \code{extension} marks

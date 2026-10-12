@@ -1,10 +1,10 @@
 # GBIF records of gentians in Austria
 
-The occurrence records of the genus *Gentiana* that GBIF holds with the
-country code `AT` (Austria) and a CC0 1.0 or CC BY 4.0 licence, taken
-from the GBIF snapshot of 1 October 2026. Specimens from herbaria and
-observations from surveys and citizen science, from the 18th century to
-2026, with their coordinates, stated coordinate uncertainty and the
+The occurrence records of the genus *Gentiana* that GBIF publishes with
+the country code `AT` (Austria) and a CC0 1.0 or CC BY 4.0 licence,
+taken from the GBIF snapshot of 1 October 2026. Specimens from herbaria
+and observations from surveys and citizen science, from the 18th century
+to 2026, with their coordinates, stated coordinate uncertainty and the
 fields GBIF fills during processing. Column names are those of the GBIF
 snapshot;
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)

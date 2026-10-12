@@ -23,7 +23,7 @@ function, or `NA`), `spatialvalid` (the column `clean_coordinates()` or
 [`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md),
 or `NA`) and `needs` (the record fields the test reads, as names of
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)).
-The attribute `layout_version` holds the layout version.
+The attribute `layout_version` gives the layout version.
 
 ## Details
 

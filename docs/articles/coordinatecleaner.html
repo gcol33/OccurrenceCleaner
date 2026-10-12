@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Coming from CoordinateCleaner • OccurrenceCleaner</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -91,8 +96,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Coming from CoordinateCleaner</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Coming from CoordinateCleaner</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/vignettes/coordinatecleaner.Rmd" class="external-link"><code>vignettes/coordinatecleaner.Rmd</code></a></small>
@@ -562,7 +566,7 @@ spatial tests return <code>NA</code> (<code>cc_zero</code>,
 <code>cc_equ</code>) or “clean” (<code>cc_cap</code>), and
 <code>cc_dupl</code> flags the second of two such rows. Here such a
 record gets the <code>invalid</code> bit and no other spatial bit, so a
-rule that holds <code>invalid</code> removes it and a rule without
+rule that includes <code>invalid</code> removes it and a rule without
 <code>invalid</code> sees no spatial flag on it.</p>
 </div>
 <div class="section level3">
@@ -645,108 +649,156 @@ tables and reproduces its flags up to the differences above.</p>
 <div class="section level2">
 <h2 id="speed">Speed<a class="anchor" aria-label="anchor" href="#speed"></a>
 </h2>
-<p>The proximity tests are where the two packages differ most, because
-<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
-tests records against a buffer polygon around each reference point,
-while this package queries a kd-tree. Measured on one machine (AMD Ryzen
-7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.2.0,
-CoordinateCleaner 3.0.1), single process, both reading
-CoordinateCleaner’s gazetteers, fastest of three runs, in seconds:</p>
+<p>The tables give the elapsed time in seconds of one call per test, on
+one million and on ten million records; lower values mean faster runs.
+In both packages the call used <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+reference points. The records were placed at random, a tenth of them
+within 30 km of a capital.</p>
+<p>Each time is the fastest of three runs. A CoordinateCleaner test
+whose single run took longer than 200 s was run once, which applies to
+the capital and centroid tests at ten million records. Each timing
+covers the whole call, including reading the reference points; the land
+polygons of both packages were loaded before timing started. The timer
+resolves 0.01 s.</p>
+<p>The machine was an AMD Ryzen 7 5700G with 64 GB of memory, running
+Windows 11 and R 4.6.1, with one process, OccurrenceCleaner 0.2.0 and
+CoordinateCleaner 3.0.1.</p>
+<div class="section level3">
+<h3 id="one-million-records">One million records<a class="anchor" aria-label="anchor" href="#one-million-records"></a>
+</h3>
 <table class="table">
-<colgroup>
-<col width="25%">
-<col width="18%">
-<col width="18%">
-<col width="18%">
-<col width="18%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">test</th>
-<th align="right">OccurrenceCleaner, 1e6</th>
-<th align="right">CoordinateCleaner, 1e6</th>
-<th align="right">OccurrenceCleaner, 1e7</th>
-<th align="right">CoordinateCleaner, 1e7</th>
+<th align="left">Test</th>
+<th align="right">OccurrenceCleaner (s)</th>
+<th align="right">CoordinateCleaner (s)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">capital</td>
+<td align="left"><code>capital</code></td>
 <td align="right">0.14</td>
-<td align="right">24.6</td>
-<td align="right">1.44</td>
-<td align="right">238.7</td>
+<td align="right">24.64</td>
 </tr>
 <tr class="even">
-<td align="left">centroid</td>
+<td align="left"><code>centroid</code></td>
 <td align="right">0.16</td>
-<td align="right">33.8</td>
-<td align="right">1.63</td>
-<td align="right">245.4</td>
+<td align="right">33.80</td>
 </tr>
 <tr class="odd">
-<td align="left">institution</td>
+<td align="left"><code>institution</code></td>
 <td align="right">0.15</td>
-<td align="right">0.9</td>
-<td align="right">1.68</td>
-<td align="right">7.4</td>
+<td align="right">0.92</td>
 </tr>
 <tr class="even">
-<td align="left">gbif_headquarters</td>
+<td align="left"><code>gbif_headquarters</code></td>
 <td align="right">0.08</td>
-<td align="right">0.6</td>
-<td align="right">0.80</td>
-<td align="right">6.4</td>
+<td align="right">0.58</td>
 </tr>
 <tr class="odd">
-<td align="left">sea</td>
+<td align="left"><code>sea</code></td>
 <td align="right">0.06</td>
-<td align="right">5.6</td>
-<td align="right">0.66</td>
-<td align="right">58.4</td>
+<td align="right">5.62</td>
 </tr>
 <tr class="even">
-<td align="left">zero</td>
+<td align="left"><code>zero</code></td>
 <td align="right">0.05</td>
-<td align="right">0.6</td>
-<td align="right">0.47</td>
-<td align="right">6.5</td>
+<td align="right">0.59</td>
 </tr>
 <tr class="odd">
-<td align="left">equal</td>
+<td align="left"><code>equal</code></td>
 <td align="right">0.03</td>
-<td align="right">0.0</td>
-<td align="right">0.37</td>
-<td align="right">0.1</td>
+<td align="right">&lt; 0.01</td>
 </tr>
 <tr class="even">
-<td align="left">invalid</td>
+<td align="left"><code>invalid</code></td>
 <td align="right">0.02</td>
-<td align="right">4.7</td>
-<td align="right">0.31</td>
-<td align="right">43.3</td>
+<td align="right">4.72</td>
 </tr>
 <tr class="odd">
-<td align="left">duplicate</td>
+<td align="left"><code>duplicate</code></td>
 <td align="right">1.12</td>
-<td align="right">1.2</td>
-<td align="right">12.07</td>
-<td align="right">11.2</td>
-</tr>
-<tr class="even">
-<td align="left">default_tests() (own reference)</td>
-<td align="right">1.91</td>
-<td align="right">not run</td>
-<td align="right">19.45</td>
-<td align="right">not run</td>
+<td align="right">1.17</td>
 </tr>
 </tbody>
 </table>
-<p>At ten million records the capital test takes 1.4 s here and 239 s in
-CoordinateCleaner, the centroid test 1.6 s and 245 s. The equal and
-duplicate tests are plain vector operations in both packages and take
-about the same time. Beyond memory, an on-disk table is streamed in
-chunks (see the on-disk article), so the input size is bounded by disk
-space only. The benchmark script is <code>bench/benchmark.R</code> in
-the source repository.</p>
+</div>
+<div class="section level3">
+<h3 id="ten-million-records">Ten million records<a class="anchor" aria-label="anchor" href="#ten-million-records"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Test</th>
+<th align="right">OccurrenceCleaner (s)</th>
+<th align="right">CoordinateCleaner (s)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>capital</code></td>
+<td align="right">1.44</td>
+<td align="right">238.68</td>
+</tr>
+<tr class="even">
+<td align="left"><code>centroid</code></td>
+<td align="right">1.63</td>
+<td align="right">245.39</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>institution</code></td>
+<td align="right">1.68</td>
+<td align="right">7.38</td>
+</tr>
+<tr class="even">
+<td align="left"><code>gbif_headquarters</code></td>
+<td align="right">0.80</td>
+<td align="right">6.35</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>sea</code></td>
+<td align="right">0.66</td>
+<td align="right">58.43</td>
+</tr>
+<tr class="even">
+<td align="left"><code>zero</code></td>
+<td align="right">0.47</td>
+<td align="right">6.50</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>equal</code></td>
+<td align="right">0.37</td>
+<td align="right">0.06</td>
+</tr>
+<tr class="even">
+<td align="left"><code>invalid</code></td>
+<td align="right">0.31</td>
+<td align="right">43.33</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>duplicate</code></td>
+<td align="right">12.07</td>
+<td align="right">11.15</td>
+</tr>
+</tbody>
+</table>
+<p>The largest differences are in the capital and centroid tests: at ten
+million records they take 1.44 s and 1.63 s here, and 238.68 s and
+245.39 s in CoordinateCleaner. CoordinateCleaner is faster on the
+<code>equal</code> test (0.06 s against 0.37 s) and on the
+<code>duplicate</code> test (11.15 s against 12.07 s).</p>
+<p>For the proximity tests, CoordinateCleaner tests the records against
+a buffer polygon around the reference points, and this package looks up
+each record’s nearest reference point in a kd-tree.</p>
+</div>
+<div class="section level3">
+<h3 id="all-default-tests">All default tests<a class="anchor" aria-label="anchor" href="#all-default-tests"></a>
+</h3>
+<p>With its own reference data, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> runs all
+of <code><a href="../reference/default_tests.html">default_tests()</a></code> in one call in 1.91 s on one million
+records and 19.45 s on ten million. The benchmark times this call for
+OccurrenceCleaner only.</p>
+<p><a href="on-disk.html">Large tables on disk</a> shows how a table on
+disk is read in chunks. The benchmark script is
+<code>bench/benchmark.R</code> in the source repository, and its results
+are in <code>bench/results/</code>.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="functions-around-the-tests">Functions around the tests<a class="anchor" aria-label="anchor" href="#functions-around-the-tests"></a>
