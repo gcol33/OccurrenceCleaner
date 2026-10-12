@@ -25,3 +25,4 @@
 ^\.run.*$
 ^\.bench\.log$
 ^bench$
+^\.[a-z]+\.log$

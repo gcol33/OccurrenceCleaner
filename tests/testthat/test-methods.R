@@ -52,6 +52,22 @@ test_that("summary of a row subset falls back to the flag columns", {
   expect_identical(unique(s$test[s$test != "(any)"]), c("zero", "capital", "equal"))
 })
 
+test_that("print is short: header, first records, failed tests by name", {
+  f <- flag_occurrences(records(), tests = c("zero", "capital"))
+  out <- capture.output(print(f, n = 3))
+  expect_match(out[1], "<occ_flags> 6 records, 2 tests, reference OccurrenceCleaner [0-9.]+, land 110$")
+  expect_false(any(grepl("flag_zero", out)))
+  expect_true(any(grepl("zero$", out)))
+  expect_match(out[length(out)], "3 more records")
+  expect_output(print(f[1:2, ]), "<occ_flags> 2 records, 2 tests")
+  expect_output(print(f[, c("species", "flag_zero")]), "flag_zero")
+  t <- tally_flags(f, by = "kingdom", rules = list(strict = c("zero", "capital")))
+  out <- capture.output(print(t))
+  expect_match(out[1], "<occ_tally> 6 records in 2 groups of kingdom, rules: strict")
+  expect_false(any(grepl("only_", out)))
+  expect_output(print(occ_columns(lon = "x")), "lon +x")
+})
+
 test_that("plots draw without error", {
   f <- flag_occurrences(records())
   pdf(NULL)

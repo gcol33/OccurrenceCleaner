@@ -28,3 +28,10 @@ the user cache directory (\code{tools::R_user_dir("OccurrenceCleaner", "cache")}
 \code{\link[=flag_occurrences]{flag_occurrences()}} calls it when \code{land_scale = 10} is requested and the
 layer is not cached yet.
 }
+\examples{
+if (interactive()) {
+  download_reference()
+  x <- data.frame(decimalLongitude = c(12.58, -30), decimalLatitude = c(55.67, 40))
+  flag_occurrences(x, tests = "sea", land_scale = 10)$flag_sea
+}
+}

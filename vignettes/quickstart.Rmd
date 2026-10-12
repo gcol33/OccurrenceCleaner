@@ -20,7 +20,7 @@ OccurrenceCleaner is an extension of [CoordinateCleaner](https://ropensci.github
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up.
+Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
 
 ```{r setup}
 library(OccurrenceCleaner)

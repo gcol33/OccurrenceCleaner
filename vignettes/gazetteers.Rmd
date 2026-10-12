@@ -22,7 +22,7 @@ Nine tests compare records with reference data: five with points (capitals, cent
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up. The polygon examples also need [sf](https://r-spatial.github.io/sf/).
+Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up. The polygon examples also need [sf](https://r-spatial.github.io/sf/).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)

@@ -44,6 +44,13 @@ occ_columns <- function(lon = "decimalLongitude", lat = "decimalLatitude", speci
   structure(cols, class = "occ_columns")
 }
 
+#' @export
+print.occ_columns <- function(x, ...) {
+  cat("<occ_columns>\n")
+  cat(sprintf("  %-14s %s\n", names(x), unlist(x, use.names = FALSE)), sep = "")
+  invisible(x)
+}
+
 # Resolve the field names a set of tests needs against the available column
 # names. Exact match first, then a unique case-insensitive match.
 resolve_columns <- function(columns, available, fields, optional = character()) {

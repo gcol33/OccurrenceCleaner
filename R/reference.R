@@ -38,6 +38,12 @@ reference_info <- function() {
 #' @param cache_dir Directory for the converted layer.
 #' @param quiet Suppress the download message.
 #' @return The path of the cached layer, invisibly.
+#' @examples
+#' if (interactive()) {
+#'   download_reference()
+#'   x <- data.frame(decimalLongitude = c(12.58, -30), decimalLatitude = c(55.67, 40))
+#'   flag_occurrences(x, tests = "sea", land_scale = 10)$flag_sea
+#' }
 #' @export
 download_reference <- function(layer = "land_10",
                                cache_dir = tools::R_user_dir("OccurrenceCleaner", "cache"),
@@ -400,6 +406,15 @@ checksum <- function(obj) {
 reference_label <- function(reference, land_scale, custom = NULL) {
   base <- reference_label_base(reference, land_scale)
   if (is.null(custom)) base else paste0(base, "; custom: ", custom)
+}
+
+# One-line form of a reference label for print methods: package, version and
+# land scale; reference_info() lists the layer versions.
+reference_short <- function(label) {
+  if (is.null(label)) return(NULL)
+  short <- sub("^(.*?) \\(land (\\d+);.*$", "\\1, land \\2", label, perl = TRUE)
+  if (grepl("; custom: ", label, fixed = TRUE)) short <- paste0(short, ", custom gazetteers")
+  short
 }
 
 reference_label_base <- function(reference, land_scale) {

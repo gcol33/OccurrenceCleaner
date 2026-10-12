@@ -28,7 +28,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-Needs a C++ compiler; [Installation](../index.html#installation) shows how to set one up.
+Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
 
 ## Example
 

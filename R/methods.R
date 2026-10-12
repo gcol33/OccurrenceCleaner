@@ -72,6 +72,39 @@ summary.occ_tally <- function(object, ...) {
 }
 
 #' @export
+print.occ_flags <- function(x, n = 10L, ...) {
+  if (!"flags" %in% names(x)) return(NextMethod())
+  tests <- flagged_tests(x)
+  cat("<occ_flags> ", format(nrow(x), big.mark = ","), " records, ", length(tests), " tests", sep = "")
+  ref <- reference_short(attr(x, "occ_reference"))
+  if (!is.null(ref)) cat(", reference ", ref, sep = "")
+  cat("\n")
+  d <- as.data.frame(unclass(x), stringsAsFactors = FALSE)
+  d <- utils::head(d[setdiff(names(d), paste0("flag_", tests))], n)
+  attributes(d)[c("occ_tests", "occ_layout_version", "occ_reference", "occ_columns")] <- NULL
+  d$flagged_by <- vapply(d$flags, function(f) {
+    paste(tests[vapply(tests, function(t) isTRUE(has_flag(f, t)), logical(1))], collapse = ",")
+  }, "")
+  print(d, ...)
+  if (nrow(x) > n)
+    cat("# ... ", format(nrow(x) - n, big.mark = ","), " more records; summary() for the share each test flags\n", sep = "")
+  invisible(x)
+}
+
+#' @export
+print.occ_tally <- function(x, ...) {
+  rules <- attr(x, "occ_rules")
+  by <- attr(x, "occ_by") %||% character()
+  cat("<occ_tally> ", format(sum(x$n), big.mark = ","), " records", sep = "")
+  if (length(by)) cat(" in ", nrow(x), " groups of ", paste(by, collapse = ", "), sep = "")
+  cat(", rules: ", paste(names(rules), collapse = ", "), "\n", sep = "")
+  keep <- c(by, "n", paste0(c("removed_", "kept_"), rep(names(rules), each = 2L)))
+  print(as.data.frame(unclass(x)[intersect(keep, names(x))], stringsAsFactors = FALSE), row.names = FALSE, ...)
+  cat("# summary() for the share each test flags\n")
+  invisible(x)
+}
+
+#' @export
 print.occ_summary <- function(x, digits = 2, ...) {
   by <- attr(x, "occ_by") %||% character()
   total <- if (all(c("rule", "test", "n", "flagged", "pct") %in% names(x))) x[x$test == "(any)", , drop = FALSE]

@@ -124,7 +124,7 @@ print.occ_flagged <- function(x, ...) {
   cat("  out:       ", x$out, "\n", sep = "")
   cat("  tests:     ", paste(x$tests, collapse = ", "), "\n", sep = "")
   cat("  layout:    v", x$layout_version, "\n", sep = "")
-  cat("  reference: ", x$reference, "\n", sep = "")
+  cat("  reference: ", reference_short(x$reference), "\n", sep = "")
   if (length(x$keep)) cat("  keep:      ", paste(x$keep, collapse = ", "), "\n", sep = "")
   invisible(x)
 }
@@ -136,10 +136,18 @@ print.occ_flagged <- function(x, ...) {
 #'   over all parts (`flagged_table()`), to be used with [vectra](https://gillescolling.com/vectra/) verbs and
 #'   `vectra::collect()`.
 #' @examples
-#' \dontrun{
-#' f <- flag_occurrences("snapshot/occurrence.parquet", out = "flags", keep = "kingdom")
+#' x <- data.frame(gbifID = 1:4, kingdom = c("Plantae", "Plantae", "Animalia", "Animalia"),
+#'                 decimalLongitude = c(12.58, 0, 16.37, 2.35),
+#'                 decimalLatitude = c(55.67, 0, 48.21, 48.85))
+#' input <- file.path(tempdir(), "occurrence.csv")
+#' utils::write.csv(x, input, row.names = FALSE)
+#' out <- file.path(tempdir(), "flags")
+#' flag_occurrences(input, tests = c("zero", "capital"), out = out, keep = "kingdom",
+#'                  verbose = FALSE)
+#' f <- read_flagged(out)
+#' f
 #' vectra::collect(flagged_table(f))
-#' }
+#' unlink(c(input, out), recursive = TRUE)
 #' @export
 read_flagged <- function(x) {
   if (inherits(x, "occ_flagged")) return(x)
