@@ -6,7 +6,7 @@ It assumes basic R and data frames. The coordinate tests follow
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)), with the
 same definitions and default distances. The documented differences are
-listed in [Where the flags
+listed in [Where the results
 differ](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#where-the-results-differ).
 
 1.  **Flag** the records with

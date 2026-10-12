@@ -756,17 +756,16 @@ any spatial flags.</p>
 <div class="section level4">
 <h4 id="random-age-draws">Random age draws<a class="anchor" aria-label="anchor" href="#random-age-draws"></a>
 </h4>
-<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html" class="external-link">cf_age()</a></code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html" class="external-link">cf_outl()</a></code> draw one age from
-each record’s range, repeat the test five times and keep the majority.
-CoordinateCleaner draws from the session’s random stream in the order of
-the input, so its flags change with the seed and the row order.
-<code>age_outlier</code> and <code>spatiotemporal_outlier</code> draw
-from a stream seeded per taxon
-(<code>settings = list(age_outlier = list(seed = ...))</code>) in an
-order fixed by the records’ content, so the same records give the same
-flags in any order and split into any files. Both follow the same
-distribution; when every age range has zero width nothing is drawn and
-the flags are identical.</p>
+<p>CoordinateCleaner’s fossil tests draw one age from each record’s
+range, run the test five times and keep the majority vote. The draws
+come from the session’s random stream in input order, so the flags
+change with the seed and with the row order. OccurrenceCleaner draws the
+same way but seeds a stream per taxon and orders the draws by record
+content, so the same records give the same flags whatever their order
+and however they are split across files. The seed is a setting of the
+age outlier test (<code>seed</code> under <code>age_outlier</code> in
+<code>settings</code>). When every age range has zero width nothing is
+drawn and the two packages agree exactly.</p>
 </div>
 <div class="section level4">
 <h4 id="records-without-a-dataset-key">Records without a dataset key<a class="anchor" aria-label="anchor" href="#records-without-a-dataset-key"></a>
@@ -777,31 +776,28 @@ here; <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_d
 <div class="section level4">
 <h4 id="country-codes">Country codes<a class="anchor" aria-label="anchor" href="#country-codes"></a>
 </h4>
-<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> compares the record’s code with the ISO
-alpha-3 code of the country polygon. GBIF’s <code>countryCode</code> is
-alpha-2, so a GBIF table needs converting first.
-<code>country_mismatch</code> accepts alpha-2, alpha-3 and Natural
-Earth’s <code>ADM0_A3</code> code. For records whose code is alpha-3 and
-present in Natural Earth, the two tests agree, apart from the three
-countries described under <a href="#records-in-france-norway-and-kosovo">Records in France, Norway
+<p>CoordinateCleaner compares the record’s country code with the ISO
+alpha-3 code of the polygon the record falls in. GBIF stores country
+codes as alpha-2, so a GBIF table has to be converted before the test
+runs. OccurrenceCleaner accepts alpha-2, alpha-3 and Natural Earth’s own
+three-letter code, so no conversion is needed. For records whose code is
+alpha-3 and whose country is in Natural Earth, the two tests agree,
+apart from the three countries described under <a href="#records-in-france-norway-and-kosovo">Records in France, Norway
 and Kosovo</a>.</p>
 </div>
 <div class="section level4">
 <h4 id="gazetteers">Gazetteers<a class="anchor" aria-label="anchor" href="#gazetteers"></a>
 </h4>
-<p>With the default <code>reference = "OccurrenceCleaner"</code> the
-gazetteers are rebuilt from the original sources of CoordinateCleaner’s
-tables, so they hold the same kinds of points but not the same
-coordinates; <a href="reference-data.html">Reference data</a> lists the
-sources and measures the differences. Points from sources
-CoordinateCleaner does not use, such as Wikidata institutions and
-Natural Earth capitals, carry <code>extension</code> <code>TRUE</code>
-and are used by default; passing the rows with <code>extension</code>
-<code>FALSE</code> through <code>gazetteers</code> restricts a test to
-CoordinateCleaner’s sources (<a href="reference-data.html#extension-points">Extension points</a>).
-<code>reference = "CoordinateCleaner"</code> uses CoordinateCleaner’s
-tables and reproduces its flags up to the differences in this
-section.</p>
+<p>By default the gazetteers are rebuilt from the sources
+CoordinateCleaner’s tables were originally derived from. They hold the
+same kinds of points but not the same coordinates; the <a href="reference-data.html">Reference data</a> article lists the sources
+and measures the differences. Points from sources CoordinateCleaner does
+not use, such as Wikidata institutions and Natural Earth capitals, are
+marked as extensions and included by default; <a href="reference-data.html#extension-points">Extension points</a> shows
+how to leave them out. Setting
+<code>reference = "CoordinateCleaner"</code> reads CoordinateCleaner’s
+own tables from your installation instead, and then reproduces its flags
+up to the differences listed on this page.</p>
 </div>
 </div>
 <div class="section level3">
@@ -811,15 +807,12 @@ section.</p>
 <h4 id="the-zero-buffer">The zero buffer<a class="anchor" aria-label="anchor" href="#the-zero-buffer"></a>
 </h4>
 <p>Both packages flag records whose longitude or latitude is exactly
-zero. They also check a buffer around (0, 0), whose size differs between
-implementations.</p>
-<p>CoordinateCleaner 3.0.1 applies a radius of 0.5 metres. <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html" class="external-link">Its
-documentation</a> specifies 0.5 degrees, which is the radius
-OccurrenceCleaner uses. OccurrenceCleaner therefore flags records across
-a larger area around the origin.</p>
-<p>In OccurrenceCleaner, <code>buffers = list(zero = 0)</code> disables
-the surrounding buffer and flags only records whose longitude or
-latitude is exactly zero.</p>
+zero, and both also flag a buffer around (0, 0). The buffer differs.
+CoordinateCleaner 3.0.1 applies a radius of 0.5 metres, while <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html" class="external-link">its
+documentation</a> specifies 0.5 degrees; OccurrenceCleaner uses the
+documented 0.5 degrees, so it flags a larger area around the origin.
+Setting the buffer to zero (<code>buffers = list(zero = 0)</code>) turns
+the buffer off and keeps only the exact-zero check.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span>, <span class="fl">0.001</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">0.3</span>, <span class="fl">0.001</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">z</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>

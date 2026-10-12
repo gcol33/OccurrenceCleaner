@@ -441,19 +441,15 @@ records; excluding it leaves them without any spatial flags.
 
 #### Random age draws
 
-[`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html)
-and
-[`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
-draw one age from each record’s range, repeat the test five times and
-keep the majority. CoordinateCleaner draws from the session’s random
-stream in the order of the input, so its flags change with the seed and
-the row order. `age_outlier` and `spatiotemporal_outlier` draw from a
-stream seeded per taxon
-(`settings = list(age_outlier = list(seed = ...))`) in an order fixed by
-the records’ content, so the same records give the same flags in any
-order and split into any files. Both follow the same distribution; when
-every age range has zero width nothing is drawn and the flags are
-identical.
+CoordinateCleaner’s fossil tests draw one age from each record’s range,
+run the test five times and keep the majority vote. The draws come from
+the session’s random stream in input order, so the flags change with the
+seed and with the row order. OccurrenceCleaner draws the same way but
+seeds a stream per taxon and orders the draws by record content, so the
+same records give the same flags whatever their order and however they
+are split across files. The seed is a setting of the age outlier test
+(`seed` under `age_outlier` in `settings`). When every age range has
+zero width nothing is drawn and the two packages agree exactly.
 
 #### Records without a dataset key
 
@@ -464,47 +460,42 @@ flags them.
 
 #### Country codes
 
-[`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
-compares the record’s code with the ISO alpha-3 code of the country
-polygon. GBIF’s `countryCode` is alpha-2, so a GBIF table needs
-converting first. `country_mismatch` accepts alpha-2, alpha-3 and
-Natural Earth’s `ADM0_A3` code. For records whose code is alpha-3 and
-present in Natural Earth, the two tests agree, apart from the three
-countries described under [Records in France, Norway and
-Kosovo](#records-in-france-norway-and-kosovo).
+CoordinateCleaner compares the record’s country code with the ISO
+alpha-3 code of the polygon the record falls in. GBIF stores country
+codes as alpha-2, so a GBIF table has to be converted before the test
+runs. OccurrenceCleaner accepts alpha-2, alpha-3 and Natural Earth’s own
+three-letter code, so no conversion is needed. For records whose code is
+alpha-3 and whose country is in Natural Earth, the two tests agree,
+apart from the three countries described under [Records in France,
+Norway and Kosovo](#records-in-france-norway-and-kosovo).
 
 #### Gazetteers
 
-With the default `reference = "OccurrenceCleaner"` the gazetteers are
-rebuilt from the original sources of CoordinateCleaner’s tables, so they
-hold the same kinds of points but not the same coordinates; [Reference
+By default the gazetteers are rebuilt from the sources
+CoordinateCleaner’s tables were originally derived from. They hold the
+same kinds of points but not the same coordinates; the [Reference
 data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
-lists the sources and measures the differences. Points from sources
-CoordinateCleaner does not use, such as Wikidata institutions and
-Natural Earth capitals, carry `extension` `TRUE` and are used by
-default; passing the rows with `extension` `FALSE` through `gazetteers`
-restricts a test to CoordinateCleaner’s sources ([Extension
-points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
-`reference = "CoordinateCleaner"` uses CoordinateCleaner’s tables and
-reproduces its flags up to the differences in this section.
+article lists the sources and measures the differences. Points from
+sources CoordinateCleaner does not use, such as Wikidata institutions
+and Natural Earth capitals, are marked as extensions and included by
+default; [Extension
+points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)
+shows how to leave them out. Setting `reference = "CoordinateCleaner"`
+reads CoordinateCleaner’s own tables from your installation instead, and
+then reproduces its flags up to the differences listed on this page.
 
 ### Behaviour of CoordinateCleaner 3.0.1
 
 #### The zero buffer
 
-Both packages flag records whose longitude or latitude is exactly zero.
-They also check a buffer around (0, 0), whose size differs between
-implementations.
-
-CoordinateCleaner 3.0.1 applies a radius of 0.5 metres. [Its
+Both packages flag records whose longitude or latitude is exactly zero,
+and both also flag a buffer around (0, 0). The buffer differs.
+CoordinateCleaner 3.0.1 applies a radius of 0.5 metres, while [its
 documentation](https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html)
-specifies 0.5 degrees, which is the radius OccurrenceCleaner uses.
-OccurrenceCleaner therefore flags records across a larger area around
-the origin.
-
-In OccurrenceCleaner, `buffers = list(zero = 0)` disables the
-surrounding buffer and flags only records whose longitude or latitude is
-exactly zero.
+specifies 0.5 degrees; OccurrenceCleaner uses the documented 0.5
+degrees, so it flags a larger area around the origin. Setting the buffer
+to zero (`buffers = list(zero = 0)`) turns the buffer off and keeps only
+the exact-zero check.
 
 ``` r
 

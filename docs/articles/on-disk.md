@@ -90,13 +90,13 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 2 of 2)
 #> group tests: duplicate: 64 bucket(s)
 #> group tests: outlier: 26 bucket(s)
-#> group tests: done [0.9 s]
+#> group tests: done [0.7 s]
 #> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp21CvKl\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKorb68\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -325,7 +325,7 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 2 of 2)
 #> group tests: duplicate: 64 bucket(s)
 #> group tests: outlier: 26 bucket(s)
-#> group tests: done [0.3 s]
+#> group tests: done [0.2 s]
 #> occurrence-1: done (3000 rows), skipped
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: done (3000 rows), skipped
