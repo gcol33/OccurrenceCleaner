@@ -146,6 +146,9 @@ print.occ_summary <- function(x, digits = 2, ...) {
 #' @param rules Named list of rules, as in [tally_flags()]. For `type = "map"`
 #'   the first rule decides which records are drawn as removed. Default: one
 #'   rule holding every test run.
+#' @param xlim,ylim For `type = "map"`: longitude and latitude limits of the
+#'   map. Default: the extent of the records. The title counts the records
+#'   inside the limits.
 #' @param ... For `occ_flags` and `occ_flagged`: passed to [tally_flags()]
 #'   (`by`, `bins`, `tests`). Otherwise unused.
 #' @return `x`, invisibly.
@@ -158,6 +161,7 @@ print.occ_summary <- function(x, digits = 2, ...) {
 #' plot(f)
 #' plot(f, by = "kingdom")
 #' plot(f, type = "map")
+#' plot(f, type = "map", xlim = c(0, 20), ylim = c(45, 60))
 #' @export
 plot.occ_summary <- function(x, rule = NULL, ...) {
   rule <- rule %||% x$rule[1]
@@ -179,7 +183,7 @@ plot.occ_tally <- function(x, rule = NULL, ...) {
 
 #' @rdname plot.occ_summary
 #' @export
-plot.occ_flags <- function(x, type = c("tests", "map"), rules = NULL, ...) {
+plot.occ_flags <- function(x, type = c("tests", "map"), rules = NULL, xlim = NULL, ylim = NULL, ...) {
   type <- match.arg(type)
   if (type == "tests") {
     plot(summary(x, rules = rules, ...))
@@ -188,7 +192,7 @@ plot.occ_flags <- function(x, type = c("tests", "map"), rules = NULL, ...) {
   rules <- check_rules(rules, flagged_tests(x))
   cols <- resolve_columns(attr(x, "occ_columns") %||% occ_columns(), names(x), c("lon", "lat"))
   plot_flag_map(to_numeric(x[[cols$lon]]), to_numeric(x[[cols$lat]]),
-                has_flag(x$flags, rules[[1]]), names(rules)[1])
+                has_flag(x$flags, rules[[1]]), names(rules)[1], xlim, ylim)
   invisible(x)
 }
 
@@ -210,10 +214,15 @@ plot_share_bars <- function(d, total, rule) {
   op <- graphics::par(mar = c(4.5, max(4, max(nchar(d$test)) * 0.55 + 1), 3, 1))
   on.exit(graphics::par(op))
   lim <- c(0, max(c(d$pct, 1), na.rm = TRUE) * 1.15)
-  mid <- graphics::barplot(d$pct, horiz = TRUE, names.arg = d$test, las = 1, col = .col_flagged,
+  mid <- graphics::barplot(d$pct, horiz = TRUE, names.arg = FALSE, col = .col_flagged,
                            border = NA, xlim = lim, xlab = "% of records")
   graphics::barplot(d$pct_only, horiz = TRUE, col = .col_only, border = NA, add = TRUE, axes = FALSE)
-  graphics::text(d$pct, mid, share_label(d$pct), pos = 4, cex = 0.8, xpd = TRUE)
+  # Label size from the height one bar gets, so every test keeps its label.
+  bar_pt <- graphics::par("pin")[2] * 72 / max(1, nrow(d))
+  cex <- max(0.4, min(0.9, bar_pt / 13))
+  graphics::axis(2, at = mid, labels = d$test, las = 1, tick = FALSE, cex.axis = cex,
+                 gap.axis = -1, line = -0.6)
+  graphics::text(d$pct, mid, share_label(d$pct), pos = 4, cex = 0.9 * cex, xpd = TRUE)
   graphics::title(main = sprintf("rule %s removes %s %% of %s records", rule, share_label(total$pct[1]),
                                  format(total$n[1], big.mark = ",")), font.main = 1, cex.main = 1)
   graphics::legend("bottomright", c("flagged", "only reason"), fill = c(.col_flagged, .col_only),
@@ -233,8 +242,8 @@ plot_share_grid <- function(d, total, by, rule) {
   zmax <- max(c(m, 1), na.rm = TRUE)
   graphics::image(seq_along(group), seq_along(rows), z, col = pal, zlim = c(0, zmax), axes = FALSE,
                   xlab = "", ylab = "")
-  graphics::axis(1, seq_along(group), group, las = 2, tick = FALSE, cex.axis = 0.8)
-  graphics::axis(2, seq_along(rows), rev(rows), las = 1, tick = FALSE, cex.axis = 0.8)
+  graphics::axis(1, seq_along(group), group, las = 2, tick = FALSE, cex.axis = 0.8, gap.axis = -1)
+  graphics::axis(2, seq_along(rows), rev(rows), las = 1, tick = FALSE, cex.axis = 0.8, gap.axis = -1)
   graphics::abline(h = 1.5, col = "white", lwd = 3)
   xy <- expand.grid(x = seq_along(group), y = seq_along(rows))
   graphics::text(xy$x, xy$y, share_label(as.vector(z)), cex = 0.75,
@@ -242,7 +251,7 @@ plot_share_grid <- function(d, total, by, rule) {
   graphics::title(main = "% of records flagged", font.main = 1, cex.main = 1)
 }
 
-plot_flag_map <- function(lon, lat, removed, rule) {
+plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   ok <- is.finite(lon) & is.finite(lat) & abs(lon) <= 180 & abs(lat) <= 90
   removed[is.na(removed)] <- FALSE
   if (any(ok)) {
@@ -252,6 +261,8 @@ plot_flag_map <- function(lon, lat, removed, rule) {
   } else {
     xr <- c(-180, 180); yr <- c(-90, 90)
   }
+  xr <- xlim %||% xr; yr <- ylim %||% yr
+  ok <- ok & lon >= xr[1] & lon <= xr[2] & lat >= yr[1] & lat <= yr[2]
   op <- graphics::par(mar = c(2.5, 2.5, 3, 1))
   on.exit(graphics::par(op))
   graphics::plot.new()

@@ -82,5 +82,6 @@ test_that("plots draw without error", {
   expect_invisible(plot(f, by = "kingdom"))
   expect_invisible(plot(f, type = "map", rules = list(strict = c("capital", "sea"))))
   expect_invisible(plot(tally_flags(f, by = "kingdom")))
+  expect_invisible(plot(f, type = "map", xlim = c(0, 20), ylim = c(40, 60)))
   expect_error(plot(summary(f), rule = "nope"), "no rule")
 })

@@ -11,7 +11,7 @@
 
 \method{plot}{occ_tally}(x, rule = NULL, ...)
 
-\method{plot}{occ_flags}(x, type = c("tests", "map"), rules = NULL, ...)
+\method{plot}{occ_flags}(x, type = c("tests", "map"), rules = NULL, xlim = NULL, ylim = NULL, ...)
 
 \method{plot}{occ_flagged}(x, rules = NULL, ...)
 }
@@ -30,6 +30,10 @@
 \item{rules}{Named list of rules, as in \code{\link[=tally_flags]{tally_flags()}}. For \code{type = "map"}
 the first rule decides which records are drawn as removed. Default: one
 rule holding every test run.}
+
+\item{xlim, ylim}{For \code{type = "map"}: longitude and latitude limits of the
+map. Default: the extent of the records. The title counts the records
+inside the limits.}
 }
 \value{
 \code{x}, invisibly.
@@ -51,4 +55,5 @@ f <- flag_occurrences(x)
 plot(f)
 plot(f, by = "kingdom")
 plot(f, type = "map")
+plot(f, type = "map", xlim = c(0, 20), ylim = c(45, 60))
 }
