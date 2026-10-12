@@ -1,5 +1,5 @@
 
-# OccurrenceCleaner
+# OccurrenceCleaner <img src="man/figures/logo.svg" align="right" height="139" alt="OccurrenceCleaner logo" />
 
 *quality flags for occurrence records, at any scale*
 

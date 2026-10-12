@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Fast Quality Checks for Species Occurrence Records • OccurrenceCleaner</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -14,6 +19,7 @@
 <meta property="og:title" content="Fast Quality Checks for Species Occurrence Records">
 <meta name="description" content="An extension of CoordinateCleaner (Zizka et al. 2019 &lt;doi:10.1111/2041-210X.13152&gt;) tailored to large-scale species occurrence data. Flags common problems in occurrence records, such as coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea, in the wrong country or outside the species range, duplicates, outliers within a species, and datasets with converted or gridded coordinates, with the same tests and defaults as CoordinateCleaner. It also reads the quality warnings GBIF attaches to each record, the basis of record and the establishment means, and checks records at sea or on land against the habitat of their genus from the Interim Register of Marine and Nonmarine Genera. Records are flagged and kept, and users choose afterwards which flags to filter on. Data frames of a few million records are flagged in seconds, and GBIF snapshots of billions of records are processed by reading Parquet files in chunks.">
 <meta property="og:description" content="An extension of CoordinateCleaner (Zizka et al. 2019 &lt;doi:10.1111/2041-210X.13152&gt;) tailored to large-scale species occurrence data. Flags common problems in occurrence records, such as coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea, in the wrong country or outside the species range, duplicates, outliers within a species, and datasets with converted or gridded coordinates, with the same tests and defaults as CoordinateCleaner. It also reads the quality warnings GBIF attaches to each record, the basis of record and the establishment means, and checks records at sea or on land against the habitat of their genus from the Interim Register of Marine and Nonmarine Genera. Records are flagged and kept, and users choose afterwards which flags to filter on. Data frames of a few million records are flagged in seconds, and GBIF snapshots of billions of records are processed by reading Parquet files in chunks.">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -89,8 +95,10 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="occurrencecleaner">OccurrenceCleaner<a class="anchor" aria-label="anchor" href="#occurrencecleaner"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.svg" class="logo" alt=""><h1 id="occurrencecleaner-">OccurrenceCleaner <a class="anchor" aria-label="anchor" href="#occurrencecleaner-"></a>
+</h1>
+</div>
 <p><em>quality flags for occurrence records, at any scale</em></p>
 <!-- badges: start -->
 
