@@ -14,7 +14,19 @@ has_geosphere <- requireNamespace("geosphere", quietly = TRUE)
 has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 ```
 
-This article goes through the record tests that read coordinates and GBIF fields: what each computes, which fields it reads, where its edge lies, and how its result can be changed through an argument. Eleven are the record tests of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its default buffers, up to the differences listed in the article Coming from CoordinateCleaner, eight read GBIF fields, and two compare the land test with the habitat of the record's genus; these ten are additions of this package. The other nine tests of the layout are covered elsewhere: the four fossil tests in the fossil article, the geographic outlier and the two dataset tests in the article on outliers and dataset tests, `range` in the article on custom gazetteers, and `aohi` in the article on outliers and dataset tests. Each test also has a help page of its own (`?test_capital`, `?test_sea`, ...). Installation is covered in [Get started](OccurrenceCleaner.html).
+This article explains how each test checks a record, which fields it needs, and which arguments control its behaviour. It covers:
+
+- Eleven coordinate tests adapted from [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)). Their buffers use CoordinateCleaner’s defaults. The article [Coming from CoordinateCleaner](coordinatecleaner.html) explains differences in their results.
+- Eight additional tests using fields from the Global Biodiversity Information Facility (GBIF).
+- Two additional tests comparing a record’s location on land or at sea with the habitat associated with its genus.
+
+The remaining tests are covered in separate articles:
+
+- Four fossil tests: [Cleaning fossil records](fossils.html).
+- Geographic outliers, two dataset tests, and `aohi`: [Outliers and dataset tests](outliers.html).
+- Species ranges (`range`): [Using custom gazetteers](gazetteers.html).
+
+Each test also has its own help page, such as [`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html) and [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html). Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
@@ -60,7 +72,7 @@ f <- flag_occurrences(x, tests = c("invalid", "zero", "sea"))
 f[, c("decimalLongitude", "decimalLatitude", "flag_invalid", "flag_zero", "flag_sea")]
 ```
 
-A record that fails `invalid` gets no other spatial flag: there is no point to test, so `zero` and `sea` stay `FALSE` for the second to fourth rows. CoordinateCleaner instead returns `NA` or "clean" for such rows depending on the test; the comparison article lists the cases. The boundary values (-180, -90) are valid.
+A record that fails `invalid` gets no other spatial flag: there is no point to test, so `zero` and `sea` stay `FALSE` for the second to fourth rows. CoordinateCleaner instead returns `NA` or "clean" for such rows depending on the test; [Coming from CoordinateCleaner](coordinatecleaner.html) lists the cases. The boundary values (-180, -90) are valid.
 
 ## Zero and equal coordinates: `zero`, `equal`
 
@@ -81,7 +93,7 @@ flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 1))$flag_zero
 flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 0))$flag_zero
 ```
 
-With `zero = 0` only exact zeros are flagged, which is what [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1 does in practice; the comparison article explains why its documented 0.5-degree buffer is not applied there.
+With `zero = 0` only exact zeros are flagged, which is what [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1 does in practice; [Coming from CoordinateCleaner](coordinatecleaner.html) explains why its documented 0.5-degree buffer is not applied there.
 
 ## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
 

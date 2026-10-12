@@ -1,23 +1,33 @@
 # The tests in detail
 
-This article goes through the record tests that read coordinates and
-GBIF fields: what each computes, which fields it reads, where its edge
-lies, and how its result can be changed through an argument. Eleven are
-the record tests of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with its
-default buffers, up to the differences listed in the article Coming from
-CoordinateCleaner, eight read GBIF fields, and two compare the land test
-with the habitat of the record’s genus; these ten are additions of this
-package. The other nine tests of the layout are covered elsewhere: the
-four fossil tests in the fossil article, the geographic outlier and the
-two dataset tests in the article on outliers and dataset tests, `range`
-in the article on custom gazetteers, and `aohi` in the article on
-outliers and dataset tests. Each test also has a help page of its own
-([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
-[`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
-…). Installation is covered in [Get
-started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
+This article explains how each test checks a record, which fields it
+needs, and which arguments control its behaviour. It covers:
+
+- Eleven coordinate tests adapted from
+  [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+  (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)). Their
+  buffers use CoordinateCleaner’s defaults. The article *Coming from
+  CoordinateCleaner* explains differences in their results.
+
+- Eight additional tests using fields from the Global Biodiversity
+  Information Facility (GBIF).
+
+- Two additional tests comparing a record’s location on land or at sea
+  with the habitat associated with its genus.
+
+The remaining tests are covered in separate articles:
+
+- Four fossil tests: *Fossil records*.
+
+- Geographic outliers, two dataset tests, and `aohi`: *Outliers and
+  dataset tests*.
+
+- Species ranges (`range`): *Custom gazetteers*.
+
+Each test also has its own help page, such as
+[`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html)
+and
+[`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html).
 
 ``` r
 

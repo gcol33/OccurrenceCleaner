@@ -105,21 +105,28 @@
 
     
     
-<p>This article goes through the record tests that read coordinates and
-GBIF fields: what each computes, which fields it reads, where its edge
-lies, and how its result can be changed through an argument. Eleven are
-the record tests of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
-(Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>) with its
-default buffers, up to the differences listed in the article Coming from
-CoordinateCleaner, eight read GBIF fields, and two compare the land test
-with the habitat of the record’s genus; these ten are additions of this
-package. The other nine tests of the layout are covered elsewhere: the
-four fossil tests in the fossil article, the geographic outlier and the
-two dataset tests in the article on outliers and dataset tests,
-<code>range</code> in the article on custom gazetteers, and
-<code>aohi</code> in the article on outliers and dataset tests. Each
-test also has a help page of its own (<code><a href="../reference/test_capital.html">?test_capital</a></code>,
-<code><a href="../reference/test_sea.html">?test_sea</a></code>, …). Installation is covered in <a href="OccurrenceCleaner.html">Get started</a>.</p>
+<p>This article explains how each test checks a record, which fields it
+needs, and which arguments control its behaviour. It covers:</p>
+<ul>
+<li><p>Eleven coordinate tests adapted from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+(Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>). Their buffers
+use CoordinateCleaner’s defaults. The article <em>Coming from
+CoordinateCleaner</em> explains differences in their results.</p></li>
+<li><p>Eight additional tests using fields from the Global Biodiversity
+Information Facility (GBIF).</p></li>
+<li><p>Two additional tests comparing a record’s location on land or at
+sea with the habitat associated with its genus.</p></li>
+</ul>
+<p>The remaining tests are covered in separate articles:</p>
+<ul>
+<li><p>Four fossil tests: <em>Fossil records</em>.</p></li>
+<li><p>Geographic outliers, two dataset tests, and <code>aohi</code>:
+<em>Outliers and dataset tests</em>.</p></li>
+<li><p>Species ranges (<code>range</code>): <em>Custom
+gazetteers</em>.</p></li>
+</ul>
+<p>Each test also has its own help page, such as <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html"><code>?test_capital</code></a>
+and <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html"><code>?test_sea</code></a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">

@@ -14,7 +14,7 @@ has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 options(knitr.kable.NA = "")
 ```
 
-Six tests compare a record with the other records of its species or its dataset instead of with reference data: `outlier` (geographic outliers within a species), the three fossil outlier tests, and the two dataset tests `dataset_ddmm` and `dataset_rounded`, which look for conversion and gridding errors in a dataset's coordinates as a whole. They are [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_outl()`, `cf_age()`, `cf_outl()`, `cf_range()`, `cd_ddmm()` and `cd_round()`. Because a group has to be complete before any of its records can be judged, these tests run in a pass of their own over the whole input before the record tests. This article runs the geographic and dataset tests on a simulated table of alpine plants, adds the artificial-hotspot test `aohi`, and shows how the group pass works on streamed input. The fossil outlier tests are shown in the fossil article. Installation is covered in [Get started](OccurrenceCleaner.html).
+Six tests compare a record with the other records of its species or its dataset instead of with reference data: `outlier` (geographic outliers within a species), the three fossil outlier tests, and the two dataset tests `dataset_ddmm` and `dataset_rounded`, which look for conversion and gridding errors in a dataset's coordinates as a whole. They are [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_outl()`, `cf_age()`, `cf_outl()`, `cf_range()`, `cd_ddmm()` and `cd_round()`. Because a group has to be complete before any of its records can be judged, these tests run in a pass of their own over the whole input before the record tests. This article runs the geographic and dataset tests on a simulated table of alpine plants, adds the artificial-hotspot test `aohi`, and shows how the group pass works on streamed input. The fossil outlier tests are shown in [Cleaning fossil records](fossils.html). Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
@@ -100,7 +100,7 @@ system.time(fb <- flag_occurrences(big, tests = "outlier"))
 which(fb$flag_outlier)
 ```
 
-The Madrid record is the only one flagged. CoordinateCleaner 3.0.1 computes the same cell statistics but never flags a record on this path, because its mapping from the outlier cells back to records returns none; the article Coming from CoordinateCleaner shows the comparison.
+The Madrid record is the only one flagged. CoordinateCleaner 3.0.1 computes the same cell statistics but never flags a record on this path, because its mapping from the outlier cells back to records returns none; [Coming from CoordinateCleaner](coordinatecleaner.html) shows the comparison.
 
 ## Dataset tests
 

@@ -274,7 +274,7 @@ The `wild` rule keeps 1,998 of the 2,000 clean records and removes every injecte
 
 - **`country_mismatch` needs a country code and flags records without one.** A record with no code, or one that falls at sea, is flagged, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/). In a GBIF table where many records lack `countrycode`, that test alone can flag a large share; the tally per test shows it before it goes into a rule.
 
-- **`sea` depends on the land scale.** The default 1:110 million land is coarse: in the example the GBIF headquarters are on land at that scale and at sea on the 1:50 million coast. For coastal or island taxa, `land_scale = 50` or `10` changes the result for records within a few kilometres of the coast; the reference-data article shows the size of the difference.
+- **`sea` depends on the land scale.** The default 1:110 million land is coarse: in the example the GBIF headquarters are on land at that scale and at sea on the 1:50 million coast. For coastal or island taxa, `land_scale = 50` or `10` changes the result for records within a few kilometres of the coast; [Reference data](reference-data.html) shows the size of the difference.
 
 - **`duplicate` depends on what counts as the same record.** By default it is the same coordinates and the same `species` value. Adding `duplicate_by = "eventdate"` keeps repeat visits apart; `duplicate_cell = 0.1` treats records in the same 0.1-degree cell as duplicates, which suits a grid-based analysis. On streamed input the test compares records across all input files, as on a data frame.
 
