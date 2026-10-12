@@ -66,7 +66,7 @@
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
-    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -110,8 +110,8 @@ needs, and which arguments control its behaviour. It covers:</p>
 <ul>
 <li><p>Eleven coordinate tests adapted from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 (Zizka et al. <a href="https://doi.org/10.1111/2041-210X.13152" class="external-link">2019</a>). Their buffers
-use CoordinateCleaner’s defaults. The article <em>Coming from
-CoordinateCleaner</em> explains differences in their results.</p></li>
+use CoordinateCleaner’s defaults. The article <a href="coordinatecleaner.html">Compatibility with CoordinateCleaner</a>
+explains differences in their results.</p></li>
 <li><p>Eight additional tests using fields from the Global Biodiversity
 Information Facility (GBIF).</p></li>
 <li><p>Two additional tests comparing a record’s location on land or at
@@ -119,16 +119,15 @@ sea with the habitat associated with its genus.</p></li>
 </ul>
 <p>The remaining tests are covered in separate articles:</p>
 <ul>
-<li><p>Four fossil tests: <em>Fossil records</em>.</p></li>
-<li><p>Geographic outliers, two dataset tests, and <code>aohi</code>:
-<em>Outliers and dataset tests</em>.</p></li>
-<li><p>Species ranges (<code>range</code>): <em>Custom
-gazetteers</em>.</p></li>
+<li><p>Four fossil tests: <a href="fossils.html">Cleaning fossil
+records</a>.</p></li>
+<li><p>Geographic outliers, two dataset tests, and <code>aohi</code>: <a href="outliers.html">Outliers and dataset tests</a>.</p></li>
+<li><p>Species ranges (<code>range</code>): <a href="gazetteers.html">Using custom gazetteers</a>.</p></li>
 </ul>
 <p>Each test also has its own help page, such as <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html"><code>?test_capital</code></a>
-and <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html"><code>?test_sea</code></a>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
+and <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html"><code>?test_sea</code></a>.
+Installation is covered in <a href="OccurrenceCleaner.html">Get
+started</a>.</p>
 <div class="section level2">
 <h2 id="the-flag-word">The flag word<a class="anchor" aria-label="anchor" href="#the-flag-word"></a>
 </h2>
@@ -136,8 +135,10 @@ and <a href="https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html
 lists the layout: each test’s definition with its default buffer, the
 fields it needs and its <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 counterpart:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bit"</span>, <span class="st">"test"</span>, <span class="st">"definition"</span>, <span class="st">"needs"</span>, <span class="st">"source"</span>, <span class="st">"equivalent"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bit"</span>, <span class="st">"test"</span>, <span class="st">"definition"</span>, <span class="st">"needs"</span>, <span class="st">"source"</span>, <span class="st">"equivalent"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="2%">
@@ -412,12 +413,12 @@ the sea</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Tests with an entry in the <code>equivalent</code> column follow <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
-record tests and default buffers. Differences are documented in <a href="coordinatecleaner.html">Coming from CoordinateCleaner</a>. The
-remaining tests use GBIF’s <code>issue</code>,
+record tests and default buffers. Differences are documented in <a href="coordinatecleaner.html">Compatibility with CoordinateCleaner</a>.
+The remaining tests use GBIF’s <code>issue</code>,
 <code>basisOfRecord</code> and <code>establishmentMeans</code> fields,
 or compare the land polygons with the habitat of the record’s genus
 (<code>sea_nonmarine</code>, <code>land_marine</code>).</p>
@@ -426,7 +427,7 @@ it fails, so a word of 10 (<code>2^1 + 2^3</code>) means
 <code>zero</code> and <code>capital</code>. <code><a href="../reference/flag_mask.html">flag_mask()</a></code>
 turns a set of tests into such a word and <code><a href="../reference/flag_mask.html">has_flag()</a></code> asks
 whether a word carries any test of a set:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_mask.html">flag_mask</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 10</span></span>
 <span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">2L</span>, <span class="fl">8L</span>, <span class="fl">10L</span>, <span class="fl">16L</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
@@ -440,7 +441,7 @@ every test whose columns are in the data, and <code>range</code> when
 range polygons are given. <code>tests</code> names a subset instead.
 <code><a href="../reference/test_plan.html">test_plan()</a></code> lists, for a table, which tests would run and
 the missing input of each other test:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fl">16.37</span>, decimalLatitude <span class="op">=</span> <span class="fl">48.21</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_plan.html">test_plan</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="va">p</span><span class="op">$</span><span class="va">test</span><span class="op">[</span><span class="va">p</span><span class="op">$</span><span class="va">run</span><span class="op">]</span></span>
@@ -456,7 +457,7 @@ the missing input of each other test:</p>
 [-180, 180] x [-90, 90]. Text columns are coerced to numbers first, as
 in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 <code>cc_val</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"16.37"</span>, <span class="st">"abc"</span>, <span class="cn">NA</span>, <span class="st">"200"</span>, <span class="st">"-180"</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"48.21"</span>, <span class="st">"10"</span>, <span class="st">"10"</span>, <span class="st">"10"</span>, <span class="st">"-90"</span><span class="op">)</span><span class="op">)</span></span>
@@ -472,8 +473,9 @@ in <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link"
 there is no point to test, so <code>zero</code> and <code>sea</code>
 stay <code>FALSE</code> for the second to fourth rows. CoordinateCleaner
 instead returns <code>NA</code> or “clean” for such rows depending on
-the test; the comparison article lists the cases. The boundary values
-(-180, -90) are valid.</p>
+the test; <a href="coordinatecleaner.html">Compatibility with
+CoordinateCleaner</a> lists the cases. The boundary values (-180, -90)
+are valid.</p>
 </div>
 <div class="section level2">
 <h2 id="zero-and-equal-coordinates-zero-equal">Zero and equal coordinates: <code>zero</code>,
@@ -484,7 +486,7 @@ exactly zero, and records within 0.5 degrees of (0, 0), measured as a
 planar distance in degrees. <code>equal</code> flags records whose
 absolute longitude equals their absolute latitude, a common data-entry
 error where one value was copied into both fields:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">25.3</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">10</span>, <span class="op">-</span><span class="fl">10</span>, <span class="fl">10.0001</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">42.1</span>, <span class="fl">0</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
@@ -501,15 +503,16 @@ error where one value was copied into both fields:</p>
 <p>The point at (0.3, 0.3) is 0.42 degrees from the origin and flagged,
 the one at (0.4, 0.4) is 0.57 degrees away and not. The radius is set
 with <code>buffers = list(zero = ...)</code> in degrees:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span>, tests <span class="op">=</span> <span class="st">"zero"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>zero <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_zero</span></span>
 <span><span class="co">#&gt; [1] TRUE TRUE</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span>, tests <span class="op">=</span> <span class="st">"zero"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>zero <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_zero</span></span>
 <span><span class="co">#&gt; [1] FALSE FALSE</span></span></code></pre></div>
 <p>With <code>zero = 0</code> only exact zeros are flagged, which is
 what <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
-3.0.1 does in practice; the comparison article explains why its
-documented 0.5-degree buffer is not applied there.</p>
+3.0.1 does in practice; <a href="coordinatecleaner.html">Compatibility
+with CoordinateCleaner</a> explains why its documented 0.5-degree buffer
+is not applied there.</p>
 </div>
 <div class="section level2">
 <h2 id="proximity-tests-capital-centroid-institution-gbif_headquarters">Proximity tests: <code>capital</code>, <code>centroid</code>,
@@ -528,7 +531,7 @@ Candidates are found with a kd-tree on the unit sphere, and each
 candidate is decided with the Vincenty inverse formula. The GBIF
 headquarters, a single fixed point, show the edge directly. Points due
 north of it at 990 m to 1,010 m:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">990</span>, <span class="fl">999</span>, <span class="fl">999.9</span>, <span class="fl">1000.1</span>, <span class="fl">1001</span>, <span class="fl">1010</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">geosphere</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">destPoint</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">55.67</span><span class="op">)</span>, b <span class="op">=</span> <span class="fl">0</span>, d <span class="op">=</span> <span class="va">d</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, decimalLatitude <span class="op">=</span> <span class="va">p</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
@@ -547,7 +550,7 @@ lies between 99.7 % and 100 % of the buffer depending on the bearing;
 records in that thin band are the only difference between the two
 packages for these tests.</p>
 <p>Buffers are changed per test, in metres:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"gbif_headquarters"</span>,</span>
 <span>                 buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>gbif_headquarters <span class="op">=</span> <span class="fl">995</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_gbif_headquarters</span></span>
 <span><span class="co">#&gt; [1]  TRUE FALSE FALSE FALSE FALSE FALSE</span></span></code></pre></div>
@@ -556,7 +559,7 @@ themselves. The size of the capital buffer matters more than any other,
 because 10 km around a capital covers whole cities with real records in
 them. Records spread evenly over the 40 km around Vienna show how the
 flagged share grows with the buffer:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">3000</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">geosphere</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">destPoint</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">48.21</span><span class="op">)</span>, b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">m</span>, <span class="fl">0</span>, <span class="fl">360</span><span class="op">)</span>, d <span class="op">=</span> <span class="fl">40000</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -572,89 +575,7 @@ flagged share grows with the buffer:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">17</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>        plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='252.00pt' viewBox='0 0 468.00 252.00' class="r-plt inline-svg" style="width:100%;height:auto;">
-<g class='svglite'>
-<defs>
-  <style type='text/css'><![CDATA[
-    /* theme-aware-processed */
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite circle {
-      fill: none;
-      stroke: #3E3F3A;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite > g > rect {
-      fill: none;
-      stroke: #3E3F3A;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-      fill: #3E3F3A;
-    }
-    .svglite g.glyphgroup path {
-      fill: inherit;
-      stroke: none;
-    }
-  ]]></style>
-</defs>
-<rect class='svg-bg' width='100%' height='100%' style='stroke: none; fill: #F5F6F8;'/>
-<defs>
-  <clipPath id='cpMC4wMHw0NjguMDB8MC4wMHwyNTIuMDA='>
-    <rect x='0.00' y='0.00' width='468.00' height='252.00' />
-  </clipPath>
-</defs>
-<g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNTIuMDA=)'>
-<rect x='0.00' y='0.00' width='468.00' height='252.00' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-</g>
-<defs>
-  <clipPath id='cpNjcuMDh8NDU5LjUzfDguNDd8MjAzLjMz'>
-    <rect x='67.08' y='8.47' width='392.45' height='194.86' />
-  </clipPath>
-</defs>
-<g clip-path='url(#cpNjcuMDh8NDU5LjUzfDguNDd8MjAzLjMz)'>
-<rect x='67.08' y='8.47' width='392.45' height='194.86' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-<polyline points='67.08,166.50 459.53,166.50 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,110.00 459.53,110.00 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,53.49 459.53,53.49 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='134.13,203.33 134.13,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='257.15,203.33 257.15,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='380.18,203.33 380.18,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,194.76 459.53,194.76 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,138.25 459.53,138.25 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,81.74 459.53,81.74 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='67.08,25.24 459.53,25.24 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='72.61,203.33 72.61,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='195.64,203.33 195.64,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='318.67,203.33 318.67,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='441.69,203.33 441.69,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='84.92,194.47 97.22,193.72 134.13,189.58 195.64,174.98 257.15,155.01 318.67,125.44 441.69,17.33 ' style='stroke-width: 2.13; stroke-linecap: butt;' />
-<circle class='theme-fill-fg' cx='84.92' cy='194.47' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='97.22' cy='193.72' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='134.13' cy='189.58' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='195.64' cy='174.98' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='257.15' cy='155.01' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='318.67' cy='125.44' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-<circle class='theme-fill-fg' cx='441.69' cy='17.33' r='3.22' style='stroke-width: 1.10; fill: #3E3F3A;' />
-</g>
-<g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNTIuMDA=)'>
-<text x='59.46' y='199.62' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0 %</text>
-<text x='59.46' y='143.12' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>20 %</text>
-<text x='59.46' y='86.61' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40 %</text>
-<text x='59.46' y='30.10' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60 %</text>
-<text x='72.61' y='220.69' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0</text>
-<text x='195.64' y='220.69' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>10</text>
-<text x='318.67' y='220.69' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>20</text>
-<text x='441.69' y='220.69' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>30</text>
-<text x='263.30' y='239.95' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital buffer (km)</text>
-<text transform='translate(20.64,105.90) rotate(-90)' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>records flagged</text>
-</g>
-</g>
-</svg></div></p>
+<p><img src="tests_files/figure-html/capital-sweep-1.svg" class="r-plt" alt="" width="624"></p>
 <p>For records spread evenly over a disc, the share grows with the
 square of the buffer. 7 % of the records lie within the default 10 km,
 close to the 6.25 % of the area that a 10 km circle covers in a 40 km
@@ -680,7 +601,7 @@ resolved exactly.</p>
 <p>The scale decides the result for records near the coast. The GBIF
 headquarters in Copenhagen are on land at 1:110 million and in the sea
 at 1:50 million:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">48.21</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
@@ -711,7 +632,7 @@ the first word of the <code>genus</code> column, so
 and a <code>kingdom</code> column, when present, tells apart genus names
 used in two kingdoms (<em>Asterias</em> is a starfish and a plant
 genus):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Plantae"</span>, <span class="st">"Animalia"</span>, <span class="st">"Animalia"</span>, <span class="st">"Animalia"</span><span class="op">)</span>,</span>
 <span>                genus <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus"</span>, <span class="st">"Asterias"</span>, <span class="st">"Asterias"</span>, <span class="st">"Larus"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">48.21</span>, <span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
@@ -741,7 +662,7 @@ Records in cities are often correct, so a rule can leave
 <code>urban</code> out; as a separate column it can remove garden and
 street-tree records of plants. <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> leaves this test out by default:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.51</span>, <span class="fl">15.3</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.25</span>, <span class="fl">47.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"urban"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decimalLongitude"</span>, <span class="st">"decimalLatitude"</span>,</span>
@@ -766,7 +687,7 @@ it), its ISO alpha-3 code (as <a href="https://ropensci.github.io/CoordinateClea
 expects), and Natural Earth’s own <code>ADM0_A3</code> code, which is
 filled where ISO has none. Matching is case-insensitive and ignores
 surrounding spaces:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="op">-</span><span class="fl">30</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">48.21</span>, <span class="fl">40</span><span class="op">)</span>,</span>
 <span>                countryCode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AT"</span>, <span class="st">"AUT"</span>, <span class="st">" at "</span>, <span class="st">"DE"</span>, <span class="cn">NA</span>, <span class="st">"PT"</span><span class="op">)</span><span class="op">)</span></span>
@@ -793,7 +714,7 @@ goes into a rule. The column is named through
 longitude, latitude and species as an earlier record in the input. The
 first occurrence is kept unflagged, so removing the flagged records
 leaves one record per distinct key:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"a"</span><span class="op">)</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.37</span>, <span class="fl">16.3701</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fl">48.21</span>,</span>
@@ -807,7 +728,7 @@ leaves one record per distinct key:</p>
 apart. <code>duplicate_cell</code> bins coordinates to a grid of that
 size in degrees first, so records in the same cell count as
 duplicates:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"duplicate"</span>, duplicate_by <span class="op">=</span> <span class="st">"eventDate"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_duplicate</span></span>
 <span><span class="co">#&gt; [1] FALSE  TRUE FALSE FALSE FALSE</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"duplicate"</span>, duplicate_cell <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">$</span><span class="va">flag_duplicate</span></span>
@@ -829,7 +750,7 @@ tests group them: georeferencing problems, taxon matching, dates, and
 rounded coordinates. The <code>issue</code> column can be a string of
 names separated by <code>;</code> (or <code>,</code>, <code>|</code>,
 space) or a list column of character vectors; case does not matter:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>issue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COORDINATE_ROUNDED;GEODETIC_DATUM_ASSUMED_WGS84"</span>,</span>
 <span>                          <span class="st">"TAXON_MATCH_FUZZY"</span>, <span class="st">"recorded_date_unlikely"</span>, <span class="st">""</span>, <span class="cn">NA</span>,</span>
 <span>                          <span class="st">"PRESUMED_SWAPPED_COORDINATE;COUNTRY_COORDINATE_MISMATCH"</span><span class="op">)</span><span class="op">)</span></span>
@@ -850,51 +771,48 @@ space) or a list column of character vectors; case does not matter:</p>
 <span><span class="co">#&gt; 4            FALSE           FALSE              FALSE</span></span>
 <span><span class="co">#&gt; 5            FALSE           FALSE              FALSE</span></span>
 <span><span class="co">#&gt; 6            FALSE           FALSE              FALSE</span></span></code></pre></div>
-<p>The groups hold these GBIF issue names:</p>
-<table class="table">
-<colgroup>
-<col width="4%">
-<col width="95%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">test</th>
-<th align="left">GBIF issues</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">issue_coordinate</td>
-<td align="left">COORDINATE_INVALID, COORDINATE_OUT_OF_RANGE,
-COORDINATE_REPROJECTION_FAILED, COORDINATE_REPROJECTION_SUSPICIOUS,
-COORDINATE_UNCERTAINTY_METERS_INVALID, COORDINATE_PRECISION_INVALID,
-GEODETIC_DATUM_INVALID, CONTINENT_COORDINATE_MISMATCH,
-COUNTRY_COORDINATE_MISMATCH, PRESUMED_SWAPPED_COORDINATE,
-PRESUMED_NEGATED_LONGITUDE, PRESUMED_NEGATED_LATITUDE,
-ZERO_COORDINATE</td>
-</tr>
-<tr class="even">
-<td align="left">issue_taxon</td>
-<td align="left">TAXON_MATCH_FUZZY, TAXON_MATCH_HIGHERRANK,
-TAXON_MATCH_NONE, TAXON_MATCH_AGGREGATE</td>
-</tr>
-<tr class="odd">
-<td align="left">issue_date</td>
-<td align="left">RECORDED_DATE_INVALID, RECORDED_DATE_UNLIKELY,
-RECORDED_DATE_MISMATCH</td>
-</tr>
-<tr class="even">
-<td align="left">issue_rounded</td>
-<td align="left">COORDINATE_ROUNDED</td>
-</tr>
-</tbody>
-</table>
-<p>Issues that record an assumption GBIF made without changing the data,
-such as <code>GEODETIC_DATUM_ASSUMED_WGS84</code>, are in no group.
-<code>issue_rounded</code> is kept apart from
-<code>issue_coordinate</code> because rounding is a precision question:
-GBIF sets <code>COORDINATE_ROUNDED</code> when it rounds coordinates
-given with more than five decimals, so the flag says nothing about
-whether the record is placed correctly, and a precision threshold is
-usually better taken from
+<p>Each test flags a record if its GBIF <code>issue</code> field
+contains any of the names listed below.</p>
+<p><strong><code>issue_coordinate</code></strong></p>
+<ul>
+<li><code>COORDINATE_INVALID</code></li>
+<li><code>COORDINATE_OUT_OF_RANGE</code></li>
+<li><code>COORDINATE_REPROJECTION_FAILED</code></li>
+<li><code>COORDINATE_REPROJECTION_SUSPICIOUS</code></li>
+<li><code>COORDINATE_UNCERTAINTY_METERS_INVALID</code></li>
+<li><code>COORDINATE_PRECISION_INVALID</code></li>
+<li><code>GEODETIC_DATUM_INVALID</code></li>
+<li><code>CONTINENT_COORDINATE_MISMATCH</code></li>
+<li><code>COUNTRY_COORDINATE_MISMATCH</code></li>
+<li><code>PRESUMED_SWAPPED_COORDINATE</code></li>
+<li><code>PRESUMED_NEGATED_LONGITUDE</code></li>
+<li><code>PRESUMED_NEGATED_LATITUDE</code></li>
+<li><code>ZERO_COORDINATE</code></li>
+</ul>
+<p><strong><code>issue_taxon</code></strong></p>
+<ul>
+<li><code>TAXON_MATCH_FUZZY</code></li>
+<li><code>TAXON_MATCH_HIGHERRANK</code></li>
+<li><code>TAXON_MATCH_NONE</code></li>
+<li><code>TAXON_MATCH_AGGREGATE</code></li>
+</ul>
+<p><strong><code>issue_date</code></strong></p>
+<ul>
+<li><code>RECORDED_DATE_INVALID</code></li>
+<li><code>RECORDED_DATE_UNLIKELY</code></li>
+<li><code>RECORDED_DATE_MISMATCH</code></li>
+</ul>
+<p><strong><code>issue_rounded</code></strong></p>
+<ul>
+<li><code>COORDINATE_ROUNDED</code></li>
+</ul>
+<p><code>GEODETIC_DATUM_ASSUMED_WGS84</code> records GBIF’s assumption
+about the coordinate reference system. It is excluded from these
+groups.</p>
+<p>Rounding has its own test so it can be considered separately when
+choosing a cleaning rule. GBIF sets <code>COORDINATE_ROUNDED</code> when
+it rounds coordinates to five decimal places. To filter by the reported
+uncertainty in a record’s location, use
 <code>coordinateUncertaintyInMeters</code>.</p>
 </div>
 <div class="section level2">
@@ -908,7 +826,7 @@ population at the recorded place. <code>establishment_introduced</code>
 flags <code>establishmentMeans</code> of introduced, naturalised or
 invasive, and <code>establishment_managed</code> flags managed or
 cultivated individuals:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>basisOfRecord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="st">"LIVING_SPECIMEN"</span>, <span class="st">"FOSSIL_SPECIMEN"</span>, <span class="st">"PRESERVED_SPECIMEN"</span><span class="op">)</span>,</span>
 <span>                establishmentMeans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"MANAGED"</span>, <span class="st">"NATIVE"</span>, <span class="st">"Naturalised"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"basis_fossil"</span>, <span class="st">"basis_living"</span>, <span class="st">"establishment_introduced"</span>,</span>
@@ -931,17 +849,26 @@ them. The flag is there so the choice is made in the rule.</p>
 <div class="section level2">
 <h2 id="choosing-columns">Choosing columns<a class="anchor" aria-label="anchor" href="#choosing-columns"></a>
 </h2>
-<p>Each test reads only the fields in its <code>needs</code> column, and
-only those fields have to exist. <code><a href="../reference/occ_columns.html">occ_columns()</a></code> names them;
-the defaults are Darwin Core terms, matched exactly first and then
-case-insensitively:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<p>Use <code><a href="../reference/occ_columns.html">occ_columns()</a></code> to map your column names to the fields
+a test needs. Here, <code>X</code> and <code>Y</code> hold longitude and
+latitude, and <code>taxon</code> holds the species:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxon <span class="op">=</span> <span class="st">"a"</span>, X <span class="op">=</span> <span class="fl">16.37</span>, Y <span class="op">=</span> <span class="fl">48.21</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
-<span>                 columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"X"</span>, lat <span class="op">=</span> <span class="st">"Y"</span>, species <span class="op">=</span> <span class="st">"taxon"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flags</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
+<span>  columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"X"</span>, lat <span class="op">=</span> <span class="st">"Y"</span>, species <span class="op">=</span> <span class="st">"taxon"</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">flags</span></span>
 <span><span class="co">#&gt; [1] 8</span></span></code></pre></div>
-<p>A test whose field is missing stops with an error that names the
-column, so a misspelt column never silently skips a test.</p>
+<p>By default, <code><a href="../reference/occ_columns.html">occ_columns()</a></code> uses Darwin Core names such as
+<code>decimalLongitude</code>, <code>decimalLatitude</code>, and
+<code>species</code>. It looks for an exact match first, then tries a
+case-insensitive match.</p>
+<p>The <code>needs</code> column in the test table lists the fields each
+test requires. An explicitly requested test raises an error if a
+required column is missing. When <code>tests</code> is omitted, the
+package selects the tests supported by the available columns.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -976,83 +903,5 @@ Ecology and Evolution</em> 10:744-751. <a href="https://doi.org/10.1111/2041-210
 
 
 
-  <script>
-/* SVG Copy Button Functionality */
-(function() {
-  "use strict";
-
-  // Initialize SVG copy buttons after DOM is ready
-  document.addEventListener("DOMContentLoaded", function() {
-    if (typeof ClipboardJS === "undefined") {
-      console.warn("ClipboardJS not loaded - SVG copy buttons disabled");
-      return;
-    }
-
-    // Initialize clipboard for SVG copy buttons
-    var svgClipboard = new ClipboardJS(".btn-copy-svg", {
-      text: function(trigger) {
-        var container = trigger.closest(".svg-container");
-        if (!container) return "";
-
-        var svg = container.querySelector("svg");
-        if (!svg) return "";
-
-        // Clone SVG to avoid modifying the original
-        var clone = svg.cloneNode(true);
-
-        // Remove inline-svg class (not needed in copied version)
-        clone.classList.remove("inline-svg");
-
-        // Add XML declaration and serialize
-        var serializer = new XMLSerializer();
-        var svgString = serializer.serializeToString(clone);
-
-        // Add XML declaration if not present
-        if (!svgString.startsWith("<?xml")) {
-          svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgString;
-        }
-
-        return svgString;
-      }
-    });
-
-    // Handle success
-    svgClipboard.on("success", function(e) {
-      var btn = e.trigger;
-      var originalTitle = btn.getAttribute("data-bs-original-title") || btn.getAttribute("title");
-
-      // Update tooltip to show "Copied!"
-      btn.setAttribute("data-bs-original-title", "Copied!");
-      var tooltip = bootstrap.Tooltip.getInstance(btn);
-      if (tooltip) {
-        tooltip.show();
-      }
-
-      // Reset after delay
-      setTimeout(function() {
-        btn.setAttribute("data-bs-original-title", originalTitle);
-      }, 1500);
-
-      e.clearSelection();
-    });
-
-    // Handle error
-    svgClipboard.on("error", function(e) {
-      var btn = e.trigger;
-      btn.setAttribute("data-bs-original-title", "Press Ctrl+C to copy");
-      var tooltip = bootstrap.Tooltip.getInstance(btn);
-      if (tooltip) {
-        tooltip.show();
-      }
-    });
-
-    // Initialize tooltips for SVG copy buttons
-    var svgCopyButtons = document.querySelectorAll(".btn-copy-svg");
-    svgCopyButtons.forEach(function(btn) {
-      new bootstrap.Tooltip(btn, { container: "body" });
-    });
-  });
-})();
-</script>
-</body>
+  </body>
 </html>

@@ -22,19 +22,17 @@ This article compares how individual tests and cleaning rules affect the dataset
 
 3. Compare these shares by taxon, record age and coordinate precision using `tally_flags()` with `by` and `bins`.
 
-4. Select records using the chosen rule with `has_flag()`.
+4. Select records using the chosen rule with `keep_unflagged()`.
 
 ## Example
-
-```{r setup, message = FALSE, warning = FALSE}
-library(OccurrenceCleaner)
-```
 
 ### Example records
 
 The example records are terrestrial: random points on land in Europe, drawn by rejecting points the `sea` test flags. Each of 60 species belongs to one kingdom, and each record has a year and the GBIF fields a download carries. Coordinates are rounded to four decimals.
 
 ```{r}
+library(OccurrenceCleaner)
+
 set.seed(42)
 n <- 3000
 lon <- runif(3 * n, -10, 30)
@@ -208,10 +206,10 @@ Other analyses add other tests:
 
 `issue_rounded` is left out. GBIF sets `COORDINATE_ROUNDED` when the original coordinate was modified by rounding to five decimals ([GBIF issue definition](https://gbif.github.io/gbif-api/apidocs/org/gbif/api/vocabulary/OccurrenceIssue.html#COORDINATE_ROUNDED)). A precision threshold can be taken from coordinate uncertainty instead.
 
-`has_flag()` returns `TRUE` for every record carrying at least one test of the rule, so the cleaned table is the complement.
+`keep_unflagged()` keeps the records that carry no flag from the rule. `has_flag()` gives the logical vector behind it, `TRUE` for every record carrying at least one test of the rule.
 
 ```{r}
-clean <- f[!has_flag(f$flags, rules$coordinatecleaner), ]
+clean <- keep_unflagged(f, rules$coordinatecleaner)
 nrow(clean)
 ```
 
@@ -225,7 +223,7 @@ sum(keep)
 
 The removed records keep their flags. Another rule built from the tests already run reads the same `f`. Adding a test that was not run, or changing buffers, `settings`, reference data or the land scale, needs a new call to `flag_occurrences()`.
 
-To compare with `clean_coordinates()` output, both packages need the same tests, buffers and reference data. At its defaults, `clean_coordinates()` adds its outlier test and draws the sea test from the 1:50 million land, while `flag_occurrences()` uses the 1:110 million land and its own gazetteers; `land_scale = 50` and `reference = "CoordinateCleaner"` align the last two. [Coming from CoordinateCleaner](coordinatecleaner.html) maps the remaining arguments.
+To compare with `clean_coordinates()` output, both packages need the same tests, buffers and reference data. At its defaults, `clean_coordinates()` adds its outlier test and draws the sea test from the 1:50 million land, while `flag_occurrences()` uses the 1:110 million land and its own gazetteers; `land_scale = 50` and `reference = "CoordinateCleaner"` align the last two. [Compatibility with CoordinateCleaner](coordinatecleaner.html) maps the remaining arguments.
 
 ## How the shares are computed
 

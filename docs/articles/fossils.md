@@ -16,7 +16,7 @@ the end also needs that package installed.
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
 
 2.  **Filter** out flagged records, using
-    [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
+    [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md).
 
 3.  **Filter** by the width of the age range, counting each group with
     [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
@@ -25,11 +25,6 @@ the end also needs that package installed.
 
 5.  **Export** the kept records with
     [`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md).
-
-``` r
-
-library(OccurrenceCleaner)
-```
 
 ## A small fossil table
 
@@ -49,6 +44,8 @@ million years, and the country code `DE`; their coordinates are missing
 in the table and set in the next chunk:
 
 ``` r
+
+library(OccurrenceCleaner)
 
 fos <- data.frame(
   occurrence_no = 1:9,
@@ -120,18 +117,15 @@ default 1 km of the centroid of Germany.
 
 ## Filtering records
 
-Use
-[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-to remove records flagged by any test in `tests`.
-[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-also checks that every named test was run on the flagged table, and
-stops with an error if one was not. The later sections reuse this rule
-as `rule`:
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+keeps the records that no test in `tests` flags. It also checks that
+every named test was run on the flagged table, and stops with an error
+if one was not. The later sections reuse this rule as `rule`:
 
 ``` r
 
 rule <- tests
-kept <- f[!has_flag(f, rule), ]
+kept <- keep_unflagged(f, rule)
 kept[, c("occurrence_no", "accepted_name", "min_ma", "max_ma")]
 #>   occurrence_no accepted_name min_ma max_ma
 #> 1             1    Coryphodon   53.0   56.0
@@ -177,12 +171,9 @@ data.frame(occurrence_no = fos$occurrence_no,
 
 These defaults differ from those in CoordinateCleaner. In version 3.0.1,
 [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)
-passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer`
-arguments of
-[`cc_cen()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html)
-and
-[`cc_inst()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html),
-respectively. Both functions interpret these values in metres.
+applies its defaults `centroids_rad = 0.05` and `inst_rad = 0.001` as
+radii in metres, so its centroid and institution tests flag only records
+within 5 cm and 1 mm of a reference point.
 
 ## Filtering by age range
 
@@ -203,12 +194,15 @@ tally_flags(f, bins = list(age_range = c(5, 15)), rules = list(all = rule))
 ```
 
 Record 4 has an age range of 43 Ma and is the only record above 15 Ma.
-To retain unflagged records with an age range of at most 15 Ma, exclude
-missing ranges and apply the limit directly:
+To retain unflagged records with an age range of at most 15 Ma, apply
+the limit to the kept records;
+[`which()`](https://rdrr.io/r/base/which.html) also drops records
+without an age range:
 
 ``` r
 
-kept15 <- f[!has_flag(f, rule) & f$age_range <= 15 & !is.na(f$age_range), ]
+kept15 <- keep_unflagged(f, rule)
+kept15 <- kept15[which(kept15$age_range <= 15), ]
 kept15$occurrence_no
 #> [1] 1 8 9
 ```
@@ -323,9 +317,9 @@ and have an age range of at most 15 Ma:
 
 ``` r
 
-final_rule <- c(tests, otests)
 g$age_range <- g$max_ma - g$min_ma
-final <- g[!has_flag(g, final_rule) & g$age_range <= 15, ]
+final <- keep_unflagged(g)
+final <- final[which(final$age_range <= 15), ]
 nrow(final)
 #> [1] 575
 ```
@@ -401,7 +395,7 @@ and a palaeontological one keeps only the flagged records:
 
 ``` r
 
-fg[!has_flag(fg, "basis_fossil"), c("gbifID", "basisOfRecord")]
+keep_unflagged(fg, "basis_fossil")[, c("gbifID", "basisOfRecord")]
 #>   gbifID      basisOfRecord
 #> 1      1  HUMAN_OBSERVATION
 #> 3      3 PRESERVED_SPECIMEN

@@ -4,8 +4,10 @@ An extension of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 (Zizka et al. 2019) tailored to large-scale occurrence data: it runs
 that package's record tests with the same definitions and default
-buffers, and keeps every record. Each test writes one flag per record,
-so a cleaning rule is chosen afterwards as a query over the flags. See
+buffers, up to the differences listed in
+[`vignette("coordinatecleaner", package = "OccurrenceCleaner")`](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md),
+and keeps every record. Each test writes one flag per record, so a
+cleaning rule is chosen afterwards as a query over the flags. See
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 to flag a data frame or an on-disk table,
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
@@ -15,9 +17,12 @@ to count what each test and rule removes.
 
 ## Details
 
-The tests, their default buffers and the options of the outlier and
-dataset tests come from CoordinateCleaner by Alexander Zizka and
-co-authors; please cite Zizka et al. (2019) together with this package
+CoordinateCleaner by Alexander Zizka and co-authors supplies the record
+tests and what each one looks for, their default buffers, the outlier
+statistics and the raster approximation for species with many records,
+the dataset tests, the fossil tests, the choice of reference sources
+behind the gazetteers and the `spatialvalid` output layout; please cite
+Zizka et al. (2019) together with this package
 (`citation("OccurrenceCleaner")` gives both).
 
 ## References

@@ -2,6 +2,20 @@
 
 ## OccurrenceCleaner 0.2.0
 
+- [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+  returns the records of a flagged data frame that no test of a rule
+  flagged, by default every test that ran, keeping the flag columns and
+  attributes.
+- Each test has a cleaning function, `clean_<test>()`
+  ([`clean_capital()`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
+  [`clean_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),
+  …), that runs the test and returns the rows of a data frame it does
+  not flag, so tests can be chained in a pipe. Its arguments are the
+  test’s buffer or options with their defaults, and it is documented on
+  the test’s help page. The functions are generated from the test
+  registry and run
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md);
+  a chain applies each test to the records the previous steps kept.
 - Without `tests`,
   [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
   runs every test whose inputs are available: the columns each test

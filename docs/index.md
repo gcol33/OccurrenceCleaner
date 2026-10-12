@@ -25,7 +25,7 @@ the dataset, and choose which records to exclude. It supports:
 
 - **Large tables.** Ten million records go through the capital proximity
   test in 1.4 seconds on a desktop machine
-  ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)).
+  ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)).
   A GBIF snapshot containing billions of records is processed from its
   Parquet files, with progress saved so processing can resume.
 - **Comparing cleaning rules.** Compute the flags once, then choose
@@ -50,7 +50,7 @@ the dataset, and choose which records to exclude. It supports:
   distinguish marine from terrestrial taxa.
 
 The tests follow CoordinateCleaner’s definitions and default buffers,
-with documented differences in [Coming from
+with documented differences in [Compatibility with
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html).
 Automated checks run both packages on sampled records and require
 matching flags for the shared behaviour. A methods section can cite
@@ -77,8 +77,8 @@ compiler.
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
     By default it runs every test the columns allow.
 2.  Choose a cleaning rule, the set of tests used for filtering, and
-    mark the records it removes with
-    [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
+    keep the records it does not flag with
+    [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md).
 3.  Compare rules per species, period or dataset with
     [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
 
@@ -150,7 +150,7 @@ tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
 #>    Quercus robur 2              2           0            2         0
 #> # summary() for the share each test flags
 
-kept <- f[!has_flag(f, mild), ]
+kept <- keep_unflagged(f, mild)
 kept[, c("species", "decimalLongitude", "decimalLatitude")]
 #>           species decimalLongitude decimalLatitude
 #> 3 Fagus sylvatica            16.37           48.21
@@ -266,10 +266,10 @@ keep <- c("kingdom", "year", "coordinateuncertaintyinmeters")
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
                       out = "flags", keep = keep)
 
-cc <- c("zero", "equal", "capital", "centroid", "institution",
-        "gbif_headquarters", "sea")
+coordinatecleaner <- c("zero", "equal", "capital", "centroid", "institution",
+                       "gbif_headquarters", "sea")
 tally_flags(f, by = "kingdom", bins = list(year = c(1950, 1970, 1990, 2000)),
-            rules = list(cc = cc))
+            rules = list(coordinatecleaner = coordinatecleaner))
 ```
 
 See [Large tables on
@@ -308,7 +308,7 @@ one path from a data frame to the records that pass a cleaning rule.
   gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html):
   the user’s own points, polygons and species ranges in place of the
   shipped reference data.
-- [Coming from
+- [Compatibility with
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html):
   function and argument mapping, every documented difference, timings.
 - [Full

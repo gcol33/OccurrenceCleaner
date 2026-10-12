@@ -11,57 +11,65 @@
 
 ## Tests
 
-- [`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md)
+- [`clean_invalid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md)
   : Test: invalid coordinates
-- [`test_zero`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+- [`clean_zero()`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
   : Test: zero coordinates
-- [`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md)
+- [`clean_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md)
   : Test: equal coordinates
-- [`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md)
+- [`clean_capital()`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md)
   : Test: country capitals
-- [`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md)
+- [`clean_centroid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md)
   : Test: country and province centroids
-- [`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md)
+- [`clean_institution()`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md)
   : Test: biodiversity institutions
-- [`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md)
+- [`clean_gbif_headquarters()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md)
   : Test: GBIF headquarters
-- [`test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md)
+- [`clean_sea()`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md)
   : Test: records at sea
-- [`test_urban`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md)
+- [`clean_urban()`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md)
   : Test: urban areas
-- [`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md)
+- [`clean_country_mismatch()`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md)
   : Test: country code mismatch
-- [`test_duplicate`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md)
+- [`clean_duplicate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md)
   : Test: duplicates
-- [`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
+- [`clean_issue_coordinate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
+  [`clean_issue_taxon()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
+  [`clean_issue_date()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
+  [`clean_issue_rounded()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md)
   : Tests: GBIF issue flags
-- [`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md)
+- [`clean_basis_fossil()`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md)
+  [`clean_basis_living()`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md)
   : Tests: basis of record
-- [`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
+- [`clean_establishment_introduced()`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
+  [`clean_establishment_managed()`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md)
   : Tests: establishment means
-- [`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
+- [`clean_age_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md)
   : Test: fossil age range
-- [`test_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md)
+- [`clean_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md)
   : Test: geographic outliers
-- [`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md)
+- [`clean_age_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md)
   : Test: fossil age outliers
-- [`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md)
+- [`clean_spatiotemporal_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md)
   : Test: fossil outliers in space and time
-- [`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md)
+- [`clean_age_range_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md)
   : Test: fossil age-range outliers
-- [`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md)
+- [`clean_dataset_ddmm()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md)
   : Test: degree-minute conversion errors in a dataset
-- [`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md)
+- [`clean_dataset_rounded()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md)
   : Test: rasterised datasets
-- [`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md)
+- [`clean_range()`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md)
   : Test: outside the species range
-- [`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
+- [`clean_aohi()`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md)
   : Test: artificial hotspots
-- [`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
+- [`clean_sea_nonmarine()`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
+  [`clean_land_marine()`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md)
   : Tests: habitat at sea and on land
 
 ## Rules and tallies
 
+- [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+  : Keep the records no test flagged
 - [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
   : Tally flags into a loss table
 - [`summary(`*`<occ_flags>`*`)`](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)

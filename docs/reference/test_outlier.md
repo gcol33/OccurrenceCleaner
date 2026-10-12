@@ -10,6 +10,46 @@ the upper fence of the species' mean distances: Q75 + `mltpl` x IQR
 is more than `tdi` km away. Species with fewer than `min_occs` distinct
 points are not tested.
 
+## Usage
+
+``` r
+clean_outlier(
+  x,
+  method = "quantile",
+  mltpl = 5,
+  tdi = 1000,
+  min_occs = 7,
+  thinning = FALSE,
+  thinning_res = 0.5,
+  sampling_thresh = 0,
+  ...
+)
+```
+
+## Arguments
+
+- x:
+
+  A data frame of occurrence records.
+
+- method, mltpl, tdi, min_occs, thinning, thinning_res, sampling_thresh:
+
+  Options of the test, as in Settings; the defaults are in the usage
+  line.
+
+- ...:
+
+  Further arguments to
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md):
+  `columns`, `reference`, `gazetteers`, `land_scale`.
+
+## Value
+
+`clean_<test>()`: the rows of `x` the test does not flag, with the
+columns of `x` unchanged. See
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md),
+Cleaning functions.
+
 ## Details
 
 Species with 10,000 records or more, and every species when
@@ -51,12 +91,11 @@ country polygons of the reference.
 ## CoordinateCleaner
 
 Equivalent to `cc_outl()`; identical flags for species below 10,000
-records. In CoordinateCleaner 3.0.1 the raster approximation computes
-the cell statistics but its mapping from outlier cells back to records
-returns none, so it never flags a record; here the records of the
-outlier cells are flagged. CoordinateCleaner's sampling correction
-queries GBIF record counts online at run time; here the counts are a
-table given with the call, so the flags can be reproduced.
+records. In CoordinateCleaner 3.0.1 the raster approximation (10,000
+records or more, or `thinning = TRUE`) flags no records; here the
+records of the outlier cells are flagged. CoordinateCleaner's sampling
+correction queries GBIF record counts online at run time; here the
+counts are a table given with the call, so the flags can be reproduced.
 
 ## See also
 
@@ -64,29 +103,29 @@ table given with the call, so the flags can be reproduced.
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
 
 Other tests:
-[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
-[`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
-[`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
-[`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md),
-[`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
-[`test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
-[`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
-[`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),
-[`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md),
-[`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md),
-[`test_duplicate`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md),
-[`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
-[`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md),
-[`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
-[`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
-[`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md),
-[`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
-[`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
-[`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md),
-[`test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
-[`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
-[`test_urban`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md),
-[`test_zero`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+[`clean_age_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
+[`clean_age_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
+[`clean_age_range_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
+[`clean_aohi()`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md),
+[`clean_basis_fossil()`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
+[`clean_capital()`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
+[`clean_centroid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
+[`clean_country_mismatch()`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),
+[`clean_dataset_ddmm()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md),
+[`clean_dataset_rounded()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md),
+[`clean_duplicate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md),
+[`clean_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
+[`clean_establishment_introduced()`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md),
+[`clean_gbif_headquarters()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
+[`clean_institution()`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
+[`clean_invalid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
+[`clean_issue_coordinate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
+[`clean_range()`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md),
+[`clean_sea()`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
+[`clean_sea_nonmarine()`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md),
+[`clean_spatiotemporal_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
+[`clean_urban()`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md),
+[`clean_zero()`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
 
 ## Examples
 
@@ -95,4 +134,5 @@ set.seed(1)
 x <- data.frame(species = "a", decimalLongitude = c(rnorm(50, 10, 1), 60),
                 decimalLatitude = c(rnorm(50, 50, 1), 10))
 which(flag_occurrences(x, tests = "outlier")$flag_outlier)
+nrow(clean_outlier(x, mltpl = 3))
 ```

@@ -23,15 +23,13 @@ A snapshot of GBIF (the Global Biodiversity Information Facility) holds billions
 
 ## Example
 
-```{r setup, message = FALSE}
-library(OccurrenceCleaner)
-```
-
 ### Example input
 
 Three files stand in for the parts of a snapshot. They are `.vtr` files, the on-disk table format of vectra; a directory of Parquet files, a single Parquet, `.csv` or `.tsv` file, and a vectra query are read the same way. Each file has 3,000 records with GBIF's lower-case column names, at random points in a box over western and central Europe:
 
 ```{r input}
+library(OccurrenceCleaner)
+
 set.seed(7)
 make_part <- function(n, offset) {
   data.frame(

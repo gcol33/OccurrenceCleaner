@@ -68,6 +68,7 @@ reference:
   - test_habitat
 - title: Rules and tallies
   contents:
+  - keep_unflagged
   - tally_flags
   - summary.occ_flags
   - plot.occ_summary

@@ -44,7 +44,7 @@
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
-    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -108,168 +108,168 @@
 
       <dl><dt>
 
-          <code><a href="test_invalid.html">test_invalid</a></code>
+          <code><a href="test_invalid.html">clean_invalid()</a></code>
 
         </dt>
         <dd>Test: invalid coordinates</dd>
 
         <dt>
 
-          <code><a href="test_zero.html">test_zero</a></code>
+          <code><a href="test_zero.html">clean_zero()</a></code>
 
         </dt>
         <dd>Test: zero coordinates</dd>
 
         <dt>
 
-          <code><a href="test_equal.html">test_equal</a></code>
+          <code><a href="test_equal.html">clean_equal()</a></code>
 
         </dt>
         <dd>Test: equal coordinates</dd>
 
         <dt>
 
-          <code><a href="test_capital.html">test_capital</a></code>
+          <code><a href="test_capital.html">clean_capital()</a></code>
 
         </dt>
         <dd>Test: country capitals</dd>
 
         <dt>
 
-          <code><a href="test_centroid.html">test_centroid</a></code>
+          <code><a href="test_centroid.html">clean_centroid()</a></code>
 
         </dt>
         <dd>Test: country and province centroids</dd>
 
         <dt>
 
-          <code><a href="test_institution.html">test_institution</a></code>
+          <code><a href="test_institution.html">clean_institution()</a></code>
 
         </dt>
         <dd>Test: biodiversity institutions</dd>
 
         <dt>
 
-          <code><a href="test_gbif_headquarters.html">test_gbif_headquarters</a></code>
+          <code><a href="test_gbif_headquarters.html">clean_gbif_headquarters()</a></code>
 
         </dt>
         <dd>Test: GBIF headquarters</dd>
 
         <dt>
 
-          <code><a href="test_sea.html">test_sea</a></code>
+          <code><a href="test_sea.html">clean_sea()</a></code>
 
         </dt>
         <dd>Test: records at sea</dd>
 
         <dt>
 
-          <code><a href="test_urban.html">test_urban</a></code>
+          <code><a href="test_urban.html">clean_urban()</a></code>
 
         </dt>
         <dd>Test: urban areas</dd>
 
         <dt>
 
-          <code><a href="test_country_mismatch.html">test_country_mismatch</a></code>
+          <code><a href="test_country_mismatch.html">clean_country_mismatch()</a></code>
 
         </dt>
         <dd>Test: country code mismatch</dd>
 
         <dt>
 
-          <code><a href="test_duplicate.html">test_duplicate</a></code>
+          <code><a href="test_duplicate.html">clean_duplicate()</a></code>
 
         </dt>
         <dd>Test: duplicates</dd>
 
         <dt>
 
-          <code><a href="test_gbif_issue.html">test_gbif_issue</a></code>
+          <code><a href="test_gbif_issue.html">clean_issue_coordinate()</a></code> <code><a href="test_gbif_issue.html">clean_issue_taxon()</a></code> <code><a href="test_gbif_issue.html">clean_issue_date()</a></code> <code><a href="test_gbif_issue.html">clean_issue_rounded()</a></code>
 
         </dt>
         <dd>Tests: GBIF issue flags</dd>
 
         <dt>
 
-          <code><a href="test_basis.html">test_basis</a></code>
+          <code><a href="test_basis.html">clean_basis_fossil()</a></code> <code><a href="test_basis.html">clean_basis_living()</a></code>
 
         </dt>
         <dd>Tests: basis of record</dd>
 
         <dt>
 
-          <code><a href="test_establishment.html">test_establishment</a></code>
+          <code><a href="test_establishment.html">clean_establishment_introduced()</a></code> <code><a href="test_establishment.html">clean_establishment_managed()</a></code>
 
         </dt>
         <dd>Tests: establishment means</dd>
 
         <dt>
 
-          <code><a href="test_age_equal.html">test_age_equal</a></code>
+          <code><a href="test_age_equal.html">clean_age_equal()</a></code>
 
         </dt>
         <dd>Test: fossil age range</dd>
 
         <dt>
 
-          <code><a href="test_outlier.html">test_outlier</a></code>
+          <code><a href="test_outlier.html">clean_outlier()</a></code>
 
         </dt>
         <dd>Test: geographic outliers</dd>
 
         <dt>
 
-          <code><a href="test_age_outlier.html">test_age_outlier</a></code>
+          <code><a href="test_age_outlier.html">clean_age_outlier()</a></code>
 
         </dt>
         <dd>Test: fossil age outliers</dd>
 
         <dt>
 
-          <code><a href="test_spatiotemporal_outlier.html">test_spatiotemporal_outlier</a></code>
+          <code><a href="test_spatiotemporal_outlier.html">clean_spatiotemporal_outlier()</a></code>
 
         </dt>
         <dd>Test: fossil outliers in space and time</dd>
 
         <dt>
 
-          <code><a href="test_age_range_outlier.html">test_age_range_outlier</a></code>
+          <code><a href="test_age_range_outlier.html">clean_age_range_outlier()</a></code>
 
         </dt>
         <dd>Test: fossil age-range outliers</dd>
 
         <dt>
 
-          <code><a href="test_dataset_ddmm.html">test_dataset_ddmm</a></code>
+          <code><a href="test_dataset_ddmm.html">clean_dataset_ddmm()</a></code>
 
         </dt>
         <dd>Test: degree-minute conversion errors in a dataset</dd>
 
         <dt>
 
-          <code><a href="test_dataset_rounded.html">test_dataset_rounded</a></code>
+          <code><a href="test_dataset_rounded.html">clean_dataset_rounded()</a></code>
 
         </dt>
         <dd>Test: rasterised datasets</dd>
 
         <dt>
 
-          <code><a href="test_range.html">test_range</a></code>
+          <code><a href="test_range.html">clean_range()</a></code>
 
         </dt>
         <dd>Test: outside the species range</dd>
 
         <dt>
 
-          <code><a href="test_aohi.html">test_aohi</a></code>
+          <code><a href="test_aohi.html">clean_aohi()</a></code>
 
         </dt>
         <dd>Test: artificial hotspots</dd>
 
         <dt>
 
-          <code><a href="test_habitat.html">test_habitat</a></code>
+          <code><a href="test_habitat.html">clean_sea_nonmarine()</a></code> <code><a href="test_habitat.html">clean_land_marine()</a></code>
 
         </dt>
         <dd>Tests: habitat at sea and on land</dd>
@@ -284,6 +284,13 @@
 
 
       <dl><dt>
+
+          <code><a href="keep_unflagged.html">keep_unflagged()</a></code>
+
+        </dt>
+        <dd>Keep the records no test flagged</dd>
+
+        <dt>
 
           <code><a href="tally_flags.html">tally_flags()</a></code>
 

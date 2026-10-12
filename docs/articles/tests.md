@@ -6,8 +6,10 @@ needs, and which arguments control its behaviour. It covers:
 - Eleven coordinate tests adapted from
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
   (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)). Their
-  buffers use CoordinateCleaner’s defaults. The article *Coming from
-  CoordinateCleaner* explains differences in their results.
+  buffers use CoordinateCleaner’s defaults. The article [Compatibility
+  with
+  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
+  explains differences in their results.
 
 - Eight additional tests using fields from the Global Biodiversity
   Information Facility (GBIF).
@@ -17,22 +19,22 @@ needs, and which arguments control its behaviour. It covers:
 
 The remaining tests are covered in separate articles:
 
-- Four fossil tests: *Fossil records*.
+- Four fossil tests: [Cleaning fossil
+  records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md).
 
-- Geographic outliers, two dataset tests, and `aohi`: *Outliers and
-  dataset tests*.
+- Geographic outliers, two dataset tests, and `aohi`: [Outliers and
+  dataset
+  tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.md).
 
-- Species ranges (`range`): *Custom gazetteers*.
+- Species ranges (`range`): [Using custom
+  gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md).
 
 Each test also has its own help page, such as
 [`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html)
 and
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html).
-
-``` r
-
-library(OccurrenceCleaner)
-```
+Installation is covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ## The flag word
 
@@ -44,6 +46,8 @@ fields it needs and its
 counterpart:
 
 ``` r
+
+library(OccurrenceCleaner)
 
 knitr::kable(flag_tests()[, c("bit", "test", "definition", "needs", "source", "equivalent")])
 ```
@@ -89,8 +93,8 @@ attr(flag_tests(), "layout_version")
 
 Tests with an entry in the `equivalent` column follow
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-record tests and default buffers. Differences are documented in [Coming
-from
+record tests and default buffers. Differences are documented in
+[Compatibility with
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md).
 The remaining tests use GBIF’s `issue`, `basisOfRecord` and
 `establishmentMeans` fields, or compare the land polygons with the
@@ -161,8 +165,9 @@ f[, c("decimalLongitude", "decimalLatitude", "flag_invalid", "flag_zero", "flag_
 A record that fails `invalid` gets no other spatial flag: there is no
 point to test, so `zero` and `sea` stay `FALSE` for the second to fourth
 rows. CoordinateCleaner instead returns `NA` or “clean” for such rows
-depending on the test; the comparison article lists the cases. The
-boundary values (-180, -90) are valid.
+depending on the test; [Compatibility with
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
+lists the cases. The boundary values (-180, -90) are valid.
 
 ## Zero and equal coordinates: `zero`, `equal`
 
@@ -203,8 +208,9 @@ flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 0))$flag_zero
 
 With `zero = 0` only exact zeros are flagged, which is what
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-does in practice; the comparison article explains why its documented
-0.5-degree buffer is not applied there.
+does in practice; [Compatibility with
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
+explains why its documented 0.5-degree buffer is not applied there.
 
 ## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
 
@@ -499,22 +505,49 @@ cbind(issue = x$issue, f[paste0("flag_", iss)])
 #> 6            FALSE           FALSE              FALSE
 ```
 
-The groups hold these GBIF issue names:
+Each test flags a record if its GBIF `issue` field contains any of the
+names listed below.
 
-| test | GBIF issues |
-|:---|:---|
-| issue_coordinate | COORDINATE_INVALID, COORDINATE_OUT_OF_RANGE, COORDINATE_REPROJECTION_FAILED, COORDINATE_REPROJECTION_SUSPICIOUS, COORDINATE_UNCERTAINTY_METERS_INVALID, COORDINATE_PRECISION_INVALID, GEODETIC_DATUM_INVALID, CONTINENT_COORDINATE_MISMATCH, COUNTRY_COORDINATE_MISMATCH, PRESUMED_SWAPPED_COORDINATE, PRESUMED_NEGATED_LONGITUDE, PRESUMED_NEGATED_LATITUDE, ZERO_COORDINATE |
-| issue_taxon | TAXON_MATCH_FUZZY, TAXON_MATCH_HIGHERRANK, TAXON_MATCH_NONE, TAXON_MATCH_AGGREGATE |
-| issue_date | RECORDED_DATE_INVALID, RECORDED_DATE_UNLIKELY, RECORDED_DATE_MISMATCH |
-| issue_rounded | COORDINATE_ROUNDED |
+**`issue_coordinate`**
 
-Issues that record an assumption GBIF made without changing the data,
-such as `GEODETIC_DATUM_ASSUMED_WGS84`, are in no group. `issue_rounded`
-is kept apart from `issue_coordinate` because rounding is a precision
-question: GBIF sets `COORDINATE_ROUNDED` when it rounds coordinates
-given with more than five decimals, so the flag says nothing about
-whether the record is placed correctly, and a precision threshold is
-usually better taken from `coordinateUncertaintyInMeters`.
+- `COORDINATE_INVALID`
+- `COORDINATE_OUT_OF_RANGE`
+- `COORDINATE_REPROJECTION_FAILED`
+- `COORDINATE_REPROJECTION_SUSPICIOUS`
+- `COORDINATE_UNCERTAINTY_METERS_INVALID`
+- `COORDINATE_PRECISION_INVALID`
+- `GEODETIC_DATUM_INVALID`
+- `CONTINENT_COORDINATE_MISMATCH`
+- `COUNTRY_COORDINATE_MISMATCH`
+- `PRESUMED_SWAPPED_COORDINATE`
+- `PRESUMED_NEGATED_LONGITUDE`
+- `PRESUMED_NEGATED_LATITUDE`
+- `ZERO_COORDINATE`
+
+**`issue_taxon`**
+
+- `TAXON_MATCH_FUZZY`
+- `TAXON_MATCH_HIGHERRANK`
+- `TAXON_MATCH_NONE`
+- `TAXON_MATCH_AGGREGATE`
+
+**`issue_date`**
+
+- `RECORDED_DATE_INVALID`
+- `RECORDED_DATE_UNLIKELY`
+- `RECORDED_DATE_MISMATCH`
+
+**`issue_rounded`**
+
+- `COORDINATE_ROUNDED`
+
+`GEODETIC_DATUM_ASSUMED_WGS84` records GBIF’s assumption about the
+coordinate reference system. It is excluded from these groups.
+
+Rounding has its own test so it can be considered separately when
+choosing a cleaning rule. GBIF sets `COORDINATE_ROUNDED` when it rounds
+coordinates to five decimal places. To filter by the reported
+uncertainty in a record’s location, use `coordinateUncertaintyInMeters`.
 
 ## Basis of record and establishment means
 
@@ -550,22 +583,33 @@ them. The flag is there so the choice is made in the rule.
 
 ## Choosing columns
 
-Each test reads only the fields in its `needs` column, and only those
-fields have to exist.
+Use
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
-names them; the defaults are Darwin Core terms, matched exactly first
-and then case-insensitively:
+to map your column names to the fields a test needs. Here, `X` and `Y`
+hold longitude and latitude, and `taxon` holds the species:
 
 ``` r
 
 x <- data.frame(taxon = "a", X = 16.37, Y = 48.21)
-flag_occurrences(x, tests = c("capital", "duplicate"),
-                 columns = occ_columns(lon = "X", lat = "Y", species = "taxon"))$flags
+
+flag_occurrences(
+  x,
+  tests = c("capital", "duplicate"),
+  columns = occ_columns(lon = "X", lat = "Y", species = "taxon")
+)$flags
 #> [1] 8
 ```
 
-A test whose field is missing stops with an error that names the column,
-so a misspelt column never silently skips a test.
+By default,
+[`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
+uses Darwin Core names such as `decimalLongitude`, `decimalLatitude`,
+and `species`. It looks for an exact match first, then tries a
+case-insensitive match.
+
+The `needs` column in the test table lists the fields each test
+requires. An explicitly requested test raises an error if a required
+column is missing. When `tests` is omitted, the package selects the
+tests supported by the available columns.
 
 ## References
 

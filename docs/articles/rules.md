@@ -23,14 +23,9 @@ dataset, then applies a chosen rule:
     with `by` and `bins`.
 
 4.  Select records using the chosen rule with
-    [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
+    [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md).
 
 ## Example
-
-``` r
-
-library(OccurrenceCleaner)
-```
 
 ### Example records
 
@@ -40,6 +35,8 @@ belongs to one kingdom, and each record has a year and the GBIF fields a
 download carries. Coordinates are rounded to four decimals.
 
 ``` r
+
+library(OccurrenceCleaner)
 
 set.seed(42)
 n <- 3000
@@ -373,13 +370,15 @@ issue
 definition](https://gbif.github.io/gbif-api/apidocs/org/gbif/api/vocabulary/OccurrenceIssue.html#COORDINATE_ROUNDED)).
 A precision threshold can be taken from coordinate uncertainty instead.
 
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+keeps the records that carry no flag from the rule.
 [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-returns `TRUE` for every record carrying at least one test of the rule,
-so the cleaned table is the complement.
+gives the logical vector behind it, `TRUE` for every record carrying at
+least one test of the rule.
 
 ``` r
 
-clean <- f[!has_flag(f$flags, rules$coordinatecleaner), ]
+clean <- keep_unflagged(f, rules$coordinatecleaner)
 nrow(clean)
 #> [1] 2846
 ```
@@ -412,7 +411,8 @@ adds its outlier test and draws the sea test from the 1:50 million land,
 while
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
 uses the 1:110 million land and its own gazetteers; `land_scale = 50`
-and `reference = "CoordinateCleaner"` align the last two. [Coming from
+and `reference = "CoordinateCleaner"` align the last two. [Compatibility
+with
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
 maps the remaining arguments.
 

@@ -16,16 +16,14 @@ options(knitr.kable.NA = "")
 
 This article runs the whole cleaning workflow on a table shaped like a GBIF download: flag every record with all the tests its columns allow, look at what each test caught, and then compare several cleaning rules over the same flags before choosing one. The data are simulated so that every error is known, which makes it possible to check that each test catches what it should and nothing else. Installation is covered in [Get started](OccurrenceCleaner.html).
 
-```{r setup, eval = TRUE, message = FALSE}
-library(OccurrenceCleaner)
-library(ggplot2)
-```
-
 ## Example data
 
 GBIF's simple-format downloads and the Parquet snapshot hold the Darwin Core terms in lower case (`decimallongitude`, `countrycode`, `basisofrecord`, ...). The column matching in `occ_columns()` is case-insensitive, so these names are found without renaming. The simulated table has 2,000 clean records spread over the interiors of five European countries, each with the right country code:
 
 ```{r data-clean}
+library(OccurrenceCleaner)
+library(ggplot2)
+
 set.seed(42)
 boxes <- data.frame(code = c("AT", "DE", "FR", "ES", "PL"),
                     lon0 = c(13.0, 9.0, 1.0, -6.0, 17.0), lon1 = c(15.5, 12.0, 4.0, -4.5, 21.0),
@@ -251,17 +249,17 @@ knitr::kable(t_u[, c("coordinateuncertaintyinmeters_bin", "n",
 A threshold on uncertainty is then a filter on the raw column next to the rule, for example keeping records with a stated uncertainty of at most 1 km:
 
 ```{r cut}
-keep <- !has_flag(f$flags, rules$coordinatecleaner_country) &
-  !is.na(f$coordinateuncertaintyinmeters) & f$coordinateuncertaintyinmeters <= 1000
-c(records = nrow(f), kept = sum(keep))
+kept <- keep_unflagged(f, rules$coordinatecleaner_country)
+kept <- kept[which(kept$coordinateuncertaintyinmeters <= 1000), ]
+c(records = nrow(f), kept = nrow(kept))
 ```
 
 ## The cleaned table
 
-Applying a rule is a single subset. The flags stay attached, so a later analysis can still tell which tests the kept records passed and can tighten the rule without rerunning anything:
+Applying a rule is one call to `keep_unflagged()`. The flags stay attached, so a later analysis can still tell which tests the kept records passed and can tighten the rule without rerunning anything:
 
 ```{r apply}
-clean <- f[!has_flag(f$flags, rules$wild), ]
+clean <- keep_unflagged(f, rules$wild)
 nrow(clean)
 table(clean$truth)
 ```
@@ -270,7 +268,7 @@ The `wild` rule keeps 1,998 of the 2,000 clean records and removes every injecte
 
 ## Practical guidance
 
-- **Run every test the columns allow.** `flag_occurrences()` does so without `tests`, and `test_plan()` shows what did not run and why. The pass over the records is the expensive step; rules are a bit-mask query afterwards. On an AMD Ryzen 7 5700G the nine CoordinateCleaner tests that need only coordinates and a species took 1.9 s for one million records in memory (see the timings in [Coming from CoordinateCleaner](coordinatecleaner.html#speed)).
+- **Run every test the columns allow.** `flag_occurrences()` does so without `tests`, and `test_plan()` shows what did not run and why. The pass over the records is the expensive step; rules are a bit-mask query afterwards. On an AMD Ryzen 7 5700G the nine CoordinateCleaner tests that need only coordinates and a species took 1.9 s for one million records in memory (see the timings in [Compatibility with CoordinateCleaner](coordinatecleaner.html#timings)).
 
 - **`country_mismatch` needs a country code and flags records without one.** A record with no code, or one that falls at sea, is flagged, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/). In a GBIF table where many records lack `countrycode`, that test alone can flag a large share; the tally per test shows it before it goes into a rule.
 

@@ -1,36 +1,36 @@
 # Outliers and dataset tests
 
-Six tests compare a record with the other records of its species or its
-dataset instead of with reference data: `outlier` (geographic outliers
-within a species), the three fossil outlier tests, and the two dataset
-tests `dataset_ddmm` and `dataset_rounded`, which look for conversion
-and gridding errors in a dataset’s coordinates as a whole. They are
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+Six tests compare records within a species or dataset rather than
+against external reference data. These include `outlier`, which
+identifies geographic outliers within a species; three fossil outlier
+tests; and `dataset_ddmm` and `dataset_rounded`, which detect coordinate
+conversion and gridding errors across a dataset. They correspond to
+CoordinateCleaner’s
 [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html),
 [`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html),
 [`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html),
 [`cf_range()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_range.html),
-[`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html)
+[`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html),
 and
 [`cd_round()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html).
-Because a group has to be complete before any of its records can be
-judged, these tests run in a pass of their own over the whole input
-before the record tests. This article runs the geographic and dataset
-tests on a simulated table of alpine plants, adds the artificial-hotspot
-test `aohi`, and shows how the group pass works on streamed input. The
-fossil outlier tests are shown in [Cleaning fossil
-records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md).
-Installation is covered in [Get
+
+Unlike record-level tests, these tests need all records in a group
+before they can evaluate any of them. They therefore run in a separate
+pass over the input, before the record-level tests.
+
+This article demonstrates the geographic and dataset tests using
+simulated alpine plant records. It also introduces the
+artificial-hotspot test `aohi` and explains how the group pass handles
+streamed input. The fossil tests are covered in [Cleaning fossil
+records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md),
+and installation instructions are available in [Get
 started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
-
-``` r
-
-library(OccurrenceCleaner)
-```
 
 ## Example data
 
 ``` r
+
+library(OccurrenceCleaner)
 
 set.seed(11)
 sp <- data.frame(species = c("Erica carnea", "Gentiana verna", "Pinus mugo", "Salix retusa"),
@@ -43,15 +43,17 @@ x$datasetKey <- sample(c("survey-a", "survey-b", "herbarium"), nrow(x), TRUE)
 x$truth <- "clean"
 ```
 
-The table has 961 records of four alpine plants around the Eastern Alps,
-spread over three datasets; *Salix retusa* has only 6 records. Into it
-go four herbarium records placed on the wrong continent or far outside
-the species’ area (New York, Sydney, Paris, Moscow), one more *Pinus
-mugo* record inside its area as a control, and two datasets of 300
-records each with the errors the dataset tests look for: an atlas whose
-coordinates were converted from degrees and minutes as if they were
-decimals, so that no decimal part exceeds .59, and an atlas published on
-the centres of a quarter-degree grid:
+The table contains 961 records of four alpine plant species from the
+Eastern Alps, distributed across three datasets. *Salix retusa* is
+represented by only six records. We add four herbarium records far
+outside their species’ ranges (New York, Sydney, Paris and Moscow), plus
+one *Pinus mugo* record within its range as a control.
+
+We also add two datasets of 300 records each to test for systematic
+coordinate errors. In the first, coordinates were incorrectly converted
+from degrees and minutes to decimal degrees, leaving no fractional part
+above .59. In the second, coordinates fall on the centres of a
+quarter-degree grid.
 
 ``` r
 
@@ -91,20 +93,24 @@ table(truth = f$truth, outlier = f$flag_outlier)
 #>   grid    300    0
 ```
 
-Three of the four far records are flagged and no clean record is. For
-each species the test takes every record’s mean distance to the species’
-other records and flags those above Q75 + 5 x IQR of these means,
+Three of the four distant records are flagged, while no clean records
+are flagged. For each species, the test calculates every record’s mean
+distance to all other records of that species. Records exceeding Q75 + 5
+× IQR of these mean distances are flagged, following
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-default. The *Gentiana verna* record in Paris stays below that fence:
-the simulated *Gentiana* records spread over about 2 degrees of
-longitude around 10 E, so a point 7.6 degrees west raises the mean
-distance less than the fence allows. *Salix retusa*, with 6 distinct
-points, is below `min_occs = 7` and is not tested.
+default.
 
-The fence and the statistic are set through `settings`. With
-`method = "mad"` the fence is median + 5 x MAD, with
-`method = "distance"` a record is flagged when its nearest other record
-of the species is more than `tdi` km away (1000 km by default):
+The *Gentiana verna* record in Paris is not flagged. The simulated
+*Gentiana* records span about 2 degrees of longitude around 10° E, so
+the Paris record, at 2.4° E, does not increase the mean distance enough
+to exceed the threshold. *Salix retusa* is not tested because its six
+distinct locations fall below the default `min_occs = 7`.
+
+The threshold and distance statistic can be changed through `settings`.
+With `method = "mad"`, the threshold is the median + 5 × MAD. With
+`method = "distance"`, a record is flagged if its nearest other record
+of the same species is more than `tdi` kilometres away (1000 km by
+default):
 
 ``` r
 
@@ -121,12 +127,13 @@ knitr::kable(m)
 | far   |        3 |   4 |        3 |
 | grid  |        0 |   3 |        0 |
 
-The MAD fence is the stricter one here: it catches all four far records
-but also 15 records inside the species’ areas, most of them in the
-converted atlas, whose coordinates are shifted towards the south-west of
-each degree square. The distance method flags the same three far records
-as the quantile fence; the Paris record is within 1000 km of *Gentiana*
-records in the Alps. The map shows the default result:
+The MAD threshold is the stricter one here: it catches all four far
+records but also 15 records inside the species’ areas, most of them in
+the converted atlas, whose coordinates are shifted towards the
+south-west of each degree square. The distance method flags the same
+three far records as the quantile threshold; the Paris record is within
+1000 km of *Gentiana* records in the Alps. The map shows the default
+result:
 
 ``` r
 
@@ -181,15 +188,13 @@ big <- data.frame(species = "Rhododendron ferrugineum",
                   decimalLatitude = c(rnorm(15000, 46.8, 0.6), 40.4))
 system.time(fb <- flag_occurrences(big, tests = "outlier"))
 #>    user  system elapsed 
-#>    0.03    0.00    0.03
+#>    0.04    0.00    0.03
 which(fb$flag_outlier)
 #> [1] 15001
 ```
 
-The Madrid record is the only one flagged. CoordinateCleaner 3.0.1
-computes the same cell statistics but never flags a record on this path,
-because its mapping from the outlier cells back to records returns none;
-[Coming from
+The Madrid record is the only one flagged. CoordinateCleaner 3.0.1 flags
+no records on this path; [Compatibility with
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
 shows the comparison.
 
@@ -239,15 +244,23 @@ ggplot(dec, aes(lon, lat)) +
 
 ![](outliers_files/figure-html/decimals-1.svg)
 
-In a dataset of correct decimal coordinates the decimal parts fill the
-unit square. After a degree-minute conversion they stay below .6 on both
-axes, so the square’s upper and right bands are empty; `dataset_ddmm`
-tests that with a binomial test on a 1000 x 1000 grid of decimal values.
-On a grid the decimals take a few values only, and `dataset_rounded`
-finds the regular spacing in the autocorrelation of the coordinate
-histograms of each axis. The degree-minute atlas is not on a grid and
-the gridded atlas has decimal parts of .125, .375, .625 and .875 on both
-axes, so each fails one test only.
+The two tests look for different patterns in a dataset’s coordinates.
+
+`dataset_ddmm` detects incorrect conversions from degrees and minutes to
+decimal degrees. In correctly converted coordinates, the decimal part
+can range from 0 to 1. With the conversion error, it never exceeds 0.59.
+The test looks for this missing range using a binomial test on a 1000 ×
+1000 grid.
+
+`dataset_rounded` detects coordinates placed on a regular grid. Instead
+of taking many different values, the coordinates occur at fixed
+intervals. The test identifies this spacing through the autocorrelation
+of latitude and longitude histograms.
+
+In our example, the degree-minute atlas has the conversion error but no
+regular grid. The gridded atlas has decimal parts of 0.125, 0.375, 0.625
+and 0.875 on both axes, but no conversion error. Each atlas is therefore
+flagged by only one test.
 
 ## Artificial hotspots
 
@@ -291,28 +304,37 @@ knitr::kable(t[, c("datasetKey", "n", "flagged_outlier", "flagged_dataset_ddmm",
 | survey-a | 326 | 0 | 0 | 0 | 0 | 0 | 326 |
 | survey-b | 329 | 0 | 0 | 0 | 0 | 0 | 329 |
 
-The two atlases are removed whole. The herbarium loses 6 records: the 3
-outliers and 4 records near inventory points, one of them both. The New
-York record lies 5 km from Central Park, a bird hotspot. The Paris
-record that the outlier test kept lies 3.7 km from the centre of a 10 km
-grid square used for French plant records, and two clean records in
-Bavaria lie near centres of the German floristic mapping grid. The
-`aohi` flags in the atlases are of the same kind, so whether to keep
-them depends on whether a record at a grid centre is acceptable for the
-analysis.
+Both atlases are removed entirely. The herbarium loses six records:
+three geographic outliers and four records near known artificial
+hotspots, with one record flagged by both tests.
+
+The New York record lies 5 km from Central Park, a bird-recording
+hotspot. The Paris record, which passed the outlier test, lies 3.7 km
+from the centre of a French 10 km mapping grid cell. Two otherwise clean
+records in Bavaria are also flagged because they lie near centres of the
+German floristic mapping grid.
+
+The `aohi` flags in the atlases reflect similar patterns. Whether these
+records should be removed depends on whether grid-centre coordinates are
+suitable for the analysis.
 
 ## Streamed input
 
-On an on-disk table the group pass reads every input file before the
-record pass: once to count records per species and to collect the
-coordinate ranges of each dataset, and once more to collect the records
-of each group. Small species and fossil taxa go through hashed bucket
-files in the output directory, large species are counted on the grid,
-and datasets are summarised as they stream, so memory does not grow with
-the input. A species or dataset spread over several files is tested as
-one group. The result is kept in `group_result.rds` in the output
-directory, so a resumed run does not repeat the group pass. The same
-table split into three files gives the same tally as the data frame:
+For input stored across multiple files, the group pass runs before the
+record-level tests. It reads all files twice. The first pass counts
+records per species and determines the coordinate range of each dataset.
+The second collects the information needed to test each group.
+
+To limit memory use, small species groups and fossil taxa are written to
+hashed bucket files, large species are counted on a grid, and dataset
+summaries are updated as records are read. This avoids loading the
+entire input into memory.
+
+Records of the same species or dataset are tested together, even when
+spread across files. The results are saved in `group_result.rds` in the
+output directory, so a resumed run can skip the group pass. Splitting
+our example table into three files produces the same tally as processing
+it as a data frame:
 
 ``` r
 
@@ -341,10 +363,10 @@ draws.
   grouped tests on the table that goes into the analysis, after
   taxonomic filtering, not on a larger extract.
 
-- **The quantile fence is the conservative default.** At Q75 + 5 x IQR
-  it flagged three of four far records and no clean one here; the MAD
-  fence flagged all four plus 15 records inside the species’ areas.
-  `mltpl` moves either fence.
+- **The quantile threshold is the conservative default.** At Q75 + 5 x
+  IQR it flagged three of four far records and no clean one here; the
+  MAD threshold flagged all four plus 15 records inside the species’
+  areas. `mltpl` moves either threshold.
 
 - **Species below `min_occs` distinct points are not tested.** With
   fewer than 7 points the spread of the distances says little;

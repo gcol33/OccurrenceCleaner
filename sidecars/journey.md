@@ -66,7 +66,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### readme.steps  [A3]  (list)
 - idea: flag, choose a rule, compare
 - job: Names the three verbs in the order a user calls them.
-- leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()` and what each step does
+- leaves: `flag_occurrences()`, `keep_unflagged()`, `tally_flags()` and what each step does
 
 ### readme.flag-tests  [A4]
 - idea: what runs on a table; the catalog
@@ -95,7 +95,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.rules  [A3]  (code)
 - idea: a flagged record may be valid; the reader chooses; two rules compared; kept records
-- job: Says a flagged record may still be valid (a real observation within 10 km of a capital), so you choose the tests; gives the SDM rule (fossil and living specimens plus coordinate problems) as one choice among others; applies one rule with `has_flag()`, compares two with `tally_flags()` and keeps the records the mild rule passes, output shown.
+- job: Says a flagged record may still be valid (a real observation within 10 km of a capital), so you choose the tests; gives the SDM rule (fossil and living specimens plus coordinate problems) as one choice among others; marks one rule's records with `has_flag()`, compares two with `tally_flags()` and keeps the records the mild rule passes with `keep_unflagged()`, output shown.
 - leaves: rules are chosen after flagging, compared on the same flags, and end in the table for the analysis
 
 ### readme.rules-link  [A3]
@@ -181,7 +181,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### gs.steps  (list)
 - idea: flag, inspect, keep, compare
 - job: Lists the four steps with their functions.
-- leaves: `flag_occurrences()`, `print()`/`summary()`, `has_flag()`, `tally_flags()`
+- leaves: `flag_occurrences()`, `print()`/`summary()`, `keep_unflagged()`, `tally_flags()`
 
 ### gs.install  (section)
 
@@ -207,7 +207,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.keep  [A3]  (section)
 - idea: a rule; any listed test; retained records
-- job: Defines a cleaning rule, removes records flagged by any test of the rule with `has_flag()`, says it stops when a named test was not run, and prints the retained records.
+- job: Defines a cleaning rule, keeps the records no test of the rule flags with `keep_unflagged()`, says it stops when a named test was not run, and prints the retained records.
 - leaves: `cleaned`, one copy of each duplicate kept
 
 ### gs.reference-tests  [A1 A3 A5]  (section)
@@ -255,78 +255,62 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Labels each next article by its job.
 - leaves: where each topic lives
 
-## Coming from CoordinateCleaner
+## Compatibility with CoordinateCleaner
+
+### cc.credit  [A1]
+- idea: what CoordinateCleaner supplies
+- job: Credits CoordinateCleaner with the test definitions, buffers, reference sources, outlier statistics, dataset and fossil tests, and states its standing (rOpenSci review, the cited reference).
+- leaves: the tests here come from CoordinateCleaner; it is the established reference
+
+### cc.purpose  [A2 A3]
+- idea: why this package exists, and its standing
+- job: Says what the package adds in the reader's terms (large tables, flags kept per record, rules chosen afterwards) and that it is new and reviewed only by its own test suite.
+- leaves: the use case; the burden of proof is on this package
 
 ### cc.opener  [A1]
-- idea: same tests, flags; what this article covers
-- job: States the relation and lists what the article covers.
-- leaves: the article's scope; CoordinateCleaner is only suggested; links Get started for installation
+- idea: what the article covers
+- job: States the article's scope (agreement, settings, differences, mapping, how agreement is tested, timings); CoordinateCleaner is only suggested; links Get started for installation.
+- leaves: the reader knows the article's order
 
-### cc.mapping  [A1]
-- idea: one verb; functions become test names, arguments become list entries
-- job: Says there is one flagging function, that each CoordinateCleaner test function is a test name in `tests` and its arguments are list-argument entries, and that no `cc_*` function is masked.
-- leaves: both packages can be attached together
+### cc.both  [A1]  (section)
+- idea: clean_coordinates and flag_occurrences on the same records, matched reference
+- job: Introduces `clean_coordinates(value = "spatialvalid")` as the matching interface and the opposite sign; generates the records; runs seven tests in both with `reference = "CoordinateCleaner"`; tabulates flagged counts and agreement; names the two tests that differ.
+- leaves: agreement per test on matched settings; where the two differences come from
 
-### cc.mapping-tests  [A1]  (table)
-- idea: function, clean_*() name, test name
-- job: Maps each CoordinateCleaner test function and its name in `clean_coordinates()`, `clean_fossils()` or `clean_dataset()` to the test here.
-- leaves: the `tests` vocabulary of both packages
+### cc.remove  [A1 A3]  (subsection)
+- idea: removing records, in both packages
+- job: Shows the `cc_*()` chain and the `clean_<test>()` chain, says both apply each test to the remaining records and give the same result for record tests; shows flag once + `keep_unflagged()` and a second rule from the same flags; says a grouped test in a chain depends on earlier removals.
+- leaves: the cleaning functions and `keep_unflagged()`; when a chain and one flagging call differ
 
-### cc.validity  [A1]
-- idea: validity is a named test that does not stop the run
-- job: Says `clean_coordinates()` runs an unnamed coordinate check first and stops on failure, while `invalid` here is one test among the others.
-- leaves: invalid records do not stop a run here
+### cc.tested  [A1]  (section)
+- idea: how agreement is tested and what it shows
+- job: Describes the equivalence suite against 3.0.1 and the GitHub version, the streamed duplicate check; scopes it (agreement on the samples, not suitability).
+- leaves: the evidence behind the agreement claim and its limit
 
-### cc.mapping-args  [A1]  (table)
-- idea: arguments and output
-- job: Maps the entry functions, buffer, option, reference, land-scale, duplicate and `value` arguments to their counterparts here.
-- leaves: `buffers`, `settings`, `gazetteers`, `land_scale` (110 vs 50), `duplicate_by`, flags subset instead of `value = "clean"`
+### cc.own-data  [A1 A6]  (subsection)
+- idea: checking agreement on your own records
+- job: Lists the settings to match (reference, land scale, buffers), the grouped-test caveat, and where to report a disagreement.
+- leaves: the reader can reproduce the comparison on their data
 
-### cc.pipe  [A1 A3]  (section)
-- idea: filter-as-you-go vs flag and subset
-- job: Shows a dropping `cc_*()` pipe and the same cleaning as one flag call and one subset.
-- leaves: the rule can be changed without flagging again
+### cc.mapping  [A1]  (section, tables)
+- idea: function and argument mapping
+- job: Says there is one flagging function, that each test has a `clean_<test>()` that removes what it flags, how that relates to CoordinateCleaner's `clean_*()` wrappers, and that no name is shared; maps tests, arguments and output, and the functions around the tests; `as_spatialvalid()`.
+- leaves: the vocabulary of both packages; both can be attached
 
-### cc.clean-coordinates  [A1]
-- idea: clean_coordinates is closer; TRUE means opposite
-- job: Names `clean_coordinates()` as the closer equivalent and warns that its TRUE means pass.
-- leaves: the sign convention differs
+### cc.differ  [A1]  (section)
+- idea: design differences, then behaviour of CoordinateCleaner 3.0.1
+- job: Sorts the differences: design (buffer circles, invalid coordinates, random age draws, dataset key, country codes, gazetteers) and 3.0.1 behaviour departing from its documentation or stopping (zero buffer, France/Norway/Kosovo, raster outliers, small datasets), each with the version.
+- leaves: every case where flags can differ, and which kind it is
 
-### cc.both  [A1]  (code)
-### cc.agreement  [A1]  (table)
-### cc.agreement-note  [A1]
-- idea: where they differ and that it is tested
-- job: Names the two tests that differ in the example and says the suite enforces the documented differences.
-- leaves: the reader expects the next section
+### cc.timings  [A2]  (section)
+- idea: timings with their scope
+- job: Says what the timings measure and what they do not; method, machine, versions; one table per input size; the largest differences and the two tests where CoordinateCleaner is faster; the mechanism; the shared tests in one call; benchmark script.
+- leaves: the speed per test, scoped to synthetic records on one machine
 
-### cc.buffer-circles  [A1]
-### cc.zero-buffer  [A1]
-### cc.country-codes  [A1]
-### cc.invalid  [A1]
-### cc.large-outliers  [A1 A6]
-### cc.age-draws  [A1 A6]
-### cc.small-datasets  [A1 A6]
-### cc.streamed-duplicates  [A1 A2]
-### cc.gazetteers  [A1 A5]
-- idea: own gazetteers from CC's sources; extension points
-- job: Says the default gazetteers are rebuilt from CoordinateCleaner's sources (listed in the reference-data article), that extension points are used by default, and how to restrict a test to CoordinateCleaner's sources.
-- leaves: `extension` TRUE points are used by default; `g[!g$extension, ]` through `gazetteers` restricts to CC's sources; `reference = "CoordinateCleaner"` reproduces its flags
-
-
-### cc.speed  [A2]  (section)
-- idea: timings per test at two sizes; method; where CoordinateCleaner is faster
-- job: States what is timed (seconds per call, lower is faster, both on CoordinateCleaner's reference points, fastest of three, single runs over 200 s, reference reading included, 0.01 s timer), the machine and versions; one table per input size (1e6, 1e7); names the largest differences and the two tests where CoordinateCleaner is faster; the mechanism (buffer polygons vs kd-tree) in its own paragraph; the default-tests timing on own reference data in its own subsection; chunked on-disk reading as a link; the benchmark script and results.
-- leaves: the speed per test and the benchmark script; no claim about input size beyond the link
-
-### cc.around-tests  [A1]  (section)
-- idea: every function has a counterpart; the functions around the tests
-- job: Says every CoordinateCleaner function has a counterpart and maps the ones around the tests: `cc_outl(sampling_thresh)`, `write_pyrate()`, plot, summary and the class check; explains why the sampling counts are a table and why `export_pyrate()` has its own name.
-- leaves: counts given as `gazetteers = list(sampling = ...)` are reproducible and recorded; both packages can be attached
-
-### cc.spatialvalid  [A1]  (code)
-- idea: code for spatialvalid runs on as_spatialvalid
-- job: Says `as_spatialvalid()` writes CoordinateCleaner's column names with TRUE for pass and the `spatialvalid` class, that its methods work on it, and that the tests compare it with `clean_coordinates()`; shows it on the side-by-side records.
-- leaves: a CoordinateCleaner script keeps working after the switch
+### cc.better-choice  [A1]  (section)
+- idea: when CoordinateCleaner is the better choice
+- job: States the standing difference and lists the cases (workflow already built on it and fast enough, live sampling counts, only `equal`/`duplicate`).
+- leaves: a fair basis for choosing
 
 ## The tests in detail (explanation, A4 home)
 
@@ -438,7 +422,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `plot(type = "map")`
 
 ### rules.apply  [A3]  (section)
-- idea: purpose, then complement of has_flag
+- idea: purpose, then keep_unflagged (has_flag as the vector behind it)
 - job: States the example's use (species map on a 10 km grid) and why `coordinatecleaner` fits it and duplicates may stay; lists tests other analyses add (duplicate key = species and coordinates); sources `COORDINATE_ROUNDED` to GBIF; applies the rule; shows a year and uncertainty cut with explicit missing-value handling; says which changes reuse `f` and which need reflagging; ends on what a comparison with `clean_coordinates()` must align (outlier test, `land_scale = 50`, `reference = "CoordinateCleaner"`).
 - leaves: the cleaned table; reuse condition for `f`
 
@@ -602,7 +586,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### out.opener  [A6]
 - idea: six grouped tests; group pass; what the article covers
-- job: Names the tests that compare a record with its species or dataset, their CoordinateCleaner functions and why they run in a pass of their own. Links Get started for installation.
+- job: Names the tests that compare a record with its species or dataset and their CoordinateCleaner functions; a second paragraph says why they run in a pass of their own; a third says what the article covers and links the fossil article and Get started.
 - leaves: the grouped tests; the fossil ones are in the fossil article
 
 ### out.data  [A6]  (section)
@@ -611,8 +595,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the `truth` column; `datasetKey`
 
 ### out.outlier  [A1 A6]  (section)
-- idea: quantile fence; min_occs
-- job: Flags geographic outliers with the default fence and explains the one miss and the untested small species.
+- idea: quantile threshold; min_occs
+- job: Flags geographic outliers with the default threshold and explains the one miss and the untested small species.
 - leaves: Q75 + 5 x IQR of mean distances; `min_occs`
 
 ### out.sampling  [A1 A6]
@@ -652,7 +636,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### out.guidance  [A6]  (section)
 - idea: five practical rules
-- job: Turns the article into recommendations on input scope, fences, small groups, dataset keys and the raster.
+- job: Turns the article into recommendations on input scope, thresholds, small groups, dataset keys and the raster.
 - leaves: run grouped tests on the analysis table
 
 ## Cleaning fossil records (how-to)
@@ -664,7 +648,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### fossil.steps  (list)
 - idea: flag, keep, cut, test, export
-- leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()`, the outlier tests, `export_pyrate()`
+- leaves: `flag_occurrences()`, `keep_unflagged()`, `tally_flags()`, the outlier tests, `export_pyrate()`
 
 ### fossil.data  [A3]  (section)
 - idea: nine synthetic records in PBDB columns, one case each
@@ -677,8 +661,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `age_equal` is a comparison, not a verdict on the age
 
 ### fossil.keep  [A3]  (section)
-- idea: one rule, has_flag on the flagged table
-- job: Removes records flagged by any test in `tests` with `has_flag(f, rule)`; says `has_flag()` stops when a named test was not run; says record 5 stays because a missing age carries no `age_equal` flag, and how to require both ages.
+- idea: one rule, keep_unflagged on the flagged table
+- job: Keeps the records no test in `tests` flags with `keep_unflagged(f, rule)`; says it stops when a named test was not run; says record 5 stays because a missing age carries no `age_equal` flag, and how to require both ages.
 - leaves: `kept`
 
 ### fossil.buffers  [A1]  (section)
@@ -717,8 +701,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ## Using custom gazetteers (how-to, A5)
 
 ### gaz.opener  [A5 A7]
-- idea: nine reference tests and the habitat tests; replace one layer
-- job: Says which tests use reference data and that `gazetteers` replaces the layer of single tests, as CoordinateCleaner's `ref` arguments do. Links Get started for installation; names sf as the extra package for the polygon examples.
+- idea: three kinds of reference data; replace one layer
+- job: Lists the three kinds of reference data (points, polygons, the genus habitat table). Says the package ships them except species ranges, that `reference = "CoordinateCleaner"` swaps in that package's tables, and that `gazetteers` replaces the layer of a single test, as CoordinateCleaner's `ref` arguments do. Names what the article covers, links Get started for installation and names sf as the extra package for the polygon examples.
 - leaves: what the article covers
 
 ### gaz.points  [A5]  (section)

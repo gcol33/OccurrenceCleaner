@@ -11,13 +11,13 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-This article flags a small set of species records, removes the records a chosen cleaning rule flags, and counts what two different rules exclude. It assumes basic R and data frames. The coordinate tests follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)), with the same definitions and default distances. The documented differences are listed in [Where the flags differ](coordinatecleaner.html#where-the-flags-differ).
+This article flags a small set of species records, removes the records a chosen cleaning rule flags, and counts what two different rules exclude. It assumes basic R and data frames. The coordinate tests follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)), with the same definitions and default distances. The documented differences are listed in [Where the flags differ](coordinatecleaner.html#where-the-results-differ).
 
 1. **Flag** the records with `flag_occurrences()`.
 
 2. **Inspect** the flags with `print()` and `summary()`.
 
-3. **Filter** out flagged records, using `has_flag()`.
+3. **Filter** out flagged records, using `keep_unflagged()`.
 
 4. **Compare** rules with `tally_flags()`.
 
@@ -30,15 +30,13 @@ pak::pak("gcol33/OccurrenceCleaner")
 
 Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
 
-```{r setup}
-library(OccurrenceCleaner)
-```
-
 ## Flagging a data frame
 
 The example has seven records of four tree species, each with an identifier. Coordinates are longitude and latitude in decimal degrees. The column names follow Darwin Core, the standard set of field names for biodiversity data.
 
 ```{r}
+library(OccurrenceCleaner)
+
 x <- data.frame(
   id = 1:7,
   species = c("Quercus robur", "Quercus robur", "Fagus sylvatica",
@@ -74,11 +72,11 @@ f$flag_duplicate
 
 ## Filtering records
 
-A cleaning rule is the set of tests whose flags exclude a record. Use `has_flag()` to remove records flagged by any test in the rule. `has_flag()` also checks that every named test was run on the flagged table, and stops with an error if one was not:
+A cleaning rule is the set of tests whose flags exclude a record. `keep_unflagged()` keeps the records that no test in the rule flags. It also checks that every named test was run on the flagged table, and stops with an error if one was not:
 
 ```{r}
 rule <- c("invalid", "zero", "duplicate")
-cleaned <- f[!has_flag(f, rule), ]
+cleaned <- keep_unflagged(f, rule)
 cleaned[, c("id", "species", "decimalLongitude", "decimalLatitude")]
 ```
 
@@ -265,4 +263,4 @@ The counts match the strict rule on the data frame above. On disk the `duplicate
 
 - [Reference data](reference-data.html): where the capitals, centroids, institutions and land polygons come from, their versions, and how the land scale changes the `sea` test.
 
-- [Coming from CoordinateCleaner](coordinatecleaner.html): how each function and argument maps across.
+- [Compatibility with CoordinateCleaner](coordinatecleaner.html): where the two packages agree, how that is tested, and where results differ.

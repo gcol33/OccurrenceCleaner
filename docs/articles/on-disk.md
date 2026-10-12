@@ -27,11 +27,6 @@ started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.
 
 ## Example
 
-``` r
-
-library(OccurrenceCleaner)
-```
-
 ### Example input
 
 Three files stand in for the parts of a snapshot. They are `.vtr` files,
@@ -41,6 +36,8 @@ same way. Each file has 3,000 records with GBIF’s lower-case column
 names, at random points in a box over western and central Europe:
 
 ``` r
+
+library(OccurrenceCleaner)
 
 set.seed(7)
 make_part <- function(n, offset) {
@@ -93,13 +90,13 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 2 of 2)
 #> group tests: duplicate: 64 bucket(s)
 #> group tests: outlier: 26 bucket(s)
-#> group tests: done [0.5 s]
+#> group tests: done [0.9 s]
 #> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpAxFN4C\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp21CvKl\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4

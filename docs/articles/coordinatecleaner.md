@@ -1,31 +1,252 @@
-# Coming from CoordinateCleaner
+# Compatibility with CoordinateCleaner
 
-OccurrenceCleaner runs the tests of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) with the
-same definitions and default settings, and writes the result as flags
-instead of filtering. This article maps each CoordinateCleaner function
-to its test here, runs both packages on the same records, lists every
-case where the flags differ and why, and names the parts of
-CoordinateCleaner that have no counterpart. The chunks that call
-CoordinateCleaner run only when it is installed; it is a suggested
-package, not a dependency. Installation is covered in [Get
+(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) defines
+the record tests this package runs. It sets out what each test looks
+for, its default buffer and the public sources of its reference points,
+together with the outlier statistics, the dataset tests for converted
+and rounded coordinates, and the fossil tests. It went through rOpenSci
+software peer review in 2018 and is the reference that methods sections
+cite for these tests.
+
+OccurrenceCleaner runs the same tests on tables of millions to billions
+of records, including a GBIF snapshot read from disk in chunks. It
+stores one flag per test next to each record, so you can choose which
+tests exclude a record after flagging and compare several such rules on
+one pass. It is a new package, first released in 2026, and has not been
+reviewed outside its own test suite.
+
+This article shows where the two packages agree, under which settings,
+and where their results change and why. It maps each CoordinateCleaner
+function to its counterpart, describes how agreement is tested and how
+to check it on your own records, and gives timings for the tests both
+packages run. The chunks that call CoordinateCleaner run only when it is
+installed; it is a suggested package, not a dependency. Installation is
+covered in [Get
 started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
+
+## Running both packages on the same records
+
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+runs several CoordinateCleaner tests in one call and, with
+`value = "spatialvalid"`, returns one logical column per test with every
+record kept.
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+returns the same layout: a `flag_<test>` column per test. The sign is
+opposite: CoordinateCleaner’s columns are `TRUE` for records that pass,
+the `flag_<test>` columns are `TRUE` for records that fail.
+
+Generate 4,000 records within 30 km of five capitals, then set 20 of
+them to (0, 0), 20 to equal longitude and latitude, and 10 to within 0.3
+degrees of (0, 0):
 
 ``` r
 
 library(OccurrenceCleaner)
+
+set.seed(3)
+caps <- cbind(lon = c(16.37, 2.35, -3.70, 13.40, 69.17), lat = c(48.21, 48.86, 40.42, 52.52, 34.53))
+k <- sample(5, 4000, TRUE)
+p <- geosphere::destPoint(caps[k, ], b = runif(4000, 0, 360), d = 30000 * sqrt(runif(4000)))
+x <- data.frame(species = sample(c("a", "b"), 4000, TRUE),
+                decimalLongitude = round(p[, 1], 4), decimalLatitude = round(p[, 2], 4))
+x[1:20, 2:3] <- 0
+x[21:40, 3] <- x[21:40, 2]
+x[41:50, 2:3] <- round(runif(20, -0.3, 0.3), 4)
 ```
+
+Run seven tests in both packages. `reference = "CoordinateCleaner"`
+reads that package’s own reference points at run time, so both test
+against the same points:
+
+``` r
+
+cc <- CoordinateCleaner::clean_coordinates(
+  x, lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
+  tests = c("capitals", "centroids", "equal", "gbif", "institutions", "zeros", "duplicates"),
+  value = "spatialvalid", verbose = FALSE)
+oc <- flag_occurrences(x, tests = c("invalid", "zero", "equal", "capital", "centroid",
+                                    "institution", "gbif_headquarters", "duplicate"),
+                       reference = "CoordinateCleaner")
+```
+
+Per test, the number of records each package flags and the share of
+records with the same verdict:
+
+``` r
+
+pairs <- c(.zer = "zero", .equ = "equal", .cap = "capital", .cen = "centroid",
+           .inst = "institution", .gbf = "gbif_headquarters", .dpl = "duplicate")
+agree <- vapply(names(pairs), function(cn)
+  mean((!cc[[cn]]) == oc[[paste0("flag_", pairs[[cn]])]], na.rm = TRUE), numeric(1))
+knitr::kable(data.frame(CoordinateCleaner = names(pairs), OccurrenceCleaner = pairs,
+                        flagged_cc = vapply(names(pairs), function(cn) sum(!cc[[cn]], na.rm = TRUE), 1),
+                        flagged_oc = vapply(pairs, function(t) sum(oc[[paste0("flag_", t)]]), 1),
+                        agreement = round(agree, 5)), row.names = FALSE)
+```
+
+| CoordinateCleaner | OccurrenceCleaner | flagged_cc | flagged_oc | agreement |
+|:------------------|:------------------|-----------:|-----------:|----------:|
+| .zer              | zero              |         20 |         30 |   0.99750 |
+| .equ              | equal             |         40 |         40 |   1.00000 |
+| .cap              | capital           |        435 |        436 |   0.99975 |
+| .cen              | centroid          |         29 |         29 |   1.00000 |
+| .inst             | institution       |          0 |          0 |   1.00000 |
+| .gbf              | gbif_headquarters |          0 |          0 |   1.00000 |
+| .dpl              | duplicate         |         18 |         18 |   1.00000 |
+
+Five of the seven tests give the same verdict on every record. `zero`
+differs for the 10 records near but not at (0, 0), and `capital` for
+records at the edge of the buffer; [Where the results
+differ](#where-the-results-differ) explains both.
+
+### Removing the flagged records
+
+CoordinateCleaner’s single-test functions return the records that pass
+by default (`value = "clean"`), so a chain of them removes records as it
+goes:
+
+``` r
+
+library(CoordinateCleaner)
+clean <- x |>
+  cc_val() |>
+  cc_equ() |>
+  cc_zero() |>
+  cc_cap() |>
+  cc_cen() |>
+  cc_inst() |>
+  cc_gbif() |>
+  cc_sea()
+```
+
+Each test here has a cleaning function, `clean_<test>()`, which runs the
+test and returns the records it does not flag:
+
+``` r
+
+clean <- x |>
+  clean_invalid() |>
+  clean_equal() |>
+  clean_zero() |>
+  clean_capital() |>
+  clean_centroid() |>
+  clean_institution() |>
+  clean_gbif_headquarters() |>
+  clean_sea()
+```
+
+Both chains run tests in sequence, with each test receiving only the
+records kept by the previous steps. For the record-level tests shown
+here, this gives the same result as testing the full input. However, the
+differences explained in [Where the results
+differ](#where-the-results-differ) can affect which records are kept.
+
+Each cleaning function accepts its test settings as arguments. For
+example, `clean_capital(x, buffer = 5000)` sets the buffer to 5000
+metres. The function’s help page,
+[`?clean_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
+documents the corresponding test.
+
+To keep all records and decide later which flags should lead to
+exclusion, use
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+first, then
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md):
+
+``` r
+
+f <- flag_occurrences(x, tests = c("invalid", "equal", "zero", "capital", "centroid",
+                                   "institution", "gbif_headquarters", "sea"))
+clean <- keep_unflagged(f)
+```
+
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+keeps the records that no test that ran has flagged. Its `tests`
+argument sets which flags exclude a record, so a different rule needs no
+second run. This rule keeps the records near capitals for inspection:
+
+``` r
+
+near_capital <- keep_unflagged(f, tests = c("invalid", "equal", "zero", "centroid",
+                                            "institution", "gbif_headquarters", "sea"))
+```
+
+A grouped test (`duplicate`, `outlier`, the fossil outlier tests, the
+dataset tests) compares a record with the other records of its group. In
+a chain its result depends on which records the earlier steps removed,
+while
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+runs it on the full input.
+
+## How agreement is tested
+
+The package’s test suite runs
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
+and
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+on sampled records for every test both packages share, and requires
+identical flags except in the cases described under [Where the results
+differ](#where-the-results-differ). A second run of the suite uses the
+development version of CoordinateCleaner from GitHub, so a change there
+shows up as a failing test. `duplicate` is compared on a data frame and
+on a table streamed from disk, where it is evaluated over the whole
+table as
+[`cc_dupl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html)
+is.
+
+These tests show agreement on the sampled records. They do not show that
+either package’s flags are right for a given analysis; that depends on
+the data and the question, as CoordinateCleaner’s own tutorial points
+out.
+
+### Checking agreement on your own records
+
+To check agreement on your own data, run both packages on a sample of it
+as in the chunks above, with the same tests and the same reference data:
+
+- `reference = "CoordinateCleaner"`, so both use CoordinateCleaner’s
+  reference points.
+
+- `land_scale = 50` when the sea test is included, since
+  [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+  uses the 1:50 million land and
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+  defaults to 1:110 million.
+
+- The buffers you set in CoordinateCleaner (`capitals_rad`, …) passed in
+  `buffers`, mapped in [Arguments and output](#arguments-and-output).
+
+The outlier test, the fossil outlier tests and the two dataset tests
+compare a record with the other records of its species, taxon or
+dataset, so their flags depend on the rest of the input. Compare them on
+the same input in both packages; adding records of a species can change
+whether a record of it is an outlier. A disagreement outside the cases
+described below is a bug in OccurrenceCleaner and can be reported on its
+[issue tracker](https://github.com/gcol33/OccurrenceCleaner/issues).
 
 ## Function mapping
 
-OccurrenceCleaner has one flagging function,
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
-Each test function of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) is a
-test name here, passed in `tests`, and the arguments of those functions
-are entries of a few list arguments. There are no `cc_*` functions, so
-attaching both packages hides none of CoordinateCleaner’s.
+OccurrenceCleaner uses a single function,
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
+to run its tests. CoordinateCleaner’s individual test functions become
+names passed through `tests`, while their settings are supplied through
+list arguments.
+
+Each test also has a corresponding `clean_<test>()` function that
+removes flagged records, much like CoordinateCleaner’s `cc_*()`
+functions with `value = "clean"`.
+
+CoordinateCleaner also provides functions that combine tests.
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+and
+[`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html)
+return one column per test by default, while
+[`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html)
+returns a separate table for each dataset.
+
+The packages share no function names, so both can be attached without
+hiding any CoordinateCleaner functions.
 
 ### Tests
 
@@ -70,125 +291,98 @@ records that pass it.
 | `seas_scale` (default 50) | `land_scale` (default 110, as [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)) |
 | `cc_dupl(additions = ...)` | `duplicate_by` |
 | `cf_range(method = "time", max_range = ...)` | `tally_flags(bins = ...)` on `max_ma - min_ma` |
-| `value = "clean"` | `x[!has_flag(x$flags, rule), ]` |
+| `value = "clean"` | `clean_<test>()`; `keep_unflagged(f, tests = rule)` after flagging |
 | `value = "flagged"` or `"spatialvalid"` | the `flag_<test>` columns; `as_spatialvalid(f)` for the `spatialvalid` layout |
 
-## Side by side
+### Functions around the tests
 
-A typical
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-pipeline filters as it goes, each `cc_*()` call dropping the records it
-flags:
+The functions of CoordinateCleaner 3.0.1 besides the tests correspond to
+these:
 
-``` r
+| CoordinateCleaner | what it does | OccurrenceCleaner |
+|:---|:---|:---|
+| cc_outl(sampling_thresh = …) | keeps outliers only in well-sampled countries, with record counts queried online | the same rule, with the record counts given as a table (gazetteers = list(sampling = …)) |
+| write_pyrate() | writes fossil occurrences as PyRate input files | export_pyrate(), the same file layout |
+| plot() | maps flagged records | plot(f, type = “map”) |
+| summary() | counts flagged records per test | summary(f) |
+| is.spatialvalid() | checks the class of a clean_coordinates() result | the occ_flags class |
 
-library(CoordinateCleaner)
-clean <- x |>
-  cc_val() |>
-  cc_equ() |>
-  cc_zero() |>
-  cc_cap() |>
-  cc_cen() |>
-  cc_inst() |>
-  cc_gbif() |>
-  cc_sea()
-```
+CoordinateCleaner’s
+[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
+retrieves country-level record counts from GBIF each time it runs, so
+its results can change as GBIF grows. OccurrenceCleaner instead takes
+these counts as arguments and records them in the reference label.
 
-The same cleaning here is one flagging call and one subset. The subset
-can be changed later without flagging again:
+The PyRate export function is named
+[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
+rather than
+[`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html),
+so both functions remain available when the packages are attached.
 
-``` r
+To use code written for CoordinateCleaner’s `spatialvalid` objects,
+convert the result with `as_spatialvalid(f)`. This keeps the original
+record columns and adds one column per test, using CoordinateCleaner’s
+names (`.cap`, `.zer`, `.otl`, etc.). A value of `TRUE` means the record
+passed the test. The result also includes `.summary` and has the class
+`spatialvalid`, so existing
+[`summary()`](https://rdrr.io/r/base/summary.html) and
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods and
+filters based on `.summary` continue to work.
 
-f <- flag_occurrences(x, tests = c("invalid", "equal", "zero", "capital", "centroid",
-                                   "institution", "gbif_headquarters", "sea"))
-clean <- f[!has_flag(f$flags, c("invalid", "equal", "zero", "capital", "centroid",
-                                "institution", "gbif_headquarters", "sea")), ]
-```
-
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-is the closer equivalent, since it also returns one column per test
-rather than dropping records. Its columns are `TRUE` for records that
-pass, the `flag_<test>` columns here are `TRUE` for records that fail.
-Records within 30 km of five capitals, plus 20 zeros, 20 equal
-coordinates and 10 records within 0.3 degrees of (0, 0), run through
-both:
+The package tests verify this conversion by comparing every column
+against the output of `clean_coordinates(value = "spatialvalid")`.
 
 ``` r
 
-set.seed(3)
-caps <- cbind(lon = c(16.37, 2.35, -3.70, 13.40, 69.17), lat = c(48.21, 48.86, 40.42, 52.52, 34.53))
-k <- sample(5, 4000, TRUE)
-p <- geosphere::destPoint(caps[k, ], b = runif(4000, 0, 360), d = 30000 * sqrt(runif(4000)))
-x <- data.frame(species = sample(c("a", "b"), 4000, TRUE),
-                decimalLongitude = round(p[, 1], 4), decimalLatitude = round(p[, 2], 4))
-x[1:20, 2:3] <- 0
-x[21:40, 3] <- x[21:40, 2]
-x[41:50, 2:3] <- round(runif(20, -0.3, 0.3), 4)
+sv <- as_spatialvalid(oc)
+head(sv[, c(".zer", ".equ", ".cap", ".dpl", ".summary")])
+#>    .zer  .equ .cap  .dpl .summary
+#> 1 FALSE FALSE TRUE  TRUE    FALSE
+#> 2 FALSE FALSE TRUE  TRUE    FALSE
+#> 3 FALSE FALSE TRUE FALSE    FALSE
+#> 4 FALSE FALSE TRUE FALSE    FALSE
+#> 5 FALSE FALSE TRUE FALSE    FALSE
+#> 6 FALSE FALSE TRUE FALSE    FALSE
+summary(sv)
+#>     .val     .zer     .equ     .cap     .cen    .inst     .gbf     .dpl 
+#>        0       30       40      436       29        0        0       18 
+#> .summary 
+#>      491
 ```
 
-``` r
+## Where the results differ
 
-cc <- CoordinateCleaner::clean_coordinates(
-  x, lon = "decimalLongitude", lat = "decimalLatitude", species = "species",
-  tests = c("capitals", "centroids", "equal", "gbif", "institutions", "zeros", "duplicates"),
-  value = "spatialvalid", verbose = FALSE)
-oc <- flag_occurrences(x, tests = c("invalid", "zero", "equal", "capital", "centroid",
-                                    "institution", "gbif_headquarters", "duplicate"),
-                       reference = "CoordinateCleaner")
-```
+Most differences reflect design choices in OccurrenceCleaner: how
+buffers are measured, how invalid coordinates and random draws are
+handled, and which reference data are used by default. Four other
+differences arise from reported issues in CoordinateCleaner 3.0.1
+([\#114](https://github.com/ropensci/CoordinateCleaner/issues/114),
+[\#99](https://github.com/ropensci/CoordinateCleaner/issues/99),
+[\#110](https://github.com/ropensci/CoordinateCleaner/issues/110),
+[\#66](https://github.com/ropensci/CoordinateCleaner/issues/66)), where
+tests either behave differently from their documentation or fail with an
+error. These issues may be resolved in later versions.
 
-`reference = "CoordinateCleaner"` reads that package’s own gazetteers at
-run time, so both packages test against the same points. Per test, the
-share of records with the same verdict:
+### Design differences
 
-``` r
+#### Buffer circles
 
-pairs <- c(.zer = "zero", .equ = "equal", .cap = "capital", .cen = "centroid",
-           .inst = "institution", .gbf = "gbif_headquarters", .dpl = "duplicate")
-agree <- vapply(names(pairs), function(cn)
-  mean((!cc[[cn]]) == oc[[paste0("flag_", pairs[[cn]])]], na.rm = TRUE), numeric(1))
-knitr::kable(data.frame(CoordinateCleaner = names(pairs), OccurrenceCleaner = pairs,
-                        flagged_cc = vapply(names(pairs), function(cn) sum(!cc[[cn]], na.rm = TRUE), 1),
-                        flagged_oc = vapply(pairs, function(t) sum(oc[[paste0("flag_", t)]]), 1),
-                        agreement = round(agree, 5)), row.names = FALSE)
-```
+The packages use different methods to test whether a record falls within
+a buffer:
 
-| CoordinateCleaner | OccurrenceCleaner | flagged_cc | flagged_oc | agreement |
-|:------------------|:------------------|-----------:|-----------:|----------:|
-| .zer              | zero              |         20 |         30 |   0.99750 |
-| .equ              | equal             |         40 |         40 |   1.00000 |
-| .cap              | capital           |        435 |        436 |   0.99975 |
-| .cen              | centroid          |         29 |         29 |   1.00000 |
-| .inst             | institution       |          0 |          0 |   1.00000 |
-| .gbf              | gbif_headquarters |          0 |          0 |   1.00000 |
-| .dpl              | duplicate         |         18 |         18 |   1.00000 |
+- CoordinateCleaner approximates the buffer with a polygon.
 
-The two differ in `zero`, on purpose, for the 10 records near but not at
-(0, 0), and in `capital` for records at the buffer edge; the next
-section explains both. The package’s own test suite runs this comparison
-on sampled records for every equivalent test and requires the
-differences to be only those documented below.
-
-## Where the flags differ
-
-### Buffer circles
-
-The packages draw the boundary around a reference location differently:
-
-- [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-  approximates the circle with a polygon.
-
-- OccurrenceCleaner measures the distance from the reference location
+- OccurrenceCleaner calculates the distance to the reference location
   directly.
 
-The polygon’s edges pass slightly inside the circle. A record close to
-the boundary can therefore fall inside the distance limit and outside
-the polygon.
+Because the polygon’s edges lie slightly inside the circle, records near
+the boundary can give different results.
 
-This example places two records 9,995 metres from the same capital
-reference point in Kabul. Both are inside the 10,000-metre limit. One
-lies toward a polygon vertex; the other lies halfway between two vertex
-directions.
+In this example, two records are placed 9,995 metres from the same
+reference point in Kabul, just inside a 10,000-metre buffer. One is
+aligned with a polygon vertex, while the other lies halfway between two
+vertices. Both are within the distance limit, but the polygon may
+exclude the second record.
 
 ``` r
 
@@ -227,24 +421,90 @@ data.frame(
 #> 2     2.5       9995      FALSE       TRUE
 ```
 
-Both packages flag the first record. OccurrenceCleaner also flags the
-second, which lies just outside CoordinateCleaner’s polygon.
+Both packages flag the first record. Only OccurrenceCleaner flags the
+second, which falls just outside CoordinateCleaner’s polygon despite
+being within the 10,000-metre buffer.
 
-Using the same reference point and buffer radius isolates this boundary
-effect. It explains how records near the edge can receive different
-flags.
+Because both packages use the same reference point and buffer radius,
+the difference comes entirely from how they define the boundary.
 
-### The zero buffer
+#### Records without valid coordinates
 
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-[`cc_zero()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html)
-documents a 0.5-degree buffer around (0, 0). In version 3.0.1 the buffer
-point is created without a coordinate reference system,
-[terra](https://rspatial.github.io/terra/) assumes longitude and
-latitude, and `terra::buffer(width = 0.5)` then buffers 0.5 **metres**
-([CoordinateCleaner issue
-114](https://github.com/ropensci/CoordinateCleaner/issues/114)). Only
-records with a longitude or latitude of exactly zero are flagged:
+The packages also handle missing or out-of-range coordinates
+differently. CoordinateCleaner returns `NA` for some tests (`cc_zero`,
+`cc_equ`), treats these records as clean in `cc_cap`, and flags the
+second of two such records in `cc_dupl`.
+
+OccurrenceCleaner instead assigns the `invalid` flag and skips the other
+spatial tests. Including `invalid` in a cleaning rule removes these
+records; excluding it leaves them without any spatial flags.
+
+#### Random age draws
+
+[`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html)
+and
+[`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
+draw one age from each record’s range, repeat the test five times and
+keep the majority. CoordinateCleaner draws from the session’s random
+stream in the order of the input, so its flags change with the seed and
+the row order. `age_outlier` and `spatiotemporal_outlier` draw from a
+stream seeded per taxon
+(`settings = list(age_outlier = list(seed = ...))`) in an order fixed by
+the records’ content, so the same records give the same flags in any
+order and split into any files. Both follow the same distribution; when
+every age range has zero width nothing is drawn and the flags are
+identical.
+
+#### Records without a dataset key
+
+Records without a dataset key are not flagged by either dataset test
+here;
+[`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html)
+flags them.
+
+#### Country codes
+
+[`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
+compares the record’s code with the ISO alpha-3 code of the country
+polygon. GBIF’s `countryCode` is alpha-2, so a GBIF table needs
+converting first. `country_mismatch` accepts alpha-2, alpha-3 and
+Natural Earth’s `ADM0_A3` code. For records whose code is alpha-3 and
+present in Natural Earth, the two tests agree, apart from the three
+countries described under [Records in France, Norway and
+Kosovo](#records-in-france-norway-and-kosovo).
+
+#### Gazetteers
+
+With the default `reference = "OccurrenceCleaner"` the gazetteers are
+rebuilt from the original sources of CoordinateCleaner’s tables, so they
+hold the same kinds of points but not the same coordinates; [Reference
+data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
+lists the sources and measures the differences. Points from sources
+CoordinateCleaner does not use, such as Wikidata institutions and
+Natural Earth capitals, carry `extension` `TRUE` and are used by
+default; passing the rows with `extension` `FALSE` through `gazetteers`
+restricts a test to CoordinateCleaner’s sources ([Extension
+points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
+`reference = "CoordinateCleaner"` uses CoordinateCleaner’s tables and
+reproduces its flags up to the differences in this section.
+
+### Behaviour of CoordinateCleaner 3.0.1
+
+#### The zero buffer
+
+Both packages flag records whose longitude or latitude is exactly zero.
+They also check a buffer around (0, 0), whose size differs between
+implementations.
+
+CoordinateCleaner 3.0.1 applies a radius of 0.5 metres. [Its
+documentation](https://ropensci.github.io/CoordinateCleaner/reference/cc_zero.html)
+specifies 0.5 degrees, which is the radius OccurrenceCleaner uses.
+OccurrenceCleaner therefore flags records across a larger area around
+the origin.
+
+In OccurrenceCleaner, `buffers = list(zero = 0)` disables the
+surrounding buffer and flags only records whose longitude or latitude is
+exactly zero.
 
 ``` r
 
@@ -259,46 +519,24 @@ data.frame(z[, 2:3],
 #> 3            0.001           0.001      FALSE       TRUE            FALSE
 ```
 
-This package applies the documented 0.5-degree radius.
-`buffers = list(zero = 0)` reproduces CoordinateCleaner 3.0.1’s results.
+#### Records in France, Norway and Kosovo
 
-### Country codes
-
+In CoordinateCleaner 3.0.1,
 [`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
-compares the record’s code with the ISO alpha-3 code of the country
-polygon only. GBIF’s `countryCode` is alpha-2, so a GBIF table needs
-converting first. `country_mismatch` accepts alpha-2, alpha-3 and
-Natural Earth’s `ADM0_A3` code, and reads the ISO codes from Natural
-Earth’s `ISO_A2_EH` and `ISO_A3_EH` columns, which are filled where
-`ISO_A2` and `ISO_A3` hold `-99`: in
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-layer that is France, Norway and Kosovo, so
-[`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
-flags every record that falls in them. For records whose code is alpha-3
-and present in Natural Earth, the two tests agree.
+flags every record that falls in France, Norway or Kosovo. Natural
+Earth’s `ISO_A3` column holds `-99` for these three countries.
+`country_mismatch` reads the ISO codes from the `ISO_A2_EH` and
+`ISO_A3_EH` columns, which are filled for them.
 
-### Records without valid coordinates
-
-For rows with missing or out-of-range coordinates,
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-spatial tests return `NA` (`cc_zero`, `cc_equ`) or “clean” (`cc_cap`),
-and `cc_dupl` flags the second of two such rows. Here such a record gets
-the `invalid` bit and no other spatial bit, so a rule that includes
-`invalid` removes it and a rule without `invalid` sees no spatial flag
-on it.
-
-### Outliers of large species
+#### Outliers of large species
 
 [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
 tests species of 10,000 records or more, and every species with
 `thinning = TRUE`, on a raster approximation: it counts records per cell
 of a 0.5-degree grid, computes the distance statistics between cells,
-and selects the outlier cells. In
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-the last step, which turns the outlier cells back into records, compares
-a data frame with the cell numbers as a whole and matches nothing, so
-that path never flags a record. Twenty records 1,000 km from the other
-11,980 of their species show it:
+and selects the outlier cells. In CoordinateCleaner 3.0.1 this path
+flags no records. Twenty records 1,000 km from the other 11,980 of their
+species show it:
 
 ``` r
 
@@ -317,66 +555,27 @@ records of the outlier cells. Below 10,000 records, where
 [`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
 computes exact distances, the two give identical flags.
 
-### Random age draws
-
-[`cf_age()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_age.html)
-and
-[`cf_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cf_outl.html)
-draw one age from each record’s range, repeat the test five times and
-keep the majority.
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws
-from the session’s random stream in the order of the input, so its flags
-change with the seed and the row order. `age_outlier` and
-`spatiotemporal_outlier` draw from a stream seeded per taxon
-(`settings = list(age_outlier = list(seed = ...))`) in an order fixed by
-the records’ content, so the same records give the same flags in any
-order and split into any files. Both follow the same distribution; when
-every age range has zero width nothing is drawn and the flags are
-identical.
-
-### Small datasets
+#### Small datasets
 
 [`cd_round()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html)
 skips datasets with fewer than `min_unique_ds_size` distinct
 coordinates, but in version 3.0.1 an input holding such a dataset next
-to larger ones stops with an error when the per-dataset results are
-combined. `dataset_rounded` leaves the small dataset untested and tests
-the others. Records without a dataset key are not flagged by either
-dataset test;
-[`cd_ddmm()`](https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html)
-flags them.
+to larger ones stops with an error, so no dataset is tested.
+`dataset_rounded` leaves the small dataset untested and tests the
+others.
 
-### Duplicates in streamed input
+## Timings
 
-`duplicate` is evaluated over the whole table, as
-[`cc_dupl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html)
-is, on a data frame and on a table streamed from disk.
-
-### Gazetteers
-
-With the default `reference = "OccurrenceCleaner"` the gazetteers are
-rebuilt from the original sources of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-tables, so they hold the same kinds of points but not the same
-coordinates; [Reference
-data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
-lists the sources and measures the differences. Points from sources
-CoordinateCleaner does not use, such as Wikidata institutions and
-Natural Earth capitals, carry `extension` `TRUE` and are used by
-default; passing the rows with `extension` `FALSE` through `gazetteers`
-restricts a test to CoordinateCleaner’s sources ([Extension
-points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
-`reference = "CoordinateCleaner"` uses CoordinateCleaner’s tables and
-reproduces its flags up to the differences above.
-
-## Speed
+The timings measure how long each package takes to run the tests both
+share, on synthetic records on one machine. They do not measure
+agreement, which the test suite above covers, or how either package
+performs on real occurrence data with its clustering and duplicates.
 
 The tables give the elapsed time in seconds of one call per test, on one
 million and on ten million records; lower values mean faster runs. In
-both packages the call used
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-reference points. The records were placed at random, a tenth of them
-within 30 km of a capital.
+both packages the call used CoordinateCleaner’s reference points. The
+records were placed at random, a tenth of them within 30 km of a
+capital.
 
 Each time is the fastest of three runs. A CoordinateCleaner test whose
 single run took longer than 200 s was run once, which applies to the
@@ -427,7 +626,7 @@ For the proximity tests, CoordinateCleaner tests the records against a
 buffer polygon around the reference points, and this package looks up
 each record’s nearest reference point in a kd-tree.
 
-### The CoordinateCleaner tests in one call
+### The shared tests in one call
 
 With its own reference data,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
@@ -443,62 +642,23 @@ shows how a table on disk is read in chunks. The benchmark script is
 `bench/benchmark.R` in the source repository, and its results are in
 `bench/results/`.
 
-## Functions around the tests
+## When is CoordinateCleaner the better choice?
 
-Every function of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-has a counterpart here. Besides the tests:
+CoordinateCleaner has been in use since its first CRAN release in 2017,
+went through rOpenSci review, and its tests have been applied and cited
+in published work. OccurrenceCleaner’s agreement with it rests on the
+test suite described above, on the records that suite samples.
+CoordinateCleaner may be the better choice when:
 
-| CoordinateCleaner | what it does | OccurrenceCleaner |
-|:---|:---|:---|
-| cc_outl(sampling_thresh = …) | keeps outliers only in well-sampled countries, with record counts queried online | the same rule, with the record counts given as a table (gazetteers = list(sampling = …)) |
-| write_pyrate() | writes fossil occurrences as PyRate input files | export_pyrate(), the same file layout |
-| plot() | maps flagged records | plot(f, type = “map”) |
-| summary() | counts flagged records per test | summary(f) |
-| is.spatialvalid() | checks the class of a clean_coordinates() result | the occ_flags class |
+- Your data fits in memory and runs through CoordinateCleaner in an
+  acceptable time, and your workflow and its methods section are already
+  built on it.
 
-[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
-queries GBIF for each country’s record count at run time, so its result
-changes as GBIF grows; here the counts are part of the call and recorded
-in the reference label.
-[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
-takes the name it has to leave
-[`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html)
-reachable when both packages are attached.
+- You want `cc_outl(sampling_thresh)` to query GBIF’s current record
+  counts at run time rather than supply them as a table.
 
-Code written for a `spatialvalid` object runs on `as_spatialvalid(f)`:
-it writes the record columns, one column per test under
-CoordinateCleaner’s name (`.cap`, `.zer`, `.otl`, …) with `TRUE` for
-pass, and `.summary`, with the class `spatialvalid`, so
-CoordinateCleaner’s [`summary()`](https://rdrr.io/r/base/summary.html)
-and [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods and
-filters on `.summary` work on it. The package tests compare it column by
-column with `clean_coordinates(value = "spatialvalid")`.
-
-``` r
-
-sv <- as_spatialvalid(oc)
-head(sv[, c(".zer", ".equ", ".cap", ".dpl", ".summary")])
-#>    .zer  .equ .cap  .dpl .summary
-#> 1 FALSE FALSE TRUE  TRUE    FALSE
-#> 2 FALSE FALSE TRUE  TRUE    FALSE
-#> 3 FALSE FALSE TRUE FALSE    FALSE
-#> 4 FALSE FALSE TRUE FALSE    FALSE
-#> 5 FALSE FALSE TRUE FALSE    FALSE
-#> 6 FALSE FALSE TRUE FALSE    FALSE
-summary(sv)
-#>     .val     .zer     .equ     .cap     .cen    .inst     .gbf     .dpl 
-#>        0       30       40      436       29        0        0       18 
-#> .summary 
-#>      491
-```
-
-The grouped tests (`outlier`, the three fossil outlier tests and the two
-dataset tests) compare a record with the other records of its species,
-taxon or dataset, so a record’s flag depends on the rest of the input:
-adding records of a species can change whether a record of it is an
-outlier. The article on outliers and dataset tests shows them on worked
-examples.
+- Your cleaning uses only `equal` and `duplicate`, where
+  CoordinateCleaner is as fast or faster in the timings above.
 
 ## References
 

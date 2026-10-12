@@ -176,7 +176,7 @@
 - stated-at: none in prose
 
 ### outliers-simulation
-- metric: 961 records of four species; 3 of 4 far records flagged by the quantile fence, 4 plus 15 clean by MAD; herbarium loses 6 (3 outliers, 4 near AHOI points, one both)
+- metric: 961 records of four species; 3 of 4 far records flagged by the quantile threshold, 4 plus 15 clean by MAD; herbarium loses 6 (3 outliers, 4 near AHOI points, one both)
 - source: the outliers article's own chunks (set.seed(11))
 - stated-at: @p:out.data; @p:out.outlier; @p:out.methods; @p:out.rule; @p:out.guidance
 - note: prose constants; they go stale if the simulation changes
@@ -238,8 +238,8 @@
 
 ### buffer-band
 - metric: share of a buffer radius inside CoordinateCleaner's inscribed polygon (99.9 % at 72 vertices, 99.7 % at 40)
-- source: r cos(pi/n), @p:cc.buffer-circles
-- stated-at: ?flag_occurrences (Tests); @p:cc.buffer-circles
+- source: r cos(pi/n), R/flag.R (Tests)
+- stated-at: ?flag_occurrences (Tests); vignettes/tests.Rmd (capital sweep); @p:cc.buffer-circles shows the effect by example, without the numbers
 
 ## Defaults
 

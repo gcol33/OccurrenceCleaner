@@ -13,14 +13,11 @@ reference version is recorded with the flags. Installation is covered in
 [Get
 started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
-``` r
-
-library(OccurrenceCleaner)
-```
-
 ## The layers
 
 ``` r
+
+library(OccurrenceCleaner)
 
 ri <- reference_info()
 ```
@@ -432,8 +429,8 @@ one output directory never mixes flags from two references.
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
   own reference tables, for example to compare with a published analysis
   that used it. This requires CoordinateCleaner to be installed and
-  reproduces its flags subject to the differences documented in [Coming
-  from
+  reproduces its flags subject to the differences documented in
+  [Compatibility with
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md).
   The polygon tests also need
   [rnaturalearth](https://docs.ropensci.org/rnaturalearth/), which

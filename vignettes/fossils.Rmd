@@ -17,17 +17,13 @@ Fossil occurrences, such as those downloaded from the Paleobiology Database (PBD
 
 1. **Flag** a fossil table with `flag_occurrences()`.
 
-2. **Filter** out flagged records, using `has_flag()`.
+2. **Filter** out flagged records, using `keep_unflagged()`.
 
 3. **Filter** by the width of the age range, counting each group with `tally_flags()`.
 
 4. **Test** each taxon for outliers in age and space.
 
 5. **Export** the kept records with `export_pyrate()`.
-
-```{r setup, message = FALSE}
-library(OccurrenceCleaner)
-```
 
 ## A small fossil table
 
@@ -36,6 +32,8 @@ PBDB uses `accepted_name` for taxon names, `lng` and `lat` for coordinates, and 
 The example below contains nine synthetic records. Record 2 has equal minimum and maximum ages; record 3 has the ages reversed; record 4 spans 43 million years; record 5 is missing its minimum age; and record 6 has both coordinates set to zero. Records 1 and 9 have a minimum age below the maximum age, a span under 4 million years, and coordinates in Wyoming that match their country code `US`; they pass every test. Records 7 and 8 have a minimum age below the maximum age, a span of 1.2 million years, and the country code `DE`; their coordinates are missing in the table and set in the next chunk:
 
 ```{r data}
+library(OccurrenceCleaner)
+
 fos <- data.frame(
   occurrence_no = 1:9,
   accepted_name = c("Coryphodon", "Coryphodon", "Hyracotherium", "Hyracotherium",
@@ -76,11 +74,11 @@ Record 6 fails `zero`, `equal` and `country_mismatch`, since (0, 0) lies in the 
 
 ## Filtering records
 
-Use `has_flag()` to remove records flagged by any test in `tests`. `has_flag()` also checks that every named test was run on the flagged table, and stops with an error if one was not. The later sections reuse this rule as `rule`:
+`keep_unflagged()` keeps the records that no test in `tests` flags. It also checks that every named test was run on the flagged table, and stops with an error if one was not. The later sections reuse this rule as `rule`:
 
 ```{r keep}
 rule <- tests
-kept <- f[!has_flag(f, rule), ]
+kept <- keep_unflagged(f, rule)
 kept[, c("occurrence_no", "accepted_name", "min_ma", "max_ma")]
 ```
 
@@ -99,7 +97,7 @@ data.frame(occurrence_no = fos$occurrence_no,
            centroid_1km = f$flag_centroid, centroid_5km = f5$flag_centroid)
 ```
 
-These defaults differ from those in CoordinateCleaner. In version 3.0.1, `clean_fossils()` passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer` arguments of [`cc_cen()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html) and [`cc_inst()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html), respectively. Both functions interpret these values in metres.
+These defaults differ from those in CoordinateCleaner. In version 3.0.1, [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html) applies its defaults `centroids_rad = 0.05` and `inst_rad = 0.001` as radii in metres, so its centroid and institution tests flag only records within 5 cm and 1 mm of a reference point.
 
 ## Filtering by age range
 
@@ -110,10 +108,11 @@ f$age_range <- f$max_ma - f$min_ma
 tally_flags(f, bins = list(age_range = c(5, 15)), rules = list(all = rule))
 ```
 
-Record 4 has an age range of 43 Ma and is the only record above 15 Ma. To retain unflagged records with an age range of at most 15 Ma, exclude missing ranges and apply the limit directly:
+Record 4 has an age range of 43 Ma and is the only record above 15 Ma. To retain unflagged records with an age range of at most 15 Ma, apply the limit to the kept records; `which()` also drops records without an age range:
 
 ```{r cut}
-kept15 <- f[!has_flag(f, rule) & f$age_range <= 15 & !is.na(f$age_range), ]
+kept15 <- keep_unflagged(f, rule)
+kept15 <- kept15[which(kept15$age_range <= 15), ]
 kept15$occurrence_no
 ```
 
@@ -181,9 +180,9 @@ The range test still flags the same 20 records: their 43 Ma ranges exceed the th
 PyRate (Silvestro et al. [2014](https://doi.org/10.1093/sysbio/syu006)) estimates speciation and extinction rates from fossil occurrences. Select the records from `g` that are not flagged by any of the tests run and have an age range of at most 15 Ma:
 
 ```{r final}
-final_rule <- c(tests, otests)
 g$age_range <- g$max_ma - g$min_ma
-final <- g[!has_flag(g, final_rule) & g$age_range <= 15, ]
+final <- keep_unflagged(g)
+final <- final[which(final$age_range <= 15), ]
 nrow(final)
 ```
 
@@ -224,7 +223,7 @@ fg <- flag_occurrences(gb, tests = c("invalid", "basis_fossil"))
 A study of present-day distributions keeps the records without the flag, and a palaeontological one keeps only the flagged records:
 
 ```{r gbif-select}
-fg[!has_flag(fg, "basis_fossil"), c("gbifID", "basisOfRecord")]
+keep_unflagged(fg, "basis_fossil")[, c("gbifID", "basisOfRecord")]
 fg[has_flag(fg, "basis_fossil"), c("gbifID", "basisOfRecord")]
 ```
 

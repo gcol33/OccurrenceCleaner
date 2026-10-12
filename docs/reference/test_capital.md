@@ -5,6 +5,36 @@ geodesic distance (closed ball: a record at exactly the buffer distance
 is flagged). Candidates are found with a kd-tree on the unit sphere and
 decided with the Vincenty inverse formula.
 
+## Usage
+
+``` r
+clean_capital(x, buffer = 10000, ...)
+```
+
+## Arguments
+
+- x:
+
+  A data frame of occurrence records.
+
+- buffer:
+
+  Buffer distance of the test, in the unit of its Buffer section; the
+  default is the test's default buffer.
+
+- ...:
+
+  Further arguments to
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md):
+  `columns`, `reference`, `gazetteers`, `land_scale`.
+
+## Value
+
+`clean_<test>()`: the rows of `x` the test does not flag, with the
+columns of `x` unchanged. See
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md),
+Cleaning functions.
+
 ## Details
 
 The default gazetteer contains the capital "geographic coordinates" of
@@ -55,29 +85,29 @@ latitude; see
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
 
 Other tests:
-[`test_age_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
-[`test_age_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
-[`test_age_range_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
-[`test_aohi`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md),
-[`test_basis`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
-[`test_centroid`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
-[`test_country_mismatch`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),
-[`test_dataset_ddmm`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md),
-[`test_dataset_rounded`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md),
-[`test_duplicate`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md),
-[`test_equal`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
-[`test_establishment`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md),
-[`test_gbif_headquarters`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
-[`test_gbif_issue`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
-[`test_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md),
-[`test_institution`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
-[`test_invalid`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
-[`test_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),
-[`test_range`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md),
-[`test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
-[`test_spatiotemporal_outlier`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
-[`test_urban`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md),
-[`test_zero`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+[`clean_age_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_equal.md),
+[`clean_age_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_outlier.md),
+[`clean_age_range_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_age_range_outlier.md),
+[`clean_aohi()`](https://gillescolling.com/OccurrenceCleaner/reference/test_aohi.md),
+[`clean_basis_fossil()`](https://gillescolling.com/OccurrenceCleaner/reference/test_basis.md),
+[`clean_centroid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_centroid.md),
+[`clean_country_mismatch()`](https://gillescolling.com/OccurrenceCleaner/reference/test_country_mismatch.md),
+[`clean_dataset_ddmm()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_ddmm.md),
+[`clean_dataset_rounded()`](https://gillescolling.com/OccurrenceCleaner/reference/test_dataset_rounded.md),
+[`clean_duplicate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_duplicate.md),
+[`clean_equal()`](https://gillescolling.com/OccurrenceCleaner/reference/test_equal.md),
+[`clean_establishment_introduced()`](https://gillescolling.com/OccurrenceCleaner/reference/test_establishment.md),
+[`clean_gbif_headquarters()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_headquarters.md),
+[`clean_institution()`](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md),
+[`clean_invalid()`](https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.md),
+[`clean_issue_coordinate()`](https://gillescolling.com/OccurrenceCleaner/reference/test_gbif_issue.md),
+[`clean_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.md),
+[`clean_range()`](https://gillescolling.com/OccurrenceCleaner/reference/test_range.md),
+[`clean_sea()`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
+[`clean_sea_nonmarine()`](https://gillescolling.com/OccurrenceCleaner/reference/test_habitat.md),
+[`clean_spatiotemporal_outlier()`](https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.md),
+[`clean_urban()`](https://gillescolling.com/OccurrenceCleaner/reference/test_urban.md),
+[`clean_zero()`](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
 
 ## Examples
 
@@ -88,4 +118,5 @@ flag_occurrences(x, tests = "capital", buffers = list(capital = 20000))$flag_cap
 g <- reference_points("capital")
 flag_occurrences(x, tests = "capital",
                  gazetteers = list(capital = g[!g$extension, ]))$flag_capital
+clean_capital(x, buffer = 20000)
 ```

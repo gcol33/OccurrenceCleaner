@@ -21,5 +21,5 @@
   gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md):
 - [Outliers and dataset
   tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.md):
-- [Coming from
+- [Compatibility with
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md):

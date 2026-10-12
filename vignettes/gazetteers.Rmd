@@ -14,17 +14,25 @@ has_sf <- requireNamespace("sf", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with [sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and shows how a custom layer is recorded with the flags. Installation is covered in [Get started](OccurrenceCleaner.html). The polygon examples also need [sf](https://r-spatial.github.io/sf/).
+The tests use three kinds of reference data:
 
-```{r setup, message = FALSE}
-library(OccurrenceCleaner)
-```
+- Points marking capitals, centroids, institutions, the GBIF headquarters and artificial hotspots.
 
-## The shipped points
+- Polygons outlining land, urban areas, countries and species ranges.
+
+- A table of genus habitats, used together with land polygons by the two habitat tests.
+
+OccurrenceCleaner ships fixed versions of these reference layers, except for species ranges, which users supply. Set `reference = "CoordinateCleaner"` to use the corresponding reference tables from [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/). To supply your own layer for an individual test, use the `gazetteers` argument of [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.html). This serves the same purpose as the `ref` arguments of CoordinateCleaner's `cc_*()` functions.
+
+This article shows how to filter and extend the shipped point tables, build polygon layers with [sf](https://r-spatial.github.io/sf/), supply a genus habitat table, and inspect how custom reference layers are recorded with the flags. Installation is covered in [Get started](OccurrenceCleaner.html); the polygon examples also require sf.
+
+## Included reference points
 
 `reference_points()` returns the points of a proximity test with their attributes:
 
 ```{r points}
+library(OccurrenceCleaner)
+
 caps <- reference_points("capital")
 head(caps)
 table(caps$class)
@@ -181,4 +189,4 @@ knitr::kable(data.frame(
   check.names = FALSE))
 ```
 
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s point references need its own column names (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude and latitude columns are found by name in any of the common spellings. Its `cc_coun()` reads one code column chosen with `ref_col`; here every code column present is matched. With the same reference points and polygons the two packages give the same flags, up to the buffer-polygon band described in [Coming from CoordinateCleaner](coordinatecleaner.html); the package tests check this for `institution`, `sea` and `range`.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s point references need its own column names (`capital.lon`, `centroid.lon`, `decimalLongitude`); here the longitude and latitude columns are found by name in any of the common spellings. Its `cc_coun()` reads one code column chosen with `ref_col`; here every code column present is matched. With the same reference points and polygons the two packages give the same flags, up to the buffer-polygon band described in [Compatibility with CoordinateCleaner](coordinatecleaner.html); the package tests check this for `institution`, `sea` and `range`.

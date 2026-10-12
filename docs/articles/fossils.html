@@ -66,7 +66,7 @@
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
-    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -118,7 +118,7 @@ at the end also needs that package installed.</p>
 <li><p><strong>Flag</strong> a fossil table with
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>.</p></li>
 <li><p><strong>Filter</strong> out flagged records, using
-<code><a href="../reference/flag_mask.html">has_flag()</a></code>.</p></li>
+<code><a href="../reference/keep_unflagged.html">keep_unflagged()</a></code>.</p></li>
 <li><p><strong>Filter</strong> by the width of the age range, counting
 each group with <code><a href="../reference/tally_flags.html">tally_flags()</a></code>.</p></li>
 <li><p><strong>Test</strong> each taxon for outliers in age and
@@ -126,8 +126,6 @@ space.</p></li>
 <li><p><strong>Export</strong> the kept records with
 <code><a href="../reference/export_pyrate.html">export_pyrate()</a></code>.</p></li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="a-small-fossil-table">A small fossil table<a class="anchor" aria-label="anchor" href="#a-small-fossil-table"></a>
 </h2>
@@ -145,8 +143,10 @@ Wyoming that match their country code <code>US</code>; they pass every
 test. Records 7 and 8 have a minimum age below the maximum age, a span
 of 1.2 million years, and the country code <code>DE</code>; their
 coordinates are missing in the table and set in the next chunk:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  occurrence_no <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">9</span>,</span>
 <span>  accepted_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coryphodon"</span>, <span class="st">"Coryphodon"</span>, <span class="st">"Hyracotherium"</span>, <span class="st">"Hyracotherium"</span>,</span>
 <span>                    <span class="st">"Hyracotherium"</span>, <span class="st">"Mesonyx"</span>, <span class="st">"Mesonyx"</span>, <span class="st">"Mesonyx"</span>, <span class="st">"Uintatherium"</span><span class="op">)</span>,</span>
@@ -159,7 +159,7 @@ coordinates are missing in the table and set in the next chunk:</p>
 package’s reference points, so their distance to it is known: record 7
 sits on the point, record 8 lies 0.027 degrees of latitude (about 3 km)
 north of it.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"centroid"</span><span class="op">)</span></span>
 <span><span class="va">de</span> <span class="op">&lt;-</span> <span class="va">cen</span><span class="op">[</span><span class="va">cen</span><span class="op">$</span><span class="va">key</span> <span class="op">==</span> <span class="st">"ne:DEU"</span> <span class="op">&amp;</span> <span class="va">cen</span><span class="op">$</span><span class="va">method</span> <span class="op">==</span> <span class="st">"polygon centroid"</span>, <span class="op">]</span></span>
 <span><span class="va">de</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"method"</span>, <span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span></span>
@@ -176,7 +176,7 @@ tests read. The coordinate tests are the record tests of <a href="https://ropens
 in CoordinateCleaner; <code>age_equal</code> is its
 <code>agesequal</code> test, and the country check runs too because the
 table has country codes:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lng"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"accepted_name"</span>,</span>
 <span>                    country <span class="op">=</span> <span class="st">"cc"</span>, id <span class="op">=</span> <span class="st">"occurrence_no"</span><span class="op">)</span></span>
 <span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
@@ -209,13 +209,13 @@ the centroid of Germany.</p>
 <div class="section level2">
 <h2 id="filtering-records">Filtering records<a class="anchor" aria-label="anchor" href="#filtering-records"></a>
 </h2>
-<p>Use <code><a href="../reference/flag_mask.html">has_flag()</a></code> to remove records flagged by any test in
-<code>tests</code>. <code><a href="../reference/flag_mask.html">has_flag()</a></code> also checks that every named
-test was run on the flagged table, and stops with an error if one was
-not. The later sections reuse this rule as <code>rule</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/keep_unflagged.html">keep_unflagged()</a></code> keeps the records that no test in
+<code>tests</code> flags. It also checks that every named test was run
+on the flagged table, and stops with an error if one was not. The later
+sections reuse this rule as <code>rule</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rule</span> <span class="op">&lt;-</span> <span class="va">tests</span></span>
-<span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rule</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rule</span><span class="op">)</span></span>
 <span><span class="va">kept</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"occurrence_no"</span>, <span class="st">"accepted_name"</span>, <span class="st">"min_ma"</span>, <span class="st">"max_ma"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   occurrence_no accepted_name min_ma max_ma</span></span>
 <span><span class="co">#&gt; 1             1    Coryphodon   53.0   56.0</span></span>
@@ -240,7 +240,7 @@ there by the centroid. A wider buffer catches such records, at the cost
 of flagging any correct locality within the same distance. With a 5 km
 buffer, chosen here to reach record 8, both records near the centroid of
 Germany are flagged:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">fos</span>, tests <span class="op">=</span> <span class="va">tests</span>, columns <span class="op">=</span> <span class="va">cols</span>,</span>
 <span>                       buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>centroid <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>occurrence_no <span class="op">=</span> <span class="va">fos</span><span class="op">$</span><span class="va">occurrence_no</span>,</span>
@@ -256,11 +256,11 @@ Germany are flagged:</p>
 <span><span class="co">#&gt; 8             8        FALSE         TRUE</span></span>
 <span><span class="co">#&gt; 9             9        FALSE        FALSE</span></span></code></pre></div>
 <p>These defaults differ from those in CoordinateCleaner. In version
-3.0.1, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code> passes
-<code>centroids_rad = 0.05</code> and <code>inst_rad = 0.001</code> to
-the <code>buffer</code> arguments of <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cen.html" class="external-link"><code>cc_cen()</code></a>
-and <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_inst.html" class="external-link"><code>cc_inst()</code></a>,
-respectively. Both functions interpret these values in metres.</p>
+3.0.1, <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link"><code>clean_fossils()</code></a>
+applies its defaults <code>centroids_rad = 0.05</code> and
+<code>inst_rad = 0.001</code> as radii in metres, so its centroid and
+institution tests flag only records within 5 cm and 1 mm of a reference
+point.</p>
 </div>
 <div class="section level2">
 <h2 id="filtering-by-age-range">Filtering by age range<a class="anchor" aria-label="anchor" href="#filtering-by-age-range"></a>
@@ -268,7 +268,7 @@ respectively. Both functions interpret these values in metres.</p>
 <p>Calculate the width of each record’s age range as
 <code>max_ma - min_ma</code>. Use <code><a href="../reference/tally_flags.html">tally_flags()</a></code> to count
 flagged and retained records in each age-range group:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">$</span><span class="va">max_ma</span> <span class="op">-</span> <span class="va">f</span><span class="op">$</span><span class="va">min_ma</span></span>
 <span><span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>all <span class="op">=</span> <span class="va">rule</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_tally&gt; 9 records in 3 groups of age_range_bin, rules: all</span></span>
@@ -279,9 +279,11 @@ flagged and retained records in each age-range group:</p>
 <span><span class="co">#&gt; # summary() for the share each test flags</span></span></code></pre></div>
 <p>Record 4 has an age range of 43 Ma and is the only record above 15
 Ma. To retain unflagged records with an age range of at most 15 Ma,
-exclude missing ranges and apply the limit directly:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kept15</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rule</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">f</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">age_range</span><span class="op">)</span>, <span class="op">]</span></span>
+apply the limit to the kept records; <code><a href="https://rdrr.io/r/base/which.html" class="external-link">which()</a></code> also drops
+records without an age range:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">kept15</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rule</span><span class="op">)</span></span>
+<span><span class="va">kept15</span> <span class="op">&lt;-</span> <span class="va">kept15</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">kept15</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">kept15</span><span class="op">$</span><span class="va">occurrence_no</span></span>
 <span><span class="co">#&gt; [1] 1 8 9</span></span></code></pre></div>
 <p>The 15 Ma limit is illustrative; choose a limit appropriate for your
@@ -320,7 +322,7 @@ to 4 Ma wide. Genera are assigned independently of location and age.</p>
 records an age range of 99 to 101 Ma. The <code>injected_case</code>
 column labels these changes; unchanged records are labelled
 <code>background</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">600</span></span>
 <span><span class="va">big</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -338,7 +340,7 @@ column labels these changes; unchanged records are labelled
 <span><span class="co">#&gt;         575          20           5</span></span></code></pre></div>
 <p>Run the outlier tests alongside the coordinate and age tests to
 collect their flags in one table:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">otests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_range_outlier"</span>, <span class="st">"age_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span><span class="op">)</span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">big</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">otests</span><span class="op">)</span>, columns <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"flag_"</span>, <span class="va">otests</span><span class="op">)</span><span class="op">]</span>,</span>
@@ -358,7 +360,7 @@ three tests leave the background records unflagged.</p>
 <p>You can adjust the tests through <code>settings</code>. The call
 below lowers <code>mltpl</code> to 2 for the range test and changes the
 age test’s seed to 7:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">big</span>, tests <span class="op">=</span> <span class="va">otests</span>, columns <span class="op">=</span> <span class="va">cols</span>,</span>
 <span>                       settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>age_range_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mltpl <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>                                       age_outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -378,16 +380,16 @@ gives 14 flagged records, compared with 12 under the default seed.</p>
 speciation and extinction rates from fossil occurrences. Select the
 records from <code>g</code> that are not flagged by any of the tests run
 and have an age range of at most 15 Ma:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">final_rule</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">otests</span><span class="op">)</span></span>
-<span><span class="va">g</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;-</span> <span class="va">g</span><span class="op">$</span><span class="va">max_ma</span> <span class="op">-</span> <span class="va">g</span><span class="op">$</span><span class="va">min_ma</span></span>
-<span><span class="va">final</span> <span class="op">&lt;-</span> <span class="va">g</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">final_rule</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">g</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span>, <span class="op">]</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;-</span> <span class="va">g</span><span class="op">$</span><span class="va">max_ma</span> <span class="op">-</span> <span class="va">g</span><span class="op">$</span><span class="va">min_ma</span></span>
+<span><span class="va">final</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span><span class="va">final</span> <span class="op">&lt;-</span> <span class="va">final</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">final</span><span class="op">$</span><span class="va">age_range</span> <span class="op">&lt;=</span> <span class="fl">15</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">final</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 575</span></span></code></pre></div>
 <p><code><a href="../reference/export_pyrate.html">export_pyrate()</a></code> writes them in PyRate’s input format:
 one array of ages per taxon, an extra age of 0 for extant taxa, and
 replicates of ages drawn from each record’s range.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/export_pyrate.html">export_pyrate</a></span><span class="op">(</span><span class="va">final</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"wyoming"</span><span class="op">)</span>, status <span class="op">=</span> <span class="st">"extinct"</span>,</span>
 <span>                       columns <span class="op">=</span> <span class="va">cols</span>, replicates <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
@@ -404,7 +406,7 @@ layout, and the package tests compare the two files.</p>
 </h2>
 <p><code>age_equal</code> and <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal()</a></code> give the same
 flags on the small table:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">theirs</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu">CoordinateCleaner</span><span class="fu">::</span><span class="fu"><a href="https://ropensci.github.io/CoordinateCleaner/reference/cf_equal.html" class="external-link">cf_equal</a></span><span class="op">(</span><span class="va">fos</span>, value <span class="op">=</span> <span class="st">"flagged"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>occurrence_no <span class="op">=</span> <span class="va">fos</span><span class="op">$</span><span class="va">occurrence_no</span>,</span>
 <span>           OccurrenceCleaner <span class="op">=</span> <span class="va">f</span><span class="op">$</span><span class="va">flag_age_equal</span>, CoordinateCleaner <span class="op">=</span> <span class="va">theirs</span><span class="op">)</span></span>
@@ -430,7 +432,7 @@ has to be drawn.</p>
 <p>GBIF stores fossil specimens alongside modern records, marked by
 <code>basisOfRecord = "FOSSIL_SPECIMEN"</code>, usually without
 PBDB-style age fields. <code>basis_fossil</code> flags them:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  gbifID <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
 <span>  basisOfRecord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HUMAN_OBSERVATION"</span>, <span class="st">"FOSSIL_SPECIMEN"</span>, <span class="st">"PRESERVED_SPECIMEN"</span><span class="op">)</span>,</span>
@@ -438,8 +440,8 @@ PBDB-style age fields. <code>basis_fossil</code> flags them:</p>
 <span><span class="va">fg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">gb</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>A study of present-day distributions keeps the records without the
 flag, and a palaeontological one keeps only the flagged records:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fg</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">fg</span>, <span class="st">"basis_fossil"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbifID"</span>, <span class="st">"basisOfRecord"</span><span class="op">)</span><span class="op">]</span></span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">fg</span>, <span class="st">"basis_fossil"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbifID"</span>, <span class="st">"basisOfRecord"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   gbifID      basisOfRecord</span></span>
 <span><span class="co">#&gt; 1      1  HUMAN_OBSERVATION</span></span>
 <span><span class="co">#&gt; 3      3 PRESERVED_SPECIMEN</span></span>

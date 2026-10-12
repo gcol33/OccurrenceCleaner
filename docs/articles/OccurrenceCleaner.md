@@ -7,7 +7,7 @@ It assumes basic R and data frames. The coordinate tests follow
 (Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)), with the
 same definitions and default distances. The documented differences are
 listed in [Where the flags
-differ](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#where-the-flags-differ).
+differ](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#where-the-results-differ).
 
 1.  **Flag** the records with
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
@@ -17,7 +17,7 @@ differ](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.h
     [`summary()`](https://rdrr.io/r/base/summary.html).
 
 3.  **Filter** out flagged records, using
-    [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
+    [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md).
 
 4.  **Compare** rules with
     [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
@@ -34,11 +34,6 @@ Needs a C++ compiler;
 [Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
-``` r
-
-library(OccurrenceCleaner)
-```
-
 ## Flagging a data frame
 
 The example has seven records of four tree species, each with an
@@ -47,6 +42,8 @@ The column names follow Darwin Core, the standard set of field names for
 biodiversity data.
 
 ``` r
+
+library(OccurrenceCleaner)
 
 x <- data.frame(
   id = 1:7,
@@ -109,17 +106,16 @@ f$flag_duplicate
 
 ## Filtering records
 
-A cleaning rule is the set of tests whose flags exclude a record. Use
-[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-to remove records flagged by any test in the rule.
-[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-also checks that every named test was run on the flagged table, and
-stops with an error if one was not:
+A cleaning rule is the set of tests whose flags exclude a record.
+[`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
+keeps the records that no test in the rule flags. It also checks that
+every named test was run on the flagged table, and stops with an error
+if one was not:
 
 ``` r
 
 rule <- c("invalid", "zero", "duplicate")
-cleaned <- f[!has_flag(f, rule), ]
+cleaned <- keep_unflagged(f, rule)
 cleaned[, c("id", "species", "decimalLongitude", "decimalLatitude")]
 #>   id         species decimalLongitude decimalLatitude
 #> 1  1   Quercus robur            14.05           47.85
@@ -523,6 +519,7 @@ covers resuming, duplicates across files and reading the flags back.
   where the capitals, centroids, institutions and land polygons come
   from, their versions, and how the land scale changes the `sea` test.
 
-- [Coming from
+- [Compatibility with
   CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md):
-  how each function and argument maps across.
+  where the two packages agree, how that is tested, and where results
+  differ.

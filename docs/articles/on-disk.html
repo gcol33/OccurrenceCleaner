@@ -66,7 +66,7 @@
     <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
-    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
+    <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -129,8 +129,6 @@ call.</p></li>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="example-input">Example input<a class="anchor" aria-label="anchor" href="#example-input"></a>
 </h3>
@@ -140,8 +138,10 @@ of Parquet files, a single Parquet, <code>.csv</code> or
 <code>.tsv</code> file, and a vectra query are read the same way. Each
 file has 3,000 records with GBIF’s lower-case column names, at random
 points in a box over western and central Europe:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7</span><span class="op">)</span></span>
 <span><span class="va">make_part</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">offset</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>    gbifid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">offset</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -157,7 +157,7 @@ points in a box over western and central Europe:</p>
 <p>The last record of part 3 is replaced by a copy of the first record
 of part 1, with its own identifier, so the same species and coordinates
 appear in two files:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p3</span><span class="op">[</span><span class="fl">3000</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p1</span><span class="op">[</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"snapshot"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">src</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -177,7 +177,7 @@ appear in two files:</p>
 later. The record identifier (<code>gbifid</code> here, set through
 <code>occ_columns(id = ...)</code>) is kept whenever it is present, so
 the flags can be joined back to the full records:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"flags"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="va">out</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>,</span>
 <span>                      columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
@@ -186,13 +186,13 @@ the flags can be joined back to the full records:</p>
 <span><span class="co">#&gt; group tests: reading 3 file(s) (pass 2 of 2)</span></span>
 <span><span class="co">#&gt; group tests: duplicate: 64 bucket(s)</span></span>
 <span><span class="co">#&gt; group tests: outlier: 26 bucket(s)</span></span>
-<span><span class="co">#&gt; group tests: done [0.5 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.9 s]</span></span>
 <span><span class="co">#&gt; occurrence-1: 3000 rows in 1 part(s) [0.1 s]</span></span>
 <span><span class="co">#&gt; occurrence-2: 3000 rows in 1 part(s) [0 s]</span></span>
 <span><span class="co">#&gt; occurrence-3: 3000 rows in 1 part(s) [0 s]</span></span>
 <span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 9,000 records in 3 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpAxFN4C\flags</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp21CvKl\flags</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi</span></span>
 <span><span class="co">#&gt;   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
@@ -201,7 +201,7 @@ the flags can be joined back to the full records:</p>
 <p>Without <code>tests</code>, the run covers every test the columns
 allow. The printed object lists them, and <code><a href="../reference/test_plan.html">test_plan()</a></code> gives
 the reason for each test that did not run:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_plan.html">test_plan</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">p</span><span class="op">[</span><span class="op">!</span><span class="va">p</span><span class="op">$</span><span class="va">run</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;                        test                            reason</span></span>
@@ -239,7 +239,7 @@ flagging.</p>
 <p>The rule <code>coordinatecleaner</code> holds the same tests as in <a href="rules.html">Choosing a cleaning rule</a>: the default tests of
 CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> that need only
 coordinates and a species, apart from its outlier test.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coordinatecleaner</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>,</span>
 <span>                       <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -342,7 +342,7 @@ coordinates and a species, apart from its outlier test.</p>
 the 3,591 records the rule removes: the points were drawn uniformly over
 a box that includes the Mediterranean, the Bay of Biscay and the North
 Sea. A grouping column that was not kept is an error that names it:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">out</span>, by <span class="op">=</span> <span class="st">"species"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `tally_flags()`:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> grouping column(s) not kept in the flag output: species</span></span></code></pre></div>
@@ -360,14 +360,14 @@ choose one that keeps the result small, such as one class or one region.
 <code>flags != 0L</code> keeps the records flagged by any test that ran,
 which here includes <code>duplicate</code> and <code>outlier</code> as
 well as the tests of the rule above:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fungi</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_flagged.html">flagged_table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>, <span class="va">kingdom</span> <span class="op">==</span> <span class="st">"Fungi"</span>, <span class="va">flags</span> <span class="op">!=</span> <span class="fl">0L</span><span class="op">)</span></span>
 <span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">collect</a></span><span class="op">(</span><span class="va">fungi</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1252</span></span></code></pre></div>
 <p>vectra filters cannot test a single bit of the flag word, so a rule
 is applied after collecting, with <code><a href="../reference/flag_mask.html">has_flag()</a></code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>removed <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">$</span><span class="va">flags</span>, <span class="va">coordinatecleaner</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; removed</span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
@@ -375,7 +375,7 @@ is applied after collecting, with <code><a href="../reference/flag_mask.html">ha
 <p>To attach the flags to the full records, join on the identifier.
 vectra runs the join on disk, so only the joined rows of the selection
 are collected:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">src</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">records</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="fu">vectra</span><span class="fu">::</span><span class="va"><a href="https://gillescolling.com/vectra/reference/bind_rows.html" class="external-link">bind_rows</a></span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">files</span>, <span class="fu">vectra</span><span class="fu">::</span><span class="va"><a href="https://gillescolling.com/vectra/reference/tbl.html" class="external-link">tbl</a></span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fungi</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_flagged.html">flagged_table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>, <span class="va">kingdom</span> <span class="op">==</span> <span class="st">"Fungi"</span>, <span class="va">flags</span> <span class="op">!=</span> <span class="fl">0L</span><span class="op">)</span></span>
@@ -398,7 +398,7 @@ in the input order: the files in sorted order and the rows within each
 file. The copy in the last row of part 3 is flagged and the original in
 part 1 is not, as they would be in one data frame holding all three
 parts in that order:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">collect</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_flagged.html">flagged_table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">pair</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">gbifid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span><span class="op">$</span><span class="va">gbifid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">p3</span><span class="op">$</span><span class="va">gbifid</span><span class="op">[</span><span class="fl">3000</span><span class="op">]</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>gbifid <span class="op">=</span> <span class="va">pair</span><span class="op">$</span><span class="va">gbifid</span>, duplicate <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">pair</span><span class="op">$</span><span class="va">flags</span>, <span class="st">"duplicate"</span><span class="op">)</span><span class="op">)</span></span>
@@ -414,7 +414,7 @@ vectra applies the filter while it scans the file. A query runs once, so
 it is flagged as one unit, and the grouped tests, which read the input
 more than once, do not run on it. <code><a href="../reference/test_plan.html">test_plan()</a></code> on the result
 lists them with that reason:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plants</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="st">"occurrence-1.vtr"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                         <span class="va">kingdom</span> <span class="op">==</span> <span class="st">"Plantae"</span><span class="op">)</span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">plants</span>, out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"flags-plants"</span><span class="op">)</span>,</span>
@@ -440,7 +440,7 @@ directory path instead, and select the records afterwards.</p>
 <code>.done</code> marker in <code>out</code>. Repeating the call skips
 every finished unit, so a run that was stopped is continued by running
 the same call again:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="va">out</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>,</span>
 <span>                      columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)</span></span>
@@ -450,7 +450,7 @@ the same call again:</p>
 <p>An interruption during a unit leaves that unit without its marker.
 Removing a marker by hand has the same effect, and only that unit is
 flagged again:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"occurrence-2.done"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="va">out</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>,</span>
@@ -478,7 +478,7 @@ tests, columns, <code>keep</code>, reference, buffers, test settings,
 duplicate options, package version, and each input file with its size
 and modification time. A later call into the same directory must match
 it, or it stops and names what differs:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="va">out</span>, keep <span class="op">=</span> <span class="st">"kingdom"</span>,</span>
 <span>                 columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
@@ -495,7 +495,7 @@ is written once at least <code>part_rows</code> rows (two million by
 default) have accumulated, and at the end of the unit.
 <code>flags_config.rds</code> holds the configuration record and
 <code>flags_meta.rds</code> the summary of the finished run:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "flags_config.rds"           "flags_meta.rds"            </span></span>
 <span><span class="co">#&gt; [3] "occurrence-1.done"          "occurrence-2.done"         </span></span>
@@ -537,7 +537,7 @@ case-insensitive defaults of <code><a href="../reference/occ_columns.html">occ_c
 <code><a href="../reference/test_plan.html">test_plan()</a></code> on the directory lists the tests the columns
 allow before anything runs, and <code>keep</code> names the columns a
 loss analysis groups by:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">snapshot</span> <span class="op">&lt;-</span> <span class="st">"gbif_snapshot/occurrence.parquet"</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_plan.html">test_plan</a></span><span class="op">(</span><span class="va">snapshot</span><span class="op">)</span></span>
 <span><span class="va">p</span><span class="op">[</span><span class="op">!</span><span class="va">p</span><span class="op">$</span><span class="va">run</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
