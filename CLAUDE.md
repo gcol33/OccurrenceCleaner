@@ -18,17 +18,27 @@ changing a test or a gazetteer.
 
 ## Principles
 
-- **Flag, never drop.** Every test writes one bit per record; nothing is removed and no
-  threshold is baked in. A cleaning rule is a query over the flags, chosen afterwards. Year and
-  coordinate uncertainty stay raw columns and are cut at analysis time.
+- **The engine always returns flags.** Every test writes one bit per record; the engine removes
+  nothing and bakes in no threshold. A cleaning rule is a query over the flags, chosen
+  afterwards. Removing records is an optional selection interface on top: `keep_unflagged()`
+  after flagging, and the per-test cleaning functions `clean_<test>()`. Year and coordinate
+  uncertainty stay raw columns and are cut at analysis time.
 - **Equivalence is the trust argument.** Each CoordinateCleaner-equivalent test has a test in
   `tests/testthat/` that runs CoordinateCleaner itself on sampled records and requires identical
   flags (`skip_if_not_installed("CoordinateCleaner")`). A disagreement is a bug unless it is a
   documented, deliberate difference listed in the test file and in the help page of that test.
-- **One front door.** One flagging verb whose input can be a data frame or an on-disk table
-  (vectra node / Parquet directory); the return follows the input. Tests are chosen by an
-  argument, not by separate `flag_*()` functions. A second verb tallies flags into loss tables.
-  Never export CoordinateCleaner's `cc_*` names: that would mask its functions on attach.
+- **One front door for flagging.** One flagging verb, `flag_occurrences()`, whose input can be
+  a data frame or an on-disk table (vectra node / Parquet directory); the return follows the
+  input. It is the interface for running tests together, keeping their results and processing
+  large tables. Tests are chosen by an argument, not by separate `flag_*()` functions. A second
+  verb tallies flags into loss tables.
+- **Cleaning functions come from the registry.** `clean_<test>()` exists for every test in
+  `.flag_layout`, built by `clean_fun()` in `R/clean.R`: it runs `flag_occurrences()` on one test
+  and drops what it flags, with the test's buffer or `.default_settings` options as arguments.
+  No test logic in a cleaning function; a new test gets its cleaning function as one line in
+  `R/clean.R`, documented on the test's help page (`test-clean.R` asserts one per test). Data
+  frames only; a chain applies a grouped test to the records earlier steps kept.
+- Never export CoordinateCleaner's `cc_*` names: that would mask its functions on attach.
 - **Reference data is pinned and versioned.** Every gazetteer the package uses carries its
   source, version and retrieval date, and the flag output records which reference version
   produced it.

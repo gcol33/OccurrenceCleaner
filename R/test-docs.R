@@ -15,6 +15,7 @@
 #' x <- data.frame(decimalLongitude = c("16.37", "abc", NA, "200"),
 #'                 decimalLatitude = c("48.21", "10", "10", "10"))
 #' flag_occurrences(x, tests = "invalid")$flag_invalid
+#' clean_invalid(x)
 #' @name test_invalid
 NULL
 
@@ -27,16 +28,16 @@ NULL
 #' @section Buffer: `buffers = list(zero = 0.5)`, in degrees. `zero = 0`
 #'   flags exact zeros only.
 #' @section CoordinateCleaner: Equivalent to `cc_zero()`. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-#'   3.0.1 documents the same 0.5 degree buffer, but builds the buffer point
-#'   without a CRS, so [terra](https://rspatial.github.io/terra/) buffers 0.5 metres and only exact zeros are
-#'   flagged. `buffers = list(zero = 0)` reproduces that behaviour. Reported
-#'   as \href{https://github.com/ropensci/CoordinateCleaner/issues/114}{CoordinateCleaner issue 114}.
+#'   3.0.1 documents the same 0.5 degree buffer but applies a radius of 0.5
+#'   metres, so it flags only exact zeros. `buffers = list(zero = 0)` gives
+#'   the same flags.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
 #' x <- data.frame(decimalLongitude = c(0, 0.3, 0.4), decimalLatitude = c(42, 0.3, 0.4))
 #' flag_occurrences(x, tests = "zero")$flag_zero
 #' flag_occurrences(x, tests = "zero", buffers = list(zero = 0))$flag_zero
+#' clean_zero(x, buffer = 0)
 #' @name test_zero
 NULL
 
@@ -53,6 +54,7 @@ NULL
 #' @examples
 #' x <- data.frame(decimalLongitude = c(10, -10, 10.0001), decimalLatitude = 10)
 #' flag_occurrences(x, tests = "equal")$flag_equal
+#' clean_equal(x)
 #' @name test_equal
 NULL
 
@@ -97,6 +99,7 @@ NULL
 #' g <- reference_points("capital")
 #' flag_occurrences(x, tests = "capital",
 #'                  gazetteers = list(capital = g[!g$extension, ]))$flag_capital
+#' clean_capital(x, buffer = 20000)
 #' @name test_capital
 NULL
 
@@ -144,6 +147,7 @@ NULL
 #' g <- reference_points("centroid")
 #' flag_occurrences(x, tests = "centroid",
 #'                  gazetteers = list(centroid = g[!g$extension, ]))$flag_centroid
+#' clean_centroid(x)
 #' @name test_centroid
 NULL
 
@@ -202,6 +206,7 @@ NULL
 #' g <- reference_points("institution")
 #' flag_occurrences(x, tests = "institution",
 #'                  gazetteers = list(institution = g[!g$extension, ]))$flag_institution
+#' clean_institution(x)
 #' @name test_institution
 NULL
 
@@ -223,6 +228,7 @@ NULL
 #' @examples
 #' x <- data.frame(decimalLongitude = c(12.58, 12.6), decimalLatitude = c(55.67, 55.7))
 #' flag_occurrences(x, tests = "gbif_headquarters")$flag_gbif_headquarters
+#' clean_gbif_headquarters(x)
 #' @name test_gbif_headquarters
 NULL
 
@@ -248,6 +254,7 @@ NULL
 #' x <- data.frame(decimalLongitude = c(12.58, 16.37, -30), decimalLatitude = c(55.67, 48.21, 40))
 #' flag_occurrences(x, tests = "sea")$flag_sea
 #' flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea
+#' clean_sea(x, land_scale = 50)
 #' @name test_sea
 NULL
 
@@ -269,6 +276,7 @@ NULL
 #' @examples
 #' x <- data.frame(decimalLongitude = c(16.37, 15.3), decimalLatitude = c(48.21, 47.5))
 #' flag_occurrences(x, tests = "urban")$flag_urban
+#' clean_urban(x)
 #' @name test_urban
 NULL
 
@@ -293,6 +301,7 @@ NULL
 #' x <- data.frame(decimalLongitude = 16.37, decimalLatitude = 48.21,
 #'                 countryCode = c("AT", "AUT", "DE", NA))
 #' flag_occurrences(x, tests = "country_mismatch")$flag_country_mismatch
+#' clean_country_mismatch(x)
 #' @name test_country_mismatch
 NULL
 
@@ -326,6 +335,7 @@ NULL
 #' flag_occurrences(x, tests = "duplicate")$flag_duplicate
 #' flag_occurrences(x, tests = "duplicate", duplicate_by = "eventDate")$flag_duplicate
 #' flag_occurrences(x, tests = "duplicate", duplicate_cell = 0.01)$flag_duplicate
+#' clean_duplicate(x, by = "eventDate")
 #' @name test_duplicate
 NULL
 
@@ -358,6 +368,7 @@ NULL
 #'                           "TAXON_MATCH_FUZZY", "PRESUMED_SWAPPED_COORDINATE", ""))
 #' f <- flag_occurrences(x, tests = c("issue_coordinate", "issue_taxon", "issue_rounded"))
 #' f[, c("flag_issue_coordinate", "flag_issue_taxon", "flag_issue_rounded")]
+#' x |> clean_issue_coordinate() |> clean_issue_taxon()
 #' @name test_gbif_issue
 NULL
 
@@ -378,6 +389,7 @@ NULL
 #' x <- data.frame(basisOfRecord = c("HUMAN_OBSERVATION", "LIVING_SPECIMEN", "FOSSIL_SPECIMEN"))
 #' f <- flag_occurrences(x, tests = c("basis_fossil", "basis_living"))
 #' f[, c("flag_basis_fossil", "flag_basis_living")]
+#' clean_basis_living(x)
 #' @name test_basis
 NULL
 
@@ -396,6 +408,7 @@ NULL
 #' x <- data.frame(establishmentMeans = c(NA, "MANAGED", "native", "Naturalised"))
 #' f <- flag_occurrences(x, tests = c("establishment_introduced", "establishment_managed"))
 #' f[, c("flag_establishment_introduced", "flag_establishment_managed")]
+#' x |> clean_establishment_introduced() |> clean_establishment_managed()
 #' @name test_establishment
 NULL
 
@@ -422,6 +435,7 @@ NULL
 #' @examples
 #' x <- data.frame(min_ma = c(10, 20, 30), max_ma = c(20, 20, 25))
 #' flag_occurrences(x, tests = "age_equal")$flag_age_equal
+#' clean_age_equal(x)
 #' @name test_age_equal
 NULL
 
@@ -464,9 +478,8 @@ NULL
 #'   computed from the country polygons of the reference.
 #' @section CoordinateCleaner: Equivalent to `cc_outl()`; identical flags for
 #'   species below 10,000 records. In CoordinateCleaner 3.0.1 the raster
-#'   approximation computes the cell statistics but its mapping from outlier
-#'   cells back to records returns none, so it never flags a record; here the
-#'   records of the outlier cells are flagged. CoordinateCleaner's sampling
+#'   approximation (10,000 records or more, or `thinning = TRUE`) flags no
+#'   records; here the records of the outlier cells are flagged. CoordinateCleaner's sampling
 #'   correction queries GBIF record counts online at run time; here the counts
 #'   are a table given with the call, so the flags can be reproduced.
 #' @family tests
@@ -476,6 +489,7 @@ NULL
 #' x <- data.frame(species = "a", decimalLongitude = c(rnorm(50, 10, 1), 60),
 #'                 decimalLatitude = c(rnorm(50, 50, 1), 10))
 #' which(flag_occurrences(x, tests = "outlier")$flag_outlier)
+#' nrow(clean_outlier(x, mltpl = 3))
 #' @name test_outlier
 NULL
 
@@ -513,6 +527,7 @@ NULL
 #' x <- data.frame(accepted_name = "A", min_ma = c(rep(20, 20), 90), max_ma = c(rep(22, 20), 92))
 #' flag_occurrences(x, tests = "age_outlier",
 #'                  columns = occ_columns(species = "accepted_name"))$flag_age_outlier
+#' clean_age_outlier(x, columns = occ_columns(species = "accepted_name"))
 #' @name test_age_outlier
 NULL
 
@@ -541,6 +556,7 @@ NULL
 #'                 min_ma = 20, max_ma = 20)
 #' cols <- occ_columns(lon = "lng", lat = "lat", species = "accepted_name")
 #' flag_occurrences(x, tests = "spatiotemporal_outlier", columns = cols)$flag_spatiotemporal_outlier
+#' clean_spatiotemporal_outlier(x, columns = cols)
 #' @name test_spatiotemporal_outlier
 NULL
 
@@ -570,6 +586,7 @@ NULL
 #' x <- data.frame(accepted_name = "A", min_ma = 20, max_ma = c(rep(21, 20), 60))
 #' flag_occurrences(x, tests = "age_range_outlier",
 #'                  columns = occ_columns(species = "accepted_name"))$flag_age_range_outlier
+#' clean_age_range_outlier(x, columns = occ_columns(species = "accepted_name"))
 #' @name test_age_range_outlier
 NULL
 
@@ -599,6 +616,7 @@ NULL
 #'                 decimalLongitude = c(runif(300, 0, 20), ddmm(300)),
 #'                 decimalLatitude = c(runif(300, 0, 20), ddmm(300)))
 #' tapply(flag_occurrences(x, tests = "dataset_ddmm")$flag_dataset_ddmm, x$datasetKey, all)
+#' table(clean_dataset_ddmm(x)$datasetKey)
 #' @name test_dataset_ddmm
 NULL
 
@@ -631,6 +649,7 @@ NULL
 #'                 decimalLongitude = c(runif(400, 0, 20), round(runif(400, 0, 20) * 2) / 2 + 0.01),
 #'                 decimalLatitude = c(runif(400, 0, 20), round(runif(400, 30, 50) * 2) / 2 + 0.01))
 #' tapply(flag_occurrences(x, tests = "dataset_rounded")$flag_dataset_rounded, x$datasetKey, all)
+#' table(clean_dataset_rounded(x)$datasetKey)
 #' @name test_dataset_rounded
 NULL
 
@@ -660,6 +679,7 @@ NULL
 #'   x <- data.frame(species = c("a", "a", "b"), decimalLongitude = c(10, 30, 30),
 #'                   decimalLatitude = 50)
 #'   flag_occurrences(x, tests = "range", gazetteers = list(range = rg))$flag_range
+#'   clean_range(x, ranges = rg)
 #' }
 #' @name test_range
 NULL
@@ -695,6 +715,7 @@ NULL
 #' a <- reference_points("aohi")
 #' x <- data.frame(decimalLongitude = a$lon[1] + 0.01, decimalLatitude = a$lat[1])
 #' flag_occurrences(x, tests = "aohi")$flag_aohi
+#' clean_aohi(x)
 #' @name test_aohi
 NULL
 
@@ -741,5 +762,6 @@ NULL
 #'                 decimalLatitude = c(40, 48.21, 40, 48.21))
 #' f <- flag_occurrences(x, tests = c("sea", "sea_nonmarine", "land_marine"))
 #' f[, c("genus", "flag_sea", "flag_sea_nonmarine", "flag_land_marine")]
+#' clean_sea_nonmarine(x)
 #' @name test_habitat
 NULL

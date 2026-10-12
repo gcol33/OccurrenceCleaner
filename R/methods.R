@@ -222,7 +222,10 @@ plot.occ_flagged <- function(x, rules = NULL, ...) {
 
 .col_flagged <- "#9DB4C0"
 .col_only <- "#2C5D73"
-.col_removed <- "#B5442F"
+# The map has no ocean fill and draws land, coastlines and points in one grey
+# and one red, so it reads on a light or a dark background alike.
+.col_map <- "#5C6166"
+.col_map_removed <- "#B5342B"
 
 # Title centred on the figure rather than the plot region, so a wide left
 # margin of test names does not push it past the right edge, and shrunk when
@@ -292,23 +295,21 @@ plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   on.exit(graphics::par(op))
   graphics::plot.new()
   graphics::plot.window(xr, yr, asp = 1 / cos(mean(yr) * pi / 180))
-  usr <- graphics::par("usr")
-  graphics::rect(usr[1], usr[3], usr[2], usr[4], col = "#EEF3F6", border = NA)
   land <- ref_land_110
   starts <- land$ring_start
   idx <- unlist(lapply(seq_len(length(starts) - 1L), function(i) c(NA, seq.int(starts[i] + 1L, starts[i + 1L]))))[-1L]
-  graphics::polypath(land$x[idx] / 1e7, land$y[idx] / 1e7, col = "#E3E1DA", border = "#B9B6AC",
-                     rule = "evenodd")
+  graphics::polypath(land$x[idx] / 1e7, land$y[idx] / 1e7, col = grDevices::adjustcolor(.col_map, 0.15),
+                     border = grDevices::adjustcolor(.col_map, 0.5), rule = "evenodd")
   graphics::points(lon[ok & !removed], lat[ok & !removed], pch = 16, cex = 0.6,
-                   col = grDevices::adjustcolor("#4D4D4D", 0.6))
+                   col = grDevices::adjustcolor(.col_map, 0.6))
   graphics::points(lon[ok & removed], lat[ok & removed], pch = 16, cex = 0.7,
-                   col = grDevices::adjustcolor(.col_removed, 0.6))
+                   col = grDevices::adjustcolor(.col_map_removed, 0.8))
   ticks <- function(r, lim) { p <- pretty(r); p[p >= -lim & p <= lim] }
   graphics::axis(1, ticks(xr, 180))
   graphics::axis(2, ticks(yr, 90), las = 1)
-  graphics::box(col = "grey70")
+  graphics::box(col = .col_map)
   plot_title(sprintf("rule %s: %s of %s records removed", rule,
                      format(sum(removed & ok), big.mark = ","), format(sum(ok), big.mark = ",")))
-  graphics::legend("bottomleft", c("kept", "removed"), pch = 16, col = c("#4D4D4D", .col_removed),
-                   bty = "n", bg = "white")
+  graphics::legend("bottomleft", c("kept", "removed"), pch = 16, col = c(.col_map, .col_map_removed),
+                   bty = "n")
 }

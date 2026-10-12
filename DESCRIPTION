@@ -11,8 +11,8 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     country centroids, capitals or biodiversity institutions, zero or equal
     coordinates, records at sea, in the wrong country or outside the species
     range, duplicates, outliers within a species, and datasets with converted
-    or gridded coordinates, with the same tests and defaults as
-    'CoordinateCleaner'. It also reads
+    or gridded coordinates, with the test definitions and default buffers
+    of 'CoordinateCleaner' apart from documented differences. It also reads
     the quality warnings GBIF attaches to each record, the basis of record and
     the establishment means, and checks records at sea or on land against the
     habitat of their genus from the Interim Register of Marine and Nonmarine
@@ -52,3 +52,22 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
+Collate: 
+    'OccurrenceCleaner-package.R'
+    'RcppExports.R'
+    'group.R'
+    'flag.R'
+    'clean.R'
+    'columns.R'
+    'data.R'
+    'flag_tests.R'
+    'habitat.R'
+    'methods.R'
+    'pyrate.R'
+    'reference.R'
+    'shapefile.R'
+    'spatialvalid.R'
+    'store.R'
+    'stream.R'
+    'tally.R'
+    'test-docs.R'

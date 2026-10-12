@@ -79,6 +79,8 @@ test_that("invalid, equal and duplicate match exactly", {
 })
 
 test_that("zero matches cc_zero outside the 0.5 degree disc", {
+  # cc_zero 3.0.1 buffers 0.5 m instead of 0.5 degrees:
+  # https://github.com/ropensci/CoordinateCleaner/issues/114
   set.seed(6)
   x <- data.frame(species = "a", decimalLongitude = c(runif(500, -2, 2), 0, 0, 3, 0.2),
                   decimalLatitude = c(runif(500, -2, 2), 0, 7, 0, 0.1))
