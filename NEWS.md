@@ -4,6 +4,13 @@
 * `print()` methods for `occ_flags` (a header and the first records, with the tests each failed), `occ_tally` (records removed and kept per rule) and `occ_columns`; `occ_flagged` prints its reference on one line. `summary()` stays the full per-test report.
 * `has_flag()` takes a flagged data frame as well as the flag words.
 * `flag_reference()` returns the reference label recorded with a set of flags, in memory or on disk.
+* `plot()` keeps a label on every bar however many tests a rule holds; the map takes `xlim` and `ylim`.
+
+## Streamed input
+* Files on disk are read with only the columns the tests, `keep` and `duplicate_by` use, in the record pass and in the group pass.
+* The group pass counts species with summed per-chunk tables, tallies large species with one split per chunk, holds bucket rows in memory and writes them in batches, and computes the exact outlier distances once per pair. On three GBIF snapshot files (1.9 million records) the group pass takes 101 s instead of 344 s.
+* A `vectra_node` given as input runs once, so the grouped tests, which read the input more than once, stop with a message asking for the path instead.
+* `dataset_rounded` no longer warns when a dataset has no regular spacing between 0.01 and 2 degrees.
 * `print()` and `summary()` of a flagged data frame or tally subset to other columns fall back to the data frame methods.
 
 # OccurrenceCleaner 0.1.0

@@ -50,6 +50,10 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_identical(res3$units, "stream")
   res4 <- flag_occurrences(file.path(src, "b.vtr"), tests = "zero", out = tempfile(), verbose = FALSE)
   expect_identical(res4$units, "b")
+  expect_error(flag_occurrences(vectra::tbl(file.path(src, "a.vtr")), tests = c("zero", "outlier"),
+                                out = tempfile(), verbose = FALSE), "pass the file or directory path")
+  expect_error(flag_occurrences(file.path(src, "b.vtr"), tests = "duplicate", duplicate_by = "nope",
+                                out = tempfile(), verbose = FALSE), "duplicate_by")
   expect_error(flag_occurrences(src, tests = "zero"), "`out`")
   expect_error(flag_occurrences(src, tests = "zero", out = tempfile(), keep = "nope", verbose = FALSE), "keep")
   expect_error(flag_occurrences(tempfile(), tests = "zero", out = tempfile()), "not found")

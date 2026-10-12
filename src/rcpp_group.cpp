@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <vector>
 
 using namespace Rcpp;
 
@@ -56,19 +57,29 @@ IntegerVector cpp_hash_strings(CharacterVector x) {
 List cpp_outlier_dist(NumericVector lon, NumericVector lat) {
   const R_xlen_t n = lon.size();
   if (lat.size() != n) stop("lon and lat differ in length");
+  // Each pair is computed once and added to both points, in increasing order
+  // of the other point's index, as a full row scan would add them.
+  std::vector<double> p(n), cp(n), s(n, 0.0), m(n, std::numeric_limits<double>::infinity());
+  std::vector<R_xlen_t> k(n, 0);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    p[i] = lat[i] * kDeg;
+    cp[i] = std::cos(p[i]);
+  }
+  for (R_xlen_t i = 0; i < n; ++i) {
+    for (R_xlen_t j = i + 1; j < n; ++j) {
+      const double s1 = std::sin((p[j] - p[i]) / 2), s2 = std::sin((lon[j] - lon[i]) * kDeg / 2);
+      double a = s1 * s1 + cp[i] * cp[j] * s2 * s2;
+      if (a > 1) a = 1;
+      const double d = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a)) * kRadiusKm;
+      if (!(d > 0)) continue;
+      s[i] += d; ++k[i]; if (d < m[i]) m[i] = d;
+      s[j] += d; ++k[j]; if (d < m[j]) m[j] = d;
+    }
+  }
   NumericVector mean(n), mn(n);
   for (R_xlen_t i = 0; i < n; ++i) {
-    double s = 0, m = std::numeric_limits<double>::infinity();
-    R_xlen_t k = 0;
-    for (R_xlen_t j = 0; j < n; ++j) {
-      const double d = haversine_km(lon[i], lat[i], lon[j], lat[j]);
-      if (!(d > 0)) continue;
-      s += d;
-      ++k;
-      if (d < m) m = d;
-    }
-    mean[i] = k ? s / static_cast<double>(k) : R_NaN;
-    mn[i] = m;
+    mean[i] = k[i] ? s[i] / static_cast<double>(k[i]) : R_NaN;
+    mn[i] = m[i];
   }
   return List::create(_["mean"] = mean, _["min"] = mn);
 }

@@ -234,6 +234,7 @@ axis_periodic <- function(f, mids, s) {
   if (all(is.na(dm))) return(FALSE)
   dm[dm < 0.01] <- NA
   tab <- table(c(dm))
+  if (!length(tab)) return(FALSE)
   com <- as.numeric(names(tab)[tab == max(tab)])[1]
   n_reg <- sum(c(dm) %in% com)
   isTRUE(com >= s$reg_dist_min && com <= s$reg_dist_max && n_reg >= s$reg_out_thresh)
@@ -264,12 +265,14 @@ ddmm_cells <- function(lon, lat, ms) {
 # ---- the group pass --------------------------------------------------------------
 
 # Iterate over every chunk of every unit; f(chunk, unit index, first row).
-each_chunk <- function(units, f) {
+# On-disk units are read with the columns in `cols` only.
+each_chunk <- function(units, f, cols) {
   for (u in seq_along(units)) {
     src <- units[[u]]$open()
     if (is.data.frame(src)) {
       f(src, u, 1L)
     } else {
+      if (isTRUE(units[[u]]$reopen)) src <- project(src, unlist(cols))
       vectra::collect_chunked(src, function(acc, chunk) {
         f(chunk, u, acc)
         acc + nrow(chunk)
@@ -280,31 +283,46 @@ each_chunk <- function(units, f) {
 }
 
 # Bucket store: rows of grouped records, kept in memory for a data frame and
-# written to .vtr parts for streamed input.
-new_store <- function(dir, n_buckets) {
+# written to .vtr parts for streamed input. Streamed rows are held in memory
+# per bucket and written once `flush_rows` rows have accumulated in all.
+new_store <- function(dir, n_buckets, flush_rows = 2e6) {
   env <- new.env()
   env$dir <- dir
   env$n <- n_buckets
   env$mem <- vector("list", n_buckets)
+  env$held <- 0
+  env$flush_rows <- flush_rows
   if (!is.null(dir)) dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   env
 }
 store_add <- function(store, d) {
   if (!nrow(d)) return(invisible())
   b <- cpp_hash_strings(d$key) %% store$n + 1L
-  for (k in unique(b)) {
-    part <- d[b == k, , drop = FALSE]
-    if (is.null(store$dir)) {
-      store$mem[[k]] <- rbind(store$mem[[k]], part)
-    } else {
-      path <- file.path(store$dir, sprintf("bucket-%04d.vtr", k))
-      if (file.exists(path)) vectra::append_vtr(part, path) else vectra::write_vtr(part, path)
-    }
+  for (rows in split(seq_len(nrow(d)), b)) {
+    k <- b[rows[1]]
+    store$mem[[k]] <- c(store$mem[[k]], list(d[rows, , drop = FALSE]))
   }
+  store$held <- store$held + nrow(d)
+  if (!is.null(store$dir) && store$held >= store$flush_rows) store_flush(store)
+  invisible()
+}
+store_flush <- function(store) {
+  for (k in seq_len(store$n)) {
+    if (!length(store$mem[[k]])) next
+    part <- do.call(rbind, store$mem[[k]])
+    path <- file.path(store$dir, sprintf("bucket-%04d.vtr", k))
+    if (file.exists(path)) vectra::append_vtr(part, path) else vectra::write_vtr(part, path)
+    store$mem[k] <- list(NULL)
+  }
+  store$held <- 0
   invisible()
 }
 store_buckets <- function(store) {
-  if (is.null(store$dir)) return(Filter(Negate(is.null), store$mem))
+  if (is.null(store$dir)) {
+    mem <- Filter(length, store$mem)
+    return(lapply(mem, function(parts) do.call(rbind, parts)))
+  }
+  store_flush(store)
   files <- list.files(store$dir, "^bucket-.*[.]vtr$", full.names = TRUE)
   lapply(files, function(f) function() as.data.frame(vectra::collect(vectra::tbl(f))))
 }
@@ -313,6 +331,14 @@ bucket_data <- function(b) if (is.function(b)) b() else b
 group_columns <- function(chunk, cols, field) {
   if (is.null(cols[[field]])) return(NULL)
   chunk[[cols[[field]]]]
+}
+
+# Sum a list of named count vectors by name.
+sum_counts <- function(parts) {
+  v <- unlist(parts)
+  if (!length(v)) return(stats::setNames(numeric(), character()))
+  r <- rowsum(unname(v), names(v), reorder = FALSE)
+  stats::setNames(r[, 1], rownames(r))
 }
 
 # Run every requested group test over all units. Returns the lookup used by
@@ -330,7 +356,9 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
 
   # Pass 0: extent of valid records, records per species, per-dataset ranges.
   ext <- c(Inf, -Inf, Inf, -Inf)
-  sp_n <- list()
+  # Per-chunk species counts, summed whenever they hold many names.
+  sp_parts <- list()
+  sp_len <- 0
   ds <- new.env()
   if (want_outlier || length(want_ds)) {
     each_chunk(units, function(chunk, u, first) {
@@ -342,19 +370,25 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
         sp <- sp[!is.na(sp)]
         if (length(sp)) {
           tb <- table(sp)
-          for (k in names(tb)) sp_n[[k]] <<- (if (is.null(sp_n[[k]])) 0 else sp_n[[k]]) + tb[[k]]
+          sp_parts[[length(sp_parts) + 1L]] <<- stats::setNames(as.numeric(tb), names(tb))
+          sp_len <<- sp_len + length(tb)
+          if (sp_len > 5e6) {
+            sp_parts <<- list(sum_counts(sp_parts))
+            sp_len <<- length(sp_parts[[1]])
+          }
         }
       }
       if (length(want_ds)) ds_pass0(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok)
-    })
+    }, cols)
   }
+  sp_n <- sum_counts(sp_parts)
 
   # Pass 1: rows of small species and of taxa into buckets; cell counts of
   # large species; ddmm cells and histograms of datasets.
   sp_store <- if (want_outlier) new_store(if (is.null(store_dir)) NULL else file.path(store_dir, "species"), n_buckets)
   tx_store <- if (length(want_taxon)) new_store(if (is.null(store_dir)) NULL else file.path(store_dir, "taxa"), n_buckets)
   so <- s$outlier
-  raster_sp <- if (want_outlier) names(sp_n)[unlist(sp_n) >= 10000 | so$thinning] else character()
+  raster_sp <- if (want_outlier) names(sp_n)[sp_n >= 10000 | so$thinning] else character()
   grid <- if (length(raster_sp)) outlier_grid(ext, so$thinning_res)
   cells <- new.env()
   if (want_outlier || length(want_taxon) || length(want_ds)) {
@@ -376,17 +410,19 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
                                        lon = lon[small], lat = lat[small], stringsAsFactors = FALSE))
         if (any(big)) {
           cid <- grid_cell(grid, lon[big], lat[big])
-          spb <- sp[big]
-          for (k in unique(spb)) {
+          lon_b <- lon[big]; lat_b <- lat[big]
+          by_sp <- split(seq_along(cid), sp[big])
+          for (k in names(by_sp)) {
+            i <- by_sp[[k]]
             e <- cells[[k]]
-            tb <- table(cid[spb == k])
+            tb <- table(cid[i])
             cur <- if (is.null(e)) integer() else e$counts
             add <- stats::setNames(as.integer(tb), names(tb))
             all <- union(names(cur), names(add))
             v <- stats::setNames(integer(length(all)), all)
             v[names(cur)] <- v[names(cur)] + cur
             v[names(add)] <- v[names(add)] + add
-            pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon[big][spb == k], lat[big][spb == k]), so$min_occs)
+            pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon_b[i], lat_b[i]), so$min_occs)
             cells[[k]] <- list(counts = v, pts = pts)
           }
         }
@@ -401,7 +437,7 @@ group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
                                        id = id[keep], stringsAsFactors = FALSE))
       }
       if (length(want_ds)) ds_pass1(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok, s)
-    })
+    }, cols)
   }
 
   hits <- list()

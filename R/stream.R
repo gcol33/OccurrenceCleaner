@@ -1,10 +1,11 @@
 # Streamed flagging of on-disk tables through vectra.
 
-# Turn the input into a list of units, each a function returning a fresh
-# vectra node, with a name for its output.
+# Turn the input into a list of units, each with a function returning a
+# vectra node and a name for its output. A file can be opened again for every
+# pass; a vectra_node given by the user runs once (`reopen` FALSE).
 stream_units <- function(x) {
   if (inherits(x, "vectra_node")) {
-    return(list(list(name = "stream", open = function() x)))
+    return(list(list(name = "stream", open = function() x, reopen = FALSE)))
   }
   if (!is.character(x) || length(x) < 1L) stop("`x` must be a data frame, a vectra_node or a path")
   files <- unlist(lapply(x, function(p) {
@@ -16,9 +17,16 @@ stream_units <- function(x) {
   }))
   if (!length(files)) stop("no files found under ", paste(x, collapse = ", "))
   lapply(files, function(f) {
-    list(name = tools::file_path_sans_ext(basename(f)), open = function() open_table(f))
+    list(name = tools::file_path_sans_ext(basename(f)), open = function() open_table(f), reopen = TRUE)
   })
 }
+
+# Column names of an on-disk table, read from its first row.
+table_names <- function(node) names(vectra::collect(vectra::slice_head(node, n = 1)))
+
+# The node reduced to the named columns, so each chunk reads only the columns
+# the tests use.
+project <- function(node, cols) do.call(vectra::select, c(list(node), lapply(unique(cols), as.name)))
 
 open_table <- function(f) {
   ext <- tolower(tools::file_ext(f))
@@ -41,12 +49,14 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
   }
   group <- NULL
   if (any(cfg$tests %in% .group_tests)) {
+    if (!all(vapply(units, `[[`, TRUE, "reopen")))
+      stop("the grouped tests (", paste(intersect(cfg$tests, .group_tests), collapse = ", "),
+           ") read the input more than once, and a vectra_node runs once; pass the file or directory path instead")
     gpath <- file.path(out, "group_result.rds")
     if (resume && file.exists(gpath)) {
       group <- readRDS(gpath)
     } else {
-      first <- units[[1]]$open()
-      cols0 <- resolve_test_columns(cfg$columns, names(vectra::collect(vectra::slice_head(first, n = 1))), cfg$tests)
+      cols0 <- resolve_test_columns(cfg$columns, table_names(units[[1]]$open()), cfg$tests)
       if (verbose) message("group tests: reading all units")
       t0 <- Sys.time()
       gdir <- file.path(out, ".group")
@@ -71,13 +81,27 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
     }
     unlink(list.files(out, paste0("^part-", u$name, "-"), full.names = TRUE))
     t0 <- Sys.time()
-    node <- u$open()
+    resolve <- function(avail) {
+      missing <- setdiff(c(keep, cfg$duplicate_by), avail)
+      if (length(missing)) stop("`keep` or `duplicate_by` column(s) not in the input: ",
+                                paste(missing, collapse = ", "))
+      list(cols = resolve_test_columns(cfg$columns, avail, cfg$tests),
+           id = resolve_columns(cfg$columns, avail, "id", optional = "id")$id)
+    }
+    # A reopenable unit is read with only the columns the tests, keep and
+    # duplicate_by use; a single-run node is resolved on its first chunk.
+    if (u$reopen) {
+      rc <- resolve(table_names(u$open()))
+      node <- project(u$open(), c(unlist(rc$cols), rc$id, keep, cfg$duplicate_by))
+    } else {
+      rc <- list(cols = NULL, id = NULL)
+      node <- u$open()
+    }
     acc <- vectra::collect_chunked(node, function(acc, chunk) {
       if (is.null(acc$cols)) {
-        acc$cols <- resolve_test_columns(cfg$columns, names(chunk), cfg$tests)
-        acc$id <- resolve_columns(cfg$columns, names(chunk), "id", optional = "id")$id
-        missing <- setdiff(keep, names(chunk))
-        if (length(missing)) stop("`keep` column(s) not in the input: ", paste(missing, collapse = ", "))
+        rc <- resolve(names(chunk))
+        acc$cols <- rc$cols
+        acc$id <- rc$id
       }
       r <- flag_chunk(chunk, cfg, acc$cols)
       if (!is.null(group)) r$flags <- bitwOr(r$flags, group_bits(group, chunk, ui, acc$n + 1L, acc$cols))
@@ -88,7 +112,7 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose) {
       acc$n <- acc$n + nrow(o)
       if (acc$n_buf >= part_rows) acc <- flush_part(acc, out, u$name)
       acc
-    }, .init = list(buf = list(), n_buf = 0, n = 0, k = 0L, parts = character(), cols = NULL, id = NULL))
+    }, .init = list(buf = list(), n_buf = 0, n = 0, k = 0L, parts = character(), cols = rc$cols, id = rc$id))
     if (acc$n_buf > 0 || acc$k == 0L) acc <- flush_part(acc, out, u$name)
     saveRDS(list(n = acc$n, parts = acc$parts), done_marker)
     total <- total + acc$n
