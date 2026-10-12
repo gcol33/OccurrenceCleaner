@@ -40,9 +40,9 @@ built for:
   included by default but can be excluded to restrict the test to
   CoordinateCleaner’s sources ([Extension
   points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
-- **Using what GBIF already knows.** Tests read GBIF’s issue warnings,
-  basis of record and establishment means, and the habitat of the
-  record’s genus separates marine from land taxa.
+- **Checks based on GBIF metadata.** Tests use GBIF’s issue warnings,
+  basis of record and establishment means. The recorded genus’s habitat
+  helps distinguish marine from terrestrial taxa.
 
 Results stay comparable with CoordinateCleaner, so a methods section can
 cite its tests. The tests are reimplemented with its definitions and
@@ -71,13 +71,25 @@ compiler.
     `has_flag()`.
 3.  Compare rules per species, period or dataset with `tally_flags()`.
 
+`flag_tests()` lists every test with its definition and the columns it
+needs, for choosing tests beyond the defaults.
+
+The input is a data frame, or a path to a table on disk ([Processing
+large datasets on disk](#processing-large-datasets-on-disk)).
+Coordinates are longitude and latitude in decimal degrees (WGS84).
+Columns are found by their Darwin Core names in any case, and other
+names are set with `occ_columns()`. Each test reads only the columns it
+needs: the default tests need the coordinates and the species, and a
+test whose column is missing stops with an error naming it.
+
 ``` r
 library(OccurrenceCleaner)
 
 x <- data.frame(
-  species = c("Quercus robur", "Quercus robur", "Fagus sylvatica"),
-  decimalLongitude = c(12.58, 0, 16.37),
-  decimalLatitude = c(55.67, 0, 48.21)
+  species = c("Quercus robur", "Quercus robur",
+              "Fagus sylvatica", "Fagus sylvatica"),
+  decimalLongitude = c(12.58, 0, 16.37, 14.05),
+  decimalLatitude = c(55.67, 0, 48.21, 47.85)
 )
 f <- flag_occurrences(x)
 f[, c("species", "flag_zero", "flag_capital",
@@ -86,17 +98,20 @@ f[, c("species", "flag_zero", "flag_capital",
 #> 1   Quercus robur     FALSE         TRUE                   TRUE    FALSE
 #> 2   Quercus robur      TRUE        FALSE                  FALSE     TRUE
 #> 3 Fagus sylvatica     FALSE         TRUE                  FALSE    FALSE
+#> 4 Fagus sylvatica     FALSE        FALSE                  FALSE    FALSE
 ```
 
 A flag is TRUE when the record fails the test. The first record lies
 within 1 km of the GBIF headquarters in Copenhagen and within 10 km of
 the capital, the second is a zero coordinate at sea, the third is in
-Vienna. The integer `flags` column holds all tests of a record, one bit
-per test.
+Vienna, and the fourth, in rural Upper Austria, passes every test. The
+integer `flags` column holds all tests of a record, one bit per test.
 
-A rule is a set of tests; a record is removed by the rule when any of
-its tests flags it. Several rules are compared on the same flags,
-without flagging again:
+A cleaning rule specifies which tests to use. It excludes a record if
+any of those tests flags it. A flagged record may still be valid: a real
+observation can lie within 10 km of a capital, so users must decide
+which tests suit their analysis. Users can compare several rules using
+the same flags, then select the records to retain:
 
 ``` r
 strict <- c("zero", "equal", "capital", "centroid", "institution",
@@ -104,13 +119,19 @@ strict <- c("zero", "equal", "capital", "centroid", "institution",
 mild   <- c("zero", "equal", "gbif_headquarters")
 
 has_flag(f, strict)
-#> [1] TRUE TRUE TRUE
+#> [1]  TRUE  TRUE  TRUE FALSE
 tally_flags(f, by = "species", rules = list(strict = strict, mild = mild))
-#> <occ_tally> 3 records in 2 groups of species, rules: strict, mild
+#> <occ_tally> 4 records in 2 groups of species, rules: strict, mild
 #>          species n removed_strict kept_strict removed_mild kept_mild
-#>  Fagus sylvatica 1              1           0            0         1
+#>  Fagus sylvatica 2              1           1            0         2
 #>    Quercus robur 2              2           0            2         0
 #> # summary() for the share each test flags
+
+kept <- f[!has_flag(f, mild), ]
+kept[, c("species", "decimalLongitude", "decimalLatitude")]
+#>           species decimalLongitude decimalLatitude
+#> 3 Fagus sylvatica            16.37           48.21
+#> 4 Fagus sylvatica            14.05           47.85
 ```
 
 [Choosing a cleaning
@@ -140,7 +161,7 @@ lists each layer with its source and version;
 instead, and the `gazetteers` argument replaces a test’s points or
 polygons with the user’s own.
 
-## Where it fits
+## Using OccurrenceCleaner in an analysis
 
 - The input is any table with Darwin Core coordinate and species
   columns, such as a GBIF download from
@@ -151,7 +172,9 @@ polygons with the user’s own.
 - Taxonomic names are matched beforehand, for example with
   [taxify](https://gillescolling.com/taxify/) or
   [taxize](https://docs.ropensci.org/taxize/).
-- The kept records go to species distribution models
+- The records are flagged with `flag_occurrences()`, and a cleaning rule
+  is chosen by comparing rules with `tally_flags()`.
+- The retained records go to species distribution models
   ([dismo](https://cran.r-project.org/package=dismo),
   [sdm](https://cran.r-project.org/package=sdm)), biogeography on
   phylogenies ([phytools](https://cran.r-project.org/package=phytools)),
@@ -194,14 +217,16 @@ flag_occurrences(pbdb, tests = tests, columns = pbdb_cols)
 records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.html)
 goes from a PBDB download to PyRate input files.
 
-## A whole GBIF snapshot
+## Processing large datasets on disk
 
-`flag_occurrences()` also streams an on-disk table through
-[vectra](https://gillescolling.com/vectra/): a directory of Parquet
-files (a GBIF snapshot), a `.vtr` file, a delimited file or any
-`vectra_node`. Each input file is a unit: it is flagged and written as a
-whole, and a rerun after an interruption skips the units already
-finished. The columns in `keep` are written next to the flags for
+`flag_occurrences()` uses [vectra](https://gillescolling.com/vectra/) to
+process tables stored on disk, including GBIF snapshots. It accepts a
+directory of Parquet files, a `.vtr` file, a delimited file or a
+`vectra_node`.
+
+The function flags and writes each input file separately. If processing
+is interrupted, rerunning the call skips completed files. The `keep`
+argument specifies which input columns to save alongside the flags for
 grouping:
 
 ``` r
@@ -216,9 +241,9 @@ tally_flags(f, by = "kingdom", bins = list(year = c(1950, 1970, 1990, 2000)),
             rules = list(cc = cc))
 ```
 
-[Large tables on
+See [Large tables on
 disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html)
-covers output parts, memory and resuming.
+for details on output files, memory use and resuming interrupted runs.
 
 ## Documentation
 
@@ -259,9 +284,16 @@ one path from a data frame to a tally and a streamed table.
   reference](https://gillescolling.com/OccurrenceCleaner/reference/):
   every function, grouped by job.
 
+## Getting help
+
+Questions and bug reports go to the [GitHub
+issues](https://github.com/gcol33/OccurrenceCleaner/issues). A bug
+report is easiest to act on with a small reproducible example, for
+instance made with [reprex](https://reprex.tidyverse.org/).
+
 ## Contributing
 
-Bug reports and pull requests are welcome; see the [contributing
+Pull requests are welcome; see the [contributing
 guide](https://gillescolling.com/OccurrenceCleaner/CONTRIBUTING.html).
 
 ## Support
@@ -298,22 +330,23 @@ Sandvik, thematicmapping.org) are under CC BY-SA.
 
 ## Citation
 
-    Colling G (2026). _OccurrenceCleaner: Fast Quality Flags for Species
-    Occurrence Records at Any Scale_. R package version 0.2.0,
-    <https://github.com/gcol33/OccurrenceCleaner>.
+    If you use OccurrenceCleaner, please cite the package and
+    CoordinateCleaner (Zizka et al. 2019), which provides the test
+    definitions and default buffers.
+
+      Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
+      Occurrence Records_. R package version 0.2.0,
+      <https://github.com/gcol33/OccurrenceCleaner>.
 
     A BibTeX entry for LaTeX users is
 
-      @Manual{,
-        title = {OccurrenceCleaner: Fast Quality Flags for Species Occurrence Records at Any Scale},
+      @Manual{colling2026occurrencecleaner,
+        title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
         author = {Gilles Colling},
         year = {2026},
         note = {R package version 0.2.0},
         url = {https://github.com/gcol33/OccurrenceCleaner},
       }
-
-    The tests and default buffers follow CoordinateCleaner; please cite it
-    too:
 
       Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler
       D, Farooq H, Herdean A, Ariza M, Scharn R, Svantesson S, Wengstrom N,
@@ -325,7 +358,7 @@ Sandvik, thematicmapping.org) are under CC BY-SA.
 
     A BibTeX entry for LaTeX users is
 
-      @Article{,
+      @Article{zizka2019coordinatecleaner,
         title = {CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases},
         author = {Alexander Zizka and Daniele Silvestro and Tobias Andermann and Josue Azevedo and Camila {Duarte Ritter} and Daniel Edler and Harith Farooq and Andrei Herdean and Maria Ariza and Ruud Scharn and Sten Svantesson and Niklas Wengstrom and Vera Zizka and Alexandre Antonelli},
         journal = {Methods in Ecology and Evolution},

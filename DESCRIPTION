@@ -1,5 +1,5 @@
 Package: OccurrenceCleaner
-Title: Fast Quality Flags for Species Occurrence Records at Any Scale
+Title: Fast Quality Checks for Species Occurrence Records
 Version: 0.2.0
 Authors@R:
     person("Gilles", "Colling", , "gilles.colling051@gmail.com",

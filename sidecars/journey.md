@@ -55,20 +55,30 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Names the three verbs in the order a user calls them.
 - leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()` and what each step does
 
+### readme.flag-tests  [A4]
+- idea: discovery, optional
+- job: Says `flag_tests()` lists every test with its definition and needed columns, for choosing tests beyond the defaults.
+- leaves: where the test catalog is, without making it a step
+
+### readme.input  [A2]
+- idea: what goes in
+- job: Says the input is a data frame or an on-disk table, coordinates are decimal degrees (WGS84), columns are matched by Darwin Core names in any case or set with `occ_columns()`, and a test missing its column stops with an error naming it.
+- leaves: the minimum input and what happens when a column is missing
+
 ### readme.example  (code)
 - idea: smallest call, output shown
-- job: Flags three records and prints four of the flag columns.
+- job: Flags four records, one of them clean, and prints four of the flag columns.
 - leaves: the call, its input shape and what comes back
 
 ### readme.example-result  [A1 A3]
 - idea: what each record trips; the flag word
-- job: Says a flag is TRUE on failure, why each of the three records is flagged, and that the `flags` column holds all tests as bits.
+- job: Says a flag is TRUE on failure, why each of the first three records is flagged and that the fourth passes, and that the `flags` column holds all tests as bits.
 - leaves: the reading of a flag column; the `flags` column, one bit per test
 
 ### readme.rules  [A3]  (code)
-- idea: a rule is a set of tests; two rules compared
-- job: Defines a rule, then applies one with `has_flag()` and compares two with `tally_flags()`, output shown.
-- leaves: rules are chosen after flagging and compared without flagging again
+- idea: a rule names tests; a flagged record may be valid; two rules compared; kept records
+- job: Defines a rule, says a flagged record may still be valid (a real observation within 10 km of a capital), so users decide which tests suit their analysis, applies one rule with `has_flag()`, compares two with `tally_flags()` and keeps the records the mild rule passes, output shown.
+- leaves: rules are chosen after flagging, compared without flagging again, and end in the table for the analysis
 
 ### readme.rules-link  [A3]
 - idea: rules article
@@ -86,8 +96,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the reference data is traceable and replaceable
 
 ### readme.fits  [A2]  (list)
-- idea: input, before, after
-- job: Places the package between its data sources (rgbif, paleobioDB), name matching done beforehand (taxify, taxize) and the analyses the kept records feed (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
+- idea: the workflow in order: obtain, match names, flag, use
+- job: Under "Using OccurrenceCleaner in an analysis", walks the workflow in order: data sources (rgbif, paleobioDB), name matching beforehand (taxify, taxize), flagging and choosing a rule, and the analyses the kept records feed (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
 - leaves: which inputs work, what is out of scope, where the output goes
 
 ### readme.grouped  [A6]  (section)
@@ -102,13 +112,18 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.snapshot  [A2]  (section)
 - idea: streaming a snapshot; units
-- job: Shows the same verb on a GBIF Parquet snapshot, defines a unit, and links the on-disk article.
+- job: Under "Processing large datasets on disk", says `flag_occurrences()` reads on-disk tables through vectra and which inputs it accepts, that each file is flagged and written separately and a rerun skips completed files, shows `keep` in a snapshot call, and links the on-disk article.
 - leaves: the on-disk call, `keep`, `out`, and that a rerun resumes
 
 ### readme.docs  (section)
 - idea: routing with a starting point
 - job: Marks Quick start as the place to begin and labels every article and the reference by its job.
 - leaves: where to start and where each topic lives
+
+### readme.help  (section)
+- idea: where to ask
+- job: Points questions and bug reports to the GitHub issues and asks for a reproducible example.
+- leaves: the help channel, kept apart from the donation footer
 
 ### readme.contributing  (section)
 
@@ -122,7 +137,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### readme.license  (section)
 
 ### readme.citation  (section, generated)
-- idea: cite both
+- idea: cite both, one header saying what each credits; keyed entries
 - job: Prints `citation("OccurrenceCleaner")` with BibTeX: this package (version from DESCRIPTION) and Zizka et al. (2019).
 - leaves: both references ready to paste, from `inst/CITATION`
 

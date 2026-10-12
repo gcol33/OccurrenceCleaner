@@ -1,5 +1,8 @@
+citHeader("If you use OccurrenceCleaner, please cite the package and CoordinateCleaner (Zizka et al. 2019), which provides the test definitions and default buffers.")
+
 bibentry(
   bibtype  = "Manual",
+  key      = "colling2026occurrencecleaner",
   title    = paste0("OccurrenceCleaner: ", meta$Title),
   author   = person("Gilles", "Colling"),
   year     = "2026",
@@ -9,6 +12,7 @@ bibentry(
 
 bibentry(
   bibtype = "Article",
+  key     = "zizka2019coordinatecleaner",
   title   = "CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases",
   author  = c(person("Alexander", "Zizka"), person("Daniele", "Silvestro"), person("Tobias", "Andermann"),
               person("Josue", "Azevedo"), person("Camila", "Duarte Ritter"), person("Daniel", "Edler"),
@@ -19,6 +23,5 @@ bibentry(
   year    = "2019",
   volume  = "10",
   pages   = "744--751",
-  doi     = "10.1111/2041-210X.13152",
-  header  = "The tests and default buffers follow CoordinateCleaner; please cite it too:"
+  doi     = "10.1111/2041-210X.13152"
 )

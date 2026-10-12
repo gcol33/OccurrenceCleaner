@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Fast Quality Flags for Species Occurrence Records at Any Scale • OccurrenceCleaner</title>
+<title>Fast Quality Checks for Species Occurrence Records • OccurrenceCleaner</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="Fast Quality Flags for Species Occurrence Records at Any Scale">
+<meta property="og:title" content="Fast Quality Checks for Species Occurrence Records">
 <meta name="description" content="An extension of CoordinateCleaner (Zizka et al. 2019 &lt;doi:10.1111/2041-210X.13152&gt;) tailored to large-scale species occurrence data. Flags common problems in occurrence records, such as coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea, in the wrong country or outside the species range, duplicates, outliers within a species, and datasets with converted or gridded coordinates, with the same tests and defaults as CoordinateCleaner. It also reads the quality warnings GBIF attaches to each record, the basis of record and the establishment means, and checks records at sea or on land against the habitat of their genus from the Interim Register of Marine and Nonmarine Genera. Records are flagged and kept, and users choose afterwards which flags to filter on. Data frames of a few million records are flagged in seconds, and GBIF snapshots of billions of records are processed by reading Parquet files in chunks.">
 <meta property="og:description" content="An extension of CoordinateCleaner (Zizka et al. 2019 &lt;doi:10.1111/2041-210X.13152&gt;) tailored to large-scale species occurrence data. Flags common problems in occurrence records, such as coordinates at country centroids, capitals or biodiversity institutions, zero or equal coordinates, records at sea, in the wrong country or outside the species range, duplicates, outliers within a species, and datasets with converted or gridded coordinates, with the same tests and defaults as CoordinateCleaner. It also reads the quality warnings GBIF attaches to each record, the basis of record and the establishment means, and checks records at sea or on land against the habitat of their genus from the Interim Register of Marine and Nonmarine Genera. Records are flagged and kept, and users choose afterwards which flags to filter on. Data frames of a few million records are flagged in seconds, and GBIF snapshots of billions of records are processed by reading Parquet files in chunks.">
 <script>
@@ -103,7 +103,7 @@
 <li>
 <strong>An extended list of institutions.</strong> Records are checked against 18,245 museum, herbarium and botanic garden locations to flag coordinates that may refer to the institution holding the specimen. The list combines GBIF’s collection registry (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in seven languages, GeoNames and BGCI’s botanic gardens. Of these locations, 7,665 come from sources not used by CoordinateCleaner. These additional locations are included by default but can be excluded to restrict the test to CoordinateCleaner’s sources (<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points">Extension points</a>).</li>
 <li>
-<strong>Using what GBIF already knows.</strong> Tests read GBIF’s issue warnings, basis of record and establishment means, and the habitat of the record’s genus separates marine from land taxa.</li>
+<strong>Checks based on GBIF metadata.</strong> Tests use GBIF’s issue warnings, basis of record and establishment means. The recorded genus’s habitat helps distinguish marine from terrestrial taxa.</li>
 </ul>
 <p>Results stay comparable with CoordinateCleaner, so a methods section can cite its tests. The tests are reimplemented with its definitions and default buffers, and the test suite runs CoordinateCleaner on sampled records and requires the same flags, up to the differences listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
 <div class="section level2">
@@ -122,13 +122,16 @@
 <li>Choose a rule, a set of tests, and mark the records it removes with <code><a href="reference/flag_mask.html">has_flag()</a></code>.</li>
 <li>Compare rules per species, period or dataset with <code><a href="reference/tally_flags.html">tally_flags()</a></code>.</li>
 </ol>
+<p><code><a href="reference/flag_tests.html">flag_tests()</a></code> lists every test with its definition and the columns it needs, for choosing tests beyond the defaults.</p>
+<p>The input is a data frame, or a path to a table on disk (<a href="#processing-large-datasets-on-disk">Processing large datasets on disk</a>). Coordinates are longitude and latitude in decimal degrees (WGS84). Columns are found by their Darwin Core names in any case, and other names are set with <code><a href="reference/occ_columns.html">occ_columns()</a></code>. Each test reads only the columns it needs: the default tests need the coordinates and the species, and a test whose column is missing stops with an error naming it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>,</span>
-<span>  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
-<span>  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span><span class="op">)</span></span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>,</span>
+<span>              <span class="st">"Fagus sylvatica"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>,</span>
+<span>  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span>, <span class="fl">14.05</span><span class="op">)</span>,</span>
+<span>  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span>, <span class="fl">47.85</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="va">f</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"flag_zero"</span>, <span class="st">"flag_capital"</span>,</span>
@@ -136,22 +139,29 @@
 <span><span class="co">#&gt;           species flag_zero flag_capital flag_gbif_headquarters flag_sea</span></span>
 <span><span class="co">#&gt; 1   Quercus robur     FALSE         TRUE                   TRUE    FALSE</span></span>
 <span><span class="co">#&gt; 2   Quercus robur      TRUE        FALSE                  FALSE     TRUE</span></span>
-<span><span class="co">#&gt; 3 Fagus sylvatica     FALSE         TRUE                  FALSE    FALSE</span></span></code></pre></div>
-<p>A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna. The integer <code>flags</code> column holds all tests of a record, one bit per test.</p>
-<p>A rule is a set of tests; a record is removed by the rule when any of its tests flags it. Several rules are compared on the same flags, without flagging again:</p>
+<span><span class="co">#&gt; 3 Fagus sylvatica     FALSE         TRUE                  FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 4 Fagus sylvatica     FALSE        FALSE                  FALSE    FALSE</span></span></code></pre></div>
+<p>A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna, and the fourth, in rural Upper Austria, passes every test. The integer <code>flags</code> column holds all tests of a record, one bit per test.</p>
+<p>A cleaning rule specifies which tests to use. It excludes a record if any of those tests flags it. A flagged record may still be valid: a real observation can lie within 10 km of a capital, so users must decide which tests suit their analysis. Users can compare several rules using the same flags, then select the records to retain:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
 <span>            <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="va">mild</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"gbif_headquarters"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">strict</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE TRUE TRUE</span></span>
+<span><span class="co">#&gt; [1]  TRUE  TRUE  TRUE FALSE</span></span>
 <span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;occ_tally&gt; 3 records in 2 groups of species, rules: strict, mild</span></span>
+<span><span class="co">#&gt; &lt;occ_tally&gt; 4 records in 2 groups of species, rules: strict, mild</span></span>
 <span><span class="co">#&gt;          species n removed_strict kept_strict removed_mild kept_mild</span></span>
-<span><span class="co">#&gt;  Fagus sylvatica 1              1           0            0         1</span></span>
+<span><span class="co">#&gt;  Fagus sylvatica 2              1           1            0         2</span></span>
 <span><span class="co">#&gt;    Quercus robur 2              2           0            2         0</span></span>
-<span><span class="co">#&gt; # summary() for the share each test flags</span></span></code></pre></div>
+<span><span class="co">#&gt; # summary() for the share each test flags</span></span>
+<span></span>
+<span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">mild</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">kept</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"decimalLongitude"</span>, <span class="st">"decimalLatitude"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;           species decimalLongitude decimalLatitude</span></span>
+<span><span class="co">#&gt; 3 Fagus sylvatica            16.37           48.21</span></span>
+<span><span class="co">#&gt; 4 Fagus sylvatica            14.05           47.85</span></span></code></pre></div>
 <p><a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a> compares rules on a larger table, with year and coordinate uncertainty cut into bins at tally time.</p>
 </div>
 <div class="section level2">
@@ -161,12 +171,13 @@
 <p>The reference data (the point lists of capitals, country centroids and institutions, and the land polygons) is rebuilt from public sources. Each layer is pinned by version and checksum and recorded with the flags, so a cleaning can be repeated later. <a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a> lists each layer with its source and version; <code>reference = "CoordinateCleaner"</code> uses that package’s own tables instead, and the <code>gazetteers</code> argument replaces a test’s points or polygons with the user’s own.</p>
 </div>
 <div class="section level2">
-<h2 id="where-it-fits">Where it fits<a class="anchor" aria-label="anchor" href="#where-it-fits"></a>
+<h2 id="using-occurrencecleaner-in-an-analysis">Using OccurrenceCleaner in an analysis<a class="anchor" aria-label="anchor" href="#using-occurrencecleaner-in-an-analysis"></a>
 </h2>
 <ul>
 <li>The input is any table with Darwin Core coordinate and species columns, such as a GBIF download from <a href="https://docs.ropensci.org/rgbif/" class="external-link">rgbif</a>, a fossil table from the Paleobiology Database via <a href="https://cran.r-project.org/package=paleobioDB" class="external-link">paleobioDB</a>, or another aggregator’s export.</li>
 <li>Taxonomic names are matched beforehand, for example with <a href="https://gillescolling.com/taxify/" class="external-link">taxify</a> or <a href="https://docs.ropensci.org/taxize/" class="external-link">taxize</a>.</li>
-<li>The kept records go to species distribution models (<a href="https://cran.r-project.org/package=dismo" class="external-link">dismo</a>, <a href="https://cran.r-project.org/package=sdm" class="external-link">sdm</a>), biogeography on phylogenies (<a href="https://cran.r-project.org/package=phytools" class="external-link">phytools</a>), IUCN Red List assessments (<a href="https://cran.r-project.org/package=red" class="external-link">red</a>) or, for fossils, PyRate through <code><a href="reference/export_pyrate.html">export_pyrate()</a></code>.</li>
+<li>The records are flagged with <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code>, and a cleaning rule is chosen by comparing rules with <code><a href="reference/tally_flags.html">tally_flags()</a></code>.</li>
+<li>The retained records go to species distribution models (<a href="https://cran.r-project.org/package=dismo" class="external-link">dismo</a>, <a href="https://cran.r-project.org/package=sdm" class="external-link">sdm</a>), biogeography on phylogenies (<a href="https://cran.r-project.org/package=phytools" class="external-link">phytools</a>), IUCN Red List assessments (<a href="https://cran.r-project.org/package=red" class="external-link">red</a>) or, for fossils, PyRate through <code><a href="reference/export_pyrate.html">export_pyrate()</a></code>.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -191,9 +202,10 @@
 <p><a href="https://gillescolling.com/OccurrenceCleaner/articles/fossils.html">Cleaning fossil records</a> goes from a PBDB download to PyRate input files.</p>
 </div>
 <div class="section level2">
-<h2 id="a-whole-gbif-snapshot">A whole GBIF snapshot<a class="anchor" aria-label="anchor" href="#a-whole-gbif-snapshot"></a>
+<h2 id="processing-large-datasets-on-disk">Processing large datasets on disk<a class="anchor" aria-label="anchor" href="#processing-large-datasets-on-disk"></a>
 </h2>
-<p><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> also streams an on-disk table through <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a>: a directory of Parquet files (a GBIF snapshot), a <code>.vtr</code> file, a delimited file or any <code>vectra_node</code>. Each input file is a unit: it is flagged and written as a whole, and a rerun after an interruption skips the units already finished. The columns in <code>keep</code> are written next to the flags for grouping:</p>
+<p><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> uses <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> to process tables stored on disk, including GBIF snapshots. It accepts a directory of Parquet files, a <code>.vtr</code> file, a delimited file or a <code>vectra_node</code>.</p>
+<p>The function flags and writes each input file separately. If processing is interrupted, rerunning the call skips completed files. The <code>keep</code> argument specifies which input columns to save alongside the flags for grouping:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"country_mismatch"</span>, <span class="st">"issue_rounded"</span><span class="op">)</span></span>
 <span><span class="va">keep</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span></span>
@@ -204,7 +216,7 @@
 <span>        <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="va">cc</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a> covers output parts, memory and resuming.</p>
+<p>See <a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a> for details on output files, memory use and resuming interrupted runs.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -234,9 +246,14 @@
 </ul>
 </div>
 <div class="section level2">
+<h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+</h2>
+<p>Questions and bug reports go to the <a href="https://github.com/gcol33/OccurrenceCleaner/issues" class="external-link">GitHub issues</a>. A bug report is easiest to act on with a small reproducible example, for instance made with <a href="https://reprex.tidyverse.org/" class="external-link">reprex</a>.</p>
+</div>
+<div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Bug reports and pull requests are welcome; see the <a href="https://gillescolling.com/OccurrenceCleaner/CONTRIBUTING.html">contributing guide</a>.</p>
+<p>Pull requests are welcome; see the <a href="https://gillescolling.com/OccurrenceCleaner/CONTRIBUTING.html">contributing guide</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
@@ -261,42 +278,43 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Flags <span class="cf">for</span> Species</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>Occurrence Records at Any Scale_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner<span class="sc">&gt;</span>.</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>If you use OccurrenceCleaner, please cite the package and</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">CoordinateCleaner</span> (Zizka et al. <span class="dv">2019</span>), which provides the test</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>definitions and default buffers.</span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">@</span>Manual{,</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    title <span class="ot">=</span> {OccurrenceCleaner<span class="sc">:</span> Fast Quality Flags <span class="cf">for</span> Species Occurrence Records at Any Scale},</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner},</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  }</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>The tests and default buffers follow CoordinateCleaner; please cite it</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>too<span class="sc">:</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler</span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  D, Farooq H, Herdean A, Ariza M, Scharn R, Svantesson S, Wengstrom N,</span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  Zizka V, Antonelli <span class="fu">A</span> (<span class="dv">2019</span>). <span class="st">"CoordinateCleaner: standardized</span></span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="st">  cleaning of occurrence records from biological collection databases."</span></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  _Methods <span class="cf">in</span> Ecology and Evolution_, <span class="sc">*</span><span class="dv">10</span><span class="sc">*</span>, <span class="dv">744</span><span class="fl">-751.</span></span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span></span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span><span class="sc">&gt;</span>.</span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a></span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>  <span class="sc">@</span>Article{,</span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    title <span class="ot">=</span> {CoordinateCleaner<span class="sc">:</span> standardized cleaning of occurrence records from biological collection databases},</span>
-<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    author <span class="ot">=</span> {Alexander Zizka and Daniele Silvestro and Tobias Andermann and Josue Azevedo and Camila {Duarte Ritter} and Daniel Edler and Harith Farooq and Andrei Herdean and Maria Ariza and Ruud Scharn and Sten Svantesson and Niklas Wengstrom and Vera Zizka and Alexandre Antonelli},</span>
-<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    journal <span class="ot">=</span> {Methods <span class="cf">in</span> Ecology and Evolution},</span>
-<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2019</span>},</span>
-<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    volume <span class="ot">=</span> {<span class="dv">10</span>},</span>
-<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    pages <span class="ot">=</span> {<span class="dv">744</span><span class="sc">--</span><span class="dv">751</span>},</span>
-<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>},</span>
-<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>  }</span></code></pre></div>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  Occurrence Records_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner<span class="sc">&gt;</span>.</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="sc">@</span>Manual{colling2026occurrencecleaner,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    title <span class="ot">=</span> {OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species Occurrence Records},</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner},</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  D, Farooq H, Herdean A, Ariza M, Scharn R, Svantesson S, Wengstrom N,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  Zizka V, Antonelli <span class="fu">A</span> (<span class="dv">2019</span>). <span class="st">"CoordinateCleaner: standardized</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="st">  cleaning of occurrence records from biological collection databases."</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  _Methods <span class="cf">in</span> Ecology and Evolution_, <span class="sc">*</span><span class="dv">10</span><span class="sc">*</span>, <span class="dv">744</span><span class="fl">-751.</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span><span class="sc">&gt;</span>.</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  <span class="sc">@</span>Article{zizka2019coordinatecleaner,</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    title <span class="ot">=</span> {CoordinateCleaner<span class="sc">:</span> standardized cleaning of occurrence records from biological collection databases},</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    author <span class="ot">=</span> {Alexander Zizka and Daniele Silvestro and Tobias Andermann and Josue Azevedo and Camila {Duarte Ritter} and Daniel Edler and Harith Farooq and Andrei Herdean and Maria Ariza and Ruud Scharn and Sten Svantesson and Niklas Wengstrom and Vera Zizka and Alexandre Antonelli},</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    journal <span class="ot">=</span> {Methods <span class="cf">in</span> Ecology and Evolution},</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2019</span>},</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    volume <span class="ot">=</span> {<span class="dv">10</span>},</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    pages <span class="ot">=</span> {<span class="dv">744</span><span class="sc">--</span><span class="dv">751</span>},</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>},</span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>  }</span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

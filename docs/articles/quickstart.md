@@ -241,7 +241,7 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpYjjmwx\flags622444b559a6
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp4YuoNG\flags5b6424592986
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v4
 #>   reference: OccurrenceCleaner 0.2.0, land 110
