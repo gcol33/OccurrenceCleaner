@@ -89,7 +89,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 
 ## Documents
 - DESCRIPTION: listing text; claim, relation, A1-A4 in one sentence each (the A6 tests named in the A1 list)
-- README / landing: kind of tool, claim, relation, A1 trust sentence, A2-A4/A7 one line each, three-step usage with the first example and rules (A3), test count and reference data in two paragraphs (full table in the tests article), where it fits, grouped tests (A6), fossils, snapshot (A2), routing with a starting point, acknowledgement of the CoordinateCleaner authors, both citations generated from inst/CITATION
+- README / landing: kind of tool, claim, relation, A1 trust sentence, A2-A4/A7 one line each, three-step usage with the first example and rules (A3), test count and reference data in two paragraphs (full table in the tests article), where it fits, grouped tests (A6), fossils, snapshot (A2), routing with a starting point, acknowledgement of the CoordinateCleaner authors, the package citation generated from inst/CITATION, CoordinateCleaner named with its DOI in its header
 - ?OccurrenceCleaner: entry point inside R; claim, relation, verb map, credit and both citations
 - OccurrenceCleaner.Rmd (Get started): tutorial from a data frame through flags and a rule to the retained records, then rule comparison, distances, column names, a GBIF-field test and a table on disk
 - tests: explanation of each test (A4 home)

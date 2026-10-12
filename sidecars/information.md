@@ -8,7 +8,7 @@
 - avoid: follows CoordinateCleaner; reproduces CoordinateCleaner (without "up to the documented differences"); wraps or calls CoordinateCleaner (the tests are reimplemented; CoordinateCleaner runs only in the equivalence tests and under `reference = "CoordinateCleaner"`)
 - stated-at: @p:desc.claim; @p:readme.claim; @p:pkg.overview; @p:qs.opener; @p:cc.opener
 - reimplemented-at: @p:readme.comparable
-- credit: Zizka and co-authors named for the tests, default buffers and grouped-test options at @p:readme.acknowledgements and @p:pkg.credit; cite both at @p:readme.citation (bibtex), @p:pkg.credit and inst/CITATION
+- credit: Zizka and co-authors named for the tests, default buffers and grouped-test options at @p:readme.acknowledgements and @p:pkg.credit; cite the package at @p:readme.citation (bibtex, one entry from inst/CITATION) with CoordinateCleaner named with its DOI in the header line; both at @p:pkg.credit
 
 ### test-names
 - detail: the `tests` argument of `clean_coordinates()` takes plural names ("capitals", "centroids", "countries", "duplicates", "institutions", "seas", "zeros") and "gbif"; that of `flag_occurrences()` takes singular names, "country_mismatch" and "gbif_headquarters"; the coordinate validity check has no test name in `clean_coordinates()` and stops the run (@p:cc.validity)

@@ -152,7 +152,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### readme.citation  (section, generated)
 - idea: cite both, one header saying what each credits; keyed entries
 - job: Prints `citation("OccurrenceCleaner")` with BibTeX: this package (version from DESCRIPTION) and Zizka et al. (2019).
-- leaves: both references ready to paste, from `inst/CITATION`
+- leaves: the package reference ready to paste and the CoordinateCleaner DOI, from `inst/CITATION`
 
 ## ?OccurrenceCleaner
 
