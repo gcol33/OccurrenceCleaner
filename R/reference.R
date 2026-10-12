@@ -304,6 +304,8 @@ gazetteer_points <- function(g, test) {
   y <- to_numeric(g[[lat]])
   ok <- is.finite(x) & is.finite(y) & abs(x) <= 180 & abs(y) <= 90
   if (!any(ok)) stop("`gazetteers$", test, "` has no valid coordinates")
+  if (!all(ok)) warning(sum(!ok), " point(s) of `gazetteers$", test,
+                        "` with missing or out-of-range coordinates are not used", call. = FALSE)
   list(lon = x[ok], lat = y[ok])
 }
 

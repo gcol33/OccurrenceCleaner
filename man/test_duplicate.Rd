@@ -7,8 +7,10 @@
 Flags every record with the same longitude, latitude and species as an
 earlier record; the first of each set is not flagged. \code{duplicate_by} adds
 columns that must also match; \code{duplicate_cell} bins coordinates to a grid
-of that many degrees first. On streamed input the test runs within each
-input file.
+of that many degrees first. A missing species counts as one value, as in
+\code{duplicated()}, so records without a species at the same coordinates are
+duplicates of each other. On streamed input the test runs within each
+input file, so duplicates in different files are not found.
 }
 \section{Fields}{
  \code{lon}, \code{lat}, \code{species}, and any \code{duplicate_by} columns.

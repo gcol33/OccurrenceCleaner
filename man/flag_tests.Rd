@@ -21,6 +21,11 @@ versioned: \code{layout_version} changes whenever a bit is added, removed or
 redefined, and the flag output records which version produced it.
 }
 \details{
+The word is an R integer, 32 bits of which the sign bit cannot be used
+(it carries \code{NA}): bits 0 to 29 hold the thirty tests and bit 30 is free.
+A thirty-second test needs a wider word, which will come with a new layout
+version.
+
 Tests marked \code{source = "CoordinateCleaner"} are equivalent to the test of
 the same name in that package with its default buffer (see the \code{equivalent} column);
 the documented differences are listed in \code{\link[=flag_occurrences]{flag_occurrences()}}. Tests marked

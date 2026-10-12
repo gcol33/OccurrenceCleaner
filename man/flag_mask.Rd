@@ -17,7 +17,10 @@ has_flag(flags, tests)
 }
 \value{
 \code{flag_mask()}: a single integer. \code{has_flag()}: a logical vector, one
-element per flag word (per row of a data frame); \code{NA} flags give \code{NA}.
+element per flag word (per row of a data frame); \code{NA} flags give \code{NA}, so
+subset with \code{which()} or \verb{\%in\% TRUE} when flags can be missing. For a
+flagged data frame, a test that was not run is an error, so a rule never
+silently removes nothing for a test it names.
 }
 \description{
 \code{flag_mask()} turns test names into the integer with those bits set;

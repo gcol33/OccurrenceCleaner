@@ -299,8 +299,10 @@ NULL
 #' Flags every record with the same longitude, latitude and species as an
 #' earlier record; the first of each set is not flagged. `duplicate_by` adds
 #' columns that must also match; `duplicate_cell` bins coordinates to a grid
-#' of that many degrees first. On streamed input the test runs within each
-#' input file.
+#' of that many degrees first. A missing species counts as one value, as in
+#' `duplicated()`, so records without a species at the same coordinates are
+#' duplicates of each other. On streamed input the test runs within each
+#' input file, so duplicates in different files are not found.
 #'
 #' @section Fields: `lon`, `lat`, `species`, and any `duplicate_by` columns.
 #' @section CoordinateCleaner: Equivalent to `cc_dupl()`, with `duplicate_by`

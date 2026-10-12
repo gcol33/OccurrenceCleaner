@@ -37,13 +37,14 @@
 tally_flags <- function(x, by = NULL, rules = NULL, bins = NULL, tests = NULL) {
   if (is.data.frame(x)) {
     if (!"flags" %in% names(x)) stop("`x` has no `flags` column; run flag_occurrences() first")
-    tests <- tests %||% flagged_tests(x)
-    rules <- check_rules(rules, tests)
+    run <- flagged_tests(x)
+    tests <- tests %||% run
+    rules <- check_rules(rules, tests, run)
     return(finish_tally(tally_chunk(x, by, rules, bins, tests), by, bins, rules))
   }
   m <- read_flagged(x)
   tests <- tests %||% m$tests
-  rules <- check_rules(rules, tests)
+  rules <- check_rules(rules, tests, m$tests)
   missing <- setdiff(by, c(m$keep, m$columns$id, names(bins)))
   if (length(missing)) stop("grouping column(s) not kept in the flag output: ", paste(missing, collapse = ", "))
   acc <- NULL
@@ -70,10 +71,13 @@ flagged_tests <- function(x) {
   tests_present(x$flags)
 }
 
-check_rules <- function(rules, tests) {
+# `tests` are the tests counted (the default rule); `run` those the flags hold.
+check_rules <- function(rules, tests, run = tests) {
   if (is.null(rules)) rules <- list(all = tests)
   if (!is.list(rules) || is.null(names(rules)) || any(!nzchar(names(rules)))) stop("`rules` must be a named list of test-name vectors")
-  lapply(rules, check_tests)
+  rules <- lapply(rules, check_tests)
+  check_tests_run(unlist(rules), run)
+  rules
 }
 
 # Bin labels in break order, lowest first.

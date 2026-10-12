@@ -70,6 +70,12 @@ test_that("print is short: header, first records, failed tests by name", {
   expect_identical(has_flag(f, "zero"), has_flag(f$flags, "zero"))
   expect_error(has_flag(data.frame(a = 1), "zero"), "without a `flags` column")
   expect_identical(flag_reference(f), attr(f, "occ_reference"))
+  expect_error(has_flag(f, "urban"), "not run on these flags: urban")
+  expect_error(tally_flags(f, rules = list(a = c("zero", "urban"))), "not run")
+  expect_error(summary(f, rules = list(a = "urban")), "not run")
+  g <- data.frame(lon = c(16.37, NA, 500), lat = c(48.21, 10, 10))
+  expect_warning(flag_occurrences(records(), tests = "institution", gazetteers = list(institution = g)),
+                 "2 point\\(s\\) of `gazetteers\\$institution`")
   expect_error(flag_reference(data.frame(a = 1)), "no reference label")
   expect_output(print(occ_columns(lon = "x")), "lon +x")
 })

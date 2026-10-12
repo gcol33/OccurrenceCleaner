@@ -4,6 +4,8 @@
 * `print()` methods for `occ_flags` (a header and the first records, with the tests each failed), `occ_tally` (records removed and kept per rule) and `occ_columns`; `occ_flagged` prints its reference on one line. `summary()` stays the full per-test report.
 * `has_flag()` takes a flagged data frame as well as the flag words.
 * `flag_reference()` returns the reference label recorded with a set of flags, in memory or on disk.
+* A rule that names a test the flags were not computed with is an error in `has_flag()` on a flagged data frame, `tally_flags()`, `summary()` and `plot()`, instead of removing nothing for that test.
+* Points of a user gazetteer with missing or out-of-range coordinates give a warning that says how many are not used.
 * `plot()` keeps a label on every bar however many tests a rule holds; the map takes `xlim` and `ylim`.
 
 ## Streamed input

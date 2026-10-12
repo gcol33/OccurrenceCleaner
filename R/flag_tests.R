@@ -5,6 +5,11 @@
 #' versioned: `layout_version` changes whenever a bit is added, removed or
 #' redefined, and the flag output records which version produced it.
 #'
+#' The word is an R integer, 32 bits of which the sign bit cannot be used
+#' (it carries `NA`): bits 0 to 29 hold the thirty tests and bit 30 is free.
+#' A thirty-second test needs a wider word, which will come with a new layout
+#' version.
+#'
 #' Tests marked `source = "CoordinateCleaner"` are equivalent to the test of
 #' the same name in that package with its default buffer (see the `equivalent` column);
 #' the documented differences are listed in [flag_occurrences()]. Tests marked
@@ -113,7 +118,10 @@ default_tests <- function() {
 #' @param flags Integer flag words, or a data frame returned by
 #'   [flag_occurrences()], whose `flags` column is then used.
 #' @return `flag_mask()`: a single integer. `has_flag()`: a logical vector, one
-#'   element per flag word (per row of a data frame); `NA` flags give `NA`.
+#'   element per flag word (per row of a data frame); `NA` flags give `NA`, so
+#'   subset with `which()` or `%in% TRUE` when flags can be missing. For a
+#'   flagged data frame, a test that was not run is an error, so a rule never
+#'   silently removes nothing for a test it names.
 #' @examples
 #' flag_mask(c("capital", "centroid"))
 #' has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
@@ -134,9 +142,18 @@ flag_mask <- function(tests) {
 has_flag <- function(flags, tests) {
   if (is.data.frame(flags)) {
     if (!"flags" %in% names(flags)) stop("`flags` is a data frame without a `flags` column; run flag_occurrences() first")
+    check_tests_run(tests, flagged_tests(flags))
     flags <- flags[["flags"]]
   }
   bitwAnd(as.integer(flags), flag_mask(tests)) != 0L
+}
+
+# A rule naming a test that was not run would silently remove nothing for it.
+check_tests_run <- function(tests, run) {
+  missing <- setdiff(check_tests(tests), run)
+  if (length(missing)) stop("test(s) not run on these flags: ", paste(missing, collapse = ", "),
+                            "; run flag_occurrences() with them, or drop them from the rule")
+  invisible(tests)
 }
 
 check_tests <- function(tests) {
