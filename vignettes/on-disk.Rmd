@@ -11,16 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-A GBIF snapshot has billions of records in a directory of Parquet files, far more than fits in memory. `flag_occurrences()` takes such a directory, a single file or a vectra query in place of a data frame, reads it in chunks through [vectra](https://gillescolling.com/vectra/), and writes the flags to disk next to the columns kept for grouping. This article walks through the output layout, resuming an interrupted run, tallying from disk, and the one test whose result depends on how the input is split.
-
-## Installation
-
-```{r install, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
+A GBIF snapshot has billions of records in a directory of Parquet files, far more than fits in memory. `flag_occurrences()` takes such a directory, a single file or a vectra query in place of a data frame, reads it in chunks through [vectra](https://gillescolling.com/vectra/), and writes the flags to disk next to the columns kept for grouping. This article walks through the output layout, resuming an interrupted run, tallying from disk, and the one test whose result depends on how the input is split. Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)

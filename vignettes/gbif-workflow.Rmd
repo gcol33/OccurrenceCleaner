@@ -14,16 +14,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.heig
 options(knitr.kable.NA = "")
 ```
 
-This article runs the whole cleaning workflow on a table shaped like a GBIF download: flag every record once with all the tests that apply, look at what each test caught, and then compare several cleaning rules over the same flags before choosing one. The data are simulated so that every error is known, which makes it possible to check that each test catches what it should and nothing else.
-
-## Installation
-
-```{r install, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
+This article runs the whole cleaning workflow on a table shaped like a GBIF download: flag every record once with all the tests that apply, look at what each test caught, and then compare several cleaning rules over the same flags before choosing one. The data are simulated so that every error is known, which makes it possible to check that each test catches what it should and nothing else. Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ```{r setup, eval = TRUE, message = FALSE}
 library(OccurrenceCleaner)

@@ -14,16 +14,7 @@ has_sf <- requireNamespace("sf", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with [sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and shows how a custom layer is recorded with the flags.
-
-## Installation
-
-```{r install, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up. The polygon examples also need [sf](https://r-spatial.github.io/sf/).
+Nine tests compare records with reference data: five with points (capitals, centroids, institutions, the GBIF headquarters, artificial hotspots) and four with polygons (land, urban areas, countries, species ranges); the two habitat tests read the land together with a table of genus habitats. The package ships its own pinned layers for all but the species ranges, which only a user can supply, and `reference = "CoordinateCleaner"` swaps in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s. The `gazetteers` argument of `flag_occurrences()` replaces the layer of single tests with a user's own, as the `ref` arguments of CoordinateCleaner's `cc_*()` functions do. This article filters and extends the shipped point tables, builds polygon layers with [sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and shows how a custom layer is recorded with the flags. Installation is covered in [Get started](OccurrenceCleaner.html). The polygon examples also need [sf](https://r-spatial.github.io/sf/).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)

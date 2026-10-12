@@ -14,16 +14,7 @@ has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 
-Eight of the tests compare a record with reference data from a shipped layer: points (capitals, country and province centroids, biodiversity institutions, artificial hotspots) and polygons (land, urban areas, countries). The ninth, `range`, needs species range polygons, which the user supplies (see the article on custom gazetteers). This article lists where each layer comes from, how the package's own gazetteers compare with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s, how much the choice of land scale changes the `sea` test, and how the reference version is recorded with the flags.
-
-## Installation
-
-```{r install, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
+Eight of the tests compare a record with reference data from a shipped layer: points (capitals, country and province centroids, biodiversity institutions, artificial hotspots) and polygons (land, urban areas, countries). The ninth, `range`, needs species range polygons, which the user supplies (see the article on custom gazetteers). This article lists where each layer comes from, how the package's own gazetteers compare with [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s, how much the choice of land scale changes the `sea` test, and how the reference version is recorded with the flags. Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)

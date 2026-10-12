@@ -12,7 +12,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.heig
                       dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
 ```
 
-`flag_occurrences()` stores each test's result alongside each record. All records remain in the table. A cleaning rule specifies which tests to use when filtering: a record is excluded if any test in the rule flags it.
+`flag_occurrences()` stores each test's result alongside each record. All records remain in the table. A cleaning rule specifies which tests to use when filtering: a record is excluded if any test in the rule flags it. Installation is covered in [Get started](OccurrenceCleaner.html).
 
 This article compares how individual tests and cleaning rules affect the dataset, then applies a chosen rule:
 
@@ -23,15 +23,6 @@ This article compares how individual tests and cleaning rules affect the dataset
 3. Compare these shares by taxon, record age and coordinate precision using `tally_flags()` with `by` and `bins`.
 
 4. Select records using the chosen rule with `has_flag()`.
-
-## Installation
-
-```{r install, eval = FALSE}
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler; [Installation](https://gillescolling.com/OccurrenceCleaner/#installation) shows how to set one up.
 
 ## Example
 

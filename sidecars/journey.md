@@ -250,9 +250,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### cc.opener  [A1]
 - idea: same tests, flags; what this article covers
 - job: States the relation and lists what the article covers.
-- leaves: the article's scope; CoordinateCleaner is only suggested
-
-### cc.install  (section)
+- leaves: the article's scope; CoordinateCleaner is only suggested; links Get started for installation
 
 ### cc.mapping  [A1]
 - idea: one verb; functions become test names, arguments become list entries
@@ -324,10 +322,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### tests.opener  [A1 A4 A7]
 - idea: eleven CC record tests, ten additions (eight GBIF fields, two habitat); the rest elsewhere; per-test help
-- job: Says what the article covers per test and which tests come from CoordinateCleaner.
+- job: Says what the article covers per test and which tests come from CoordinateCleaner. Links Get started for installation.
 - leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
-
-### tests.install  (section)
 
 ### tests.flag-word  [A3]  (section)
 - idea: one bit per test; layout version; default tests
@@ -393,10 +389,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### rules.opener  [A3]
 - idea: results stored per record; what a rule is; four steps
-- job: Says `flag_occurrences()` stores each test's result alongside each record and all records remain, defines a cleaning rule (tests used when filtering; excluded if any flags it), then says what the article compares and lists the four steps, each naming its function.
+- job: Says `flag_occurrences()` stores each test's result alongside each record and all records remain, defines a cleaning rule (tests used when filtering; excluded if any flags it), then says what the article compares and lists the four steps, each naming its function. Links Get started for installation.
 - leaves: flag, compare per test and rule, compare by group, select
-
-### rules.install  (section)
 
 ### rules.example-data  [A3]  (section)
 - idea: simulated European records with planted errors
@@ -447,10 +441,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### disk.opener  [A2]
 - idea: snapshot too big for memory; what the article covers
-- job: States why streaming is needed and lists the article's topics.
+- job: States why streaming is needed and lists the article's topics. Links Get started for installation.
 - leaves: inputs accepted, output beside kept columns
-
-### disk.install  (section)
 
 ### disk.input  [A2]  (section)
 - idea: three parts stand in for a snapshot
@@ -496,10 +488,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gbif.opener  [A3]
 - idea: whole workflow on simulated GBIF data
-- job: States the workflow and why the data are simulated.
+- job: States the workflow and why the data are simulated. Links Get started for installation.
 - leaves: every error is labelled, so catches can be checked
-
-### gbif.install  (section)
 
 ### gbif.data  [A3 A4]  (section)
 - idea: clean records plus 236 labelled errors
@@ -550,10 +540,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.opener  [A5]
 - idea: seven tests use reference data; what the article covers
-- job: Names the reference layers and lists the article's topics.
+- job: Names the reference layers and lists the article's topics. Links Get started for installation.
 - leaves: points vs polygons
-
-### ref.install  (section)
 
 ### ref.layers  [A5]  (section)
 - idea: sources, versions, licences
@@ -594,10 +582,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### out.opener  [A6]
 - idea: six grouped tests; group pass; what the article covers
-- job: Names the tests that compare a record with its species or dataset, their CoordinateCleaner functions and why they run in a pass of their own.
+- job: Names the tests that compare a record with its species or dataset, their CoordinateCleaner functions and why they run in a pass of their own. Links Get started for installation.
 - leaves: the grouped tests; the fossil ones are in the fossil article
-
-### out.install  (section)
 
 ### out.data  [A6]  (section)
 - idea: alpine plants plus far records and two faulty atlases
@@ -712,10 +698,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gaz.opener  [A5 A7]
 - idea: nine reference tests and the habitat tests; replace one layer
-- job: Says which tests use reference data and that `gazetteers` replaces the layer of single tests, as CoordinateCleaner's `ref` arguments do.
+- job: Says which tests use reference data and that `gazetteers` replaces the layer of single tests, as CoordinateCleaner's `ref` arguments do. Links Get started for installation; names sf as the extra package for the polygon examples.
 - leaves: what the article covers
-
-### gaz.install  (section)
 
 ### gaz.points  [A5]  (section)
 - idea: reference_points returns a test's points
