@@ -223,22 +223,22 @@ With the default `reference = "OccurrenceCleaner"` the gazetteers are rebuilt fr
 
 ## Speed
 
-The proximity tests are where the two packages differ most, because [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) builds a polygon per reference point and tests each record against all of them, while this package queries a kd-tree. Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1), single process, both reading CoordinateCleaner's gazetteers, in seconds:
+The proximity tests are where the two packages differ most, because [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) tests records against a buffer polygon around each reference point, while this package queries a kd-tree. Measured on one machine (AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.2.0, CoordinateCleaner 3.0.1), single process, both reading CoordinateCleaner's gazetteers, fastest of three runs, in seconds:
 
 ```{r bench, echo = FALSE}
 b <- data.frame(
   test = c("capital", "centroid", "institution", "gbif_headquarters", "sea", "zero", "equal",
            "invalid", "duplicate", "default_tests() (own reference)"),
-  oc_1e6 = c(0.28, 0.15, 0.18, 0.08, 0.06, 0.07, 0.03, 0.02, 1.55, 1.9),
-  cc_1e6 = c(24.5, 34.9, 1, 0.6, 5.9, 0.6, 0, 5.9, 1.1, NA),
-  oc_1e7 = c(1.78, 2.15, 1.73, 0.81, 0.66, 0.42, 0.36, 0.38, 13.79, 17.79),
-  cc_1e7 = c(242.3, 246.2, 7.4, 6.5, 59.7, 6.7, 0.1, 64.3, 11.9, NA))
+  oc_1e6 = c(0.14, 0.16, 0.15, 0.08, 0.06, 0.05, 0.03, 0.02, 1.12, 1.91),
+  cc_1e6 = c(24.6, 33.8, 0.9, 0.6, 5.6, 0.6, 0, 4.7, 1.2, NA),
+  oc_1e7 = c(1.44, 1.63, 1.68, 0.80, 0.66, 0.47, 0.37, 0.31, 12.07, 19.45),
+  cc_1e7 = c(238.7, 245.4, 7.4, 6.4, 58.4, 6.5, 0.1, 43.3, 11.2, NA))
 options(knitr.kable.NA = "not run")
 knitr::kable(b, col.names = c("test", "OccurrenceCleaner, 1e6", "CoordinateCleaner, 1e6",
                               "OccurrenceCleaner, 1e7", "CoordinateCleaner, 1e7"))
 ```
 
-At ten million records the capital test takes 1.8 s here and 242 s in CoordinateCleaner, the centroid test 2.2 s and 246 s. The equal and duplicate tests are plain vector operations in both packages and take about the same time. Beyond memory, an on-disk table is streamed in chunks (see the on-disk article), so the input size is bounded by disk space only. The benchmark script is `bench/benchmark.R` in the source repository.
+At ten million records the capital test takes 1.4 s here and 239 s in CoordinateCleaner, the centroid test 1.6 s and 245 s. The equal and duplicate tests are plain vector operations in both packages and take about the same time. Beyond memory, an on-disk table is streamed in chunks (see the on-disk article), so the input size is bounded by disk space only. The benchmark script is `bench/benchmark.R` in the source repository.
 
 ## Functions around the tests
 
