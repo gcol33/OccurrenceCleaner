@@ -44,13 +44,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/OccurrenceCleaner.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
     <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
@@ -1936,7 +1936,7 @@ size. A species of 15,001 records with one record in Madrid:</p>
 <span>                  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">15000</span>, <span class="fl">46.8</span>, <span class="fl">0.6</span><span class="op">)</span>, <span class="fl">40.4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">fb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">big</span>, tests <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;    0.03    0.00    0.05</span></span>
+<span><span class="co">#&gt;    0.03    0.00    0.03</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">fb</span><span class="op">$</span><span class="va">flag_outlier</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 15001</span></span></code></pre></div>
 <p>The Madrid record is the only one flagged. CoordinateCleaner 3.0.1

@@ -3,8 +3,8 @@
 Flags records outside the Natural Earth land polygons, by a planar
 point-in-polygon test in longitude and latitude through a grid index
 that resolves boundary cells exactly. The land layer is chosen with
-`land_scale`: 110 (default), 50, or 10. The 1:10m layer is downloaded
-once by
+`land_scale`: 110 (default), 50, or 10. The 1:10 million layer is
+downloaded once by
 [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).
 
 ## Fields

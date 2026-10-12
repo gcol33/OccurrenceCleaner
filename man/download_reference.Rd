@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference.R
 \name{download_reference}
 \alias{download_reference}
-\title{Download the 1:10m land layer}
+\title{Download the 1:10 million land layer}
 \usage{
 download_reference(
   layer = "land_10",
@@ -21,7 +21,7 @@ download_reference(
 The path of the cached layer, invisibly.
 }
 \description{
-The 1:10m Natural Earth land polygons (2.3 MB compressed) are not bundled
+The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
 with the package. This fetches the pinned zip from Natural Earth, verifies
 its SHA-256 against \code{\link[=reference_info]{reference_info()}}, converts it and stores the result in
 the user cache directory (\code{tools::R_user_dir("OccurrenceCleaner", "cache")}).

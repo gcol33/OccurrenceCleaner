@@ -206,10 +206,10 @@ Most error types trip more than one test. All 25 swapped records fail
 warning (`issue_coordinate`); 9 of them also land at sea. The 15
 GBIF-headquarters records are flagged by `gbif_headquarters` and
 `capital` (Copenhagen is within 10 km), and by `country_mismatch`,
-because the point lies just off the 1:50m Natural Earth coastline of
-Denmark that the country test uses, while the 1:110m land of the `sea`
-test still covers it. The zero coordinates fail `zero`, `equal`, `sea`
-and `country_mismatch`.
+because the point lies just off the 1:50 million Natural Earth coastline
+of Denmark that the country test uses, while the 1:110 million land of
+the `sea` test still covers it. The zero coordinates fail `zero`,
+`equal`, `sea` and `country_mismatch`.
 
 The negated longitudes show the limit of the spatial tests. Only 18 of
 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
@@ -469,9 +469,9 @@ can see. The 20 records with a fuzzy taxon match are removed through
   can flag a large share; the tally per test shows it before it goes
   into a rule.
 
-- **`sea` depends on the land scale.** The default 1:110m land is
+- **`sea` depends on the land scale.** The default 1:110 million land is
   coarse: in the example the GBIF headquarters are on land at that scale
-  and at sea on the 1:50m coast. For coastal or island taxa,
+  and at sea on the 1:50 million coast. For coastal or island taxa,
   `land_scale = 50` or `10` changes the result for records within a few
   kilometres of the coast; the reference-data article shows the size of
   the difference.

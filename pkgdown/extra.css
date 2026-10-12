@@ -298,6 +298,15 @@ mjx-container:not([display="true"]),
   vertical-align: middle;
 }
 
+/* Wide tables scroll inside their own box on phones */
+@media (max-width: 767px) {
+  .contents table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
 /* Figure text scale */
 /* One SVG serves every breakpoint and scales to the width it is given, so */
 /* text sized to stay legible on a phone renders about twice as large in a */

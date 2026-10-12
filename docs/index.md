@@ -255,9 +255,9 @@ for details on output files, memory use and resuming interrupted runs.
 
 ## Documentation
 
-Start with [Quick
-start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html):
-one path from a data frame to a tally and a streamed table.
+Start with [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.html):
+one path from a data frame to the records that pass a cleaning rule.
 
 - [Cleaning GBIF
   data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html):

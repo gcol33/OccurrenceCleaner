@@ -4,7 +4,7 @@
 \alias{test_country_mismatch}
 \title{Test: country code mismatch}
 \description{
-Flags records whose coordinates fall outside the Natural Earth 1:50m
+Flags records whose coordinates fall outside the Natural Earth 1:50 million
 country polygon named by their country code. The code is compared with the
 polygon's ISO 3166-1 alpha-2 code, its alpha-3 code and the Natural Earth
 \code{ADM0_A3} code, case-insensitively. Records without a code, and records at

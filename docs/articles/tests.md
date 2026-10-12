@@ -88,6 +88,17 @@ attr(flag_tests(), "layout_version")
 #> [1] 4
 ```
 
+Tests with an entry in the `equivalent` column follow
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+record tests and default buffers. Differences are documented in [Coming
+from
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md).
+The remaining tests use GBIF’s `issue`, `basisOfRecord` and
+`establishmentMeans` fields, or compare the land polygons with the
+habitat of the record’s genus (`sea_nonmarine`, `land_marine`).
+[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
+lists the tests that require only coordinates and a species name.
+
 A record’s flag word is the sum of `2^bit` over the tests it fails, so a
 word of 10 (`2^1 + 2^3`) means `zero` and `capital`.
 [`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
@@ -285,18 +296,19 @@ reports directly.
 ## Land and sea: `sea`
 
 `sea` flags records outside the land polygons of Natural Earth. The land
-layer comes at three scales: 1:110m (the default, as in
+layer comes at three scales: 1:110 million (the default, as in
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
 its
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-uses 1:50m), 1:50m and 1:10m, set with `land_scale`. The test is a
-planar point-in-polygon test in longitude and latitude, through a grid
-index whose boundary cells are resolved exactly.
+uses 1:50 million), 1:50 million and 1:10 million, set with
+`land_scale`. The test is a planar point-in-polygon test in longitude
+and latitude, through a grid index whose boundary cells are resolved
+exactly.
 
 The scale decides the result for records near the coast. The GBIF
-headquarters in Copenhagen are on land at 1:110m and in the sea at
-1:50m:
+headquarters in Copenhagen are on land at 1:110 million and in the sea
+at 1:50 million:
 
 ``` r
 
@@ -311,7 +323,7 @@ data.frame(x[, 2:3],
 #> 3           -30.00           40.00    TRUE   TRUE
 ```
 
-The 1:10m layer is downloaded once on first use
+The 1:10 million layer is downloaded once on first use
 ([`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md))
 and cached. The reference-data article measures how many coastal records
 change between scales.
@@ -356,7 +368,7 @@ apart.
 
 ## Urban areas: `urban`
 
-`urban` flags records inside the Natural Earth 1:50m urban-area
+`urban` flags records inside the Natural Earth 1:50 million urban-area
 polygons. It is not in
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
 as in
@@ -385,10 +397,11 @@ third is in rural Styria.
 ## Country codes: `country_mismatch`
 
 `country_mismatch` flags records whose coordinates fall outside the
-country named by their country code, using the Natural Earth 1:50m
-country polygons. The record’s code is compared with the polygon’s ISO
-alpha-2 code (as GBIF’s `countryCode` gives it), its ISO alpha-3 code
-(as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+country named by their country code, using the Natural Earth 1:50
+million country polygons. The record’s code is compared with the
+polygon’s ISO alpha-2 code (as GBIF’s `countryCode` gives it), its ISO
+alpha-3 code (as
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 expects), and Natural Earth’s own `ADM0_A3` code, which is filled where
 ISO has none. Matching is case-insensitive and ignores surrounding
 spaces:

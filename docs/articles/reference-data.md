@@ -33,32 +33,45 @@ library(OccurrenceCleaner)
 ``` r
 
 ri <- reference_info()
-knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 ```
 
-| layer | source | file | version | retrieved |
-|:---|:---|:---|:---|:---|
-| land_110 | Natural Earth | ne_110m_land.zip | 4.1.0 | 2026-10-09 |
-| land_50 | Natural Earth | ne_50m_land.zip | 4.1.0 | 2026-10-09 |
-| land_10 | Natural Earth | ne_10m_land.zip | 5.1.1 | 2026-10-09 |
-| countries_50 | Natural Earth | ne_50m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
-| urban_50 | Natural Earth | ne_50m_urban_areas.zip | 4.1.0 | 2026-10-09 |
-| places_10 | Natural Earth | ne_10m_populated_places_simple.zip | 5.1.2 | 2026-10-09 |
-| admin0_10 | Natural Earth | ne_10m_admin_0_countries.zip | 5.1.1 | 2026-10-09 |
-| admin1_10 | Natural Earth | ne_10m_admin_1_states_provinces.zip | 5.1.1 | 2026-10-09 |
-| factbook | CIA World Factbook (factbook.json) | factbook_json.zip | factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b | 2026-10-11 |
-| world_borders | thematicmapping.org World Borders Dataset | tm_world_borders_0.3.json | 0.3 (2008-07-30) | 2026-10-11 |
-| geolocate | GEOLocate web service | geolocate/\*.json | 2026-10-11 | 2026-10-11 |
-| institutions | GBIF GRSciColl | grscicoll_institutions.tsv | 2026-10-09 | 2026-10-09 |
-| institutions_wikidata | Wikidata | wikidata_Q167346_v2.csv, wikidata_Q1970365_v2.csv, wikidata_Q43501_v2.csv, wikidata_Q181916_v2.csv, wikidata_Q2281788_v2.csv, wikidata_museum_subjects.csv | 2026-10-10 | 2026-10-10 |
-| institutions_wikipedia | Wikipedia, lists of natural history museums | wikipedia_en_museum_list.json, wikipedia_de_museum_list.json, wikipedia_fr_museum_list.json, wikipedia_nl_museum_list.json, wikipedia_pt_museum_list.json, wikipedia_ar_museum_list.json, wikipedia_eo_museum_list.json, wikipedia_fr_museum_list_flags.csv, wikipedia_pt_museum_list_flags.csv, wikipedia_en_museum_list_titles.csv, wikipedia_de_museum_list_titles.csv, wikipedia_fr_museum_list_titles.csv, wikipedia_nl_museum_list_titles.csv, wikipedia_pt_museum_list_titles.csv, wikipedia_ar_museum_list_titles.csv, wikipedia_eo_museum_list_titles.csv, wikidata_list_items.csv, wikidata_institution_classes.csv, wikidata_search_en.csv, wikidata_search_de.csv, wikidata_search_fr.csv, wikidata_search_nl.csv, wikidata_search_pt.csv, wikidata_search_ar.csv, wikidata_search_eo.csv, geonames_countryInfo.txt, geonames_admin1CodesASCII.txt, geonames_cities500.zip | en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115 | 2026-10-11 |
-| institutions_geonames | GeoNames | geonames_MC.zip, geonames_PT.zip, geonames_IT.zip | 2026-10-10 | 2026-10-10 |
-| institutions_bgci | BGCI GardenSearch | bgci_map_all.html | 2026-10-10 | 2026-10-10 |
-| aohi | Park et al. 2023, AHOI (Dryad <doi:10.5061/dryad.v41ns1s0p>) | birds_20221010.csv, insects_20221010.csv, mammals_20221010.csv, plants_20221010.csv | 2022-10-10 | 2026-10-10 |
-| habitat | IRMNG, Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera | IRMNG_genera_DwCA_2026-10-06.zip | 2026-10-06 | 2026-10-10 |
+| Layer | Source | Version / snapshot | Retrieved |
+|:---|:---|:---|:---|
+| land_110 | Natural Earth | 4.1.0 | 2026-10-09 |
+| land_50 | Natural Earth | 4.1.0 | 2026-10-09 |
+| land_10 | Natural Earth | 5.1.1 | 2026-10-09 |
+| countries_50 | Natural Earth | 5.1.1 | 2026-10-09 |
+| urban_50 | Natural Earth | 4.1.0 | 2026-10-09 |
+| places_10 | Natural Earth | 5.1.2 | 2026-10-09 |
+| admin0_10 | Natural Earth | 5.1.1 | 2026-10-09 |
+| admin1_10 | Natural Earth | 5.1.1 | 2026-10-09 |
+| factbook | CIA World Factbook (factbook.json) | factbook.json 144d697 | 2026-10-11 |
+| world_borders | thematicmapping.org World Borders Dataset | 0.3 (2008-07-30) | 2026-10-11 |
+| geolocate | GEOLocate web service | 2026-10-11 | 2026-10-11 |
+| institutions | GBIF GRSciColl | 2026-10-09 | 2026-10-09 |
+| institutions_wikidata | Wikidata | 2026-10-10 | 2026-10-10 |
+| institutions_wikipedia | Wikipedia, lists of natural history museums | 7 page revisions (below) | 2026-10-11 |
+| institutions_geonames | GeoNames | 2026-10-10 | 2026-10-10 |
+| institutions_bgci | BGCI GardenSearch | 2026-10-10 | 2026-10-10 |
+| aohi | AHOI (Park et al. 2023) | 2022-10-10 | 2026-10-10 |
+| habitat | IRMNG (Rees 2026) | 2026-10-06 | 2026-10-10 |
 
-Each row also holds the download URL, the SHA-256 checksum of the source
-file and the licence. The tests read these layers:
+The factbook version is the commit of the factbook.json mirror,
+shortened here;
+[`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
+holds the full hash. The Wikipedia lists are pinned by page revision: en
+1376233148; de 267938927; fr 240149609; nl 69876533; pt 71307420; ar
+76691072; eo 9165115. IRMNG is cited as Rees, T. (compiler) (2026), The
+Interim Register of Marine and Nonmarine Genera, available from
+<https://www.irmng.org> at VLIZ. The layer `aohi` takes its name from
+CoordinateCleaner’s
+[`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html);
+the inventory’s own abbreviation is AHOI.
+
+Each row of
+[`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
+also holds the file name, the download URL, the SHA-256 checksum of the
+source file and the licence. The tests read these layers:
 
 | test | reference data |
 |:---|:---|
@@ -67,9 +80,9 @@ file and the licence. The tests read these layers:
 | institution | GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, museums of Wikipedia’s lists of natural history museums, and BGCI gardens, with coordinates |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
-| sea | Natural Earth land at 1:110m (default), 1:50m or 1:10m |
-| urban | Natural Earth urban areas 1:50m |
-| country_mismatch | Natural Earth admin-0 countries 1:50m |
+| sea | Natural Earth land at 1:110 million (default), 1:50 million or 1:10 million |
+| urban | Natural Earth urban areas 1:50 million |
+| country_mismatch | Natural Earth admin-0 countries 1:50 million |
 | sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
 
 The capitals are the capital “geographic coordinates” of the CIA World
@@ -306,15 +319,21 @@ data.frame(city = x$city,
 
 ## Land scale and the `sea` test
 
-The `sea` test flags records outside the land polygons. The coarse
-1:110m layer, the default of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+The `sea` test flags records outside the land polygons. It supports
+Natural Earth land polygons at scales of 1:110 million, 1:50 million and
+1:10 million. OccurrenceCleaner defaults to 1:110 million
+(`land_scale = 110`).
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+defaults to 1:110 million in
 [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
-(its
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-uses 1:50m), smooths the coast and drops small islands; the 1:50m layer
-follows the coast more closely. A grid of points over Denmark and the
-western Baltic shows where the two disagree:
+and 1:50 million in
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
+The 1:10 million layer is downloaded on first use and cached.
+
+The coarse 1:110 million layer smooths the coast and drops small
+islands; the 1:50 million layer follows the coast more closely. A grid
+of points over Denmark and the western Baltic shows where the two
+disagree:
 
 ``` r
 
@@ -324,11 +343,13 @@ g$species <- "a"
 s110 <- flag_occurrences(g, tests = "sea")$flag_sea
 s50 <- flag_occurrences(g, tests = "sea", land_scale = 50)$flag_sea
 g$verdict <- ifelse(s110 & s50, "sea at both", ifelse(!s110 & !s50, "land at both",
-                    ifelse(s110, "sea at 1:110m only", "sea at 1:50m only")))
+                    ifelse(s110, "sea at 1:110 million only", "sea at 1:50 million only")))
 table(g$verdict)
 #> 
-#>       land at both sea at 1:110m only  sea at 1:50m only        sea at both 
-#>               5765                519                783               5974
+#>              land at both sea at 1:110 million only  sea at 1:50 million only 
+#>                      5765                       519                       783 
+#>               sea at both 
+#>                      5974
 ```
 
 ``` r
@@ -337,7 +358,7 @@ library(ggplot2)
 ggplot(g, aes(decimalLongitude, decimalLatitude, fill = verdict)) +
   geom_tile() +
   scale_fill_manual(values = c(`land at both` = "#C8B88A", `sea at both` = "#A9C7E0",
-                               `sea at 1:110m only` = "#C0392B", `sea at 1:50m only` = "#2C3E50")) +
+                               `sea at 1:110 million only` = "#C0392B", `sea at 1:50 million only` = "#2C3E50")) +
   coord_quickmap(expand = FALSE) +
   labs(x = "longitude", y = "latitude", fill = NULL) +
   theme_minimal() +
@@ -348,13 +369,13 @@ ggplot(g, aes(decimalLongitude, decimalLatitude, fill = verdict)) +
 ![](reference-data_files/figure-html/land-map-1.svg)
 
 On this grid the two scales disagree for 10 % of the points, all of them
-along the coast. At 1:110m Funen, Lolland, Falster, Rügen and Bornholm
-are missing, so records on them are flagged as at sea (red); the coarse
-1:110m coastline also reaches out into the water, so records in a strip
-of coastal water count as on land there and are flagged only at 1:50m
-(dark). For coastal and island taxa the scale therefore changes a share
-of the `sea` flags large enough to see in a tally. The 1:10m layer is
-the most detailed of the three and is downloaded on first use:
+along the coast. At 1:110 million Funen, Lolland, Falster, Rügen and
+Bornholm are missing, so records on them are flagged as at sea (red);
+the coarse 1:110 million coastline also reaches out into the water, so
+records in a strip of coastal water count as on land there and are
+flagged only at 1:50 million (dark). For coastal and island taxa the
+scale therefore changes a share of the `sea` flags large enough to see
+in a tally. The 1:10 million layer is the most detailed of the three:
 
 ``` r
 
@@ -416,14 +437,17 @@ one output directory never mixes flags from two references.
   package, has a version and checksum for every layer, and uses current
   Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
-- `reference = "CoordinateCleaner"` gives
+- Set `reference = "CoordinateCleaner"` to use
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-  flags up to the differences listed in the article Coming from
-  CoordinateCleaner, for example to compare with a published analysis
-  that used it. It needs CoordinateCleaner installed, and
-  [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) for the
-  polygon tests, which downloads the Natural Earth layers at run time as
-  CoordinateCleaner does.
+  own reference tables, for example to compare with a published analysis
+  that used it. This requires CoordinateCleaner to be installed and
+  reproduces its flags subject to the differences documented in [Coming
+  from
+  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md).
+  The polygon tests also need
+  [rnaturalearth](https://docs.ropensci.org/rnaturalearth/), which
+  downloads the Natural Earth layers at run time as CoordinateCleaner
+  does.
 
 Both references use the same buffers and the same geodesic distance, so
 the difference between them is in the points and polygons only.

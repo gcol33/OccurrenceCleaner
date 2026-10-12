@@ -44,13 +44,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/OccurrenceCleaner.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/quickstart.html">Quick start</a></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
     <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
@@ -527,11 +527,11 @@ clean record is flagged:</p>
 (<code>issue_coordinate</code>); 9 of them also land at sea. The 15
 GBIF-headquarters records are flagged by <code>gbif_headquarters</code>
 and <code>capital</code> (Copenhagen is within 10 km), and by
-<code>country_mismatch</code>, because the point lies just off the 1:50m
-Natural Earth coastline of Denmark that the country test uses, while the
-1:110m land of the <code>sea</code> test still covers it. The zero
-coordinates fail <code>zero</code>, <code>equal</code>, <code>sea</code>
-and <code>country_mismatch</code>.</p>
+<code>country_mismatch</code>, because the point lies just off the 1:50
+million Natural Earth coastline of Denmark that the country test uses,
+while the 1:110 million land of the <code>sea</code> test still covers
+it. The zero coordinates fail <code>zero</code>, <code>equal</code>,
+<code>sea</code> and <code>country_mismatch</code>.</p>
 <p>The negated longitudes show the limit of the spatial tests. Only 18
 of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
@@ -3489,11 +3489,12 @@ In a GBIF table where many records lack <code>countrycode</code>, that
 test alone can flag a large share; the tally per test shows it before it
 goes into a rule.</p></li>
 <li><p><strong><code>sea</code> depends on the land scale.</strong> The
-default 1:110m land is coarse: in the example the GBIF headquarters are
-on land at that scale and at sea on the 1:50m coast. For coastal or
-island taxa, <code>land_scale = 50</code> or <code>10</code> changes the
-result for records within a few kilometres of the coast; the
-reference-data article shows the size of the difference.</p></li>
+default 1:110 million land is coarse: in the example the GBIF
+headquarters are on land at that scale and at sea on the 1:50 million
+coast. For coastal or island taxa, <code>land_scale = 50</code> or
+<code>10</code> changes the result for records within a few kilometres
+of the coast; the reference-data article shows the size of the
+difference.</p></li>
 <li><p><strong><code>duplicate</code> depends on what counts as the same
 record.</strong> By default it is the same coordinates and the same
 <code>species</code> value. Adding

@@ -2,8 +2,6 @@
 
 ### Workflows
 
-- [Quick
-  start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.md):
 - [Cleaning GBIF
   data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md):
 - [Cleaning fossil

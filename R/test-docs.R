@@ -214,7 +214,7 @@ NULL
 #' @section Buffer: `buffers = list(gbif_headquarters = 1000)`, in metres.
 #' @section CoordinateCleaner: Equivalent to `cc_gbif()`; same point, 72-gon
 #'   buffer within 0.95 m of the 1 km circle. The point lies outside the
-#'   1:50m Natural Earth coast, so it also fails `sea` at `land_scale = 50`
+#'   1:50 million Natural Earth coast, so it also fails `sea` at `land_scale = 50`
 #'   and `country_mismatch` with code `"DK"`, in both packages.
 #' @section Custom gazetteer: `gazetteers = list(gbif_headquarters = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].
@@ -231,7 +231,7 @@ NULL
 #' Flags records outside the Natural Earth land polygons, by a planar
 #' point-in-polygon test in longitude and latitude through a grid index that
 #' resolves boundary cells exactly. The land layer is chosen with
-#' `land_scale`: 110 (default), 50, or 10. The 1:10m layer is downloaded once
+#' `land_scale`: 110 (default), 50, or 10. The 1:10 million layer is downloaded once
 #' by [download_reference()].
 #'
 #' @section Fields: `lon`, `lat`.
@@ -253,12 +253,12 @@ NULL
 
 #' Test: urban areas
 #'
-#' Flags records inside the Natural Earth 1:50m urban-area polygons. Not in
+#' Flags records inside the Natural Earth 1:50 million urban-area polygons. Not in
 #' [default_tests()], as urban records are often correct.
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section CoordinateCleaner: Equivalent to `cc_urb()` with its default
-#'   1:50m urban areas; identical flags on the same layer. Not run by
+#'   1:50 million urban areas; identical flags on the same layer. Not run by
 #'   `clean_coordinates()` by default either.
 #' @section Custom gazetteer: `gazetteers = list(urban = polygons)`, an `sf` or
 #'   `sfc` object of urban-area polygons; see [flag_occurrences()].
@@ -272,7 +272,7 @@ NULL
 
 #' Test: country code mismatch
 #'
-#' Flags records whose coordinates fall outside the Natural Earth 1:50m
+#' Flags records whose coordinates fall outside the Natural Earth 1:50 million
 #' country polygon named by their country code. The code is compared with the
 #' polygon's ISO 3166-1 alpha-2 code, its alpha-3 code and the Natural Earth
 #' `ADM0_A3` code, case-insensitively. Records without a code, and records at

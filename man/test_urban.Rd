@@ -4,7 +4,7 @@
 \alias{test_urban}
 \title{Test: urban areas}
 \description{
-Flags records inside the Natural Earth 1:50m urban-area polygons. Not in
+Flags records inside the Natural Earth 1:50 million urban-area polygons. Not in
 \code{\link[=default_tests]{default_tests()}}, as urban records are often correct.
 }
 \section{Fields}{
@@ -13,7 +13,7 @@ Flags records inside the Natural Earth 1:50m urban-area polygons. Not in
 
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_urb()} with its default
-1:50m urban areas; identical flags on the same layer. Not run by
+1:50 million urban areas; identical flags on the same layer. Not run by
 \code{clean_coordinates()} by default either.
 }
 

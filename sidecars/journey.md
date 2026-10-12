@@ -117,7 +117,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.docs  (section)
 - idea: routing with a starting point
-- job: Marks Quick start as the place to begin and labels every article and the reference by its job.
+- job: Marks Get started as the place to begin and labels every article and the reference by its job.
 - leaves: where to start and where each topic lives
 
 ### readme.help  (section)
@@ -153,61 +153,89 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Credits Zizka and co-authors for the tests and defaults and asks for both citations.
 - leaves: `citation("OccurrenceCleaner")` gives both
 
-## Quick start
+## Get started (vignettes/OccurrenceCleaner.Rmd)
 
-### qs.opener  [A1 A3]
-- idea: extension of CC; flag, keep, query
-- job: States the relation and that the drop decision is a query over the flags.
-- leaves: the parent package, the flag word, and the idea of choosing afterwards
+### gs.opener  [A1 A3]
+- idea: what the tutorial does and where it ends; relation to CC
+- job: Says the article flags records, keeps those passing a rule and counts what two rules exclude; states the assumed starting point (basic R, data frames); names the later sections and the CoordinateCleaner relation.
+- leaves: the end point (retained records) and the parent package
 
-### qs.install  (section)
+### gs.steps  (list)
+- idea: flag, inspect, keep, compare
+- job: Lists the four steps with their functions.
+- leaves: `flag_occurrences()`, `print()`/`summary()`, `has_flag()`, `tally_flags()`
 
-### qs.input
-- idea: required columns
-- job: Names the columns the input needs.
-- leaves: Darwin Core names, case-insensitive, `occ_columns()`
+### gs.install  (section)
 
-### qs.flag  (code)
-### qs.flag-result  [A1]
-- idea: why each record is flagged
-- job: Explains each of the five records' flags.
-- leaves: one record can trip several tests; coastline effects on `country_mismatch`
+### gs.data
+- idea: example records
+- job: Introduces seven records of four species with an identifier, coordinates in decimal degrees under Darwin Core names.
+- leaves: the example `x`
 
-### qs.tests  [A1 A4]  (table)
-### qs.tests-note  [A1 A4]
-- idea: CC-equivalent tests, then GBIF fields
-- job: Says which tests come from CoordinateCleaner, up to the documented differences, and which read GBIF fields.
-- leaves: the split between equivalent tests and additions
+### gs.first-tests  (list)
+- idea: three tests without reference data
+- job: Defines `invalid`, `zero` and `duplicate`.
+- leaves: the three definitions
 
-### qs.rules  [A3]  (section)
-- idea: rules as queries; tally
-- job: Defines a rule and compares two with `has_flag()` and `tally_flags()`.
-- leaves: a rule, the tally columns
+### gs.flag-result  [A1]
+- idea: reading the flags
+- job: States the output contract (same rows, same order, input columns unchanged, flag columns added), explains `flagged_by` and which record each test flags, and that a record without a flag passed only the tests run (record 3 in Vienna).
+- leaves: the contract; absence of a flag is relative to the tests run
 
-### qs.bins  [A3]
-- idea: raw columns cut at tally time
-- job: Shows year binned at tally time.
-- leaves: `bins`
+### gs.flag-columns
+- idea: logical columns and the integer
+- job: Says `flag_<test>` is TRUE where the test flagged the record and that `flags` holds all tests in one integer, linking the tests article for the encoding.
+- leaves: `flag_<test>`, `flags`
 
-### qs.buffers  [A1]
-- idea: CC default buffers; override
-- job: States the default buffers and shows changing one.
-- leaves: `buffers = list(capital = 500)`
+### gs.keep  [A3]  (section)
+- idea: a rule; any listed test; retained records
+- job: Defines a cleaning rule, says `has_flag()` matches any test of the rule, and prints the retained records.
+- leaves: `cleaned`, one copy of each duplicate kept
 
-### qs.reference  [A5]
-- idea: pinned gazetteers; CC tables; land scale
-- job: Shows where the gazetteers come from, the CoordinateCleaner alternative and the land scales.
-- leaves: `reference_info()`, `reference = "CoordinateCleaner"`, `land_scale` and which CoordinateCleaner default it matches
+### gs.reference-tests  [A1 A5]  (section)
+- idea: default tests against reference data
+- job: Runs the default tests and explains which records the capital and sea tests flag; two records pass every test.
+- leaves: `default_tests()`; the land scale (1:110 million default) changes `sea` near coasts, linked to Reference data
 
-### qs.disk  [A2]  (section)
-- idea: stream a table
-- job: Streams a two-part table and tallies it.
-- leaves: `out`, `keep`, resumable units
+### gs.valid  [A3]
+- idea: a flag may mark a valid record; summary
+- job: Says a flagged record may be valid and users choose the tests; shows `summary()` and that a rule excludes each record once (per-test counts 8, excluded 5).
+- leaves: `summary()`, the `only` column, overlapping flags counted once
 
-### qs.snapshot-pointer  [A2]
-- idea: for a snapshot
-- job: Says how to point the same call at a GBIF snapshot.
-- leaves: the snapshot path and `flagged_table()`
+### gs.rules  [A3]  (section)
+- idea: compare rules on the same flags
+- job: Compares a strict and a mild rule per species with `tally_flags()`, without rerunning the tests; points to bins in the rules article.
+- leaves: `tally_flags(rules =)`, `flagged_<test>`, `removed_<rule>` (table rendered by a hidden kable)
+
+### gs.buffers  [A1]  (section)
+- idea: distances are part of a test
+- job: Shows that changing a distance means flagging again, with `buffers = list(capital = 200)` (the Vienna point lies between 500 m and 1 km of the capital point).
+- leaves: `buffers` in metres; defaults in `?flag_occurrences`
+
+### gs.own-data  (section)
+- idea: bridge to own data
+- job: Writes the records to a CSV with other column names, reads it back, maps the names with `occ_columns()`, and says only the path and names change for another file.
+- leaves: `read.csv()`, `occ_columns()`, `columns =`
+
+### gs.errors  (section)
+- idea: common errors and their fixes
+- job: Shows three real error messages (missing column, unknown test, rule naming a test not run), each with its fix.
+- leaves: `occ_columns()`, `flag_tests()`, rerun or drop the test
+
+### gs.metadata  [A4]  (section)
+- idea: tests on GBIF fields
+- job: Shows `basis_fossil` on `basisOfRecord` and links the GBIF workflow.
+- leaves: that some tests read GBIF fields
+
+### gs.disk  [A2]  (section)
+- idea: a table on disk
+- job: Flags a two-file directory (setup collapsed), says the result for a path describes the output directory instead of a data frame, tallies it, says a rerun skips flagged files, links the on-disk article.
+- leaves: `out`, `keep`, resuming
+
+### gs.next  (list)
+- idea: routing
+- job: Labels each next article by its job.
+- leaves: where each topic lives
 
 ## Coming from CoordinateCleaner
 
@@ -521,7 +549,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.layers  [A5]  (section)
 - idea: sources, versions, licences
-- job: Lists each layer with source and version, which test reads it, and the licences.
+- job: Lists each layer in a narrow table (Layer, Source, Version / snapshot, Retrieved; short factbook hash, Wikipedia revisions and the IRMNG citation in a note, `aohi` named after `cc_aohi()` while the inventory is AHOI), which test reads it, and the licences.
 - leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner
 
 ### ref.vs-cc  [A1 A5]  (section)
@@ -535,8 +563,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `extension` column; `gazetteers = list(capital = g[!g$extension, ])` restricts to CC's sources
 
 ### ref.land-scale  [A1 A5]  (section)
-- idea: 1:110m vs 1:50m on the Danish coast
-- job: Measures where the two land scales disagree and how to get 1:10m.
+- idea: 1:110 million vs 1:50 million on the Danish coast
+- job: States the three supported scales, OccurrenceCleaner's default (1:110 million) beside CoordinateCleaner's two defaults, that 1:10 million is downloaded once and cached, then measures where 1:110 million and 1:50 million disagree.
 - leaves: the scale matters for coastal and island taxa; the download is checksummed
 
 ### ref.buffers  [A1]  (section)
@@ -551,7 +579,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.choose  [A1 A5]  (section)
 - idea: which reference to use
-- job: Says when to use each reference.
+- job: Says when to use each reference; `reference = "CoordinateCleaner"` uses its own tables, needs it installed, and reproduces its flags subject to the documented differences.
 - leaves: own gazetteers (Natural Earth, Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI) by default; CoordinateCleaner's to compare with published work
 
 ## Outliers and dataset tests (how-to, A6 home)

@@ -103,7 +103,7 @@
 - [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
   : Genus habitats of the habitat tests
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
-  : Download the 1:10m land layer
+  : Download the 1:10 million land layer
 
 ## Data
 

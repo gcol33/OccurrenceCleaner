@@ -7,7 +7,7 @@
 Flags records outside the Natural Earth land polygons, by a planar
 point-in-polygon test in longitude and latitude through a grid index that
 resolves boundary cells exactly. The land layer is chosen with
-\code{land_scale}: 110 (default), 50, or 10. The 1:10m layer is downloaded once
+\code{land_scale}: 110 (default), 50, or 10. The 1:10 million layer is downloaded once
 by \code{\link[=download_reference]{download_reference()}}.
 }
 \section{Fields}{

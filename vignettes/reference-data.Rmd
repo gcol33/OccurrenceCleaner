@@ -32,10 +32,25 @@ library(OccurrenceCleaner)
 
 ```{r layers}
 ri <- reference_info()
-knitr::kable(ri[, c("layer", "source", "file", "version", "retrieved")])
 ```
 
-Each row also holds the download URL, the SHA-256 checksum of the source file and the licence. The tests read these layers:
+```{r layers-table, echo = FALSE}
+wiki <- ri$layer == "institutions_wikipedia"
+shown <- ri[, c("layer", "source", "version", "retrieved")]
+fb <- ri$layer == "factbook"
+shown$version[fb] <- substr(shown$version[fb], 1, nchar("factbook.json ") + 7)
+shown$version[wiki] <- "7 page revisions (below)"
+shown$source[ri$layer == "habitat"] <- "IRMNG (Rees 2026)"
+shown$source[ri$layer == "aohi"] <- "AHOI (Park et al. 2023)"
+shown$retrieved <- sprintf('<span style="white-space: nowrap">%s</span>',
+                           shown$retrieved)
+knitr::kable(shown, col.names = c("Layer", "Source", "Version / snapshot",
+                                  "Retrieved"))
+```
+
+The factbook version is the commit of the factbook.json mirror, shortened here; `reference_info()` holds the full hash. The Wikipedia lists are pinned by page revision: `r gsub(" revision", "", ri$version[wiki])`. IRMNG is cited as Rees, T. (compiler) (2026), The Interim Register of Marine and Nonmarine Genera, available from https://www.irmng.org at VLIZ. The layer `aohi` takes its name from CoordinateCleaner's `cc_aohi()`; the inventory's own abbreviation is AHOI.
+
+Each row of `reference_info()` also holds the file name, the download URL, the SHA-256 checksum of the source file and the licence. The tests read these layers:
 
 ```{r layer-use, echo = FALSE}
 knitr::kable(data.frame(
@@ -46,9 +61,9 @@ knitr::kable(data.frame(
                        "GBIF GRSciColl institutions, Wikidata botanical gardens, natural history museums, zoos, aquaria and herbaria, museums of Wikipedia's lists of natural history museums, and BGCI gardens, with coordinates",
                        "one fixed point, 12.58 E, 55.67 N",
                        "Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points",
-                       "Natural Earth land at 1:110m (default), 1:50m or 1:10m",
-                       "Natural Earth urban areas 1:50m",
-                       "Natural Earth admin-0 countries 1:50m",
+                       "Natural Earth land at 1:110 million (default), 1:50 million or 1:10 million",
+                       "Natural Earth urban areas 1:50 million",
+                       "Natural Earth admin-0 countries 1:50 million",
                        "the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera"),
   check.names = FALSE))
 ```
@@ -127,7 +142,9 @@ data.frame(city = x$city,
 
 ## Land scale and the `sea` test
 
-The `sea` test flags records outside the land polygons. The coarse 1:110m layer, the default of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()` (its `clean_coordinates()` uses 1:50m), smooths the coast and drops small islands; the 1:50m layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
+The `sea` test flags records outside the land polygons. It supports Natural Earth land polygons at scales of 1:110 million, 1:50 million and 1:10 million. OccurrenceCleaner defaults to 1:110 million (`land_scale = 110`). [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) defaults to 1:110 million in `cc_sea()` and 1:50 million in `clean_coordinates()`. The 1:10 million layer is downloaded on first use and cached.
+
+The coarse 1:110 million layer smooths the coast and drops small islands; the 1:50 million layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
 
 ```{r land-grid}
 g <- expand.grid(decimalLongitude = seq(7.5, 15.5, by = 0.05),
@@ -136,7 +153,7 @@ g$species <- "a"
 s110 <- flag_occurrences(g, tests = "sea")$flag_sea
 s50 <- flag_occurrences(g, tests = "sea", land_scale = 50)$flag_sea
 g$verdict <- ifelse(s110 & s50, "sea at both", ifelse(!s110 & !s50, "land at both",
-                    ifelse(s110, "sea at 1:110m only", "sea at 1:50m only")))
+                    ifelse(s110, "sea at 1:110 million only", "sea at 1:50 million only")))
 table(g$verdict)
 ```
 
@@ -145,7 +162,7 @@ library(ggplot2)
 ggplot(g, aes(decimalLongitude, decimalLatitude, fill = verdict)) +
   geom_tile() +
   scale_fill_manual(values = c(`land at both` = "#C8B88A", `sea at both` = "#A9C7E0",
-                               `sea at 1:110m only` = "#C0392B", `sea at 1:50m only` = "#2C3E50")) +
+                               `sea at 1:110 million only` = "#C0392B", `sea at 1:50 million only` = "#2C3E50")) +
   coord_quickmap(expand = FALSE) +
   labs(x = "longitude", y = "latitude", fill = NULL) +
   theme_minimal() +
@@ -157,7 +174,7 @@ ggplot(g, aes(decimalLongitude, decimalLatitude, fill = verdict)) +
 dis <- mean(s110 != s50)
 ```
 
-On this grid the two scales disagree for `r round(100 * dis, 1)` % of the points, all of them along the coast. At 1:110m Funen, Lolland, Falster, Rügen and Bornholm are missing, so records on them are flagged as at sea (red); the coarse 1:110m coastline also reaches out into the water, so records in a strip of coastal water count as on land there and are flagged only at 1:50m (dark). For coastal and island taxa the scale therefore changes a share of the `sea` flags large enough to see in a tally. The 1:10m layer is the most detailed of the three and is downloaded on first use:
+On this grid the two scales disagree for `r round(100 * dis, 1)` % of the points, all of them along the coast. At 1:110 million Funen, Lolland, Falster, Rügen and Bornholm are missing, so records on them are flagged as at sea (red); the coarse 1:110 million coastline also reaches out into the water, so records in a strip of coastal water count as on land there and are flagged only at 1:50 million (dark). For coastal and island taxa the scale therefore changes a share of the `sea` flags large enough to see in a tally. The 1:10 million layer is the most detailed of the three:
 
 ```{r land-10, eval = FALSE}
 download_reference("land_10")
@@ -194,6 +211,6 @@ attr(f, "occ_layout_version")
 
 - `reference = "OccurrenceCleaner"` (the default) needs no other package, has a version and checksum for every layer, and uses current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI data.
 
-- `reference = "CoordinateCleaner"` gives [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s flags up to the differences listed in the article Coming from CoordinateCleaner, for example to compare with a published analysis that used it. It needs CoordinateCleaner installed, and [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) for the polygon tests, which downloads the Natural Earth layers at run time as CoordinateCleaner does.
+- Set `reference = "CoordinateCleaner"` to use [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s own reference tables, for example to compare with a published analysis that used it. This requires CoordinateCleaner to be installed and reproduces its flags subject to the differences documented in [Coming from CoordinateCleaner](coordinatecleaner.html). The polygon tests also need [rnaturalearth](https://docs.ropensci.org/rnaturalearth/), which downloads the Natural Earth layers at run time as CoordinateCleaner does.
 
 Both references use the same buffers and the same geodesic distance, so the difference between them is in the points and polygons only.

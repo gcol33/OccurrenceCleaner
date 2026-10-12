@@ -37,6 +37,8 @@ knitr::kable(flag_tests()[, c("bit", "test", "definition", "needs", "source", "e
 attr(flag_tests(), "layout_version")
 ```
 
+Tests with an entry in the `equivalent` column follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s record tests and default buffers. Differences are documented in [Coming from CoordinateCleaner](coordinatecleaner.html). The remaining tests use GBIF’s `issue`, `basisOfRecord` and `establishmentMeans` fields, or compare the land polygons with the habitat of the record’s genus (`sea_nonmarine`, `land_marine`). `default_tests()` lists the tests that require only coordinates and a species name.
+
 A record's flag word is the sum of `2^bit` over the tests it fails, so a word of 10 (`2^1 + 2^3`) means `zero` and `capital`. `flag_mask()` turns a set of tests into such a word and `has_flag()` asks whether a word carries any test of a set:
 
 ```{r mask}
@@ -133,9 +135,9 @@ For records spread evenly over a disc, the share grows with the square of the bu
 
 ## Land and sea: `sea`
 
-`sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110m (the default, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()`; its `clean_coordinates()` uses 1:50m), 1:50m and 1:10m, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
+`sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110 million (the default, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()`; its `clean_coordinates()` uses 1:50 million), 1:50 million and 1:10 million, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
 
-The scale decides the result for records near the coast. The GBIF headquarters in Copenhagen are on land at 1:110m and in the sea at 1:50m:
+The scale decides the result for records near the coast. The GBIF headquarters in Copenhagen are on land at 1:110 million and in the sea at 1:50 million:
 
 ```{r sea-scale}
 x <- data.frame(species = "a", decimalLongitude = c(12.58, 16.37, -30),
@@ -145,7 +147,7 @@ data.frame(x[, 2:3],
            sea_50 = flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea)
 ```
 
-The 1:10m layer is downloaded once on first use (`download_reference()`) and cached. The reference-data article measures how many coastal records change between scales.
+The 1:10 million layer is downloaded once on first use (`download_reference()`) and cached. The reference-data article measures how many coastal records change between scales.
 
 ## Habitat at sea and on land: `sea_nonmarine`, `land_marine`
 
@@ -163,7 +165,7 @@ The oak in the Atlantic fails both `sea` and `sea_nonmarine`; the starfish in Vi
 
 ## Urban areas: `urban`
 
-`urban` flags records inside the Natural Earth 1:50m urban-area polygons. It is not in `default_tests()`, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()`, because records in cities are often correct; it is useful as a separate column, for example to remove garden and street-tree records of plants:
+`urban` flags records inside the Natural Earth 1:50 million urban-area polygons. It is not in `default_tests()`, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()`, because records in cities are often correct; it is useful as a separate column, for example to remove garden and street-tree records of plants:
 
 ```{r urban}
 x <- data.frame(species = "a", decimalLongitude = c(16.37, 16.51, 15.3),
@@ -176,7 +178,7 @@ The first point is central Vienna. The second is in the north-east of the city, 
 
 ## Country codes: `country_mismatch`
 
-`country_mismatch` flags records whose coordinates fall outside the country named by their country code, using the Natural Earth 1:50m country polygons. The record's code is compared with the polygon's ISO alpha-2 code (as GBIF's `countryCode` gives it), its ISO alpha-3 code (as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) expects), and Natural Earth's own `ADM0_A3` code, which is filled where ISO has none. Matching is case-insensitive and ignores surrounding spaces:
+`country_mismatch` flags records whose coordinates fall outside the country named by their country code, using the Natural Earth 1:50 million country polygons. The record's code is compared with the polygon's ISO alpha-2 code (as GBIF's `countryCode` gives it), its ISO alpha-3 code (as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) expects), and Natural Earth's own `ADM0_A3` code, which is filled where ISO has none. Matching is case-insensitive and ignores surrounding spaces:
 
 ```{r country}
 x <- data.frame(species = "a", decimalLongitude = c(16.37, 16.37, 16.37, 16.37, 16.37, -30),

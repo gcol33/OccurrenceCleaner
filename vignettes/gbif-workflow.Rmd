@@ -128,7 +128,7 @@ names(tab) <- c("truth", show)
 knitr::kable(tab)
 ```
 
-Most error types trip more than one test. All 25 swapped records fail `country_mismatch` and carry GBIF's own `PRESUMED_SWAPPED_COORDINATE` warning (`issue_coordinate`); 9 of them also land at sea. The 15 GBIF-headquarters records are flagged by `gbif_headquarters` and `capital` (Copenhagen is within 10 km), and by `country_mismatch`, because the point lies just off the 1:50m Natural Earth coastline of Denmark that the country test uses, while the 1:110m land of the `sea` test still covers it. The zero coordinates fail `zero`, `equal`, `sea` and `country_mismatch`.
+Most error types trip more than one test. All 25 swapped records fail `country_mismatch` and carry GBIF's own `PRESUMED_SWAPPED_COORDINATE` warning (`issue_coordinate`); 9 of them also land at sea. The 15 GBIF-headquarters records are flagged by `gbif_headquarters` and `capital` (Copenhagen is within 10 km), and by `country_mismatch`, because the point lies just off the 1:50 million Natural Earth coastline of Denmark that the country test uses, while the 1:110 million land of the `sea` test still covers it. The zero coordinates fail `zero`, `equal`, `sea` and `country_mismatch`.
 
 ```{r truth-counts, include = FALSE}
 neg_caught <- sum(rowSums(as.data.frame(f[f$truth == "negated", paste0("flag_", show)])) > 0)
@@ -262,7 +262,7 @@ The `wild` rule keeps 1,998 of the 2,000 clean records and removes every injecte
 
 - **`country_mismatch` needs a country code and flags records without one.** A record with no code, or one that falls at sea, is flagged, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/). In a GBIF table where many records lack `countrycode`, that test alone can flag a large share; the tally per test shows it before it goes into a rule.
 
-- **`sea` depends on the land scale.** The default 1:110m land is coarse: in the example the GBIF headquarters are on land at that scale and at sea on the 1:50m coast. For coastal or island taxa, `land_scale = 50` or `10` changes the result for records within a few kilometres of the coast; the reference-data article shows the size of the difference.
+- **`sea` depends on the land scale.** The default 1:110 million land is coarse: in the example the GBIF headquarters are on land at that scale and at sea on the 1:50 million coast. For coastal or island taxa, `land_scale = 50` or `10` changes the result for records within a few kilometres of the coast; the reference-data article shows the size of the difference.
 
 - **`duplicate` depends on what counts as the same record.** By default it is the same coordinates and the same `species` value. Adding `duplicate_by = "eventdate"` keeps repeat visits apart; `duplicate_cell = 0.1` treats records in the same 0.1-degree cell as duplicates, which suits a grid-based analysis. On streamed input duplicates are found within each input file only (see the on-disk article).
 

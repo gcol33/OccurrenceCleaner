@@ -137,7 +137,7 @@ See [Large tables on disk](https://gillescolling.com/OccurrenceCleaner/articles/
 
 ## Documentation
 
-Start with [Quick start](https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html): one path from a data frame to a tally and a streamed table.
+Start with [Get started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.html): one path from a data frame to the records that pass a cleaning rule.
 
 - [Cleaning GBIF data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html): a GBIF download flagged, compared under several rules and filtered.
 - [Choosing a cleaning rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.html): what each rule removes, per group.

@@ -1,6 +1,6 @@
-# Download the 1:10m land layer
+# Download the 1:10 million land layer
 
-The 1:10m Natural Earth land polygons (2.3 MB compressed) are not
+The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not
 bundled with the package. This fetches the pinned zip from Natural
 Earth, verifies its SHA-256 against
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md),

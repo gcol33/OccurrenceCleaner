@@ -14,9 +14,9 @@ E, 55.67 N), a location some records receive as a default.
 ## CoordinateCleaner
 
 Equivalent to `cc_gbif()`; same point, 72-gon buffer within 0.95 m of
-the 1 km circle. The point lies outside the 1:50m Natural Earth coast,
-so it also fails `sea` at `land_scale = 50` and `country_mismatch` with
-code `"DK"`, in both packages.
+the 1 km circle. The point lies outside the 1:50 million Natural Earth
+coast, so it also fails `sea` at `land_scale = 50` and
+`country_mismatch` with code `"DK"`, in both packages.
 
 ## Custom gazetteer
 

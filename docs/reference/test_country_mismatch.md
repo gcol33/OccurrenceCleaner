@@ -1,10 +1,10 @@
 # Test: country code mismatch
 
-Flags records whose coordinates fall outside the Natural Earth 1:50m
-country polygon named by their country code. The code is compared with
-the polygon's ISO 3166-1 alpha-2 code, its alpha-3 code and the Natural
-Earth `ADM0_A3` code, case-insensitively. Records without a code, and
-records at sea, are flagged.
+Flags records whose coordinates fall outside the Natural Earth 1:50
+million country polygon named by their country code. The code is
+compared with the polygon's ISO 3166-1 alpha-2 code, its alpha-3 code
+and the Natural Earth `ADM0_A3` code, case-insensitively. Records
+without a code, and records at sea, are flagged.
 
 ## Fields
 

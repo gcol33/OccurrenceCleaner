@@ -190,7 +190,7 @@ big <- data.frame(species = "Rhododendron ferrugineum",
                   decimalLatitude = c(rnorm(15000, 46.8, 0.6), 40.4))
 system.time(fb <- flag_occurrences(big, tests = "outlier"))
 #>    user  system elapsed 
-#>    0.03    0.00    0.05
+#>    0.03    0.00    0.03
 which(fb$flag_outlier)
 #> [1] 15001
 ```

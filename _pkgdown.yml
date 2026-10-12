@@ -98,7 +98,6 @@ articles:
 - title: Workflows
   navbar: Workflows
   contents:
-  - quickstart
   - gbif-workflow
   - fossils
   - rules

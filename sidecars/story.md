@@ -24,7 +24,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - evidence: tests/testthat/test-equivalence.R; tests/testthat/test-group.R; ?flag_occurrences (Tests section); vignettes/coordinatecleaner.Rmd (side by side, where the flags differ)
 - limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's; `outlier` flags on the raster path where 3.0.1 flags nothing; the fossil age draws are seeded per taxon, so they agree in distribution, not draw by draw
 - home: vignettes/coordinatecleaner.Rmd
-- also: DESCRIPTION, README, ?OccurrenceCleaner, quickstart
+- also: DESCRIPTION, README, ?OccurrenceCleaner, Get started
 
 ### A2 Handles my scale
 - question: Will it run on my data, up to a whole GBIF snapshot?
@@ -42,7 +42,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - evidence: vignettes/rules.Rmd; ?tally_flags; ?has_flag
 - limits: year and coordinate uncertainty are not tests; they stay raw columns and are cut at tally time
 - home: vignettes/rules.Rmd
-- also: DESCRIPTION, README, ?OccurrenceCleaner, quickstart
+- also: DESCRIPTION, README, ?OccurrenceCleaner, Get started
 
 ### A4 GBIF's own quality fields
 - question: Can I use what GBIF already tells me about each record?
@@ -70,7 +70,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - evidence (sources): data-raw/institutions.R (GRSciColl and Wikidata, CC0); data-raw/habitat.R (IRMNG, CC BY 4.0)
 - limits: GRSciColl licence not yet confirmed (dev_notes/reference_data.md)
 - home: vignettes/reference-data.Rmd
-- also: README, quickstart
+- also: README, Get started
 
 ### A7 Land and sea by habitat
 - question: My data mixes marine and land taxa; does the sea test flag every whale and every oak alike?
@@ -91,7 +91,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - DESCRIPTION: listing text; claim, relation, A1-A4 in one sentence each (the A6 tests named in the A1 list)
 - README / landing: kind of tool, claim, relation, A1 trust sentence, A2-A4/A7 one line each, three-step usage with the first example and rules (A3), test count and reference data in two paragraphs (full table in the tests article), where it fits, grouped tests (A6), fossils, snapshot (A2), routing with a starting point, acknowledgement of the CoordinateCleaner authors, both citations generated from inst/CITATION
 - ?OccurrenceCleaner: entry point inside R; claim, relation, verb map, credit and both citations
-- quickstart (Get Started): tutorial from a data frame to a tally and a streamed table
+- OccurrenceCleaner.Rmd (Get started): tutorial from a data frame through flags and a rule to the retained records, then rule comparison, distances, column names, a GBIF-field test and a table on disk
 - tests: explanation of each test (A4 home)
 - rules: how-to choose and compare rules (A3 home)
 - on-disk: how-to stream a snapshot (A2 home)

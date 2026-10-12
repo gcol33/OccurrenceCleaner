@@ -25,9 +25,9 @@ reference_info <- function() {
   ref_meta
 }
 
-#' Download the 1:10m land layer
+#' Download the 1:10 million land layer
 #'
-#' The 1:10m Natural Earth land polygons (2.3 MB compressed) are not bundled
+#' The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
 #' with the package. This fetches the pinned zip from Natural Earth, verifies
 #' its SHA-256 against [reference_info()], converts it and stores the result in
 #' the user cache directory (`tools::R_user_dir("OccurrenceCleaner", "cache")`).

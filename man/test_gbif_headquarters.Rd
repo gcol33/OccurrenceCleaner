@@ -18,7 +18,7 @@ Flags records within 1 km of the GBIF secretariat in Copenhagen (12.58 E,
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_gbif()}; same point, 72-gon
 buffer within 0.95 m of the 1 km circle. The point lies outside the
-1:50m Natural Earth coast, so it also fails \code{sea} at \code{land_scale = 50}
+1:50 million Natural Earth coast, so it also fails \code{sea} at \code{land_scale = 50}
 and \code{country_mismatch} with code \code{"DK"}, in both packages.
 }
 

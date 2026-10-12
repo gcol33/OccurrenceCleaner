@@ -1,6 +1,7 @@
 # Test: urban areas
 
-Flags records inside the Natural Earth 1:50m urban-area polygons. Not in
+Flags records inside the Natural Earth 1:50 million urban-area polygons.
+Not in
 [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
 as urban records are often correct.
 
@@ -10,9 +11,9 @@ as urban records are often correct.
 
 ## CoordinateCleaner
 
-Equivalent to `cc_urb()` with its default 1:50m urban areas; identical
-flags on the same layer. Not run by `clean_coordinates()` by default
-either.
+Equivalent to `cc_urb()` with its default 1:50 million urban areas;
+identical flags on the same layer. Not run by `clean_coordinates()` by
+default either.
 
 ## Custom gazetteer
 
