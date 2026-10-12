@@ -30,10 +30,10 @@ library(OccurrenceCleaner)
 
 ## The flag word
 
-Every test owns one bit of an integer. `flag_tests()` lists the layout, the fields each test needs and its [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) counterpart:
+Every test owns one bit of an integer. `flag_tests()` lists the layout: each test's definition with its default buffer, the fields it needs and its [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) counterpart:
 
 ```{r layout}
-knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
+knitr::kable(flag_tests()[, c("bit", "test", "definition", "needs", "source", "equivalent")])
 attr(flag_tests(), "layout_version")
 ```
 

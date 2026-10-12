@@ -17,7 +17,7 @@ pak::pak("gcol33/OccurrenceCleaner")
 ```
 
 Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
 ``` r
@@ -241,10 +241,10 @@ vectra::write_vtr(big[2501:5000, ], file.path(src, "part-2.vtr"))
 out <- flag_occurrences(src, out = tempfile("flags"), keep = c("kingdom", "year"), verbose = FALSE)
 out
 #> <occ_flagged> 5,000 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpOMk1eP\flags543c92c676
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpYjjmwx\flags622444b559a6
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, duplicate
 #>   layout:    v4
-#>   reference: OccurrenceCleaner 0.1.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)
+#>   reference: OccurrenceCleaner 0.2.0, land 110
 #>   keep:      kingdom, year
 t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
                  rules = list(cc = c("zero", "equal", "capital", "centroid", "institution",

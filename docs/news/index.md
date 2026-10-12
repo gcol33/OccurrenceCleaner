@@ -1,5 +1,54 @@
 # Changelog
 
+## OccurrenceCleaner 0.2.0
+
+- `gentiana`: the 33,025 GBIF records of the genus *Gentiana* in Austria
+  under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples
+  and the case study of the package paper.
+- [`print()`](https://rdrr.io/r/base/print.html) methods for `occ_flags`
+  (a header and the first records, with the tests each failed),
+  `occ_tally` (records removed and kept per rule) and `occ_columns`;
+  `occ_flagged` prints its reference on one line.
+  [`summary()`](https://rdrr.io/r/base/summary.html) stays the full
+  per-test report.
+- [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
+  takes a flagged data frame as well as the flag words.
+- [`flag_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_reference.md)
+  returns the reference label recorded with a set of flags, in memory or
+  on disk.
+- A rule that names a test the flags were not computed with is an error
+  in
+  [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
+  on a flagged data frame,
+  [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md),
+  [`summary()`](https://rdrr.io/r/base/summary.html) and
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html), instead of
+  removing nothing for that test.
+- Points of a user gazetteer with missing or out-of-range coordinates
+  give a warning that says how many are not used.
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) keeps a label
+  on every bar however many tests a rule holds; the map takes `xlim` and
+  `ylim`.
+
+### Streamed input
+
+- Files on disk are read with only the columns the tests, `keep` and
+  `duplicate_by` use, in the record pass and in the group pass.
+- The group pass counts species with summed per-chunk tables, tallies
+  large species with one split per chunk, holds bucket rows in memory
+  and writes them in batches, and computes the exact outlier distances
+  once per pair. On three GBIF snapshot files (1.9 million records) the
+  group pass takes 101 s instead of 344 s.
+- A `vectra_node` given as input runs once, so the grouped tests, which
+  read the input more than once, stop with a message asking for the path
+  instead.
+- `dataset_rounded` no longer warns when a dataset has no regular
+  spacing between 0.01 and 2 degrees.
+- [`print()`](https://rdrr.io/r/base/print.html) and
+  [`summary()`](https://rdrr.io/r/base/summary.html) of a flagged data
+  frame or tally subset to other columns fall back to the data frame
+  methods.
+
 ## OccurrenceCleaner 0.1.0
 
 Initial release.

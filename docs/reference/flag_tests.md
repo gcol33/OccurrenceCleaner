@@ -27,6 +27,11 @@ The attribute `layout_version` holds the layout version.
 
 ## Details
 
+The word is an R integer, 32 bits of which the sign bit cannot be used
+(it carries `NA`): bits 0 to 29 hold the thirty tests and bit 30 is
+free. A thirty-second test needs a wider word, which will come with a
+new layout version.
+
 Tests marked `source = "CoordinateCleaner"` are equivalent to the test
 of the same name in that package with its default buffer (see the
 `equivalent` column); the documented differences are listed in

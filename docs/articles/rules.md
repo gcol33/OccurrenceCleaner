@@ -31,7 +31,7 @@ pak::pak("gcol33/OccurrenceCleaner")
 ```
 
 Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
 ## Example

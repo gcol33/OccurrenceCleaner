@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,31 @@
       <small>Source: <a href="https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="occurrencecleaner-020">OccurrenceCleaner 0.2.0<a class="anchor" aria-label="anchor" href="#occurrencecleaner-020"></a></h2>
+<ul><li>
+<code>gentiana</code>: the 33,025 GBIF records of the genus <em>Gentiana</em> in Austria under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples and the case study of the package paper.</li>
+<li>
+<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> methods for <code>occ_flags</code> (a header and the first records, with the tests each failed), <code>occ_tally</code> (records removed and kept per rule) and <code>occ_columns</code>; <code>occ_flagged</code> prints its reference on one line. <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> stays the full per-test report.</li>
+<li>
+<code><a href="../reference/flag_mask.html">has_flag()</a></code> takes a flagged data frame as well as the flag words.</li>
+<li>
+<code><a href="../reference/flag_reference.html">flag_reference()</a></code> returns the reference label recorded with a set of flags, in memory or on disk.</li>
+<li>A rule that names a test the flags were not computed with is an error in <code><a href="../reference/flag_mask.html">has_flag()</a></code> on a flagged data frame, <code><a href="../reference/tally_flags.html">tally_flags()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, instead of removing nothing for that test.</li>
+<li>Points of a user gazetteer with missing or out-of-range coordinates give a warning that says how many are not used.</li>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> keeps a label on every bar however many tests a rule holds; the map takes <code>xlim</code> and <code>ylim</code>.</li>
+</ul><div class="section level3">
+<h3 id="streamed-input-0-2-0">Streamed input<a class="anchor" aria-label="anchor" href="#streamed-input-0-2-0"></a></h3>
+<ul><li>Files on disk are read with only the columns the tests, <code>keep</code> and <code>duplicate_by</code> use, in the record pass and in the group pass.</li>
+<li>The group pass counts species with summed per-chunk tables, tallies large species with one split per chunk, holds bucket rows in memory and writes them in batches, and computes the exact outlier distances once per pair. On three GBIF snapshot files (1.9 million records) the group pass takes 101 s instead of 344 s.</li>
+<li>A <code>vectra_node</code> given as input runs once, so the grouped tests, which read the input more than once, stop with a message asking for the path instead.</li>
+<li>
+<code>dataset_rounded</code> no longer warns when a dataset has no regular spacing between 0.01 and 2 degrees.</li>
+<li>
+<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> of a flagged data frame or tally subset to other columns fall back to the data frame methods.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="occurrencecleaner-010">OccurrenceCleaner 0.1.0<a class="anchor" aria-label="anchor" href="#occurrencecleaner-010"></a></h2>
 <p>Initial release.</p>

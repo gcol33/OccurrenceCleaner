@@ -27,7 +27,7 @@ pak::pak("gcol33/OccurrenceCleaner")
 ```
 
 Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
 ``` r
@@ -39,47 +39,48 @@ library(OccurrenceCleaner)
 
 Every test owns one bit of an integer.
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
-lists the layout, the fields each test needs and its
+lists the layout: each test’s definition with its default buffer, the
+fields it needs and its
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 counterpart:
 
 ``` r
 
-knitr::kable(flag_tests()[, c("bit", "test", "needs", "source", "equivalent")])
+knitr::kable(flag_tests()[, c("bit", "test", "definition", "needs", "source", "equivalent")])
 ```
 
-| bit | test | needs | source | equivalent |
-|---:|:---|:---|:---|:---|
-| 0 | invalid | lon,lat | CoordinateCleaner | cc_val |
-| 1 | zero | lon,lat | CoordinateCleaner | cc_zero |
-| 2 | equal | lon,lat | CoordinateCleaner | cc_equ |
-| 3 | capital | lon,lat | CoordinateCleaner | cc_cap |
-| 4 | centroid | lon,lat | CoordinateCleaner | cc_cen |
-| 5 | institution | lon,lat | CoordinateCleaner | cc_inst |
-| 6 | gbif_headquarters | lon,lat | CoordinateCleaner | cc_gbif |
-| 7 | sea | lon,lat | CoordinateCleaner | cc_sea |
-| 8 | urban | lon,lat | CoordinateCleaner | cc_urb |
-| 9 | country_mismatch | lon,lat,country | CoordinateCleaner | cc_coun |
-| 10 | duplicate | lon,lat,species | CoordinateCleaner | cc_dupl |
-| 11 | issue_coordinate | issue | OccurrenceCleaner | NA |
-| 12 | issue_taxon | issue | OccurrenceCleaner | NA |
-| 13 | issue_date | issue | OccurrenceCleaner | NA |
-| 14 | issue_rounded | issue | OccurrenceCleaner | NA |
-| 15 | basis_fossil | basis | OccurrenceCleaner | NA |
-| 16 | basis_living | basis | OccurrenceCleaner | NA |
-| 17 | establishment_introduced | establishment | OccurrenceCleaner | NA |
-| 18 | establishment_managed | establishment | OccurrenceCleaner | NA |
-| 19 | age_equal | min_age,max_age | CoordinateCleaner | cf_equal |
-| 20 | outlier | lon,lat,species | CoordinateCleaner | cc_outl |
-| 21 | age_outlier | min_age,max_age,species | CoordinateCleaner | cf_age |
-| 22 | spatiotemporal_outlier | lon,lat,min_age,max_age,species | CoordinateCleaner | cf_outl |
-| 23 | age_range_outlier | min_age,max_age,species | CoordinateCleaner | cf_range |
-| 24 | dataset_ddmm | lon,lat,dataset | CoordinateCleaner | cd_ddmm |
-| 25 | dataset_rounded | lon,lat,dataset | CoordinateCleaner | cd_round |
-| 26 | range | lon,lat,species | CoordinateCleaner | cc_iucn |
-| 27 | aohi | lon,lat | CoordinateCleaner | cc_aohi |
-| 28 | sea_nonmarine | lon,lat,genus | OccurrenceCleaner | NA |
-| 29 | land_marine | lon,lat,genus | OccurrenceCleaner | NA |
+| bit | test | definition | needs | source | equivalent |
+|---:|:---|:---|:---|:---|:---|
+| 0 | invalid | coordinate missing, not numeric or outside \[-180, 180\] x \[-90, 90\] | lon,lat | CoordinateCleaner | cc_val |
+| 1 | zero | longitude or latitude exactly zero, or within 0.5 degrees of (0, 0) | lon,lat | CoordinateCleaner | cc_zero |
+| 2 | equal | absolute longitude equal to absolute latitude | lon,lat | CoordinateCleaner | cc_equ |
+| 3 | capital | within 10 km of a country capital | lon,lat | CoordinateCleaner | cc_cap |
+| 4 | centroid | within 1 km of a country or province centroid | lon,lat | CoordinateCleaner | cc_cen |
+| 5 | institution | within 100 m of a biodiversity institution | lon,lat | CoordinateCleaner | cc_inst |
+| 6 | gbif_headquarters | within 1 km of the GBIF headquarters (12.58 E, 55.67 N) | lon,lat | CoordinateCleaner | cc_gbif |
+| 7 | sea | outside the land polygons | lon,lat | CoordinateCleaner | cc_sea |
+| 8 | urban | inside an urban-area polygon | lon,lat | CoordinateCleaner | cc_urb |
+| 9 | country_mismatch | coordinates fall outside the country given by the record’s country code | lon,lat,country | CoordinateCleaner | cc_coun |
+| 10 | duplicate | same coordinates and species as an earlier record | lon,lat,species | CoordinateCleaner | cc_dupl |
+| 11 | issue_coordinate | a GBIF georeferencing issue is present | issue | OccurrenceCleaner | NA |
+| 12 | issue_taxon | GBIF matched the taxon fuzzily or to a higher rank | issue | OccurrenceCleaner | NA |
+| 13 | issue_date | GBIF found the recorded date invalid or unlikely | issue | OccurrenceCleaner | NA |
+| 14 | issue_rounded | GBIF rounded the coordinates (COORDINATE_ROUNDED) | issue | OccurrenceCleaner | NA |
+| 15 | basis_fossil | basis of record is a fossil specimen | basis | OccurrenceCleaner | NA |
+| 16 | basis_living | basis of record is a living specimen | basis | OccurrenceCleaner | NA |
+| 17 | establishment_introduced | establishment means is introduced, naturalised or invasive | establishment | OccurrenceCleaner | NA |
+| 18 | establishment_managed | establishment means is managed or cultivated | establishment | OccurrenceCleaner | NA |
+| 19 | age_equal | minimum age equal to or greater than the maximum age | min_age,max_age | CoordinateCleaner | cf_equal |
+| 20 | outlier | geographic outlier among the records of its species | lon,lat,species | CoordinateCleaner | cc_outl |
+| 21 | age_outlier | age outlier among the records of its taxon | min_age,max_age,species | CoordinateCleaner | cf_age |
+| 22 | spatiotemporal_outlier | outlier in space and time among the records of its taxon | lon,lat,min_age,max_age,species | CoordinateCleaner | cf_outl |
+| 23 | age_range_outlier | age range wider than that of the other records of its taxon | min_age,max_age,species | CoordinateCleaner | cf_range |
+| 24 | dataset_ddmm | in a dataset with a degree-minute to decimal conversion error | lon,lat,dataset | CoordinateCleaner | cd_ddmm |
+| 25 | dataset_rounded | in a dataset whose coordinates lie on a regular grid | lon,lat,dataset | CoordinateCleaner | cd_round |
+| 26 | range | outside the range polygons of its species | lon,lat,species | CoordinateCleaner | cc_iucn |
+| 27 | aohi | within 10 km of an Artificial Hotspot Occurrence Inventory point | lon,lat | CoordinateCleaner | cc_aohi |
+| 28 | sea_nonmarine | outside the land polygons, and the genus does not live in the sea | lon,lat,genus | OccurrenceCleaner | NA |
+| 29 | land_marine | inside the land polygons, and the genus lives only in the sea | lon,lat,genus | OccurrenceCleaner | NA |
 
 ``` r
 

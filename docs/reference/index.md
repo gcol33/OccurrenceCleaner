@@ -96,12 +96,19 @@
 
 - [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
   : Reference data: sources and versions
+- [`flag_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_reference.md)
+  : Reference data behind a set of flags
 - [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
   : Reference points of a proximity test
 - [`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
   : Genus habitats of the habitat tests
 - [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)
   : Download the 1:10m land layer
+
+## Data
+
+- [`gentiana`](https://gillescolling.com/OccurrenceCleaner/reference/gentiana.md)
+  : GBIF records of gentians in Austria
 
 ## Package
 

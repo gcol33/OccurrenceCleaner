@@ -19,7 +19,7 @@ pak::pak("gcol33/OccurrenceCleaner")
 ```
 
 Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
 ``` r
@@ -94,11 +94,11 @@ str(m[c("tests", "layout_version", "reference", "keep", "n", "units", "package_v
 #> List of 7
 #>  $ tests          : chr [1:9] "invalid" "zero" "equal" "capital" ...
 #>  $ layout_version : int 4
-#>  $ reference      : chr "OccurrenceCleaner 0.1.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4"| __truncated__
+#>  $ reference      : chr "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4"| __truncated__
 #>  $ keep           : chr [1:2] "kingdom" "year"
 #>  $ n              : num 9000
 #>  $ units          : chr [1:3] "occurrence-1" "occurrence-2" "occurrence-3"
-#>  $ package_version: chr "0.1.0"
+#>  $ package_version: chr "0.2.0"
 ```
 
 Memory use is set by the chunk size of

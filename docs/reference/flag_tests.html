@@ -26,7 +26,7 @@ redefined, and the flag output records which version produced it."><script>
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,11 @@ The attribute <code>layout_version</code> holds the layout version.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Tests marked <code>source = "CoordinateCleaner"</code> are equivalent to the test of
+    <p>The word is an R integer, 32 bits of which the sign bit cannot be used
+(it carries <code>NA</code>): bits 0 to 29 hold the thirty tests and bit 30 is free.
+A thirty-second test needs a wider word, which will come with a new layout
+version.</p>
+<p>Tests marked <code>source = "CoordinateCleaner"</code> are equivalent to the test of
 the same name in that package with its default buffer (see the <code>equivalent</code> column);
 the documented differences are listed in <code><a href="flag_occurrences.html">flag_occurrences()</a></code>. Tests marked
 <code>source = "OccurrenceCleaner"</code> are additions.</p>

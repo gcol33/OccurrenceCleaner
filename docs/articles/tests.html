@@ -35,7 +35,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,8 +122,8 @@ test also has a help page of its own (<code><a href="../reference/test_capital.h
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
-<p>Needs a C++ compiler; <a href="../index.html#installation">Installation</a> shows how to set one
-up.</p>
+<p>Needs a C++ compiler; <a href="https://gillescolling.com/OccurrenceCleaner/#installation">Installation</a>
+shows how to set one up.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -131,21 +131,24 @@ up.</p>
 <h2 id="the-flag-word">The flag word<a class="anchor" aria-label="anchor" href="#the-flag-word"></a>
 </h2>
 <p>Every test owns one bit of an integer. <code><a href="../reference/flag_tests.html">flag_tests()</a></code>
-lists the layout, the fields each test needs and its <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+lists the layout: each test’s definition with its default buffer, the
+fields it needs and its <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 counterpart:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bit"</span>, <span class="st">"test"</span>, <span class="st">"needs"</span>, <span class="st">"source"</span>, <span class="st">"equivalent"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_tests.html">flag_tests</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bit"</span>, <span class="st">"test"</span>, <span class="st">"definition"</span>, <span class="st">"needs"</span>, <span class="st">"source"</span>, <span class="st">"equivalent"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="4%">
-<col width="27%">
-<col width="35%">
-<col width="20%">
-<col width="12%">
+<col width="2%">
+<col width="15%">
+<col width="44%">
+<col width="19%">
+<col width="11%">
+<col width="6%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">bit</th>
 <th align="left">test</th>
+<th align="left">definition</th>
 <th align="left">needs</th>
 <th align="left">source</th>
 <th align="left">equivalent</th>
@@ -154,6 +157,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">0</td>
 <td align="left">invalid</td>
+<td align="left">coordinate missing, not numeric or outside [-180, 180]
+x [-90, 90]</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_val</td>
@@ -161,6 +166,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">1</td>
 <td align="left">zero</td>
+<td align="left">longitude or latitude exactly zero, or within 0.5
+degrees of (0, 0)</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_zero</td>
@@ -168,6 +175,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">2</td>
 <td align="left">equal</td>
+<td align="left">absolute longitude equal to absolute latitude</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_equ</td>
@@ -175,6 +183,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">3</td>
 <td align="left">capital</td>
+<td align="left">within 10 km of a country capital</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_cap</td>
@@ -182,6 +191,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">4</td>
 <td align="left">centroid</td>
+<td align="left">within 1 km of a country or province centroid</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_cen</td>
@@ -189,6 +199,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">5</td>
 <td align="left">institution</td>
+<td align="left">within 100 m of a biodiversity institution</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_inst</td>
@@ -196,6 +207,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">6</td>
 <td align="left">gbif_headquarters</td>
+<td align="left">within 1 km of the GBIF headquarters (12.58 E, 55.67
+N)</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_gbif</td>
@@ -203,6 +216,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">7</td>
 <td align="left">sea</td>
+<td align="left">outside the land polygons</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_sea</td>
@@ -210,6 +224,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">8</td>
 <td align="left">urban</td>
+<td align="left">inside an urban-area polygon</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_urb</td>
@@ -217,6 +232,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">9</td>
 <td align="left">country_mismatch</td>
+<td align="left">coordinates fall outside the country given by the
+record’s country code</td>
 <td align="left">lon,lat,country</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_coun</td>
@@ -224,6 +241,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">10</td>
 <td align="left">duplicate</td>
+<td align="left">same coordinates and species as an earlier record</td>
 <td align="left">lon,lat,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_dupl</td>
@@ -231,6 +249,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">11</td>
 <td align="left">issue_coordinate</td>
+<td align="left">a GBIF georeferencing issue is present</td>
 <td align="left">issue</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -238,6 +257,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">12</td>
 <td align="left">issue_taxon</td>
+<td align="left">GBIF matched the taxon fuzzily or to a higher rank</td>
 <td align="left">issue</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -245,6 +265,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">13</td>
 <td align="left">issue_date</td>
+<td align="left">GBIF found the recorded date invalid or unlikely</td>
 <td align="left">issue</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -252,6 +273,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">14</td>
 <td align="left">issue_rounded</td>
+<td align="left">GBIF rounded the coordinates (COORDINATE_ROUNDED)</td>
 <td align="left">issue</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -259,6 +281,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">15</td>
 <td align="left">basis_fossil</td>
+<td align="left">basis of record is a fossil specimen</td>
 <td align="left">basis</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -266,6 +289,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">16</td>
 <td align="left">basis_living</td>
+<td align="left">basis of record is a living specimen</td>
 <td align="left">basis</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -273,6 +297,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">17</td>
 <td align="left">establishment_introduced</td>
+<td align="left">establishment means is introduced, naturalised or
+invasive</td>
 <td align="left">establishment</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -280,6 +306,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">18</td>
 <td align="left">establishment_managed</td>
+<td align="left">establishment means is managed or cultivated</td>
 <td align="left">establishment</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -287,6 +314,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">19</td>
 <td align="left">age_equal</td>
+<td align="left">minimum age equal to or greater than the maximum
+age</td>
 <td align="left">min_age,max_age</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cf_equal</td>
@@ -294,6 +323,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">20</td>
 <td align="left">outlier</td>
+<td align="left">geographic outlier among the records of its
+species</td>
 <td align="left">lon,lat,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_outl</td>
@@ -301,6 +332,7 @@ counterpart:</p>
 <tr class="even">
 <td align="right">21</td>
 <td align="left">age_outlier</td>
+<td align="left">age outlier among the records of its taxon</td>
 <td align="left">min_age,max_age,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cf_age</td>
@@ -308,6 +340,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">22</td>
 <td align="left">spatiotemporal_outlier</td>
+<td align="left">outlier in space and time among the records of its
+taxon</td>
 <td align="left">lon,lat,min_age,max_age,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cf_outl</td>
@@ -315,6 +349,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">23</td>
 <td align="left">age_range_outlier</td>
+<td align="left">age range wider than that of the other records of its
+taxon</td>
 <td align="left">min_age,max_age,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cf_range</td>
@@ -322,6 +358,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">24</td>
 <td align="left">dataset_ddmm</td>
+<td align="left">in a dataset with a degree-minute to decimal conversion
+error</td>
 <td align="left">lon,lat,dataset</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cd_ddmm</td>
@@ -329,6 +367,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">25</td>
 <td align="left">dataset_rounded</td>
+<td align="left">in a dataset whose coordinates lie on a regular
+grid</td>
 <td align="left">lon,lat,dataset</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cd_round</td>
@@ -336,6 +376,7 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">26</td>
 <td align="left">range</td>
+<td align="left">outside the range polygons of its species</td>
 <td align="left">lon,lat,species</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_iucn</td>
@@ -343,6 +384,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">27</td>
 <td align="left">aohi</td>
+<td align="left">within 10 km of an Artificial Hotspot Occurrence
+Inventory point</td>
 <td align="left">lon,lat</td>
 <td align="left">CoordinateCleaner</td>
 <td align="left">cc_aohi</td>
@@ -350,6 +393,8 @@ counterpart:</p>
 <tr class="odd">
 <td align="right">28</td>
 <td align="left">sea_nonmarine</td>
+<td align="left">outside the land polygons, and the genus does not live
+in the sea</td>
 <td align="left">lon,lat,genus</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>
@@ -357,6 +402,8 @@ counterpart:</p>
 <tr class="even">
 <td align="right">29</td>
 <td align="left">land_marine</td>
+<td align="left">inside the land polygons, and the genus lives only in
+the sea</td>
 <td align="left">lon,lat,genus</td>
 <td align="left">OccurrenceCleaner</td>
 <td align="left">NA</td>

@@ -7,7 +7,7 @@
 - as: runs CoordinateCleaner's record tests with the same definitions and default buffers, for large-scale data, keeping every record
 - avoid: follows CoordinateCleaner; reproduces CoordinateCleaner (without "up to the documented differences"); wraps or calls CoordinateCleaner (the tests are reimplemented; CoordinateCleaner runs only in the equivalence tests and under `reference = "CoordinateCleaner"`)
 - stated-at: @p:desc.claim; @p:readme.claim; @p:pkg.overview; @p:qs.opener; @p:cc.opener
-- reimplemented-at: @p:readme.equivalence
+- reimplemented-at: @p:readme.comparable
 - credit: Zizka and co-authors named for the tests, default buffers and grouped-test options at @p:readme.acknowledgements and @p:pkg.credit; cite both at @p:readme.citation (bibtex), @p:pkg.credit and inst/CITATION
 
 ### test-names
@@ -18,7 +18,7 @@
 ### value-default
 - detail: `cc_*()` default `value = "clean"` removes records; `clean_coordinates()` default `value = "spatialvalid"` flags, with TRUE meaning pass; `flag_<test>` is TRUE for fail; `as_spatialvalid()` converts to the `spatialvalid` layout (column names from the `spatialvalid` column of `flag_tests()`, `.<test>` for tests without one, `.summary`)
 - home: @p:cc.pipe; @p:cc.clean-coordinates; @p:cc.spatialvalid
-- stated-at: ?as_spatialvalid; @p:readme.box; NEWS.md
+- stated-at: ?as_spatialvalid; NEWS.md
 
 ### sea-scale
 - detail: `cc_sea(scale = 110)`; `clean_coordinates(seas_scale = 50)`; `flag_occurrences(land_scale = 110)`
@@ -38,7 +38,7 @@
 ### pyrate-name
 - detail: CoordinateCleaner's `write_pyrate()` is `export_pyrate()` here, same file layout; the different name keeps `write_pyrate()` reachable when both packages are attached
 - home: @p:cc.around-tests
-- stated-at: @p:fossil.pyrate; @p:readme.box; ?export_pyrate
+- stated-at: @p:fossil.pyrate; ?export_pyrate
 
 ### sampling-counts
 - detail: `cc_outl(sampling_thresh)` counts GBIF records per country online at run time; here the counts are a table passed as `gazetteers = list(sampling = ...)` with `settings = list(outlier = list(sampling_thresh = ...))`, and are recorded in the reference label
@@ -77,7 +77,7 @@
 ### addition
 - forms: addition; additions
 - as: a test with no CoordinateCleaner counterpart
-- defined: @p:readme.tests (the "source" column)
+- defined: @p:readme.tests ("additions"); @p:tests.flag-word (the `source` column)
 
 ### equivalent-test
 - forms: CoordinateCleaner-equivalent test; the tests with an `equivalent`
@@ -113,7 +113,7 @@
 - forms: `extension` column; points marked `extension`; extension points
 - as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (243 Natural Earth capitals, 516 Natural Earth country centroids and label points, 7,665 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
 - defined: @p:ref.extension; ?test_capital, ?test_centroid, ?test_institution
-- stated-at: @p:readme.reference; @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md
+- stated-at: @p:readme.usecases (7,665 institutions marked `extension`); @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md
 
 ### reference-points
 - forms: `reference_points()`
@@ -131,7 +131,7 @@
 - forms: `settings`
 - as: the argument of `flag_occurrences()` holding per-test option lists for the grouped tests, defaults CoordinateCleaner's
 - defined: ?flag_occurrences (`settings`); @p:out.methods
-- glossed: @p:readme.grouped; @p:readme.box
+- glossed: @p:readme.grouped
 
 ### dataset-key
 - forms: dataset key; `datasetKey`; `dataset` field of `occ_columns()`
@@ -142,7 +142,7 @@
 - forms: `aohi`; Artificial Hotspot Occurrence Inventory; AHOI; artificial hotspot
 - as: coordinates that recur most often in GBIF records (Park et al. 2023); the test flags records within 10 km of one
 - defined: @p:out.aohi; ?test_aohi
-- glossed: @p:readme.tests
+- glossed: @p:tests.flag-word
 
 ### range-test
 - forms: `range`; species range; range polygons
@@ -161,7 +161,8 @@
 - metric: tests in the layout: 30 (11 coordinate record tests, `range`, `aohi`, `outlier`, 2 dataset tests, 4 fossil tests, 8 GBIF field tests, 2 habitat tests); 20 ported from CoordinateCleaner; layout_version 4
 - source: `flag_tests()`
 - stated-at: NEWS.md; @p:tests.opener (eleven, eight and two here, nine elsewhere); @p:gbif.flag ("nineteen tests in the first bits")
-- note: README and DESCRIPTION give no count
+- stated-at (README): @p:readme.tests (30; twenty from CoordinateCleaner, ten additions)
+- note: DESCRIPTION gives no count
 
 ### aohi-points
 - metric: 308 points in the shipped AHOI layer
@@ -183,7 +184,7 @@
 - metric: seconds to flag a data frame, `default_tests()`, own reference
 - population: 1e6 and 1e7 synthetic records, 10 % near capitals
 - source: dev_notes/benchmark.md (run 2026-10-09 on worky, AMD Ryzen 7 5700G, 64 GB, R 4.6.1, OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1); bench/benchmark.R; table at @p:cc.speed
-- stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.scale (same, linked to @p:cc.speed); @p:cc.speed; @p:gbif.guidance (1.9 s at 1e6); @p:disk.snapshot (17.8 s at 1e7)
+- stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.usecases (capital test 1.4 s at 1e7, linked to @p:cc.speed; the CoordinateCleaner time only in the comparison article); @p:cc.speed; @p:gbif.guidance (1.9 s at 1e6); @p:disk.snapshot (17.8 s at 1e7)
 - note: vignette table matches dev_notes/benchmark.md (checked 2026-10-10)
 
 ### speed-ratio
@@ -217,7 +218,7 @@
 - metric: CoordinateCleaner's 345 hand-placed Wikipedia rows with coordinates (CD/JA/RS, contributor initials): a shipped point within 100 m / 1 km / 5 km for 52 / 82 / 92 % (46 / 76 / 91 % for the points with `extension` FALSE)
 - metric: CoordinateCleaner geocoded 641 of its 712 BGCI gardens itself; coverage of its BGCI rows by the shipped points: 46 % within 100 m, 87 % within 1 km, 96 % within 5 km
 - source: data-raw/institutions.R, queried 2026-10-10; dev_notes/reference_data.md
-- stated-at: NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
+- stated-at: @p:readme.usecases (18,245 points, 7,665 extension, seven Wikipedia languages); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine
@@ -227,7 +228,7 @@
 ### habitat-source
 - metric: IRMNG Darwin Core archive 2026-10-06, CC BY 4.0, citation "Rees, T. (compiler) (2026). The Interim Register of Marine and Nonmarine Genera. Available from https://www.irmng.org at VLIZ."
 - source: eml.xml of the archive; data-raw/habitat.R
-- stated-at: ?reference_habitat; ?test_habitat; @p:ref.layers; vignettes/tests.Rmd (References); README (gazetteer sources); DESCRIPTION; NEWS.md
+- stated-at: ?reference_habitat; ?test_habitat; @p:ref.layers; vignettes/tests.Rmd (References); DESCRIPTION; NEWS.md
 
 ### buffer-band
 - metric: share of a buffer radius inside CoordinateCleaner's inscribed polygon (99.9 % at 72 vertices, 99.7 % at 40)
@@ -239,7 +240,7 @@
 ### buffers
 - argument: flag_occurrences(buffers): capital 10 km, centroid 1 km, institution 100 m, gbif_headquarters 1 km, zero 0.5 degrees (range and aohi under range-aohi-buffers)
 - home: ?flag_occurrences (Tests section)
-- stated-at: @p:readme.tests; @p:qs.buffers; @p:tests.proximity; @p:ref.buffers
+- stated-at: @p:readme.example-result (capital 10 km, gbif_headquarters 1 km); @p:tests.flag-word; @p:qs.buffers; @p:tests.proximity; @p:ref.buffers
 - note: all agree with `.default_buffers` in R/flag.R (checked 2026-10-10)
 
 ### grouped-settings
@@ -250,13 +251,13 @@
 ### range-aohi-buffers
 - argument: flag_occurrences(buffers): range 0 m, aohi 10 km, sea_nonmarine 0 m, land_marine 0 m
 - home: ?test_range, ?test_aohi, ?test_habitat
-- stated-at: @p:readme.tests (aohi 10 km); @p:out.aohi; @p:gaz.ranges (100 km example); @p:tests.habitat (named, no value)
+- stated-at: @p:tests.flag-word (aohi 10 km); @p:out.aohi; @p:gaz.ranges (100 km example); @p:tests.habitat (named, no value)
 - note: `@param buffers` in ?flag_occurrences names all of them with their defaults
 
 ### land-scale
 - argument: flag_occurrences(land_scale = 110)
 - home: ?flag_occurrences
-- stated-at: @p:readme.tests; @p:qs.reference
+- stated-at: @p:qs.reference
 
 ### reference
 - argument: flag_occurrences(reference = "OccurrenceCleaner")

@@ -37,3 +37,13 @@ download_reference(
 ## Value
 
 The path of the cached layer, invisibly.
+
+## Examples
+
+``` r
+if (interactive()) {
+  download_reference()
+  x <- data.frame(decimalLongitude = c(12.58, -30), decimalLatitude = c(55.67, 40))
+  flag_occurrences(x, tests = "sea", land_scale = 10)$flag_sea
+}
+```

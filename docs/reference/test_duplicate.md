@@ -3,8 +3,11 @@
 Flags every record with the same longitude, latitude and species as an
 earlier record; the first of each set is not flagged. `duplicate_by`
 adds columns that must also match; `duplicate_cell` bins coordinates to
-a grid of that many degrees first. On streamed input the test runs
-within each input file.
+a grid of that many degrees first. A missing species counts as one
+value, as in [`duplicated()`](https://rdrr.io/r/base/duplicated.html),
+so records without a species at the same coordinates are duplicates of
+each other. On streamed input the test runs within each input file, so
+duplicates in different files are not found.
 
 ## Fields
 

@@ -1,9 +1,9 @@
 bibentry(
   bibtype  = "Manual",
-  title    = "OccurrenceCleaner: Fast Quality Flags for Species Occurrence Records at Any Scale",
+  title    = paste0("OccurrenceCleaner: ", meta$Title),
   author   = person("Gilles", "Colling"),
   year     = "2026",
-  note     = "R package version 0.1.0",
+  note     = paste("R package version", meta$Version),
   url      = "https://github.com/gcol33/OccurrenceCleaner"
 )
 

@@ -11,14 +11,14 @@ Source:
 [`inst/CITATION`](https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/inst/CITATION)
 
 Colling G (2026). *OccurrenceCleaner: Fast Quality Flags for Species
-Occurrence Records at Any Scale*. R package version 0.1.0,
+Occurrence Records at Any Scale*. R package version 0.2.0,
 <https://github.com/gcol33/OccurrenceCleaner>.
 
     @Manual{,
       title = {OccurrenceCleaner: Fast Quality Flags for Species Occurrence Records at Any Scale},
       author = {Gilles Colling},
       year = {2026},
-      note = {R package version 0.1.0},
+      note = {R package version 0.2.0},
       url = {https://github.com/gcol33/OccurrenceCleaner},
     }
 

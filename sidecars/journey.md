@@ -31,97 +31,86 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ## README
 
-### readme.claim  [A1 A2]
-- idea: extension of CC · what is flagged
-- job: Names the package as an extension of CoordinateCleaner for large-scale data and lists the problems it flags, from coordinates at centroids to outliers and converted datasets.
-- leaves: the parent, the purpose and the list of problems
+Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
-### readme.gbif  [A4 A7]
-- idea: GBIF fields; habitat tests
-- job: Adds the three GBIF fields the package reads and the two habitat tests.
-- leaves: issue warnings, basis of record, establishment means; land genera at sea and marine genera on land; details in the test table
+### readme.claim  [A1 A2 A3]
+- idea: kind of tool · extension of CC · same tests, scale, kept records
+- job: Says what occurrence cleaning tools do (one sentence), names the package as an extension of CoordinateCleaner to large datasets running the same tests at snapshot scale (one sentence), and says every record is kept with its flags so the exclusion is decided afterwards (one sentence).
+- leaves: the category, the parent, scale, and that records are kept
 
-### readme.flags  [A3]
-- idea: flagged and kept
-- job: States that records are kept and the filter is chosen afterwards.
-- leaves: the package never removes a record
+### readme.usecases  [A2 A3 A5 A4 A7]  (list)
+- idea: scale · comparing rules · extension points · GBIF fields
+- job: Lists the four uses the package is built for, each with its reason: large tables with the mechanism (nearest-neighbour queries) and the measured capital-test time, and streaming, rule comparison with `tally_flags()`, 18,245 institution locations, their sources and the 7,665 extension points (included by default, removable), GBIF fields and genus habitat.
+- leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
-### readme.input  [A2 A3]
-- idea: what goes in, what is out of scope, where the kept records go
-- job: Places the package in the workflow: its inputs with the packages they come from (rgbif, paleobioDB), name matching left to other packages (taxify, taxize), and where the kept records go (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
-- leaves: a GBIF download, a PBDB table, a snapshot or any Darwin Core table works; names are cleaned elsewhere; where the package sits between data sources and analyses
-
-### readme.equivalence  [A1]
-- idea: reimplemented; same flags, tested
-- job: Says the tests are reimplemented with CoordinateCleaner's definitions and defaults, that CoordinateCleaner is needed only to compare, and that the test suite checks both return the same flags, pointing to the deliberate differences.
-- leaves: CoordinateCleaner is not called at run time; equivalence is tested, and where the exceptions are listed
-
-### readme.scale  [A2]
-- idea: seconds; billions by chunks
-- job: Gives the practical input size, with a link to the timings.
-- leaves: how large an input is practical, and where the numbers come from
+### readme.comparable  [A1]
+- idea: comparable with CC; reimplemented; tested
+- job: Says results stay comparable with CoordinateCleaner, then why: reimplemented definitions and defaults, equivalence tests, documented differences.
+- leaves: a methods section can cite CoordinateCleaner's tests; where the exceptions are listed
 
 ### readme.install  (section)
 
-### readme.example  [A3]  (code)
-- idea: smallest call
-- job: Shows the smallest call on three records.
-- leaves: the call and its input shape
+### readme.steps  [A3]  (list)
+- idea: flag, choose a rule, compare
+- job: Names the three verbs in the order a user calls them.
+- leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()` and what each step does
+
+### readme.example  (code)
+- idea: smallest call, output shown
+- job: Flags three records and prints four of the flag columns.
+- leaves: the call, its input shape and what comes back
 
 ### readme.example-result  [A1 A3]
-- idea: what each record trips
-- job: Explains the returned columns and why each of the three records is flagged.
-- leaves: the `flag_<test>` columns and the `flags` column, one bit per test; one record can trip several tests
+- idea: what each record trips; the flag word
+- job: Says a flag is TRUE on failure, why each of the three records is flagged, and that the `flags` column holds all tests as bits.
+- leaves: the reading of a flag column; the `flags` column, one bit per test
 
-### readme.rules  [A3]  (section)
-- idea: several rules, one pass
-- job: Shows a rule as a set of tests and compares two rules on the same flags.
-- leaves: `has_flag()`, `tally_flags()`, and that year and uncertainty are binned at tally time
+### readme.rules  [A3]  (code)
+- idea: a rule is a set of tests; two rules compared
+- job: Defines a rule, then applies one with `has_flag()` and compares two with `tally_flags()`, output shown.
+- leaves: rules are chosen after flagging and compared without flagging again
+
+### readme.rules-link  [A3]
+- idea: rules article
+- job: Links the rules article, which adds bins for year and uncertainty.
+- leaves: where the full treatment of rules is
+
+### readme.tests  [A1 A4 A6 A7]  (section)
+- idea: thirty tests; twenty from CC; ten additions
+- job: Gives the number of tests, their two origins in one sentence each, and links the tests article and `flag_tests()`.
+- leaves: the scope of the tests and where each is defined
+
+### readme.reference  [A5]
+- idea: reference data defined; pinned; CC tables; own layers
+- job: Defines the reference data, says it is rebuilt, pinned and recorded with the flags so a cleaning can be repeated, links the reference-data article, and names `reference = "CoordinateCleaner"` and `gazetteers`.
+- leaves: the reference data is traceable and replaceable
+
+### readme.fits  [A2]  (list)
+- idea: input, before, after
+- job: Places the package between its data sources (rgbif, paleobioDB), name matching done beforehand (taxify, taxize) and the analyses the kept records feed (dismo, sdm, phytools, red, PyRate via `export_pyrate()`).
+- leaves: which inputs work, what is out of scope, where the output goes
 
 ### readme.grouped  [A6]  (section)
 - idea: grouped tests; settings
-- job: Says why the outlier and dataset tests run in a pass over the whole input and shows `settings` in one call.
+- job: Says why the outlier and dataset tests run in a pass over the whole input and shows `settings` in one call, linking the outliers article.
 - leaves: the grouped tests exist, work streamed too, and take CoordinateCleaner's options through `settings`
 
-### readme.fossil  [A1 A6]  (code)
+### readme.fossil  [A1 A6]  (section)
 - idea: PBDB table, clean_fossils' tests
-- job: Shows a PBDB fossil table flagged with the age test and two fossil outlier tests, columns named once.
-- leaves: fossil tables take the same verb; `occ_columns()` for PBDB names; ages read from `min_ma`, `max_ma` by default
+- job: Shows a PBDB fossil table flagged with the age test and two fossil outlier tests, columns named once, linking the fossil article.
+- leaves: fossil tables take the same verb; `occ_columns()` for PBDB names
 
 ### readme.snapshot  [A2]  (section)
-- idea: streaming a snapshot
-- job: Shows the same verb on a GBIF Parquet snapshot, with resumable units.
+- idea: streaming a snapshot; units
+- job: Shows the same verb on a GBIF Parquet snapshot, defines a unit, and links the on-disk article.
 - leaves: the on-disk call, `keep`, `out`, and that a rerun resumes
 
-### readme.box  (list)
-- idea: exported functions
-- job: Lists each exported function by what it does.
-- leaves: the verb map, including `buffers` and `settings`, the `occ_columns()` fields (genus and kingdom among them), `reference_points()` for custom gazetteers and AHOI, `reference_habitat()`, `export_pyrate()` and `as_spatialvalid()`
-
-### readme.tests  [A1 A4 A6 A7]  (table)
-- idea: tests, definitions, sources
-- job: Defines each test in one line and names its CoordinateCleaner source or marks it an addition.
-- leaves: the test names and their origin: twenty from CoordinateCleaner, including range, hotspot, outlier, dataset and four fossil tests; ten additions, two of them the habitat tests
-
-### readme.method  [A1]
-- idea: how tests are computed
-- job: Says how proximity and polygon tests are computed.
-- leaves: kd-tree and geodesic distance; grid-indexed point-in-polygon
-
-### readme.reference  [A1 A5]
-- idea: pinned gazetteers; CC tables
-- job: Says where the gazetteers come from and that CoordinateCleaner's tables give its flags up to the documented differences.
-- leaves: own gazetteers are pinned, from Natural Earth, the Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI, and IRMNG for genus habitats; points from sources CoordinateCleaner does not draw on are marked `extension` and used by default; `reference = "CoordinateCleaner"`; where the differences are listed; `gazetteers` for the user's own layers
-
 ### readme.docs  (section)
-- idea: routing
-- job: Links every article and the reference index by title.
-- leaves: where each topic lives
+- idea: routing with a starting point
+- job: Marks Quick start as the place to begin and labels every article and the reference by its job.
+- leaves: where to start and where each topic lives
 
 ### readme.contributing  (section)
-- idea: how to contribute
-- job: Points to the CONTRIBUTING page on the site.
-- leaves: where bug reports and changes go
 
 ### readme.support  (section)
 
@@ -132,10 +121,10 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### readme.license  (section)
 
-### readme.citation  (section)
-- idea: cite both, as bibtex
-- job: Gives the bibtex for this package and for Zizka et al. (2019), the same two entries `citation()` returns.
-- leaves: both references ready to paste
+### readme.citation  (section, generated)
+- idea: cite both
+- job: Prints `citation("OccurrenceCleaner")` with BibTeX: this package (version from DESCRIPTION) and Zizka et al. (2019).
+- leaves: both references ready to paste, from `inst/CITATION`
 
 ## ?OccurrenceCleaner
 
@@ -291,8 +280,8 @@ Anchors are `<doc>.<slug>`; the documents carry no `@p:` markers yet, so entries
 
 ### tests.flag-word  [A3]  (section)
 - idea: one bit per test; layout version; default tests
-- job: Defines the flag word, shows a mask and says why the layout is versioned.
-- leaves: `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `default_tests()`
+- job: Lists every test from `flag_tests()` (definition with default buffer, needed fields, source, CoordinateCleaner counterpart), defines the flag word, shows a mask and says why the layout is versioned.
+- leaves: the full test table (the README links here for it); `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `default_tests()`
 
 ### tests.invalid  [A1]  (section)
 - idea: invalid gets no other spatial flag

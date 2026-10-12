@@ -20,7 +20,7 @@ pak::pak("gcol33/OccurrenceCleaner")
 ```
 
 Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/index.html#installation)
+[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
 shows how to set one up.
 
 ``` r
@@ -353,28 +353,28 @@ reproduces its flags up to the differences above.
 ## Speed
 
 The proximity tests are where the two packages differ most, because
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-builds a polygon per reference point and tests each record against all
-of them, while this package queries a kd-tree. Measured on one machine
-(AMD Ryzen 7 5700G, 64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.1.0,
-CoordinateCleaner 3.0.1), single process, both reading
-CoordinateCleaner’s gazetteers, in seconds:
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) tests
+records against a buffer polygon around each reference point, while this
+package queries a kd-tree. Measured on one machine (AMD Ryzen 7 5700G,
+64 GB, Windows, R 4.6.1, OccurrenceCleaner 0.2.0, CoordinateCleaner
+3.0.1), single process, both reading CoordinateCleaner’s gazetteers,
+fastest of three runs, in seconds:
 
 | test | OccurrenceCleaner, 1e6 | CoordinateCleaner, 1e6 | OccurrenceCleaner, 1e7 | CoordinateCleaner, 1e7 |
 |:---|---:|---:|---:|---:|
-| capital | 0.28 | 24.5 | 1.78 | 242.3 |
-| centroid | 0.15 | 34.9 | 2.15 | 246.2 |
-| institution | 0.18 | 1.0 | 1.73 | 7.4 |
-| gbif_headquarters | 0.08 | 0.6 | 0.81 | 6.5 |
-| sea | 0.06 | 5.9 | 0.66 | 59.7 |
-| zero | 0.07 | 0.6 | 0.42 | 6.7 |
-| equal | 0.03 | 0.0 | 0.36 | 0.1 |
-| invalid | 0.02 | 5.9 | 0.38 | 64.3 |
-| duplicate | 1.55 | 1.1 | 13.79 | 11.9 |
-| default_tests() (own reference) | 1.90 | not run | 17.79 | not run |
+| capital | 0.14 | 24.6 | 1.44 | 238.7 |
+| centroid | 0.16 | 33.8 | 1.63 | 245.4 |
+| institution | 0.15 | 0.9 | 1.68 | 7.4 |
+| gbif_headquarters | 0.08 | 0.6 | 0.80 | 6.4 |
+| sea | 0.06 | 5.6 | 0.66 | 58.4 |
+| zero | 0.05 | 0.6 | 0.47 | 6.5 |
+| equal | 0.03 | 0.0 | 0.37 | 0.1 |
+| invalid | 0.02 | 4.7 | 0.31 | 43.3 |
+| duplicate | 1.12 | 1.2 | 12.07 | 11.2 |
+| default_tests() (own reference) | 1.91 | not run | 19.45 | not run |
 
-At ten million records the capital test takes 1.8 s here and 242 s in
-CoordinateCleaner, the centroid test 2.2 s and 246 s. The equal and
+At ten million records the capital test takes 1.4 s here and 239 s in
+CoordinateCleaner, the centroid test 1.6 s and 245 s. The equal and
 duplicate tests are plain vector operations in both packages and take
 about the same time. Beyond memory, an on-disk table is streamed in
 chunks (see the on-disk article), so the input size is bounded by disk

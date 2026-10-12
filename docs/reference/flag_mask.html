@@ -26,7 +26,7 @@ that rule removes."><script>
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,19 +98,26 @@ that rule removes.</p>
 
 
 <dt id="arg-flags">flags<a class="anchor" aria-label="anchor" href="#arg-flags"></a></dt>
-<dd><p>Integer flag words as returned by <code><a href="flag_occurrences.html">flag_occurrences()</a></code>.</p></dd>
+<dd><p>Integer flag words, or a data frame returned by
+<code><a href="flag_occurrences.html">flag_occurrences()</a></code>, whose <code>flags</code> column is then used.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>flag_mask()</code>: a single integer. <code>has_flag()</code>: a logical vector the
-length of <code>flags</code>; <code>NA</code> flags give <code>NA</code>.</p>
+    <p><code>flag_mask()</code>: a single integer. <code>has_flag()</code>: a logical vector, one
+element per flag word (per row of a data frame); <code>NA</code> flags give <code>NA</code>, so
+subset with <code><a href="https://rdrr.io/r/base/which.html" class="external-link">which()</a></code> or <code>%in% TRUE</code> when flags can be missing. For a
+flagged data frame, a test that was not run is an error, so a rule never
+silently removes nothing for a test it names.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">flag_mask</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"centroid"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">has_flag</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">8L</span>, <span class="fl">16L</span>, <span class="fl">24L</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"centroid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">has_flag</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">8L</span>, <span class="fl">16L</span>, <span class="fl">24L</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"centroid"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">0</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"capital"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu">has_flag</span><span class="op">(</span><span class="va">f</span>, <span class="st">"zero"</span><span class="op">)</span>, <span class="op">]</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -19,7 +19,7 @@ plot(x, rule = NULL, ...)
 plot(x, rule = NULL, ...)
 
 # S3 method for class 'occ_flags'
-plot(x, type = c("tests", "map"), rules = NULL, ...)
+plot(x, type = c("tests", "map"), rules = NULL, xlim = NULL, ylim = NULL, ...)
 
 # S3 method for class 'occ_flagged'
 plot(x, rules = NULL, ...)
@@ -54,6 +54,12 @@ plot(x, rules = NULL, ...)
   For `type = "map"` the first rule decides which records are drawn as
   removed. Default: one rule holding every test run.
 
+- xlim, ylim:
+
+  For `type = "map"`: longitude and latitude limits of the map. Default:
+  the extent of the records. The title counts the records inside the
+  limits.
+
 ## Value
 
 `x`, invisibly.
@@ -69,4 +75,5 @@ f <- flag_occurrences(x)
 plot(f)
 plot(f, by = "kingdom")
 plot(f, type = "map")
+plot(f, type = "map", xlim = c(0, 20), ylim = c(45, 60))
 ```

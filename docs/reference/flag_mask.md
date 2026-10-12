@@ -22,17 +22,25 @@ has_flag(flags, tests)
 
 - flags:
 
-  Integer flag words as returned by
-  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
+  Integer flag words, or a data frame returned by
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md),
+  whose `flags` column is then used.
 
 ## Value
 
-`flag_mask()`: a single integer. `has_flag()`: a logical vector the
-length of `flags`; `NA` flags give `NA`.
+`flag_mask()`: a single integer. `has_flag()`: a logical vector, one
+element per flag word (per row of a data frame); `NA` flags give `NA`,
+so subset with [`which()`](https://rdrr.io/r/base/which.html) or
+`%in% TRUE` when flags can be missing. For a flagged data frame, a test
+that was not run is an error, so a rule never silently removes nothing
+for a test it names.
 
 ## Examples
 
 ``` r
 flag_mask(c("capital", "centroid"))
 has_flag(c(0L, 8L, 16L, 24L), c("capital", "centroid"))
+x <- data.frame(decimalLongitude = c(16.37, 0), decimalLatitude = c(48.21, 0))
+f <- flag_occurrences(x, tests = c("zero", "capital"))
+f[!has_flag(f, "zero"), ]
 ```

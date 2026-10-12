@@ -37,7 +37,7 @@
 
     <a class="navbar-brand me-2" href="index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,283 +92,145 @@
 <div class="page-header"><h1 id="occurrencecleaner">OccurrenceCleaner<a class="anchor" aria-label="anchor" href="#occurrencecleaner"></a>
 </h1></div>
 <p><em>quality flags for occurrence records, at any scale</em></p>
-<p><a href="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/gcol33/OccurrenceCleaner" class="external-link"><img src="https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p>OccurrenceCleaner is an extension of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) tailored to large-scale occurrence data. It flags common problems in species occurrence records: coordinates at country centroids, capitals or biodiversity institutions; zero or equal coordinates; records at sea, in the wrong country or outside the species range; duplicates; records far from the rest of their species; and datasets whose coordinates were converted from degrees and minutes or published on a grid.</p>
-<p>It also reads three fields GBIF fills for each record: the quality warnings GBIF attaches during processing, the basis of record and the establishment means. Two more tests set the land test against the habitat of the record’s genus, to find land genera at sea and marine genera on land.</p>
-<p>Records are flagged and kept, and users choose afterwards which flags to filter on.</p>
-<p>The input is any table of records with Darwin Core coordinate and species columns: a GBIF download (for example from <a href="https://docs.ropensci.org/rgbif/" class="external-link">rgbif</a>), a fossil table from the Paleobiology Database (for example from <a href="https://cran.r-project.org/package=paleobioDB" class="external-link">paleobioDB</a>), a whole GBIF snapshot, or another aggregator’s export. Taxonomic name cleaning is not part of the package; names are matched beforehand, for example with <a href="https://gillescolling.com/taxify/" class="external-link">taxify</a> or <a href="https://docs.ropensci.org/taxize/" class="external-link">taxize</a>. The kept records go on to species distribution models such as <a href="https://cran.r-project.org/package=dismo" class="external-link">dismo</a> or <a href="https://cran.r-project.org/package=sdm" class="external-link">sdm</a>, to biogeographic analyses on phylogenies with <a href="https://cran.r-project.org/package=phytools" class="external-link">phytools</a>, to IUCN Red List assessments with <a href="https://cran.r-project.org/package=red" class="external-link">red</a>, or, for fossils, to PyRate through <code><a href="reference/export_pyrate.html">export_pyrate()</a></code>.</p>
-<p>The tests are reimplemented with CoordinateCleaner’s definitions, default buffers and settings, and CoordinateCleaner itself is needed only to compare: the test suite runs it on sampled records and checks that both packages return the same flags; the few deliberate differences are listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
-<p>Data frames containing a few million records are flagged in seconds (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed">timings</a>), and GBIF snapshots containing billions of records are processed by reading Parquet files in chunks.</p>
+<!-- badges: start -->
+
+<p>Occurrence cleaning tools flag species records with suspect coordinates, such as points at country centroids or museums, in the sea, or far from all other records of the same species. OccurrenceCleaner extends <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) to large datasets, running the same tests fast enough to process an entire GBIF snapshot. All records are retained with their flags, so users can decide afterwards which to exclude. It is built for:</p>
+<ul>
+<li>
+<strong>Large tables.</strong> The proximity tests are nearest-neighbour queries in C++: ten million records go through the capital test in 1.4 s on a desktop machine (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed">timings</a>). A GBIF snapshot of billions of records is streamed from its Parquet files, one resumable file at a time.</li>
+<li>
+<strong>Comparing cleaning rules.</strong> The flags are computed once; <code><a href="reference/tally_flags.html">tally_flags()</a></code> then reports what each rule removes per taxon, period or precision class, ready for a methods section or a data paper.</li>
+<li>
+<strong>An extended list of institutions.</strong> Records are checked against 18,245 museum, herbarium and botanic garden locations to flag coordinates that may refer to the institution holding the specimen. The list combines GBIF’s collection registry (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in seven languages, GeoNames and BGCI’s botanic gardens. Of these locations, 7,665 come from sources not used by CoordinateCleaner. These additional locations are included by default but can be excluded to restrict the test to CoordinateCleaner’s sources (<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points">Extension points</a>).</li>
+<li>
+<strong>Using what GBIF already knows.</strong> Tests read GBIF’s issue warnings, basis of record and establishment means, and the habitat of the record’s genus separates marine from land taxa.</li>
+</ul>
+<p>Results stay comparable with CoordinateCleaner, so a methods section can cite its tests. The tests are reimplemented with its definitions and default buffers, and the test suite runs CoordinateCleaner on sampled records and requires the same flags, up to the differences listed in <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
-<p>Needs a C++ compiler:</p>
-<ul>
-<li>Windows: install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>, the version matching your R.</li>
-<li>macOS: run <code>xcode-select --install</code> in a terminal.</li>
-<li>Linux: install R’s development package, for example <code>sudo apt install r-base-dev</code> on Debian or Ubuntu.</li>
-</ul>
-<p><code>pkgbuild::has_build_tools(debug = TRUE)</code> checks that R finds the compiler.</p>
+<p>The package compiles C++ code: <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> on Windows, <code>xcode-select --install</code> on macOS, <code>r-base-dev</code> on Debian and Ubuntu. <code>pkgbuild::has_build_tools(debug = TRUE)</code> checks that R finds the compiler.</p>
 </div>
 <div class="section level2">
-<h2 id="flag-a-data-frame">Flag a data frame<a class="anchor" aria-label="anchor" href="#flag-a-data-frame"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
+<ol style="list-style-type: decimal">
+<li>Flag the records with <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code>.</li>
+<li>Choose a rule, a set of tests, and mark the records it removes with <code><a href="reference/flag_mask.html">has_flag()</a></code>.</li>
+<li>Compare rules per species, period or dataset with <code><a href="reference/tally_flags.html">tally_flags()</a></code>.</li>
+</ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>,</span>
-<span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
-<span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<p>The result is <code>x</code> with one logical <code>flag_&lt;test&gt;</code> column per test and an integer <code>flags</code> column that holds all of them, one bit per test. The first record is within 1 km of the GBIF headquarters and 10 km of Copenhagen, the second is a zero coordinate at sea, the third is in Vienna, a capital.</p>
-</div>
-<div class="section level2">
-<h2 id="several-rules-from-one-pass">Several rules from one pass<a class="anchor" aria-label="anchor" href="#several-rules-from-one-pass"></a>
-</h2>
-<p>A rule is a set of tests. <code><a href="reference/flag_mask.html">has_flag()</a></code> marks the records a rule removes, and <code><a href="reference/tally_flags.html">tally_flags()</a></code> compares several rules on the same flags:</p>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Quercus robur"</span>, <span class="st">"Quercus robur"</span>, <span class="st">"Fagus sylvatica"</span><span class="op">)</span>,</span>
+<span>  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12.58</span>, <span class="fl">0</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
+<span>  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">55.67</span>, <span class="fl">0</span>, <span class="fl">48.21</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="va">f</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"flag_zero"</span>, <span class="st">"flag_capital"</span>,</span>
+<span>      <span class="st">"flag_gbif_headquarters"</span>, <span class="st">"flag_sea"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;           species flag_zero flag_capital flag_gbif_headquarters flag_sea</span></span>
+<span><span class="co">#&gt; 1   Quercus robur     FALSE         TRUE                   TRUE    FALSE</span></span>
+<span><span class="co">#&gt; 2   Quercus robur      TRUE        FALSE                  FALSE     TRUE</span></span>
+<span><span class="co">#&gt; 3 Fagus sylvatica     FALSE         TRUE                  FALSE    FALSE</span></span></code></pre></div>
+<p>A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna. The integer <code>flags</code> column holds all tests of a record, one bit per test.</p>
+<p>A rule is a set of tests; a record is removed by the rule when any of its tests flags it. Several rules are compared on the same flags, without flagging again:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>,</span>
-<span>                                  <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>            <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="va">mild</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"gbif_headquarters"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">strict</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="reference/tally_flags.html">tally_flags()</a></code> gives, per group, the number of records each test flags and the number each rule removes and keeps. Year and coordinate uncertainty stay raw columns and are cut at tally time with <code>bins</code>.</p>
+<span><span class="fu"><a href="reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">strict</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE TRUE TRUE</span></span>
+<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"species"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">strict</span>, mild <span class="op">=</span> <span class="va">mild</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;occ_tally&gt; 3 records in 2 groups of species, rules: strict, mild</span></span>
+<span><span class="co">#&gt;          species n removed_strict kept_strict removed_mild kept_mild</span></span>
+<span><span class="co">#&gt;  Fagus sylvatica 1              1           0            0         1</span></span>
+<span><span class="co">#&gt;    Quercus robur 2              2           0            2         0</span></span>
+<span><span class="co">#&gt; # summary() for the share each test flags</span></span></code></pre></div>
+<p><a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a> compares rules on a larger table, with year and coordinate uncertainty cut into bins at tally time.</p>
+</div>
+<div class="section level2">
+<h2 id="the-tests">The tests<a class="anchor" aria-label="anchor" href="#the-tests"></a>
+</h2>
+<p>The package has 30 tests. Twenty carry CoordinateCleaner’s definitions and defaults, from zero coordinates and capital buffers to species outliers, gridded datasets and fossil ages. The other ten are additions that read GBIF’s issue warnings, basis of record and establishment means, and set the land test against the habitat of the record’s genus. <a href="https://gillescolling.com/OccurrenceCleaner/articles/tests.html">The tests in detail</a> gives each test’s definition, default and source, and <code><a href="reference/flag_tests.html">flag_tests()</a></code> returns the same table in R.</p>
+<p>The reference data (the point lists of capitals, country centroids and institutions, and the land polygons) is rebuilt from public sources. Each layer is pinned by version and checksum and recorded with the flags, so a cleaning can be repeated later. <a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a> lists each layer with its source and version; <code>reference = "CoordinateCleaner"</code> uses that package’s own tables instead, and the <code>gazetteers</code> argument replaces a test’s points or polygons with the user’s own.</p>
+</div>
+<div class="section level2">
+<h2 id="where-it-fits">Where it fits<a class="anchor" aria-label="anchor" href="#where-it-fits"></a>
+</h2>
+<ul>
+<li>The input is any table with Darwin Core coordinate and species columns, such as a GBIF download from <a href="https://docs.ropensci.org/rgbif/" class="external-link">rgbif</a>, a fossil table from the Paleobiology Database via <a href="https://cran.r-project.org/package=paleobioDB" class="external-link">paleobioDB</a>, or another aggregator’s export.</li>
+<li>Taxonomic names are matched beforehand, for example with <a href="https://gillescolling.com/taxify/" class="external-link">taxify</a> or <a href="https://docs.ropensci.org/taxize/" class="external-link">taxize</a>.</li>
+<li>The kept records go to species distribution models (<a href="https://cran.r-project.org/package=dismo" class="external-link">dismo</a>, <a href="https://cran.r-project.org/package=sdm" class="external-link">sdm</a>), biogeography on phylogenies (<a href="https://cran.r-project.org/package=phytools" class="external-link">phytools</a>), IUCN Red List assessments (<a href="https://cran.r-project.org/package=red" class="external-link">red</a>) or, for fossils, PyRate through <code><a href="reference/export_pyrate.html">export_pyrate()</a></code>.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="outliers-and-dataset-tests">Outliers and dataset tests<a class="anchor" aria-label="anchor" href="#outliers-and-dataset-tests"></a>
 </h2>
-<p>The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in <code>settings</code>, with <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s defaults:</p>
+<p>The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in <code>settings</code>, with CoordinateCleaner’s defaults:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span><span class="op">)</span>,</span>
-<span>                 settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"mad"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Fossil records from the Paleobiology Database add an age test and the outlier tests of <code>clean_fossils()</code>, with the PBDB column names given once:</p>
+<code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span><span class="op">)</span></span>
+<span><span class="va">mad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"mad"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, tests <span class="op">=</span> <span class="va">tests</span>, settings <span class="op">=</span> <span class="va">mad</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://gillescolling.com/OccurrenceCleaner/articles/outliers.html">Outliers and dataset tests</a> shows each method on simulated records.</p>
+</div>
+<div class="section level2">
+<h2 id="fossil-records">Fossil records<a class="anchor" aria-label="anchor" href="#fossil-records"></a>
+</h2>
+<p>A table from the Paleobiology Database goes through <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> too, with the age test and the fossil outlier tests of CoordinateCleaner’s <code>clean_fossils()</code>. Its column names are given once through <code><a href="reference/occ_columns.html">occ_columns()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">pbdb</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>, <span class="st">"age_equal"</span>,</span>
-<span>                                 <span class="st">"age_range_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span><span class="op">)</span>,</span>
-<span>                 columns <span class="op">=</span> <span class="fu"><a href="reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lng"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"accepted_name"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>           <span class="st">"age_equal"</span>, <span class="st">"age_range_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span><span class="op">)</span></span>
+<span><span class="va">pbdb_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lng"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"accepted_name"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">pbdb</span>, tests <span class="op">=</span> <span class="va">tests</span>, columns <span class="op">=</span> <span class="va">pbdb_cols</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://gillescolling.com/OccurrenceCleaner/articles/fossils.html">Cleaning fossil records</a> goes from a PBDB download to PyRate input files.</p>
 </div>
 <div class="section level2">
 <h2 id="a-whole-gbif-snapshot">A whole GBIF snapshot<a class="anchor" aria-label="anchor" href="#a-whole-gbif-snapshot"></a>
 </h2>
-<p>The same verb streams an on-disk table through <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a>: a directory of Parquet parts (a GBIF snapshot), a <code>.vtr</code> file, a delimited file or any <code>vectra_node</code>. Each input file is one resumable unit, and the flags are written as <code>.vtr</code> parts next to the columns you keep for grouping:</p>
+<p><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> also streams an on-disk table through <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a>: a directory of Parquet files (a GBIF snapshot), a <code>.vtr</code> file, a delimited file or any <code>vectra_node</code>. Each input file is a unit: it is flagged and written as a whole, and a rerun after an interruption skips the units already finished. The columns in <code>keep</code> are written next to the flags for grouping:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
-<span>                      tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"country_mismatch"</span>, <span class="st">"issue_rounded"</span>,</span>
-<span>                                <span class="st">"basis_fossil"</span><span class="op">)</span>,</span>
-<span>                      out <span class="op">=</span> <span class="st">"flags"</span>,</span>
-<span>                      keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"country_mismatch"</span>, <span class="st">"issue_rounded"</span><span class="op">)</span></span>
+<span><span class="va">keep</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
+<span>                      tests <span class="op">=</span> <span class="va">tests</span>, out <span class="op">=</span> <span class="st">"flags"</span>, keep <span class="op">=</span> <span class="va">keep</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>,</span>
-<span>            bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2000</span><span class="op">)</span>,</span>
-<span>                        coordinateuncertaintyinmeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
-<span>                                <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Rerunning the same call after an interruption skips the input files already finished.</p>
-</div>
-<div class="section level2">
-<h2 id="whats-in-the-box">What’s in the box<a class="anchor" aria-label="anchor" href="#whats-in-the-box"></a>
-</h2>
-<ul>
-<li>
-<strong><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code></strong>: the one flagging verb. Data frame in, data frame out; path or <code>vectra_node</code> in, flag parts on disk out. <code>buffers</code> sets the proximity distances and <code>settings</code> the options of the outlier and dataset tests, both with <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s defaults.</li>
-<li>
-<strong><code><a href="reference/tally_flags.html">tally_flags()</a></code></strong>: per group, the number of records each test flags and each rule removes and keeps, with bins and named rules.</li>
-<li>
-<strong><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code></strong>, <strong><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code></strong>: the percentage of records each test and rule removes, and how much of it each test is the sole reason for; bars, a grid by group, or a map of kept and removed records.</li>
-<li>
-<strong><code><a href="reference/flag_mask.html">has_flag()</a></code></strong>, <strong><code><a href="reference/flag_mask.html">flag_mask()</a></code></strong>: which records a rule removes, read from the <code>flags</code> column.</li>
-<li>
-<strong><code><a href="reference/as_spatialvalid.html">as_spatialvalid()</a></code></strong>: the flags in the layout of CoordinateCleaner’s <code>spatialvalid</code> object, for code written for it.</li>
-<li>
-<strong><code><a href="reference/flag_tests.html">flag_tests()</a></code></strong>: which bit of <code>flags</code> holds which test, with its definition, source and CoordinateCleaner equivalent; versioned.</li>
-<li>
-<strong><code><a href="reference/default_tests.html">default_tests()</a></code></strong>: the CoordinateCleaner-equivalent tests that need only coordinates and a species name.</li>
-<li>
-<strong><code><a href="reference/occ_columns.html">occ_columns()</a></code></strong>: which columns hold which field (coordinates, species, genus and kingdom, country code, fossil ages, dataset key, GBIF fields); Darwin Core defaults, case-insensitive.</li>
-<li>
-<strong><code><a href="reference/reference_info.html">reference_info()</a></code></strong>, <strong><code><a href="reference/download_reference.html">download_reference()</a></code></strong>: the pinned gazetteers (source, version, SHA-256) and the on-demand 1:10m land layer.</li>
-<li>
-<strong><code><a href="reference/reference_points.html">reference_points()</a></code></strong>: the points a proximity test uses (capitals, centroids, institutions, GBIF headquarters, artificial hotspots), to inspect, filter or extend and pass back through <code>gazetteers</code>.</li>
-<li>
-<strong><code><a href="reference/reference_habitat.html">reference_habitat()</a></code></strong>: the genera the habitat tests know, marine or not, from the Interim Register of Marine and Nonmarine Genera.</li>
-<li>
-<strong><code><a href="reference/read_flagged.html">read_flagged()</a></code></strong>, <strong><code><a href="reference/read_flagged.html">flagged_table()</a></code></strong>: open on-disk flag output as a <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> table.</li>
-<li>
-<strong><code><a href="reference/export_pyrate.html">export_pyrate()</a></code></strong>: write fossil records as PyRate input files.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="tests">Tests<a class="anchor" aria-label="anchor" href="#tests"></a>
-</h2>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
-</colgroup>
-<thead><tr>
-<th>test</th>
-<th>definition</th>
-<th>source</th>
-</tr></thead>
-<tbody>
-<tr>
-<td><code>invalid</code></td>
-<td>coordinate missing or out of range</td>
-<td><code>cc_val</code></td>
-</tr>
-<tr>
-<td><code>zero</code></td>
-<td>zero longitude or latitude, or within 0.5 degrees of (0, 0)</td>
-<td><code>cc_zero</code></td>
-</tr>
-<tr>
-<td><code>equal</code></td>
-<td>absolute longitude equals absolute latitude</td>
-<td><code>cc_equ</code></td>
-</tr>
-<tr>
-<td><code>capital</code></td>
-<td>within 10 km of a capital</td>
-<td><code>cc_cap</code></td>
-</tr>
-<tr>
-<td><code>centroid</code></td>
-<td>within 1 km of a country or province centroid</td>
-<td><code>cc_cen</code></td>
-</tr>
-<tr>
-<td><code>institution</code></td>
-<td>within 100 m of a biodiversity institution</td>
-<td><code>cc_inst</code></td>
-</tr>
-<tr>
-<td><code>gbif_headquarters</code></td>
-<td>within 1 km of the GBIF headquarters</td>
-<td><code>cc_gbif</code></td>
-</tr>
-<tr>
-<td><code>sea</code></td>
-<td>outside the land polygons (Natural Earth, scale 110, 50 or 10)</td>
-<td><code>cc_sea</code></td>
-</tr>
-<tr>
-<td><code>urban</code></td>
-<td>inside an urban area</td>
-<td><code>cc_urb</code></td>
-</tr>
-<tr>
-<td><code>country_mismatch</code></td>
-<td>outside the country given by the record’s country code</td>
-<td><code>cc_coun</code></td>
-</tr>
-<tr>
-<td><code>duplicate</code></td>
-<td>same coordinates and species as an earlier record</td>
-<td><code>cc_dupl</code></td>
-</tr>
-<tr>
-<td><code>range</code></td>
-<td>outside every range polygon of its species (user-supplied ranges)</td>
-<td><code>cc_iucn</code></td>
-</tr>
-<tr>
-<td><code>aohi</code></td>
-<td>within 10 km of an artificial hotspot (Park et al. 2023)</td>
-<td><code>cc_aohi</code></td>
-</tr>
-<tr>
-<td><code>outlier</code></td>
-<td>far from the other records of its species</td>
-<td><code>cc_outl</code></td>
-</tr>
-<tr>
-<td><code>dataset_ddmm</code></td>
-<td>in a dataset whose coordinates look converted from degrees and minutes</td>
-<td><code>cd_ddmm</code></td>
-</tr>
-<tr>
-<td><code>dataset_rounded</code></td>
-<td>in a dataset whose coordinates lie on a regular grid</td>
-<td><code>cd_round</code></td>
-</tr>
-<tr>
-<td><code>age_equal</code></td>
-<td>fossil minimum age equal to or greater than the maximum age</td>
-<td><code>cf_equal</code></td>
-</tr>
-<tr>
-<td><code>age_outlier</code></td>
-<td>fossil age far from the ages of its taxon</td>
-<td><code>cf_age</code></td>
-</tr>
-<tr>
-<td><code>spatiotemporal_outlier</code></td>
-<td>fossil far from its taxon in space and time</td>
-<td><code>cf_outl</code></td>
-</tr>
-<tr>
-<td><code>age_range_outlier</code></td>
-<td>fossil age range unusually wide</td>
-<td><code>cf_range</code></td>
-</tr>
-<tr>
-<td>
-<code>issue_coordinate</code>, <code>issue_taxon</code>, <code>issue_date</code>, <code>issue_rounded</code>
-</td>
-<td>GBIF quality warnings (<code>issue</code> field) on coordinates, taxon match, date, rounding</td>
-<td>addition</td>
-</tr>
-<tr>
-<td>
-<code>basis_fossil</code>, <code>basis_living</code>
-</td>
-<td>basis of record</td>
-<td>addition</td>
-</tr>
-<tr>
-<td>
-<code>establishment_introduced</code>, <code>establishment_managed</code>
-</td>
-<td>establishment means</td>
-<td>addition</td>
-</tr>
-<tr>
-<td><code>sea_nonmarine</code></td>
-<td>outside the land polygons, genus not marine (IRMNG)</td>
-<td>addition</td>
-</tr>
-<tr>
-<td><code>land_marine</code></td>
-<td>inside the land polygons, genus only marine (IRMNG)</td>
-<td>addition</td>
-</tr>
-</tbody>
-</table>
-<p>Proximity tests are closed balls in WGS84 geodesic distance, found with a kd-tree on the unit sphere and decided with the Vincenty inverse formula. Polygon tests are planar point-in-polygon against pinned Natural Earth layers through a grid index that resolves boundary cells exactly.</p>
-<p>The gazetteers are rebuilt from the original public sources (Natural Earth, public domain; the CIA World Factbook, public domain, for capitals and country centroids; the World Borders Dataset by Bjorn Sandvik, thematicmapping.org, CC BY-SA, and the GEOLocate service for country centroids; GBIF GRSciColl, Wikidata, Wikipedia’s lists of natural history museums, GeoNames and BGCI GardenSearch for institutions; the Interim Register of Marine and Nonmarine Genera, CC BY 4.0, for genus habitats), each pinned to a version and checksum. Points from sources CoordinateCleaner’s tables do not draw on (Natural Earth capitals and country centroids, Wikidata institutions beyond the museums of the English Wikipedia list, the museums of the non-English Wikipedia lists) are marked <code>extension</code> and used by default; the rows without the mark restrict a test to CoordinateCleaner’s sources (<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points">Extension points</a>). <code>reference = "CoordinateCleaner"</code> reads that package’s own tables instead and gives its flags up to the documented differences, which <code><a href="reference/flag_occurrences.html">?flag_occurrences</a></code> lists and the test suite enforces. The <code>gazetteers</code> argument replaces the layer of single tests with the user’s own points or polygons, recorded with the flags by size and checksum.</p>
+<span><span class="va">cc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>        <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cc <span class="op">=</span> <span class="va">cc</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a> covers output parts, memory and resuming.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
+<p>Start with <a href="https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html">Quick start</a>: one path from a data frame to a tally and a streamed table.</p>
 <ul>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/quickstart.html">Quick Start</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/tests.html">The tests in detail</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/outliers.html">Outliers and dataset tests</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/fossils.html">Cleaning fossil records</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html">Using custom gazetteers</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a></li>
-<li><a href="https://gillescolling.com/OccurrenceCleaner/reference/">Full Reference</a></li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.html">Cleaning GBIF data</a>: a GBIF download flagged, compared under several rules and filtered.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/rules.html">Choosing a cleaning rule</a>: what each rule removes, per group.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a>: streaming a snapshot.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/fossils.html">Cleaning fossil records</a>: PBDB tables and PyRate export.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/tests.html">The tests in detail</a>: what each test checks, its default and source.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/outliers.html">Outliers and dataset tests</a>: the tests that judge a record against its group.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a>: where each layer of reference data comes from and how it differs from CoordinateCleaner’s.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html">Using custom gazetteers</a>: the user’s own points, polygons and species ranges in place of the shipped reference data.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Coming from CoordinateCleaner</a>: function and argument mapping, every documented difference, timings.</li>
+<li>
+<a href="https://gillescolling.com/OccurrenceCleaner/reference/">Full reference</a>: every function, grouped by job.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -389,7 +251,7 @@
 <div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
 </h2>
-<p>The tests, their default buffers and the options of the outlier and dataset tests come from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the gazetteers here are rebuilt from the public sources it draws on.</p>
+<p>The tests, their default buffers and the options of the outlier and dataset tests come from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> by Alexander Zizka and co-authors (Zizka et al. 2019), an rOpenSci package. Its documented definitions are what the equivalence tests check against, and the reference data here is rebuilt from the public sources it draws on.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
@@ -399,22 +261,42 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">@software{OccurrenceCleaner,</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">  title = {OccurrenceCleaner: Fast Quality Flags for Species Occurrence Records at Any Scale},</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/OccurrenceCleaner}</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
-<p>The tests and their defaults follow CoordinateCleaner; please cite it as well:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="va">@article</span>{<span class="ot">CoordinateCleaner</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">author</span> = {Zizka, Alexander and Silvestro, Daniele and Andermann, Tobias and Azevedo, Josue and Duarte Ritter, Camila and Edler, Daniel and Farooq, Harith and Herdean, Andrei and Ariza, Maria and Scharn, Ruud and Svantesson, Sten and Wengstrom, Niklas and Zizka, Vera and Antonelli, Alexandre},</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="dt">title</span> = {CoordinateCleaner: Standardized cleaning of occurrence records from biological collection databases},</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="dt">journal</span> = {Methods in Ecology and Evolution},</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="dt">year</span> = {2019},</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="dt">volume</span> = {10},</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="dt">pages</span> = {744--751},</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="dt">doi</span> = {10.1111/2041-210X.13152}</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Flags <span class="cf">for</span> Species</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>Occurrence Records at Any Scale_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner<span class="sc">&gt;</span>.</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">@</span>Manual{,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    title <span class="ot">=</span> {OccurrenceCleaner<span class="sc">:</span> Fast Quality Flags <span class="cf">for</span> Species Occurrence Records at Any Scale},</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>gcol33<span class="sc">/</span>OccurrenceCleaner},</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  }</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>The tests and default buffers follow CoordinateCleaner; please cite it</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>too<span class="sc">:</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  D, Farooq H, Herdean A, Ariza M, Scharn R, Svantesson S, Wengstrom N,</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  Zizka V, Antonelli <span class="fu">A</span> (<span class="dv">2019</span>). <span class="st">"CoordinateCleaner: standardized</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="st">  cleaning of occurrence records from biological collection databases."</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  _Methods <span class="cf">in</span> Ecology and Evolution_, <span class="sc">*</span><span class="dv">10</span><span class="sc">*</span>, <span class="dv">744</span><span class="fl">-751.</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span><span class="sc">&gt;</span>.</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>  <span class="sc">@</span>Article{,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    title <span class="ot">=</span> {CoordinateCleaner<span class="sc">:</span> standardized cleaning of occurrence records from biological collection databases},</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    author <span class="ot">=</span> {Alexander Zizka and Daniele Silvestro and Tobias Andermann and Josue Azevedo and Camila {Duarte Ritter} and Daniel Edler and Harith Farooq and Andrei Herdean and Maria Ariza and Ruud Scharn and Sten Svantesson and Niklas Wengstrom and Vera Zizka and Alexandre Antonelli},</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    journal <span class="ot">=</span> {Methods <span class="cf">in</span> Ecology and Evolution},</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2019</span>},</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    volume <span class="ot">=</span> {<span class="dv">10</span>},</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    pages <span class="ot">=</span> {<span class="dv">744</span><span class="sc">--</span><span class="dv">751</span>},</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>},</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>  }</span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -455,7 +337,14 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/gcol33/OccurrenceCleaner/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/gcol33/OccurrenceCleaner" class="external-link"><img src="https://codecov.io/gh/gcol33/OccurrenceCleaner/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
