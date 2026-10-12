@@ -180,6 +180,8 @@ polygon_layer <- function(test, reference, land_scale) {
   }
   if (!requireNamespace("rnaturalearth", quietly = TRUE))
     stop("reference = \"CoordinateCleaner\" needs the rnaturalearth package for polygon layers")
+  if (test == "country_mismatch" && !requireNamespace("rnaturalearthdata", quietly = TRUE))
+    stop("reference = \"CoordinateCleaner\" needs the rnaturalearthdata package for the country layer")
   sf <- switch(test,
     sea = rnaturalearth::ne_download(scale = land_scale, type = "land", category = "physical",
                                     returnclass = "sf", load = TRUE),

@@ -92,6 +92,7 @@ test_that("zero matches cc_zero outside the 0.5 degree disc", {
 
 test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natural Earth layers", {
   skip_if_not_installed("rnaturalearth")
+  skip_if_not_installed("rnaturalearthdata")
   skip_if_offline()
   set.seed(7)
   n <- 1500
@@ -116,6 +117,7 @@ test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natura
 
 test_that("country_mismatch reads the filled ISO codes of CoordinateCleaner's country layer", {
   skip_if_not_installed("rnaturalearth")
+  skip_if_not_installed("rnaturalearthdata")
   x <- data.frame(decimalLongitude = c(2.35, 10.75, 21.17), decimalLatitude = c(48.85, 59.91, 42.67),
                   countryCode = c("FR", "NO", "XK"))
   f <- flag_occurrences(x, tests = "country_mismatch", reference = "CoordinateCleaner")
