@@ -1,11 +1,7 @@
 # Flag occurrence records
 
-Runs a set of record tests over species occurrence records and writes
-one flag per record per test. Nothing is removed and no threshold is
-baked in: a cleaning rule is a set of tests, applied afterwards with
-[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
-or summarised with
-[`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
+Runs record tests over species occurrence records and writes one flag
+per record per test. Nothing is removed and no threshold is baked in.
 
 ## Usage
 
@@ -39,9 +35,10 @@ flag_occurrences(
 
   Character vector of test names, see
   [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md).
-  Default
-  [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md).
-  A test whose fields are missing from `x` is an error.
+  `NULL` (the default) runs every test whose columns are in `x` (and
+  `range` when `gazetteers` has range polygons); see
+  [`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md).
+  A named test whose columns are missing from `x` is an error.
 
 - columns:
 
@@ -138,7 +135,9 @@ flag_occurrences(
 
 - resume:
 
-  Skip input units whose output already exists.
+  Continue a run in `out`: skip input files whose `.done` marker exists
+  and resume the group stage from its checkpoint. `FALSE` deletes the
+  earlier output in `out` and starts over.
 
 - verbose:
 
@@ -148,8 +147,8 @@ flag_occurrences(
 
 For a data frame: `x` with an integer column `flags` and one logical
 column `flag_<test>` per test, class `occ_flags` added in front, and
-attributes `occ_tests`, `occ_layout_version`, `occ_reference` and
-`occ_columns`.
+attributes `occ_tests`, `occ_test_plan`, `occ_layout_version`,
+`occ_reference` and `occ_columns`.
 [summary()](https://gillescolling.com/OccurrenceCleaner/reference/summary.occ_flags.md)
 reports the share of records each test flags,
 [plot()](https://gillescolling.com/OccurrenceCleaner/reference/plot.occ_summary.md)
@@ -162,11 +161,25 @@ and `flags`, readable with
 
 ## Details
 
-The grouped tests (`outlier`, the three fossil outlier tests and the two
-dataset tests) compare a record with the other records of its species,
-taxon or dataset; they run in a pass over the whole input before the
-record tests, which on streamed input reads every file once or twice
-more.
+Two choices are kept apart. Which tests run: by default every test whose
+inputs are available, so a screening sees every potential problem the
+columns allow;
+[`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+lists the tests that ran and the reason each other test did not. Which
+records are excluded: a cleaning rule, a set of tests chosen afterwards
+and applied with
+[`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md)
+or compared with
+[`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
+A rule for species distribution modelling might exclude fossil and
+living specimens along with the coordinate problems; a study of fossil
+ranges would keep the fossils and exclude other flags.
+
+The grouped tests (`duplicate`, `outlier`, the three fossil outlier
+tests and the two dataset tests) compare a record with the other records
+of its key, species, taxon or dataset; they run in a group stage before
+the record tests, which on streamed input reads every file once or twice
+more and keeps its buckets and results in `out/.group`.
 
 The input is either a data frame, or an on-disk table streamed in
 chunks: a `vectra_node` (from
@@ -177,6 +190,33 @@ a path to a Parquet file or directory of Parquet parts (such as a GBIF
 snapshot), or a path to a `.vtr` or delimited text file. For a directory
 each file is one resumable unit of work; the return follows the input,
 see Value.
+
+## Streamed runs
+
+Before writing any output, a run records its configuration in
+`out/flags_config.rds`: the tests, columns, `keep`, reference, buffers,
+settings, duplicate options, package version, and each input file with
+its size and modification time. A later call into the same `out` must
+match the record, or it stops and names what differs; `resume = FALSE`
+clears the directory instead. Sizes and modification times detect a
+replaced, grown or touched file; they are not a hash of the contents.
+
+The group stage checkpoints its state after a file or a bucket whenever
+five minutes have passed, and at the end of each pass, so an
+interruption repeats at most the work since the last checkpoint. The
+record pass writes a `.done` marker per input file; an interruption
+there repeats the file in progress.
+
+Memory in the record pass is one input chunk, up to `part_rows` buffered
+output rows and the group-test hits of the current block of 2^20 rows.
+The group stage holds two million bucketed rows before writing them
+(more above four billion records), the per-species record counts,
+per-dataset histograms and raster cell counts of large species, the
+duplicate keys of one bucket (at most four million records on average
+when the input has more than 256 million), and the records of one
+species (fewer than 10,000 for the exact outlier test) or one fossil
+taxon. Its disk use is at most 24 bytes per record for `duplicate`, plus
+the coordinates of the records of the outlier and fossil tests.
 
 ## Tests
 
@@ -212,9 +252,6 @@ package tests:
   CoordinateCleaner compares `ISO_A3` only, so it flags every record in
   France and Norway. Records without a code, or at sea, are flagged as
   in CoordinateCleaner.
-
-- `duplicate` on streamed input is evaluated within each input file
-  (Parquet part), not across the whole table.
 
 - `outlier` flags the records of outlier cells in the raster
   approximation (species of 10,000 records or more, or

@@ -2,6 +2,20 @@
 
 ## OccurrenceCleaner 0.2.0
 
+- Without `tests`,
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+  runs every test whose inputs are available: the columns each test
+  reads, and range polygons for `range`. Running a test only adds flags;
+  which records to exclude stays a cleaning rule chosen afterwards.
+  `default_tests()` is removed; name CoordinateCleaner’s set explicitly
+  when it is wanted.
+- [`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+  lists, for an input, the tests that would run and why each other test
+  would not, and for flag output the tests that ran and why the others
+  did not. Flagged data frames (attribute `occ_test_plan`) and on-disk
+  output (`flags_meta.rds`) record it, and
+  [`print()`](https://rdrr.io/r/base/print.html) names the tests that
+  could not run.
 - `gentiana`: the 33,025 GBIF records of the genus *Gentiana* in Austria
   under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples
   and the case study of the package paper.
@@ -32,6 +46,26 @@
 
 ### Streamed input
 
+- `duplicate` compares each record with every record before it in the
+  whole input, on disk as in a data frame: streamed input gets the same
+  flags as the same records in one data frame, in file and row order.
+  Earlier versions compared records within one chunk at a time, so
+  copies in different chunks or files were missed. `duplicate` is now a
+  grouped test: it buckets a 124-bit hash of each record’s key on disk
+  and needs a path rather than a single-run `vectra_node`.
+- A streamed run records its configuration in `out/flags_config.rds`
+  before writing any output (tests, columns, `keep`, reference, buffers,
+  settings, duplicate options, package version, and each input file’s
+  size and modification time); a later call into the same `out` must
+  match it, or it stops and names what differs. Earlier versions checked
+  only the tests, layout and reference, and only after a run had
+  finished.
+- The group stage checkpoints its state in `out/.group` after a file or
+  a bucket once five minutes have passed and at the end of each pass, so
+  an interrupted run resumes from the last checkpoint. Its hits are
+  stored on disk by file and block of rows, and the record pass reads
+  one block at a time; the bucket count grows with the input, and a
+  bucket too large for memory is split further.
 - Files on disk are read with only the columns the tests, `keep` and
   `duplicate_by` use, in the record pass and in the group pass.
 - The group pass counts species with summed per-chunk tables, tallies
@@ -118,7 +152,7 @@ Initial release.
 - [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md),
   [`flag_mask()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md),
   [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md),
-  [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md).
+  `default_tests()`.
 - [`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md)
   writes flagged records, in memory or on disk, in the layout of
   CoordinateCleaner’s `spatialvalid` object (`.cap`, `.zer`, …,

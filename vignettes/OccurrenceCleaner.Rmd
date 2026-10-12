@@ -84,20 +84,22 @@ cleaned[, c("id", "species", "decimalLongitude", "decimalLatitude")]
 
 Record 3 is kept and record 4 is excluded: the `duplicate` test flags only the repeats, so one copy of each record remains.
 
-## Adding the tests against reference data
+## Running every test the columns allow
 
-Without `tests`, `flag_occurrences()` runs the default tests listed by `default_tests()`. They add checks against reference points and polygons: country capitals, country centroids, biodiversity institutions, the headquarters of the Global Biodiversity Information Facility (GBIF), and the land.
+Without `tests`, `flag_occurrences()` runs every test whose columns are in the data. Running a test only adds its flags, so the default checks for every potential problem the columns allow. Which records to exclude is a separate choice, made afterwards with a cleaning rule.
+
+With coordinates and species, the default adds tests against reference points and polygons: country capitals, country centroids, biodiversity institutions, the headquarters of the Global Biodiversity Information Facility (GBIF), urban areas, the land, and the Artificial Hotspot Occurrence Inventory (Park et al. 2023), a list of coordinates that recur in GBIF records for reasons such as georeferencing defaults. It also runs the test for geographic outliers within a species. The printed header names the columns whose tests could not run, such as a country code or GBIF's reported issues, and `test_plan()` lists those tests with the reason for each.
 
 ```{r}
 f <- flag_occurrences(x)
 f
 ```
 
-Records 3 and 4 lie in Vienna, within 10 km of a capital. Record 6 is in the Atlantic. Record 2, at (0, 0), is also at sea and has equal longitude and latitude. Records 1 and 7 pass every test run here.
+Records 3 and 4 lie in Vienna, within 10 km of a capital and inside an urban area. Record 6 is in the Atlantic. Record 2, at (0, 0), is also at sea, has equal longitude and latitude, and lies within 10 km of an inventory point. The outlier test flags no record. Records 1 and 7 pass every test run here.
 
 The `sea` test compares each record with land polygons from Natural Earth, at the 1:110 million scale by default. Near coasts and on small islands a finer scale (`land_scale = 50` or `10`) can change the flag; [Reference data](reference-data.html) maps the difference.
 
-A flagged record may still be valid: a beech can grow within 10 km of a capital, so users decide which tests suit their analysis.
+A flagged record may still be valid: a beech can grow within 10 km of a capital, so you decide which tests suit your analysis. A rule for species distribution modelling might exclude fossil and living specimens along with coordinate problems, and another study can choose a different set.
 
 `summary()` counts the records each test flags, and in the `only` column the records that test alone flags. Without a rule, it counts under one rule named `all` that lists every test that was run. It only counts: `f` still contains all seven records.
 
@@ -105,7 +107,7 @@ A flagged record may still be valid: a beech can grow within 10 km of a capital,
 summary(f)
 ```
 
-A rule excludes each record once, however many of its tests flag it. Record 2 is flagged by three tests and record 4 by two, so the per-test counts add up to 8 while the `(any)` row excludes 5 records.
+A rule excludes each record once, however many of its tests flag it. Record 2 is flagged by four tests and record 4 by three, so the per-test counts add up to 11 while the `(any)` row excludes 5 records.
 
 ## Comparing cleaning rules
 
@@ -151,7 +153,7 @@ cols <- occ_columns(lon = "lon", lat = "lat", species = "taxon")
 flag_occurrences(y, columns = cols)
 ```
 
-Each test reads only the columns it needs: the default tests need the coordinates and the species.
+With the three columns mapped, the same 12 tests run as on `x`.
 
 ## Fixing common errors
 
@@ -163,12 +165,21 @@ Running the tests without that mapping produces this error:
 flag_occurrences(y)
 ```
 
-The message names the missing column and points to `occ_columns()`. Passing the mapping `cols` from [Flagging other data](#flagging-other-data) fixes the call:
+The message names the coordinate columns it looked for and points to `occ_columns()`. Passing the mapping `cols` from [Flagging other data](#flagging-other-data) fixes the call:
 
 ```{r}
 fy <- flag_occurrences(y, columns = cols)
 print(fy, n = 3)
 ```
+
+A mapping that leaves out a column gives no error: the tests that need that column do not run. Here the species column is left out:
+
+```{r}
+cols_xy <- occ_columns(lon = "lon", lat = "lat")
+print(flag_occurrences(y, columns = cols_xy), n = 3)
+```
+
+The header counts 10 tests instead of 12 and lists `species` among the missing inputs: the `duplicate` and `outlier` tests did not run. Adding `species = "taxon"`, as in `cols`, runs them again.
 
 An unknown test name stops the call before any test runs:
 
@@ -238,7 +249,7 @@ t <- tally_flags(out, by = "species", rules = list(strict = strict))
 t
 ```
 
-The counts match the strict rule on the data frame above. On disk the `duplicate` test compares records within each file, so it finds record 4 here only because records 3 and 4 are in the same file. A rerun into the same directory skips the files already flagged. [Large tables on disk](on-disk.html) covers resuming, duplicates across files and reading the flags back.
+The counts match the strict rule on the data frame above. On disk the `duplicate` test compares each record with all records before it across the files, so it finds record 4 as in the data frame. A rerun into the same directory skips the files already flagged. [Large tables on disk](on-disk.html) covers resuming, duplicates across files and reading the flags back.
 
 ## Where next
 

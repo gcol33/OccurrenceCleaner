@@ -253,8 +253,10 @@ NULL
 
 #' Test: urban areas
 #'
-#' Flags records inside the Natural Earth 1:50 million urban-area polygons. Not in
-#' [default_tests()], as urban records are often correct.
+#' Flags records inside the Natural Earth 1:50 million urban-area polygons.
+#' CoordinateCleaner's `clean_coordinates()` leaves this test out by default,
+#' as urban records are often correct; here it runs whenever coordinates are
+#' present, and a cleaning rule can leave it out.
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section CoordinateCleaner: Equivalent to `cc_urb()` with its default
@@ -301,8 +303,16 @@ NULL
 #' columns that must also match; `duplicate_cell` bins coordinates to a grid
 #' of that many degrees first. A missing species counts as one value, as in
 #' `duplicated()`, so records without a species at the same coordinates are
-#' duplicates of each other. On streamed input the test runs within each
-#' input file, so duplicates in different files are not found.
+#' duplicates of each other.
+#'
+#' The test compares each record with all records before it in the input
+#' order: the rows of a data frame, or on streamed input the files in sorted
+#' order and the rows within each file. Streamed input therefore gets the same
+#' flags as the same records in one data frame. It is a grouped test: the
+#' records are bucketed by a 124-bit hash of their key in a pass before the
+#' record tests, so it needs a path rather than a single-run `vectra_node`.
+#' The probability that any two different keys share a hash is about 2e-18
+#' for ten billion records.
 #'
 #' @section Fields: `lon`, `lat`, `species`, and any `duplicate_by` columns.
 #' @section CoordinateCleaner: Equivalent to `cc_dupl()`, with `duplicate_by`

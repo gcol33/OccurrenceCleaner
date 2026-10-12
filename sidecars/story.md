@@ -31,7 +31,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - answer: Proximity tests are nearest-neighbour queries, so a data frame of a few million records is flagged in seconds; an on-disk table is streamed in chunks, resumable per input file, so memory does not bound the input.
 - payoff: The tests CoordinateCleaner users know can be run on the full GBIF snapshot instead of a download subset.
 - evidence: vignettes/coordinatecleaner.Rmd (Speed); dev_notes/benchmark.md; bench/benchmark.R; vignettes/on-disk.Rmd
-- limits: `duplicate` on streamed input is evaluated within each input file; `duplicate` and `equal` are no faster than CoordinateCleaner
+- limits: `duplicate` and `equal` are no faster than CoordinateCleaner; `duplicate` is a grouped test, so it needs a path rather than a single-run vectra query
 - home: vignettes/on-disk.Rmd (streaming); vignettes/coordinatecleaner.Rmd (speed against CoordinateCleaner)
 - also: DESCRIPTION, README
 

@@ -24,7 +24,7 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_output(print(res), "550 records in 2 part")
 
   got <- vectra::collect(flagged_table(out))
-  want <- rbind(flag_occurrences(d1, tests = tests), flag_occurrences(d2, tests = tests))
+  want <- flag_occurrences(rbind(d1, d2), tests = tests)
   expect_identical(names(got), c("gbifid", "kingdom", "year", "flags"))
   expect_identical(got$gbifid, want$gbifid)
   expect_identical(got$flags, want$flags)
@@ -35,7 +35,8 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_identical(res2$parts, res$parts)
   expect_message(flag_occurrences(src, tests = tests, out = out, keep = c("kingdom", "year"), part_rows = 100), "skipped")
   # different tests into the same directory is refused
-  expect_error(flag_occurrences(src, tests = "invalid", out = out, verbose = FALSE), "different tests")
+  expect_error(flag_occurrences(src, tests = "invalid", out = out, keep = c("kingdom", "year"), verbose = FALSE),
+               "different configuration \\(tests\\)")
 
   # tally on disk equals tally in memory
   rules <- list(strict = c("zero", "gbif_headquarters", "capital", "sea"))
@@ -59,13 +60,104 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_error(flag_occurrences(tempfile(), tests = "zero", out = tempfile()), "not found")
 })
 
+test_that("duplicates are found across chunks and files, as in the whole table", {
+  skip_if_not_installed("vectra")
+  set.seed(3)
+  x <- data.frame(gbifid = as.character(1:400), species = sample(c("a", "b"), 400, TRUE),
+                  decimallongitude = sample(1:20, 400, TRUE) + 0.5, decimallatitude = sample(1:5, 400, TRUE) + 0.5,
+                  eventdate = sample(c("2001", "2002"), 400, TRUE), stringsAsFactors = FALSE)
+  src <- tempfile("dsrc"); dir.create(src)
+  vectra::write_vtr(x[1:200, ], file.path(src, "p1.vtr"), batch_size = 37)
+  vectra::write_vtr(x[201:400, ], file.path(src, "p2.vtr"), batch_size = 37)
+  chunks <- vectra::collect_chunked(vectra::tbl(file.path(src, "p1.vtr")), function(acc, ch) acc + 1L, .init = 0L)
+  expect_gt(chunks, 1L)
+  for (args in list(list(), list(duplicate_by = "eventdate"), list(duplicate_cell = 2))) {
+    whole <- do.call(flag_occurrences, c(list(x, tests = c("invalid", "duplicate")), args))
+    # copies of a record from another chunk of the same file, and from the other file
+    expect_gt(sum(whole$flag_duplicate[38:200]), 0)
+    expect_gt(sum(whole$flag_duplicate[201:400]), 0)
+    o <- do.call(flag_occurrences, c(list(src, tests = c("invalid", "duplicate"), out = tempfile(),
+                                          verbose = FALSE), args))
+    got <- vectra::collect(flagged_table(o))
+    expect_identical(got$gbifid, x$gbifid)
+    expect_identical(got$flags, whole$flags)
+  }
+  expect_message(flag_occurrences(src, tests = "duplicate", out = tempfile()), "duplicate: [0-9]+ bucket")
+})
+
+test_that("repair_duplicates replaces chunk-local duplicate bits with whole-input ones", {
+  skip_if_not_installed("vectra")
+  set.seed(5)
+  x <- data.frame(gbifid = as.character(1:300), species = sample(c("a", "b"), 300, TRUE),
+                  decimallongitude = sample(1:15, 300, TRUE) + 0.5, decimallatitude = sample(1:4, 300, TRUE) + 0.5,
+                  stringsAsFactors = FALSE)
+  src <- tempfile("rsrc"); dir.create(src)
+  vectra::write_vtr(x[1:150, ], file.path(src, "p1.vtr"), batch_size = 40)
+  vectra::write_vtr(x[151:300, ], file.path(src, "p2.vtr"), batch_size = 40)
+  tests <- c("invalid", "zero", "duplicate")
+  out <- tempfile("rout")
+  o <- flag_occurrences(src, tests = tests, out = out, part_rows = 60, verbose = FALSE)
+  whole <- flag_occurrences(x, tests = tests)
+  # the bits a chunk-local test leaves: duplicates only within each chunk of 40
+  local <- unlist(lapply(split(x, (seq_len(300) - 1) %/% 40), function(d)
+    duplicated(d[, c("decimallongitude", "decimallatitude", "species")])))
+  expect_false(identical(local, whole$flag_duplicate))
+  for (p in file.path(out, o$parts)) {
+    d <- as.data.frame(vectra::collect(vectra::tbl(p)))
+    i <- match(d$gbifid, x$gbifid)
+    d$flags <- bitwOr(bitwAnd(d$flags, bitwNot(flag_mask("duplicate"))),
+                      ifelse(local[i], flag_mask("duplicate"), 0L))
+    vectra::write_vtr(d, p, col_types = c(flags = "int32"))
+  }
+  r <- repair_duplicates(out, src, verbose = FALSE)
+  got <- vectra::collect(flagged_table(r))
+  expect_identical(got$flags, whole$flags)
+  expect_false(dir.exists(file.path(out, ".repair")))
+  expect_false(is.null(r$duplicate_repair))
+  # a second repair changes nothing
+  r <- repair_duplicates(out, src, verbose = FALSE)
+  expect_identical(vectra::collect(flagged_table(r))$flags, whole$flags)
+})
+
+test_that("an output directory refuses a rerun with other settings or changed input", {
+  skip_if_not_installed("vectra")
+  src <- tempfile("csrc"); dir.create(src)
+  vectra::write_vtr(make_table(100, 1), file.path(src, "a.vtr"))
+  vectra::write_vtr(make_table(100, 2), file.path(src, "b.vtr"))
+  out <- tempfile("cout")
+  run <- function(...) flag_occurrences(src, tests = c("zero", "capital"), out = out, keep = "kingdom",
+                                        verbose = FALSE, ...)
+  run()
+  expect_true(file.exists(file.path(out, "flags_config.rds")))
+  expect_error(flag_occurrences(src, tests = c("zero", "capital"), out = out, keep = "year", verbose = FALSE),
+               "different configuration \\(keep\\)")
+  expect_error(run(buffers = list(capital = 5000)), "different configuration \\(buffers\\)")
+  expect_error(run(columns = occ_columns(id = "kingdom")), "different configuration \\(columns\\)")
+  Sys.setFileTime(file.path(src, "b.vtr"), Sys.time() + 60)
+  expect_error(run(), "input file\\(s\\) changed: b")
+  vectra::write_vtr(make_table(10, 3), file.path(src, "c.vtr"))
+  expect_error(run(), "input files")
+  # resume = FALSE starts the directory over with the new input
+  expect_identical(run(resume = FALSE)$n, 210)
+  expect_identical(run()$n, 210)
+
+  # the record is written before the first output, so an interrupted first run is checked too
+  out2 <- tempfile("cout2")
+  with_mocked_bindings(
+    expect_error(flag_occurrences(src, tests = "zero", out = out2, verbose = FALSE), "interrupted"),
+    flush_part = function(...) stop("interrupted"))
+  expect_true(file.exists(file.path(out2, "flags_config.rds")))
+  expect_error(flag_occurrences(src, tests = "capital", out = out2, verbose = FALSE), "different configuration")
+  expect_identical(flag_occurrences(src, tests = "zero", out = out2, verbose = FALSE)$n, 210)
+})
+
 test_that("a slice of the GBIF snapshot streams through tbl_parquet", {
   skip_if_not_installed("vectra")
   snap <- Sys.getenv("OCC_GBIF_SNAPSHOT", "E:/research/raw/occurrences/gbif_snapshot/2026-10-01/occurrence.parquet")
   skip_if_not(dir.exists(snap), "GBIF snapshot not available")
   parts <- head(sort(list.files(snap, full.names = TRUE)), 3)
   out <- tempfile("gbif")
-  res <- flag_occurrences(parts, tests = c(default_tests(), "country_mismatch", "issue_rounded", "basis_fossil"), out = out,
+  res <- flag_occurrences(parts, tests = c(cc_default, "country_mismatch", "issue_rounded", "basis_fossil"), out = out,
                           keep = c("kingdom", "year", "coordinateuncertaintyinmeters"), verbose = FALSE)
   expect_gt(res$n, 0)
   got <- vectra::collect(flagged_table(res))

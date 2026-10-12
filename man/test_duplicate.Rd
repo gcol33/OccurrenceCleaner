@@ -9,8 +9,17 @@ earlier record; the first of each set is not flagged. \code{duplicate_by} adds
 columns that must also match; \code{duplicate_cell} bins coordinates to a grid
 of that many degrees first. A missing species counts as one value, as in
 \code{duplicated()}, so records without a species at the same coordinates are
-duplicates of each other. On streamed input the test runs within each
-input file, so duplicates in different files are not found.
+duplicates of each other.
+}
+\details{
+The test compares each record with all records before it in the input
+order: the rows of a data frame, or on streamed input the files in sorted
+order and the rows within each file. Streamed input therefore gets the same
+flags as the same records in one data frame. It is a grouped test: the
+records are bucketed by a 124-bit hash of their key in a pass before the
+record tests, so it needs a path rather than a single-run \code{vectra_node}.
+The probability that any two different keys share a hash is about 2e-18
+for ten billion records.
 }
 \section{Fields}{
  \code{lon}, \code{lat}, \code{species}, and any \code{duplicate_by} columns.

@@ -18,19 +18,9 @@ judged, these tests run in a pass of their own over the whole input
 before the record tests. This article runs the geographic and dataset
 tests on a simulated table of alpine plants, adds the artificial-hotspot
 test `aohi`, and shows how the group pass works on streamed input. The
-fossil outlier tests are shown in the fossil article.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up.
+fossil outlier tests are shown in the fossil article. Installation is
+covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
 

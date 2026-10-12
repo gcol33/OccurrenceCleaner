@@ -90,21 +90,104 @@ flag_tests <- function() {
 
 .test_names <- .flag_layout$test
 
-#' Default tests
+#' Which tests run on an input
 #'
-#' The tests [flag_occurrences()] runs when `tests` is not given: every
-#' CoordinateCleaner-equivalent test that needs only coordinates and a species
-#' name. `country_mismatch` needs a country code, `urban` is left out as in
-#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()`, and the GBIF-field additions need
-#' GBIF columns.
+#' Without `tests`, [flag_occurrences()] runs every test whose inputs are
+#' available: the columns the test reads (the `needs` column of
+#' [flag_tests()], named through [occ_columns()]) and, for `range`, species
+#' range polygons in `gazetteers`. Running a test only adds its flags, so
+#' which records to exclude is decided afterwards by a cleaning rule (see
+#' [has_flag()] and [tally_flags()]).
 #'
-#' @return A character vector of test names.
+#' For input, `test_plan()` lists the tests that would run and the reason each
+#' other test would not. For flag output, it lists the tests that ran and the
+#' reason each other test did not: a missing input, or "not requested" when
+#' `tests` named the tests to run.
+#'
+#' @param x Input to [flag_occurrences()]: a data frame, or a path to a file
+#'   or directory. Or its output: an `occ_flags` data frame, an `occ_flagged`
+#'   object, or the output directory.
+#' @param columns,gazetteers As in [flag_occurrences()]; used for input only.
+#' @return A data frame with one row per test in layout order: `test`, `run`
+#'   (logical), `missing` (the input the test lacks: column names, `"range
+#'   polygons"`, or `"a path"` for a grouped test given a single-run
+#'   `vectra_node`; `NA` when it runs or was not requested) and `reason` (why
+#'   the test does not run, `NA` when it runs).
 #' @examples
-#' default_tests()
+#' x <- data.frame(species = c("a", "a", "b"),
+#'                 decimalLongitude = c(12.58, 0, 16.37),
+#'                 decimalLatitude = c(55.67, 0, 48.21))
+#' p <- test_plan(x)
+#' p[p$run, "test"]
+#' p[!p$run, ]
 #' @export
-default_tests <- function() {
-  c("invalid", "zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea",
-    "duplicate")
+test_plan <- function(x, columns = occ_columns(), gazetteers = NULL) {
+  if (inherits(x, "occ_flags")) return(attr(x, "occ_test_plan") %||% requested_plan(flagged_tests(x)))
+  if (inherits(x, "occ_flagged") ||
+      (is.character(x) && length(x) == 1L && file.exists(file.path(x, "flags_meta.rds")))) {
+    m <- read_flagged(x)
+    return(m$test_plan %||% requested_plan(m$tests))
+  }
+  if (is.data.frame(x)) return(plan_tests(names(x), columns, !is.null(gazetteers$range)))
+  if (inherits(x, "vectra_node"))
+    stop("a vectra_node can be read only once; pass the path of the table to test_plan()")
+  plan_tests(table_names(stream_units(x)[[1]]$open()), columns, !is.null(gazetteers$range))
+}
+
+# The tests whose inputs are among the available column names; each other
+# test carries the reason it cannot run. Grouped tests read the input more
+# than once, so they cannot run on a single-run vectra_node.
+plan_tests <- function(available, columns, has_range, reopen = TRUE) {
+  fields <- fields_for(.test_names)
+  found <- names(resolve_columns(columns, available, fields, optional = fields))
+  plan <- lapply(.test_names, function(t) {
+    miss <- setdiff(fields_for(t), found)
+    if (length(miss)) {
+      cols <- unlist(columns[miss], use.names = FALSE)
+      return(c(paste(cols, collapse = ", "), paste0("no column ", paste0("`", cols, "`", collapse = ", "))))
+    }
+    if (t == "range" && !has_range) return(c("range polygons", "no range polygons in `gazetteers`"))
+    if (!reopen && t %in% .group_tests)
+      return(c("a path", "reads the input more than once; pass a path instead of a vectra_node"))
+    c(NA_character_, NA_character_)
+  })
+  missing <- vapply(plan, `[`, "", 1L)
+  data.frame(test = .test_names, run = is.na(missing), missing = missing,
+             reason = vapply(plan, `[`, "", 2L), stringsAsFactors = FALSE)
+}
+
+# The plan of a call that named its tests.
+requested_plan <- function(tests) {
+  run <- .test_names %in% tests
+  data.frame(test = .test_names, run = run, missing = NA_character_,
+             reason = ifelse(run, NA_character_, "not requested"), stringsAsFactors = FALSE)
+}
+
+# Fix the tests of a configuration from a plan; at least one test has to run.
+apply_plan <- function(cfg, plan) {
+  if (!any(plan$run))
+    stop("no test can run on this input: no column `", cfg$columns$lon, "` and `", cfg$columns$lat,
+         "` for the coordinates, nor another column a test reads; ",
+         "name the columns with occ_columns(), and see test_plan() for what each test needs")
+  cfg$plan <- plan
+  cfg$tests <- plan$test[plan$run]
+  cfg
+}
+
+# The inputs whose absence kept tests from running (not tests left out by an
+# explicit `tests`), each named once, and the number of those tests.
+unavailable_summary <- function(plan) {
+  if (is.null(plan$missing)) return(NULL)
+  m <- plan$missing[!plan$run & !is.na(plan$missing)]
+  if (!length(m)) return(NULL)
+  inputs <- unique(unlist(strsplit(m, ", ", fixed = TRUE)))
+  paste0(paste(inputs, collapse = ", "), " (", length(m), if (length(m) == 1L) " test)" else " tests)")
+}
+
+# One-line progress message for streamed input.
+plan_message <- function(plan) {
+  absent <- unavailable_summary(plan)
+  paste0("tests: ", sum(plan$run), " run", if (!is.null(absent)) paste0("; not run, missing input: ", absent))
 }
 
 #' Bit mask and membership for sets of tests
@@ -157,8 +240,8 @@ check_tests_run <- function(tests, run) {
 }
 
 check_tests <- function(tests) {
-  if (is.null(tests)) return(default_tests())
-  if (!is.character(tests) || anyNA(tests)) stop("`tests` must be a character vector of test names")
+  if (!is.character(tests) || anyNA(tests) || !length(tests))
+    stop("`tests` must be a character vector of test names")
   bad <- setdiff(tests, .test_names)
   if (length(bad)) stop("unknown test(s): ", paste(bad, collapse = ", "), ". See flag_tests().")
   unique(tests)

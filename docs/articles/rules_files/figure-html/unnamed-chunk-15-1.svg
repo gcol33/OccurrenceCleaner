@@ -3193,7 +3193,7 @@
 <text x='42.00' y='151.66' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text x='42.00' y='84.98' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='58.80,309.60 451.20,309.60 451.20,50.40 58.80,50.40 ' style='stroke-width: 0.75; stroke: #B3B3B3;' />
-<text x='255.00' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc: 267 of 3,120 records removed</text>
+<text x='255.00' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 267 of 3,120 records removed</text>
 </g>
 <g clip-path='url(#cpNTguODB8NDUxLjIwfDUwLjQwfDMwOS42MA==)'>
 <circle cx='71.40' cy='276.00' r='3.15' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D;' />

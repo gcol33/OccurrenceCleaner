@@ -9,19 +9,9 @@ where each layer comes from, how the package’s own gazetteers compare
 with
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s,
 how much the choice of land scale changes the `sea` test, and how the
-reference version is recorded with the flags.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up.
+reference version is recorded with the flags. Installation is covered in
+[Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
 

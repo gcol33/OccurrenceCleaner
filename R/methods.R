@@ -72,7 +72,8 @@ summary.occ_tally <- function(object, ...) {
   out
 }
 
-.occ_flag_attrs <- c("occ_tests", "occ_layout_version", "occ_reference", "occ_columns")
+.occ_flag_attrs <- c("occ_tests", "occ_test_plan", "occ_layout_version", "occ_reference",
+                     "occ_columns")
 
 #' @export
 `[.occ_flags` <- function(x, ...) {
@@ -94,6 +95,8 @@ print.occ_flags <- function(x, n = 10L, ...) {
   ref <- reference_short(attr(x, "occ_reference"))
   if (!is.null(ref)) cat(", reference ", ref, sep = "")
   cat("\n")
+  absent <- unavailable_summary(attr(x, "occ_test_plan"))
+  if (!is.null(absent)) cat("# not run, missing input: ", absent, "; test_plan() lists them\n", sep = "")
   d <- as.data.frame(unclass(x), stringsAsFactors = FALSE)
   d <- utils::head(d[setdiff(names(d), paste0("flag_", tests))], n)
   attributes(d)[.occ_flag_attrs] <- NULL

@@ -196,17 +196,57 @@ test_that("group tests give the same flags on streamed input as on a data frame"
   x$max_ma <- x$min_ma + sample(c(1, 2, 40), nrow(x), TRUE, c(.5, .45, .05))
   x$gbifID <- as.character(seq_len(nrow(x)))
   x <- x[sample(nrow(x)), ]
-  tests <- c("invalid", "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
+  x <- rbind(x, transform(x[sample(nrow(x), 50), ], gbifID = paste0("copy", 1:50)))
+  tests <- c("invalid", "duplicate", "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
              "dataset_ddmm", "dataset_rounded")
-  df <- flag_occurrences(x, tests = tests)
   src <- tempfile(); dir.create(src)
-  for (i in 1:3) vectra::write_vtr(x[seq(i, nrow(x), 3), ], file.path(src, sprintf("p%d.vtr", i)))
+  parts <- lapply(1:3, function(i) x[seq(i, nrow(x), 3), ])
+  for (i in 1:3) vectra::write_vtr(parts[[i]], file.path(src, sprintf("p%d.vtr", i)), batch_size = 97)
+  df <- flag_occurrences(do.call(rbind, parts), tests = tests)
+  expect_gt(sum(df$flag_duplicate), 0)
   out <- tempfile()
   o <- flag_occurrences(src, tests = tests, out = out, verbose = FALSE)
   s <- as.data.frame(vectra::collect(flagged_table(o)))
-  expect_identical(s$flags[match(df$gbifID, s$gbifID)], df$flags)
-  expect_true(file.exists(file.path(out, "group_result.rds")))
+  expect_identical(s$gbifID, df$gbifID)
+  expect_identical(s$flags, df$flags)
   expect_false(dir.exists(file.path(out, ".group")))
+})
+
+test_that("an interrupted group stage resumes from its checkpoint with the same result", {
+  x <- species_data()
+  x$datasetKey <- sample(c("d1", "d2"), nrow(x), TRUE)
+  x <- rbind(x, x[sample(nrow(x), 80), ])
+  src <- tempfile(); dir.create(src)
+  for (i in 1:3) vectra::write_vtr(x[seq(i, nrow(x), 3), ], file.path(src, sprintf("p%d.vtr", i)), batch_size = 61)
+  cfg <- flag_config(tests = c("invalid", "duplicate", "outlier", "dataset_ddmm", "dataset_rounded"))
+  units <- stream_units(src)
+  cols <- resolve_test_columns(cfg$columns, table_names(units[[1]]$open()), cfg$tests)
+  ref <- group_pass(units, cfg, cols, dir = tempfile(), checkpoint_secs = 0, flush_rows = 40)
+  bits <- function(res) unlist(lapply(seq_along(units), function(u)
+    hits_lookup(hits_reader(res$hits), u, 1L, unit_rows(units[[u]]))))
+  expect_gt(sum(has_flag(bits(ref), "duplicate")), 0)
+
+  # Interrupt each pass after the first chunk of its second unit has been
+  # bucketed, then resume from the same directory.
+  real <- each_chunk
+  for (stop_at in c(2L, 5L)) {
+    dir <- tempfile()
+    calls <- 0L
+    with_mocked_bindings(
+      expect_error(group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40), "interrupted"),
+      each_chunk = function(units, f, cols, which = seq_along(units)) {
+        calls <<- calls + 1L
+        if (calls != stop_at) return(real(units, f, cols, which))
+        real(units, function(chunk, u, first) {
+          f(chunk, u, first)
+          stop("interrupted")
+        }, cols, which)
+      })
+    expect_true(file.exists(file.path(dir, "state.rds")))
+    res <- group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40)
+    expect_identical(bits(res), bits(ref))
+    expect_identical(res$datasets, ref$datasets)
+  }
 })
 
 test_that("settings are validated", {

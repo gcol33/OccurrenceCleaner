@@ -43,6 +43,7 @@ Suggests:
     rnaturalearth,
     rnaturalearthdata,
     sf,
+    svglite,
     terra,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr

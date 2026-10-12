@@ -1,9 +1,9 @@
 # Test: urban areas
 
 Flags records inside the Natural Earth 1:50 million urban-area polygons.
-Not in
-[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
-as urban records are often correct.
+CoordinateCleaner's `clean_coordinates()` leaves this test out by
+default, as urban records are often correct; here it runs whenever
+coordinates are present, and a cleaning rule can leave it out.
 
 ## Fields
 

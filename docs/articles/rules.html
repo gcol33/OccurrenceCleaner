@@ -108,7 +108,7 @@
 <p><code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> stores each test’s result alongside
 each record. All records remain in the table. A cleaning rule specifies
 which tests to use when filtering: a record is excluded if any test in
-the rule flags it.</p>
+the rule flags it. Installation is covered in <a href="OccurrenceCleaner.html">Get started</a>.</p>
 <p>This article compares how individual tests and cleaning rules affect
 the dataset, then applies a chosen rule:</p>
 <ol style="list-style-type: decimal">
@@ -123,28 +123,20 @@ precision using <code><a href="../reference/tally_flags.html">tally_flags()</a><
 <code><a href="../reference/flag_mask.html">has_flag()</a></code>.</p></li>
 </ol>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
-<p>Needs a C++ compiler; <a href="https://gillescolling.com/OccurrenceCleaner/#installation">Installation</a>
-shows how to set one up.</p>
-</div>
-<div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="records-with-known-errors">Records with known errors<a class="anchor" aria-label="anchor" href="#records-with-known-errors"></a>
 </h3>
 <p>The example records are random points on land in Europe, drawn by
 rejecting points the <code>sea</code> test flags, with species, kingdom,
-year and the GBIF fields a download carries. Older records get larger
-coordinate uncertainty and are more often rounded, as in real GBIF
-data.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+year and the GBIF fields a download carries. All coordinates are rounded
+to four decimals. Older records get a larger coordinate uncertainty and
+are more often assigned GBIF’s <code>COORDINATE_ROUNDED</code>
+issue.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">3000</span></span>
 <span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">3</span> <span class="op">*</span> <span class="va">n</span>, <span class="op">-</span><span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span></span>
@@ -156,7 +148,7 @@ data.</p>
 <span>                kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Animalia"</span>, <span class="st">"Plantae"</span>, <span class="st">"Fungi"</span><span class="op">)</span>, <span class="va">n</span>, <span class="cn">TRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">60</span>, <span class="va">n</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1850</span><span class="op">:</span><span class="fl">2024</span>, <span class="va">n</span>, <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, length.out <span class="op">=</span> <span class="fl">175</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;</span> <span class="fl">1970</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">coordinateUncertaintyInMeters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">old</span>, <span class="fl">8</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">coordinateUncertaintyInMeters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">600</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
@@ -164,9 +156,9 @@ data.</p>
 <span><span class="va">x</span><span class="op">$</span><span class="va">basisOfRecord</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">15</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"FOSSIL_SPECIMEN"</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">issue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">old</span>, <span class="fl">0.3</span>, <span class="fl">0.03</span><span class="op">)</span>, <span class="st">"COORDINATE_ROUNDED"</span>, <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">issue</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">40</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"</span></span></code></pre></div>
-<p>Then we add records within 3 km of five capitals, at (0, 0), and in
-the Atlantic, along with exact copies of earlier records.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Add records within 3 km of five capitals, at (0, 0), and in the
+Atlantic, along with exact copies of earlier records.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">capitals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">2.35</span>, <span class="fl">13.40</span>, <span class="op">-</span><span class="fl">3.70</span>, <span class="fl">12.50</span><span class="op">)</span>,</span>
 <span>                       lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.86</span>, <span class="fl">52.52</span>, <span class="fl">40.42</span>, <span class="fl">41.90</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">150</span><span class="op">)</span>; <span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">150</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -184,12 +176,15 @@ the Atlantic, along with exact copies of earlier records.</p>
 <div class="section level3">
 <h3 id="flag-once">Flag once<a class="anchor" aria-label="anchor" href="#flag-once"></a>
 </h3>
-<p>The tests are the defaults (the CoordinateCleaner-equivalent tests
-that need only coordinates and a species), the GBIF issue flags on
-coordinates and rounding, and the fossil test on the basis of
-record.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"issue_coordinate"</span>, <span class="st">"issue_rounded"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span></span>
+<p>The tests are the CoordinateCleaner tests that need only coordinates
+and a species, the GBIF issue flags on coordinates and rounding, and the
+fossil test on the basis of record. Without <code>tests</code>,
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> would run every test the columns allow;
+naming them here keeps the comparison to these twelve.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cc_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>              <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
+<span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cc_tests</span>, <span class="st">"issue_coordinate"</span>, <span class="st">"issue_rounded"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="va">tests</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "occ_flags"  "data.frame"</span></span></code></pre></div>
@@ -204,7 +199,7 @@ logical <code>flag_&lt;test&gt;</code> column per test. Its class,
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares of records.
 Without a <code>rules</code> argument it uses one rule,
 <code>all</code>, holding every test that was run.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 3,120 records</span></span>
 <span><span class="co">#&gt;   rule all: removes 750 (24.04 %)</span></span>
@@ -239,7 +234,7 @@ problem occurs, <code>pct_only</code> is how much of the loss would
 disappear without that test.</p>
 <p>The same numbers as a plot: the full bar is <code>pct</code>, the
 dark part <code>pct_only</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='432.00pt' viewBox='0 0 468.00 432.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -363,25 +358,34 @@ dark part <code>pct_only</code>.</p>
 <div class="section level3">
 <h3 id="comparing-rules">Comparing rules<a class="anchor" aria-label="anchor" href="#comparing-rules"></a>
 </h3>
-<p>Candidate rules go into <code>rules</code> as a named list. Here
-<code>strict</code> uses all the tests, <code>cc</code> the <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
-tests without the duplicate test, and <code>minimal</code> only the
-tests for coordinates that cannot be right.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>Candidate rules go into <code>rules</code> as a named list. This
+example compares three:</p>
+<ul>
+<li><p><code>strict</code> uses all twelve tests.</p></li>
+<li><p><code>coordinatecleaner</code> uses the tests of this set that <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> runs by default. That default leaves
+out the duplicate test, because an exact copy repeats a record’s
+coordinates without placing them wrongly.</p></li>
+<li><p><code>minimal</code> uses only the tests for coordinates that
+cannot be right.</p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">tests</span>,</span>
-<span>              cc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="../reference/default_tests.html">default_tests</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
+<span>              coordinatecleaner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">cc_tests</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
 <span>              minimal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span></span>
 <span><span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">test</span> <span class="op">==</span> <span class="st">"(any)"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rule"</span>, <span class="st">"n"</span>, <span class="st">"flagged"</span>, <span class="st">"pct"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;     rule    n flagged   pct</span></span>
-<span><span class="co">#&gt;   strict 3120     750 24.04</span></span>
-<span><span class="co">#&gt;       cc 3120     267  8.56</span></span>
-<span><span class="co">#&gt;  minimal 3120     105  3.37</span></span></code></pre></div>
+<span><span class="co">#&gt;               rule    n flagged   pct</span></span>
+<span><span class="co">#&gt;             strict 3120     750 24.04</span></span>
+<span><span class="co">#&gt;  coordinatecleaner 3120     267  8.56</span></span>
+<span><span class="co">#&gt;            minimal 3120     105  3.37</span></span></code></pre></div>
 <p>The summary is a data frame of class <code>occ_summary</code>, so
 rows can be selected as usual; the selection above keeps one row per
-rule. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws one rule at a time:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">s</span>, rule <span class="op">=</span> <span class="st">"cc"</span><span class="op">)</span></span></code></pre></div>
+rule. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws one rule at a time. This plot and the
+grouped summaries below use <code>coordinatecleaner</code>, the rule
+applied at the end of this article:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">s</span>, rule <span class="op">=</span> <span class="st">"coordinatecleaner"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='324.00pt' viewBox='0 0 468.00 324.00' class="r-plt inline-svg" style="width:100%;height:auto;">
 <g class='svglite'>
@@ -465,7 +469,7 @@ rule. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="extern
 <text x='242.19' y='117.63' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
 <text x='339.55' y='94.23' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
 <text x='423.43' y='70.83' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.2</text>
-<text x='312.54' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc removes 8.6 % of 3,120 records</text>
+<text x='312.54' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner removes 8.6 % of 3,120 records</text>
 </g>
 <defs>
   <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwyNDguNDA='>
@@ -480,8 +484,8 @@ rule. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="extern
 </g>
 </g>
 </svg></div></p>
-<p>Under <code>cc</code>, no record at (0, 0) is counted under
-<code>only</code>, since <code>zero</code>, <code>equal</code> and
+<p>Under <code>coordinatecleaner</code>, no record at (0, 0) is counted
+under <code>only</code>, since <code>zero</code>, <code>equal</code> and
 <code>sea</code> all flag it; dropping any one of the three from the
 rule keeps every such record removed. The capital test, by contrast, is
 the sole reason for most of its records.</p>
@@ -492,25 +496,25 @@ the sole reason for most of its records.</p>
 <p>The arguments of <code><a href="../reference/tally_flags.html">tally_flags()</a></code> pass through
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, so <code>by</code> splits the shares by any
 column of the records.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"cc"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span>
 <span><span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">test</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span>, <span class="st">"(any)"</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 3,120 records, grouped by kingdom</span></span>
-<span><span class="co">#&gt;   kingdom rule    test    n flagged  pct only pct_only</span></span>
-<span><span class="co">#&gt;  Animalia   cc capital 1546      85 5.50   77     4.98</span></span>
-<span><span class="co">#&gt;  Animalia   cc     sea 1546      53 3.43   33     2.13</span></span>
-<span><span class="co">#&gt;  Animalia   cc   (any) 1546     138 8.93              </span></span>
-<span><span class="co">#&gt;     Fungi   cc capital  312      15 4.81   12     3.85</span></span>
-<span><span class="co">#&gt;     Fungi   cc     sea  312      10 3.21    6     1.92</span></span>
-<span><span class="co">#&gt;     Fungi   cc   (any)  312      25 8.01              </span></span>
-<span><span class="co">#&gt;   Plantae   cc capital 1262      61 4.83   52     4.12</span></span>
-<span><span class="co">#&gt;   Plantae   cc     sea 1262      42 3.33   26     2.06</span></span>
-<span><span class="co">#&gt;   Plantae   cc   (any) 1262     104 8.24</span></span></code></pre></div>
+<span><span class="co">#&gt;   kingdom              rule    test    n flagged  pct only pct_only</span></span>
+<span><span class="co">#&gt;  Animalia coordinatecleaner capital 1546      85 5.50   77     4.98</span></span>
+<span><span class="co">#&gt;  Animalia coordinatecleaner     sea 1546      53 3.43   33     2.13</span></span>
+<span><span class="co">#&gt;  Animalia coordinatecleaner   (any) 1546     138 8.93              </span></span>
+<span><span class="co">#&gt;     Fungi coordinatecleaner capital  312      15 4.81   12     3.85</span></span>
+<span><span class="co">#&gt;     Fungi coordinatecleaner     sea  312      10 3.21    6     1.92</span></span>
+<span><span class="co">#&gt;     Fungi coordinatecleaner   (any)  312      25 8.01              </span></span>
+<span><span class="co">#&gt;   Plantae coordinatecleaner capital 1262      61 4.83   52     4.12</span></span>
+<span><span class="co">#&gt;   Plantae coordinatecleaner     sea 1262      42 3.33   26     2.06</span></span>
+<span><span class="co">#&gt;   Plantae coordinatecleaner   (any) 1262     104 8.24</span></span></code></pre></div>
 <p>With grouping, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> shows a grid of tests by groups,
 shaded by the share each test flags in each group, with the rule itself
 in the bottom row.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"cc"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='396.00pt' viewBox='0 0 468.00 396.00' class="r-plt inline-svg" style="width:100%;height:auto;">
 <g class='svglite'>
@@ -550,85 +554,85 @@ in the bottom row.</p>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwzOTYuMDA=)'>
 </g>
 <defs>
-  <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwzMTIuMDA='>
-    <rect x='173.88' y='50.40' width='277.32' height='261.60' />
+  <clipPath id='cpMjIwLjA4fDQ1MS4yMHw1MC40MHwzMTIuMDA='>
+    <rect x='220.08' y='50.40' width='231.12' height='261.60' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpMTczLjg4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
-<rect x='173.88' y='282.93' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='266.32' y='282.93' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A5BAC5;' />
-<rect x='358.76' y='282.93' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A3B8C3;' />
-<rect x='173.88' y='253.87' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D2DDE2;' />
-<rect x='266.32' y='253.87' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D5DFE4;' />
-<rect x='358.76' y='253.87' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D3DDE3;' />
-<rect x='173.88' y='224.80' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='266.32' y='224.80' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='358.76' y='224.80' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='173.88' y='195.73' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F2F5F6;' />
-<rect x='266.32' y='195.73' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='358.76' y='195.73' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F3F6F7;' />
-<rect x='173.88' y='166.67' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F1F4F6;' />
-<rect x='266.32' y='166.67' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EBF0F2;' />
-<rect x='358.76' y='166.67' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EDF2F4;' />
-<rect x='173.88' y='137.60' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #BECDD5;' />
-<rect x='266.32' y='137.60' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C5D3DA;' />
-<rect x='358.76' y='137.60' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C4D2D9;' />
-<rect x='173.88' y='108.53' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='266.32' y='108.53' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='358.76' y='108.53' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='173.88' y='79.47' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='266.32' y='79.47' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='358.76' y='79.47' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
-<rect x='173.88' y='50.40' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='266.32' y='50.40' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
-<rect x='358.76' y='50.40' width='92.44' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<g clip-path='url(#cpMjIwLjA4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
+<rect x='220.08' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='297.12' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A5BAC5;' />
+<rect x='374.16' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A3B8C3;' />
+<rect x='220.08' y='253.87' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D2DDE2;' />
+<rect x='297.12' y='253.87' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D5DFE4;' />
+<rect x='374.16' y='253.87' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D3DDE3;' />
+<rect x='220.08' y='224.80' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='297.12' y='224.80' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='374.16' y='224.80' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='220.08' y='195.73' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F2F5F6;' />
+<rect x='297.12' y='195.73' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='374.16' y='195.73' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F3F6F7;' />
+<rect x='220.08' y='166.67' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F1F4F6;' />
+<rect x='297.12' y='166.67' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EBF0F2;' />
+<rect x='374.16' y='166.67' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EDF2F4;' />
+<rect x='220.08' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #BECDD5;' />
+<rect x='297.12' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C5D3DA;' />
+<rect x='374.16' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C4D2D9;' />
+<rect x='220.08' y='108.53' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='297.12' y='108.53' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='374.16' y='108.53' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='220.08' y='79.47' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='297.12' y='79.47' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='374.16' y='79.47' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E7EDF0;' />
+<rect x='220.08' y='50.40' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='297.12' y='50.40' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
+<rect x='374.16' y='50.40' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwzOTYuMDA=)'>
-<text transform='translate(225.11,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Animalia</text>
-<text transform='translate(317.55,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Fungi</text>
-<text transform='translate(409.99,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Plantae</text>
-<text x='157.08' y='302.48' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc</text>
-<text x='157.08' y='273.41' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>sea</text>
-<text x='157.08' y='244.34' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
-<text x='157.08' y='215.28' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
-<text x='157.08' y='186.21' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
-<text x='157.08' y='157.14' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
-<text x='157.08' y='128.08' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
-<text x='157.08' y='99.01' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
-<text x='157.08' y='69.94' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
+<text transform='translate(263.61,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Animalia</text>
+<text transform='translate(340.65,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Fungi</text>
+<text transform='translate(417.69,328.80) rotate(-90)' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Plantae</text>
+<text x='203.28' y='302.48' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner</text>
+<text x='203.28' y='273.41' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>sea</text>
+<text x='203.28' y='244.34' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
+<text x='203.28' y='215.28' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
+<text x='203.28' y='186.21' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
+<text x='203.28' y='157.14' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
+<text x='203.28' y='128.08' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
+<text x='203.28' y='99.01' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
+<text x='203.28' y='69.94' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
 </g>
-<g clip-path='url(#cpMTczLjg4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
-<line x1='173.88' y1='282.93' x2='451.20' y2='282.93' style='stroke-width: 2.25; stroke: #FFFFFF;' />
-<text class='preserve-color' x='220.10' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.9</text>
-<text class='preserve-color' x='312.54' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.0</text>
-<text class='preserve-color' x='404.98' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.2</text>
-<text class='preserve-color' x='220.10' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
-<text class='preserve-color' x='312.54' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.2</text>
-<text class='preserve-color' x='404.98' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.3</text>
-<text class='preserve-color' x='220.10' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='312.54' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='404.98' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='220.10' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.2</text>
-<text class='preserve-color' x='312.54' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='404.98' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.2</text>
-<text class='preserve-color' x='220.10' y='186.14' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.3</text>
-<text class='preserve-color' x='312.54' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.0</text>
-<text class='preserve-color' x='404.98' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.6</text>
-<text class='preserve-color' x='220.10' y='156.99' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.5</text>
-<text class='preserve-color' x='312.54' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.8</text>
-<text class='preserve-color' x='404.98' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.8</text>
-<text class='preserve-color' x='220.10' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='312.54' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='404.98' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='220.10' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='312.54' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='404.98' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
-<text class='preserve-color' x='220.10' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='312.54' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text class='preserve-color' x='404.98' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<g clip-path='url(#cpMjIwLjA4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
+<line x1='220.08' y1='282.93' x2='451.20' y2='282.93' style='stroke-width: 2.25; stroke: #FFFFFF;' />
+<text class='preserve-color' x='258.60' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.9</text>
+<text class='preserve-color' x='335.64' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.0</text>
+<text class='preserve-color' x='412.68' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.2</text>
+<text class='preserve-color' x='258.60' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
+<text class='preserve-color' x='335.64' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.2</text>
+<text class='preserve-color' x='412.68' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.3</text>
+<text class='preserve-color' x='258.60' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='335.64' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='412.68' y='244.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='258.60' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.2</text>
+<text class='preserve-color' x='335.64' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='412.68' y='215.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.2</text>
+<text class='preserve-color' x='258.60' y='186.14' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.3</text>
+<text class='preserve-color' x='335.64' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.0</text>
+<text class='preserve-color' x='412.68' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.6</text>
+<text class='preserve-color' x='258.60' y='156.99' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.5</text>
+<text class='preserve-color' x='335.64' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.8</text>
+<text class='preserve-color' x='412.68' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.8</text>
+<text class='preserve-color' x='258.60' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='335.64' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='412.68' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='258.60' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='335.64' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='412.68' y='98.94' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
+<text class='preserve-color' x='258.60' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='335.64' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
+<text class='preserve-color' x='412.68' y='69.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwzOTYuMDA=)'>
-<text x='312.54' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>% of records flagged</text>
+<text x='335.64' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>% of records flagged</text>
 </g>
 </g>
 </svg></div></p>
@@ -640,7 +644,11 @@ in the bottom row.</p>
 are cut into classes only when tallying. <code>bins</code> takes the
 break points and adds a <code>&lt;column&gt;_bin</code> grouping column,
 with missing values in their own class.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>This section reads the shares under <code>strict</code>, the only one
+of the three rules that includes <code>issue_rounded</code>, so the
+share of records with GBIF’s rounding issue can be followed across age
+and uncertainty classes.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span>,</span>
 <span>                 bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1900</span>, <span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
@@ -661,7 +669,7 @@ with missing values in their own class.</p>
 on its result gives the percentages, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> the grid.
 The tally is the one to keep when the counts will be summed or merged
 later.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">t</span>, rule <span class="op">=</span> <span class="st">"strict"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='540.00pt' viewBox='0 0 468.00 540.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -868,7 +876,7 @@ later.</p>
 </svg></div></p>
 <p>The same works for the stated coordinate uncertainty, where the
 classes are distances in metres:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"strict"</span><span class="op">]</span>,</span>
 <span>                 bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coordinateUncertaintyInMeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
@@ -891,9 +899,10 @@ classes are distances in metres:</p>
 </h3>
 <p>On a flagged data frame, <code>plot(type = "map")</code> draws the
 records over the Natural Earth land, coloured by whether the first rule
-of <code>rules</code> removes them.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"cc"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+of <code>rules</code> removes them. The map returns to
+<code>coordinatecleaner</code>, the rule applied below.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;">
 <g class='svglite'>
@@ -4089,7 +4098,7 @@ of <code>rules</code> removes them.</p>
 <text x='42.00' y='151.66' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text x='42.00' y='84.98' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='58.80,309.60 451.20,309.60 451.20,50.40 58.80,50.40 ' style='stroke-width: 0.75; stroke: #B3B3B3;' />
-<text x='255.00' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule cc: 267 of 3,120 records removed</text>
+<text x='255.00' y='30.21' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 267 of 3,120 records removed</text>
 </g>
 <g clip-path='url(#cpNTguODB8NDUxLjIwfDUwLjQwfDMwOS42MA==)'>
 <circle cx='71.40' cy='276.00' r='3.15' style='stroke-width: 0.75; stroke: none; fill: #4D4D4D;' />
@@ -4103,11 +4112,30 @@ of <code>rules</code> removes them.</p>
 <div class="section level3">
 <h3 id="applying-the-rule">Applying the rule<a class="anchor" aria-label="anchor" href="#applying-the-rule"></a>
 </h3>
+<p>Choose the tests by what your analysis needs. The example applies
+<code>coordinatecleaner</code>, which removes records whose coordinates
+are impossible or may point to a capital, a country centroid, an
+institution, GBIF’s headquarters or the sea. Results under this rule can
+be compared with data cleaned by <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> at its
+defaults. Other tests may be added for a given analysis:</p>
+<ul>
+<li><p><code>basis_fossil</code> when the analysis concerns living
+populations.</p></li>
+<li><p><code>duplicate</code> when each location should count once, for
+example in a presence-only distribution model.</p></li>
+<li><p><code>issue_coordinate</code> to exclude records with GBIF’s
+georeferencing warnings.</p></li>
+</ul>
+<p><code>issue_rounded</code> is left out, because GBIF sets
+<code>COORDINATE_ROUNDED</code> when it rounds a coordinate given with
+more than five decimals, which moves the point by at most about 1 m. A
+precision threshold is better taken from
+<code>coordinateUncertaintyInMeters</code>.</p>
 <p><code><a href="../reference/flag_mask.html">has_flag()</a></code> returns <code>TRUE</code> for every record
 carrying at least one test of the rule, so the cleaned table is the
 complement.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">rules</span><span class="op">$</span><span class="va">cc</span><span class="op">)</span>, <span class="op">]</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span>, <span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2853</span></span></code></pre></div>
 <p>The removed records keep their flags, and a different rule only needs

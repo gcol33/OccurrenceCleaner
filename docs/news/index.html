@@ -69,7 +69,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="occurrencecleaner-020">OccurrenceCleaner 0.2.0<a class="anchor" aria-label="anchor" href="#occurrencecleaner-020"></a></h2>
-<ul><li>
+<ul><li>Without <code>tests</code>, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> runs every test whose inputs are available: the columns each test reads, and range polygons for <code>range</code>. Running a test only adds flags; which records to exclude stays a cleaning rule chosen afterwards. <code>default_tests()</code> is removed; name CoordinateCleaner’s set explicitly when it is wanted.</li>
+<li>
+<code><a href="../reference/test_plan.html">test_plan()</a></code> lists, for an input, the tests that would run and why each other test would not, and for flag output the tests that ran and why the others did not. Flagged data frames (attribute <code>occ_test_plan</code>) and on-disk output (<code>flags_meta.rds</code>) record it, and <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> names the tests that could not run.</li>
+<li>
 <code>gentiana</code>: the 33,025 GBIF records of the genus <em>Gentiana</em> in Austria under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples and the case study of the package paper.</li>
 <li>
 <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> methods for <code>occ_flags</code> (a header and the first records, with the tests each failed), <code>occ_tally</code> (records removed and kept per rule) and <code>occ_columns</code>; <code>occ_flagged</code> prints its reference on one line. <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> stays the full per-test report.</li>
@@ -83,7 +86,11 @@
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> keeps a label on every bar however many tests a rule holds; the map takes <code>xlim</code> and <code>ylim</code>.</li>
 </ul><div class="section level3">
 <h3 id="streamed-input-0-2-0">Streamed input<a class="anchor" aria-label="anchor" href="#streamed-input-0-2-0"></a></h3>
-<ul><li>Files on disk are read with only the columns the tests, <code>keep</code> and <code>duplicate_by</code> use, in the record pass and in the group pass.</li>
+<ul><li>
+<code>duplicate</code> compares each record with every record before it in the whole input, on disk as in a data frame: streamed input gets the same flags as the same records in one data frame, in file and row order. Earlier versions compared records within one chunk at a time, so copies in different chunks or files were missed. <code>duplicate</code> is now a grouped test: it buckets a 124-bit hash of each record’s key on disk and needs a path rather than a single-run <code>vectra_node</code>.</li>
+<li>A streamed run records its configuration in <code>out/flags_config.rds</code> before writing any output (tests, columns, <code>keep</code>, reference, buffers, settings, duplicate options, package version, and each input file’s size and modification time); a later call into the same <code>out</code> must match it, or it stops and names what differs. Earlier versions checked only the tests, layout and reference, and only after a run had finished.</li>
+<li>The group stage checkpoints its state in <code>out/.group</code> after a file or a bucket once five minutes have passed and at the end of each pass, so an interrupted run resumes from the last checkpoint. Its hits are stored on disk by file and block of rows, and the record pass reads one block at a time; the bucket count grows with the input, and a bucket too large for memory is split further.</li>
+<li>Files on disk are read with only the columns the tests, <code>keep</code> and <code>duplicate_by</code> use, in the record pass and in the group pass.</li>
 <li>The group pass counts species with summed per-chunk tables, tallies large species with one split per chunk, holds bucket rows in memory and writes them in batches, and computes the exact outlier distances once per pair. On three GBIF snapshot files (1.9 million records) the group pass takes 101 s instead of 344 s.</li>
 <li>A <code>vectra_node</code> given as input runs once, so the grouped tests, which read the input more than once, stop with a message asking for the path instead.</li>
 <li>
@@ -111,7 +118,7 @@
 <li>
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> on flagged records, on-disk output or a tally gives the percentage of records each test and rule removes, with the sole-reason share; <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws it as bars or, by group, as a grid, and maps kept and removed records with <code>type = "map"</code>.</li>
 <li>
-<code><a href="../reference/flag_mask.html">has_flag()</a></code>, <code><a href="../reference/flag_mask.html">flag_mask()</a></code>, <code><a href="../reference/flag_tests.html">flag_tests()</a></code>, <code><a href="../reference/default_tests.html">default_tests()</a></code>.</li>
+<code><a href="../reference/flag_mask.html">has_flag()</a></code>, <code><a href="../reference/flag_mask.html">flag_mask()</a></code>, <code><a href="../reference/flag_tests.html">flag_tests()</a></code>, <code>default_tests()</code>.</li>
 <li>
 <code><a href="../reference/as_spatialvalid.html">as_spatialvalid()</a></code> writes flagged records, in memory or on disk, in the layout of CoordinateCleaner’s <code>spatialvalid</code> object (<code>.cap</code>, <code>.zer</code>, …, <code>.summary</code>, <code>TRUE</code> for pass), so code and methods written for it run unchanged; <code><a href="../reference/flag_tests.html">flag_tests()</a></code> gives the column name per test.</li>
 </ul></div>

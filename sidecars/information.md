@@ -60,8 +60,14 @@
 ### rule
 - forms: rule; rules; cleaning rule
 - as: a set of tests; a record is removed by the rule if any of them flags it
-- defined: @p:readme.rules; @p:qs.rules
+- defined: @p:readme.two-choices; @p:gs.reference-tests
 - glossed: @p:desc.flags ("which flags to filter on")
+
+### test-selection
+- forms: every test the columns allow; every test whose columns are present; test plan; `test_plan()`
+- as: without `tests`, `flag_occurrences()` runs every test whose input columns are present (and `range` when range polygons are given); `test_plan()` lists the tests that run and the missing input of each other test; kept apart from the rule, which decides exclusion
+- defined: @p:readme.two-choices; @p:gs.reference-tests; ?flag_occurrences details; ?test_plan
+- glossed: @p:readme.input; @p:tests.flag-word; @p:gbif.flag; @p:gbif.guidance
 
 ### loss-table
 - forms: loss table
@@ -160,7 +166,7 @@
 ### test-count
 - metric: tests in the layout: 30 (11 coordinate record tests, `range`, `aohi`, `outlier`, 2 dataset tests, 4 fossil tests, 8 GBIF field tests, 2 habitat tests); 20 ported from CoordinateCleaner; layout_version 4
 - source: `flag_tests()`
-- stated-at: NEWS.md; @p:tests.opener (eleven, eight and two here, nine elsewhere); @p:gbif.flag ("nineteen tests in the first bits")
+- stated-at: NEWS.md; @p:tests.opener (eleven, eight and two here, nine elsewhere); @p:gbif.flag (21 run on the example table, 9 not)
 - stated-at (README): @p:readme.tests (30; twenty from CoordinateCleaner, ten additions)
 - note: DESCRIPTION gives no count
 
@@ -181,7 +187,7 @@
 - stated-at: @p:fossil.outliers
 
 ### speed-df
-- metric: seconds to flag a data frame, `default_tests()`, own reference
+- metric: seconds to flag a data frame with the nine CoordinateCleaner tests that need only coordinates and a species (`cc_default` in bench/benchmark.R), own reference
 - population: 1e6 and 1e7 synthetic records, 10 % near capitals
 - source: dev_notes/benchmark.md (run 2026-10-09 on worky, AMD Ryzen 7 5700G, 64 GB, R 4.6.1, OccurrenceCleaner 0.1.0, CoordinateCleaner 3.0.1); bench/benchmark.R; table at @p:cc.speed
 - stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.usecases (capital test 1.4 s at 1e7, linked to @p:cc.speed; the CoordinateCleaner time only in the comparison article); @p:cc.speed; @p:gbif.guidance (1.9 s at 1e6); @p:disk.snapshot (17.8 s at 1e7)
@@ -198,10 +204,10 @@
 - stated-at: @p:cc.agreement
 
 ### gbif-simulation
-- metric: counts from the seeded simulation in the GBIF workflow article (263 of 2,276 records flagged; ladder 119, +21, +20, +41, +62; 1,998 clean kept; 15 of 20 zero records with five tests)
+- metric: counts from the seeded simulation in the GBIF workflow article, flagged with every test the columns allow (21 tests): 274 of 2,276 records flagged; ladder 125, +21, +20, +41, +67 (duplicate 42, urban 20, aohi 6); 1,998 clean kept; 15 of 20 zero records with seven tests; 25 swapped records flagged by `outlier`; of 30 whole-degree records 5 on the France and Germany centroids, 1 at an institution, 24 kept by `wild`
 - source: the article's own chunks (set.seed(42))
 - stated-at: @p:gbif.flag; @p:gbif.truth; @p:gbif.combos; @p:gbif.ladder; @p:gbif.cleaned
-- note: recomputed on committed HEAD 7b9d944 on 2026-10-10; all hard-coded values matched except the negated-record catch (18, not 17), now computed inline as `neg_caught`. The other values are prose constants and go stale if the simulation changes
+- note: recomputed 2026-10-12 after the default changed to every applicable test; the build of 8c3de2d already showed `cc` 125 and 24 whole-degree records kept against prose 119 and none, after the reference-data update. The negated-record catch is computed inline as `neg_caught`; the other values are prose constants and go stale if the simulation or the reference data changes
 
 ### rules-simulation
 - metric: the 40 zero records, flagged by `zero`, `equal` and `sea`, so none counted under `only`, in the rules article
@@ -274,5 +280,5 @@
 
 ### streamed-duplicates
 - condition: `duplicate` on an on-disk table
-- action: make each input file a unit within which duplicates matter (on-disk article)
+- action: none; streamed `duplicate` compares records across all input files, as on a data frame (on-disk article)
 - stated-at: ?flag_occurrences (Tests); @p:cc.streamed-duplicates

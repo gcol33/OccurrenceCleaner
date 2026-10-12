@@ -117,7 +117,7 @@ test_that("the flag word is the OR of the per-test bits and nothing is dropped",
   f <- flag_occurrences(x)
   expect_identical(nrow(f), 500L)
   expect_identical(f$decimalLongitude, x$decimalLongitude)
-  recon <- Reduce(bitwOr, lapply(default_tests(), function(t) ifelse(f[[paste0("flag_", t)]], flag_mask(t), 0L)))
+  recon <- Reduce(bitwOr, lapply(attr(f, "occ_tests"), function(t) ifelse(f[[paste0("flag_", t)]], flag_mask(t), 0L)))
   expect_identical(f$flags, recon)
   expect_true(any(f$flag_sea))
 })

@@ -67,14 +67,17 @@ compiler.
 
 1.  Flag the records with
     [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
-2.  Choose a rule, a set of tests, and mark the records it removes with
+    By default it runs every test the columns allow.
+2.  Choose a cleaning rule, the set of tests used for filtering, and
+    mark the records it removes with
     [`has_flag()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.md).
 3.  Compare rules per species, period or dataset with
     [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md).
 
+[`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+shows which tests run on a table and why each other test does not.
 [`flag_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_tests.md)
-lists every test with its definition and the columns it needs, for
-choosing tests beyond the defaults.
+lists every test with its definition and the columns it needs.
 
 The input is a data frame, or a path to a table on disk ([Processing
 large datasets on disk](#processing-large-datasets-on-disk)).
@@ -82,9 +85,9 @@ Coordinates are longitude and latitude in decimal degrees (WGS84).
 Columns are found by their Darwin Core names in any case, and other
 names are set with
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md).
-Each test reads only the columns it needs: the default tests need the
-coordinates and the species, and a test whose column is missing stops
-with an error naming it.
+Each test reads only the columns it needs. Without `tests`, every test
+whose columns are present runs. With `tests`, only the named tests run,
+and a named test whose column is missing stops with an error naming it.
 
 ``` r
 
@@ -112,11 +115,17 @@ the capital, the second is a zero coordinate at sea, the third is in
 Vienna, and the fourth, in rural Upper Austria, passes every test. The
 integer `flags` column holds all tests of a record, one bit per test.
 
-A cleaning rule specifies which tests to use. It excludes a record if
-any of those tests flags it. A flagged record may still be valid: a real
-observation can lie within 10 km of a capital, so users must decide
-which tests suit their analysis. Users can compare several rules using
-the same flags, then select the records to retain:
+Running a test only adds its flag, so the default runs every test the
+data allows. Which records to exclude is a separate choice, made
+afterwards with a cleaning rule. A rule specifies which tests to use
+when filtering: a record is excluded if any test in the rule flags it.
+
+A flagged record may still be valid: a real observation can lie within
+10 km of a capital, so you choose the tests that suit your analysis. A
+rule for species distribution modelling might exclude fossil and living
+specimens along with coordinate problems, and another study can choose a
+different set. You can compare several rules on the same flags, then
+select the records to keep:
 
 ``` r
 
@@ -245,10 +254,9 @@ grouping:
 
 ``` r
 
-tests <- c(default_tests(), "country_mismatch", "issue_rounded")
-keep  <- c("kingdom", "year", "coordinateuncertaintyinmeters")
+keep <- c("kingdom", "year", "coordinateuncertaintyinmeters")
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
-                      tests = tests, out = "flags", keep = keep)
+                      out = "flags", keep = keep)
 
 cc <- c("zero", "equal", "capital", "centroid", "institution",
         "gbif_headquarters", "sea")

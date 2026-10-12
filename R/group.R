@@ -4,7 +4,7 @@
 # record tests; the pass returns a lookup that the record pass ORs into the
 # flag word of each chunk.
 
-.group_tests <- c("outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
+.group_tests <- c("duplicate", "outlier", "age_outlier", "spatiotemporal_outlier", "age_range_outlier",
                   "dataset_ddmm", "dataset_rounded")
 .taxon_tests <- c("age_outlier", "spatiotemporal_outlier", "age_range_outlier")
 .dataset_tests <- c("dataset_ddmm", "dataset_rounded")
@@ -264,10 +264,10 @@ ddmm_cells <- function(lon, lat, ms) {
 
 # ---- the group pass --------------------------------------------------------------
 
-# Iterate over every chunk of every unit; f(chunk, unit index, first row).
-# On-disk units are read with the columns in `cols` only.
-each_chunk <- function(units, f, cols) {
-  for (u in seq_along(units)) {
+# Iterate over every chunk of the units in `which`; f(chunk, unit index, first
+# row). On-disk units are read with the columns in `cols` only.
+each_chunk <- function(units, f, cols, which = seq_along(units)) {
+  for (u in which) {
     src <- units[[u]]$open()
     if (is.data.frame(src)) {
       f(src, u, 1L)
@@ -282,51 +282,13 @@ each_chunk <- function(units, f, cols) {
   invisible(NULL)
 }
 
-# Bucket store: rows of grouped records, kept in memory for a data frame and
-# written to .vtr parts for streamed input. Streamed rows are held in memory
-# per bucket and written once `flush_rows` rows have accumulated in all.
-new_store <- function(dir, n_buckets, flush_rows = 2e6) {
-  env <- new.env()
-  env$dir <- dir
-  env$n <- n_buckets
-  env$mem <- vector("list", n_buckets)
-  env$held <- 0
-  env$flush_rows <- flush_rows
-  if (!is.null(dir)) dir.create(dir, showWarnings = FALSE, recursive = TRUE)
-  env
+# Rows of each unit: counted from the table metadata where the format keeps
+# it, otherwise by a scan.
+unit_rows <- function(u) {
+  src <- u$open()
+  if (is.data.frame(src)) return(nrow(src))
+  vectra::collect(vectra::tally(src))$n
 }
-store_add <- function(store, d) {
-  if (!nrow(d)) return(invisible())
-  b <- cpp_hash_strings(d$key) %% store$n + 1L
-  for (rows in split(seq_len(nrow(d)), b)) {
-    k <- b[rows[1]]
-    store$mem[[k]] <- c(store$mem[[k]], list(d[rows, , drop = FALSE]))
-  }
-  store$held <- store$held + nrow(d)
-  if (!is.null(store$dir) && store$held >= store$flush_rows) store_flush(store)
-  invisible()
-}
-store_flush <- function(store) {
-  for (k in seq_len(store$n)) {
-    if (!length(store$mem[[k]])) next
-    part <- do.call(rbind, store$mem[[k]])
-    path <- file.path(store$dir, sprintf("bucket-%04d.vtr", k))
-    if (file.exists(path)) vectra::append_vtr(part, path) else vectra::write_vtr(part, path)
-    store$mem[k] <- list(NULL)
-  }
-  store$held <- 0
-  invisible()
-}
-store_buckets <- function(store) {
-  if (is.null(store$dir)) {
-    mem <- Filter(length, store$mem)
-    return(lapply(mem, function(parts) do.call(rbind, parts)))
-  }
-  store_flush(store)
-  files <- list.files(store$dir, "^bucket-.*[.]vtr$", full.names = TRUE)
-  lapply(files, function(f) function() as.data.frame(vectra::collect(vectra::tbl(f))))
-}
-bucket_data <- function(b) if (is.function(b)) b() else b
 
 group_columns <- function(chunk, cols, field) {
   if (is.null(cols[[field]])) return(NULL)
@@ -341,157 +303,291 @@ sum_counts <- function(parts) {
   stats::setNames(r[, 1], rownames(r))
 }
 
+# The key columns of the duplicate test: coordinates (binned to
+# duplicate_cell when given), species and the duplicate_by columns.
+duplicate_key <- function(chunk, cols, cfg, lon, lat) {
+  if (!is.null(cfg$duplicate_cell)) {
+    lon <- floor(lon / cfg$duplicate_cell); lat <- floor(lat / cfg$duplicate_cell)
+  }
+  key <- list(as.double(lon), as.double(lat), as.character(chunk[[cols$species]]))
+  for (extra in cfg$duplicate_by) {
+    if (!extra %in% names(chunk)) stop("`duplicate_by` column `", extra, "` not found in the input")
+    v <- chunk[[extra]]
+    key[[length(key) + 1L]] <- if (is.numeric(v)) as.double(v) else if (is.logical(v)) v else as.character(v)
+  }
+  key
+}
+
+# Call f(g) for each key group of one partition of a store. A partition of
+# more than `cap` rows on disk is split further by a salted hash of the key,
+# so only one group (all records of one species or taxon) has to fit in
+# memory.
+each_group <- function(p, k, f, cap = 5e6, depth = 0L) {
+  n <- p$rows[[k]]
+  if (is.null(p$dir) || n <= cap || depth >= 4L) {
+    d <- parts_read(p, k)
+    for (g in split(d, d$key)) f(g)
+    return(invisible())
+  }
+  sub <- new_parts(if (!is.null(p$dir)) file.path(p$dir, paste0("sub-", k)), "b", p$flush_rows)
+  m <- max(2, ceiling(n / cap) * 2)
+  parts_each(p, k, function(d) parts_add(sub, d, cpp_hash_strings(paste0(d$key, "\r", depth)) %% m))
+  for (kk in parts_keys(sub)) each_group(sub, kk, f, cap, depth + 1L)
+  parts_drop(sub)
+  invisible()
+}
+
 # Run every requested group test over all units. Returns the lookup used by
-# the record pass: flagged rows by (unit, row) with their bits, flagged cells
-# of raster-approximated species, and failed datasets.
-group_pass <- function(units, cfg, cols, store_dir = NULL, n_buckets = 64L) {
+# the record pass: the flagged rows by (unit, row), flagged cells of
+# raster-approximated species, and failed datasets.
+#
+# With `dir`, rows are bucketed on disk and the stage is checkpointed to
+# dir/state.rds after a unit or a bucket whenever `checkpoint_secs` have
+# passed, and at the end of each step; a call with the same `dir` resumes from
+# the last checkpoint. The steps: count the rows of each unit, pass 0 (extent,
+# records per species, dataset ranges), pass 1 (rows into buckets, raster
+# cell counts, dataset histograms), the decision over each store's buckets,
+# and the final per-species and per-dataset decisions.
+group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verbose = FALSE,
+                       flush_rows = NULL) {
   tests <- intersect(cfg$tests, .group_tests)
   s <- cfg$settings
-  res <- list(rows = data.frame(unit = integer(), row = integer(), bits = integer()),
-              raster = list(), grid = NULL, datasets = list(dataset_ddmm = character(), dataset_rounded = character()))
-  if (!length(tests)) return(res)
   want_outlier <- "outlier" %in% tests
   want_taxon <- intersect(tests, .taxon_tests)
   want_ds <- intersect(tests, .dataset_tests)
+  want_dup <- "duplicate" %in% tests
+  read_cols <- c(unlist(cols), if (want_dup) cfg$duplicate_by)
+  disk <- !is.null(dir)
+  state_path <- if (disk) file.path(dir, "state.rds")
+  if (disk) dir.create(dir, showWarnings = FALSE, recursive = TRUE)
+  st <- if (disk && file.exists(state_path)) readRDS(state_path) else
+    list(stage = "count", unit = 1L, unit_rows = NULL, ext = c(Inf, -Inf, Inf, -Inf),
+         sp_parts = list(), sp_len = 0, ds = list(), cells = list(), stores = list(), decided = 0L,
+         datasets = NULL, raster = list(), grid = NULL, sampling = NULL)
+  if (st$stage == "done") return(group_result(st, dir))
+  if (!length(tests)) {
+    st$stage <- "done"
+    return(group_result(st, dir))
+  }
+  say <- function(...) if (verbose) message("group tests: ", ...)
+
+  if (st$stage == "count") {
+    st$unit_rows <- vapply(units, unit_rows, 0)
+    # In memory one bucket holds everything; on disk a bucket holds about
+    # four million records.
+    st$n_buckets <- if (disk) max(64, ceiling(sum(st$unit_rows) / 4e6)) else 1
+    st$stage <- if (want_outlier || length(want_ds)) "pass0" else "pass1"
+    if (disk) save_atomic(st, state_path)
+  }
+  flush_rows <- flush_rows %||% max(2e6, 2000 * st$n_buckets)
+  subdir <- function(name) if (disk) file.path(dir, name)
+  stores <- list(hits = new_parts(subdir("hits"), "h", flush_rows))
+  if (want_outlier) stores$sp <- new_parts(subdir("species"), "b", flush_rows)
+  if (length(want_taxon)) stores$tx <- new_parts(subdir("taxa"), "b", flush_rows)
+  if (want_dup) stores$dup <- new_parts(subdir("duplicate"), "b", flush_rows)
+  # Files written after the last checkpoint (or before the first) are cut back.
+  for (k in names(stores)) parts_restore(stores[[k]], st$stores[[k]] %||% stats::setNames(numeric(), character()))
+  ds <- list2env(st$ds)
+  cells <- list2env(st$cells)
+  last <- Sys.time()
+  checkpoint <- function(force = FALSE) {
+    if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible())
+    st$stores <<- lapply(stores, parts_state)
+    st$ds <<- as.list(ds, all.names = TRUE)
+    st$cells <<- as.list(cells, all.names = TRUE)
+    save_atomic(st, state_path)
+    last <<- Sys.time()
+  }
+  # One pass over the units, from the first unit not yet done.
+  run_pass <- function(stage, next_stage, f) {
+    if (st$stage != stage) return(invisible())
+    say("reading ", length(units) - st$unit + 1L, " file(s)",
+        if (want_outlier || length(want_ds)) paste0(" (pass ", if (stage == "pass0") 1 else 2, " of 2)"))
+    while (st$unit <= length(units)) {
+      each_chunk(units, f, read_cols, which = st$unit)
+      st$unit <<- st$unit + 1L
+      checkpoint()
+    }
+    st$stage <<- next_stage
+    st$unit <<- 1L
+    checkpoint(force = TRUE)
+  }
+  # The buckets of one store, from the first bucket not yet decided.
+  run_buckets <- function(stage, next_stage, store, f, resumable = TRUE) {
+    if (st$stage != stage) return(invisible())
+    keys <- if (is.null(store)) character() else as.character(sort(as.numeric(parts_keys(store))))
+    if (!is.null(store)) say(sub("decide_", "", stage), ": ", length(keys) - st$decided, " bucket(s)")
+    for (i in seq_along(keys)) {
+      if (i <= st$decided) next
+      f(keys[i])
+      if (resumable) {
+        st$decided <<- i
+        checkpoint()
+      }
+    }
+    st$stage <<- next_stage
+    st$decided <<- 0L
+    checkpoint(force = TRUE)
+  }
 
   # Pass 0: extent of valid records, records per species, per-dataset ranges.
-  ext <- c(Inf, -Inf, Inf, -Inf)
-  # Per-chunk species counts, summed whenever they hold many names.
-  sp_parts <- list()
-  sp_len <- 0
-  ds <- new.env()
-  if (want_outlier || length(want_ds)) {
-    each_chunk(units, function(chunk, u, first) {
+  run_pass("pass0", "pass1", function(chunk, u, first) {
+    lon <- to_numeric(chunk[[cols$lon]]); lat <- to_numeric(chunk[[cols$lat]])
+    ok <- valid_coords(lon, lat)
+    if (any(ok)) st$ext <<- c(min(st$ext[1], lon[ok]), max(st$ext[2], lon[ok]),
+                               min(st$ext[3], lat[ok]), max(st$ext[4], lat[ok]))
+    if (want_outlier) {
+      sp <- as.character(chunk[[cols$species]])[ok]
+      sp <- sp[!is.na(sp)]
+      if (length(sp)) {
+        tb <- table(sp)
+        st$sp_parts[[length(st$sp_parts) + 1L]] <<- stats::setNames(as.numeric(tb), names(tb))
+        st$sp_len <<- st$sp_len + length(tb)
+        if (st$sp_len > 5e6) {
+          st$sp_parts <<- list(sum_counts(st$sp_parts))
+          st$sp_len <<- length(st$sp_parts[[1]])
+        }
+      }
+    }
+    if (length(want_ds)) ds_pass0(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok)
+  })
+
+  # Pass 1: rows of small species, of taxa and duplicate keys into buckets;
+  # cell counts of large species; ddmm cells and histograms of datasets.
+  so <- s$outlier
+  if (want_outlier && is.null(st$raster_sp)) {
+    sp_n <- sum_counts(st$sp_parts)
+    st$raster_sp <- names(sp_n)[sp_n >= 10000 | so$thinning]
+    st$grid <- if (length(st$raster_sp)) outlier_grid(st$ext, so$thinning_res)
+    st$sp_parts <- list()
+  }
+  nb <- st$n_buckets
+  run_pass("pass1", "decide_duplicate", function(chunk, u, first) {
+    rows <- first + seq_len(nrow(chunk)) - 1L
+    if (is.null(cols$lon) || is.null(cols$lat)) {
+      lon <- lat <- rep(NA_real_, nrow(chunk))
+      ok <- rep(FALSE, nrow(chunk))
+    } else {
       lon <- to_numeric(chunk[[cols$lon]]); lat <- to_numeric(chunk[[cols$lat]])
       ok <- valid_coords(lon, lat)
-      if (any(ok)) ext <<- c(min(ext[1], lon[ok]), max(ext[2], lon[ok]), min(ext[3], lat[ok]), max(ext[4], lat[ok]))
-      if (want_outlier) {
-        sp <- as.character(chunk[[cols$species]])[ok]
-        sp <- sp[!is.na(sp)]
-        if (length(sp)) {
-          tb <- table(sp)
-          sp_parts[[length(sp_parts) + 1L]] <<- stats::setNames(as.numeric(tb), names(tb))
-          sp_len <<- sp_len + length(tb)
-          if (sp_len > 5e6) {
-            sp_parts <<- list(sum_counts(sp_parts))
-            sp_len <<- length(sp_parts[[1]])
-          }
+    }
+    if (want_dup) {
+      h <- cpp_key_hash(duplicate_key(chunk, cols, cfg, lon, lat))
+      d <- data.frame(unit = u, row = rows, h1 = h$h1, h2 = h$h2, h3 = h$h3, h4 = h$h4)[ok, , drop = FALSE]
+      parts_add(stores$dup, d, d$h1 %% nb)
+    }
+    if (want_outlier) {
+      sp <- as.character(chunk[[cols$species]])
+      keep <- ok & !is.na(sp)
+      big <- keep & sp %in% st$raster_sp
+      small <- keep & !big
+      d <- data.frame(key = sp[small], unit = rep(u, sum(small)), row = rows[small],
+                      lon = lon[small], lat = lat[small], stringsAsFactors = FALSE)
+      parts_add(stores$sp, d, cpp_hash_strings(d$key) %% nb)
+      if (any(big)) {
+        cid <- grid_cell(st$grid, lon[big], lat[big])
+        lon_b <- lon[big]; lat_b <- lat[big]
+        by_sp <- split(seq_along(cid), sp[big])
+        for (k in names(by_sp)) {
+          i <- by_sp[[k]]
+          e <- cells[[k]]
+          tb <- table(cid[i])
+          cur <- if (is.null(e)) integer() else e$counts
+          add <- stats::setNames(as.integer(tb), names(tb))
+          all <- union(names(cur), names(add))
+          v <- stats::setNames(integer(length(all)), all)
+          v[names(cur)] <- v[names(cur)] + cur
+          v[names(add)] <- v[names(add)] + add
+          pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon_b[i], lat_b[i]), so$min_occs)
+          cells[[k]] <- list(counts = v, pts = pts)
         }
       }
-      if (length(want_ds)) ds_pass0(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok)
-    }, cols)
-  }
-  sp_n <- sum_counts(sp_parts)
+    }
+    if (length(want_taxon)) {
+      sp <- as.character(chunk[[cols$species]])
+      keep <- !is.na(sp)
+      lo <- to_numeric(chunk[[cols$min_age]]); hi <- to_numeric(chunk[[cols$max_age]])
+      id <- if (is.null(cols$id)) rep(NA_character_, nrow(chunk)) else as.character(chunk[[cols$id]])
+      d <- data.frame(key = sp[keep], unit = rep(u, sum(keep)), row = rows[keep],
+                      lon = lon[keep], lat = lat[keep], lo = lo[keep], hi = hi[keep],
+                      id = id[keep], stringsAsFactors = FALSE)
+      parts_add(stores$tx, d, cpp_hash_strings(d$key) %% nb)
+    }
+    if (length(want_ds)) ds_pass1(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok, s)
+  })
 
-  # Pass 1: rows of small species and of taxa into buckets; cell counts of
-  # large species; ddmm cells and histograms of datasets.
-  sp_store <- if (want_outlier) new_store(if (is.null(store_dir)) NULL else file.path(store_dir, "species"), n_buckets)
-  tx_store <- if (length(want_taxon)) new_store(if (is.null(store_dir)) NULL else file.path(store_dir, "taxa"), n_buckets)
-  so <- s$outlier
-  raster_sp <- if (want_outlier) names(sp_n)[sp_n >= 10000 | so$thinning] else character()
-  grid <- if (length(raster_sp)) outlier_grid(ext, so$thinning_res)
-  cells <- new.env()
-  if (want_outlier || length(want_taxon) || length(want_ds)) {
-    each_chunk(units, function(chunk, u, first) {
-      rows <- first + seq_len(nrow(chunk)) - 1L
-      if (is.null(cols$lon) || is.null(cols$lat)) {
-        lon <- lat <- rep(NA_real_, nrow(chunk))
-        ok <- rep(FALSE, nrow(chunk))
-      } else {
-        lon <- to_numeric(chunk[[cols$lon]]); lat <- to_numeric(chunk[[cols$lat]])
-        ok <- valid_coords(lon, lat)
-      }
-      if (want_outlier) {
-        sp <- as.character(chunk[[cols$species]])
-        keep <- ok & !is.na(sp)
-        big <- keep & sp %in% raster_sp
-        small <- keep & !big
-        store_add(sp_store, data.frame(key = sp[small], unit = rep(u, sum(small)), row = rows[small],
-                                       lon = lon[small], lat = lat[small], stringsAsFactors = FALSE))
-        if (any(big)) {
-          cid <- grid_cell(grid, lon[big], lat[big])
-          lon_b <- lon[big]; lat_b <- lat[big]
-          by_sp <- split(seq_along(cid), sp[big])
-          for (k in names(by_sp)) {
-            i <- by_sp[[k]]
-            e <- cells[[k]]
-            tb <- table(cid[i])
-            cur <- if (is.null(e)) integer() else e$counts
-            add <- stats::setNames(as.integer(tb), names(tb))
-            all <- union(names(cur), names(add))
-            v <- stats::setNames(integer(length(all)), all)
-            v[names(cur)] <- v[names(cur)] + cur
-            v[names(add)] <- v[names(add)] + add
-            pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon_b[i], lat_b[i]), so$min_occs)
-            cells[[k]] <- list(counts = v, pts = pts)
-          }
-        }
-      }
-      if (length(want_taxon)) {
-        sp <- as.character(chunk[[cols$species]])
-        keep <- !is.na(sp)
-        lo <- to_numeric(chunk[[cols$min_age]]); hi <- to_numeric(chunk[[cols$max_age]])
-        id <- if (is.null(cols$id)) rep(NA_character_, nrow(chunk)) else as.character(chunk[[cols$id]])
-        store_add(tx_store, data.frame(key = sp[keep], unit = rep(u, sum(keep)), row = rows[keep],
-                                       lon = lon[keep], lat = lat[keep], lo = lo[keep], hi = hi[keep],
-                                       id = id[keep], stringsAsFactors = FALSE))
-      }
-      if (length(want_ds)) ds_pass1(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok, s)
-    }, cols)
-  }
+  # Duplicates: the rows of a bucket are in input order, so a row whose key
+  # is already in the bucket's seen-set is a later copy.
+  run_buckets("decide_duplicate", "decide_outlier", stores$dup, function(k) {
+    seen <- cpp_seen_new()
+    parts_each(stores$dup, k, function(d) {
+      hit <- cpp_seen_mark(seen, d$h1, d$h2, d$h3, d$h4)
+      hits_add(stores$hits, d$unit[hit], d$row[hit], "duplicate")
+    })
+  })
 
-  hits <- list()
-  add_hits <- function(g, flagged, test) {
-    if (any(flagged)) hits[[length(hits) + 1L]] <<- data.frame(unit = g$unit[flagged], row = g$row[flagged],
-                                                                bits = flag_mask(test))
-  }
-  if (want_outlier) {
-    for (b in store_buckets(sp_store)) {
-      d <- bucket_data(b)
-      for (g in split(d, d$key)) {
-        if (sum(!duplicated(g[, c("lon", "lat")])) < so$min_occs) next
-        add_hits(g, outlier_exact(g$lon, g$lat, so), "outlier")
+  run_buckets("decide_outlier", "decide_taxon", stores$sp, function(k) {
+    each_group(stores$sp, k, function(g) {
+      if (sum(!duplicated(g[, c("lon", "lat")])) < so$min_occs) return()
+      hit <- outlier_exact(g$lon, g$lat, so)
+      hits_add(stores$hits, g$unit[hit], g$row[hit], "outlier")
+    })
+  })
+
+  # With age_range_outlier at level "all", every taxon is held until the end,
+  # so that step restarts from its first bucket after an interruption.
+  all_level <- "age_range_outlier" %in% want_taxon && s$age_range_outlier$level == "all"
+  all_rows <- list()
+  run_buckets("decide_taxon", "final", stores$tx, resumable = !all_level, function(k) {
+    each_group(stores$tx, k, function(g) {
+      g <- g[canonical_order(g), , drop = FALSE]
+      add <- function(hit, test) hits_add(stores$hits, g$unit[hit], g$row[hit], test)
+      if ("age_outlier" %in% want_taxon) add(taxon_age_outlier(g, s$age_outlier), "age_outlier")
+      if ("spatiotemporal_outlier" %in% want_taxon)
+        add(taxon_spatiotemporal_outlier(g, s$spatiotemporal_outlier), "spatiotemporal_outlier")
+      if ("age_range_outlier" %in% want_taxon) {
+        if (!all_level) add(taxon_age_range_outlier(g, s$age_range_outlier), "age_range_outlier")
+        else all_rows[[length(all_rows) + 1L]] <<- g
       }
-    }
-    for (k in raster_sp) {
-      e <- cells[[k]]
-      if (is.null(e) || nrow(e$pts) < so$min_occs) next
-      fc <- outlier_cells(as.numeric(names(e$counts)), e$counts, grid, so)
-      if (length(fc)) res$raster[[k]] <- fc
-    }
-    res$grid <- grid
-  }
-  if (length(want_taxon)) {
-    all_rows <- if ("age_range_outlier" %in% want_taxon && s$age_range_outlier$level == "all") list()
-    for (b in store_buckets(tx_store)) {
-      d <- bucket_data(b)
-      for (g in split(d, d$key)) {
-        g <- g[canonical_order(g), , drop = FALSE]
-        if ("age_outlier" %in% want_taxon) add_hits(g, taxon_age_outlier(g, s$age_outlier), "age_outlier")
-        if ("spatiotemporal_outlier" %in% want_taxon)
-          add_hits(g, taxon_spatiotemporal_outlier(g, s$spatiotemporal_outlier), "spatiotemporal_outlier")
-        if ("age_range_outlier" %in% want_taxon) {
-          if (s$age_range_outlier$level == "taxon") add_hits(g, taxon_age_range_outlier(g, s$age_range_outlier), "age_range_outlier")
-          else all_rows[[length(all_rows) + 1L]] <- g
-        }
-      }
-    }
-    if (!is.null(all_rows) && length(all_rows)) {
+    })
+  })
+
+  if (st$stage == "final") {
+    if (length(all_rows)) {
       g <- do.call(rbind, all_rows)
       g <- g[canonical_order(g), , drop = FALSE]
-      add_hits(g, taxon_age_range_outlier(g, s$age_range_outlier, sized = FALSE), "age_range_outlier")
+      hit <- taxon_age_range_outlier(g, s$age_range_outlier, sized = FALSE)
+      hits_add(stores$hits, g$unit[hit], g$row[hit], "age_range_outlier")
     }
+    if (want_outlier) {
+      for (k in st$raster_sp) {
+        e <- cells[[k]]
+        if (is.null(e) || nrow(e$pts) < so$min_occs) next
+        fc <- outlier_cells(as.numeric(names(e$counts)), e$counts, st$grid, so)
+        if (length(fc)) st$raster[[k]] <- fc
+      }
+    }
+    st$datasets <- if (length(want_ds)) ds_decide(ds, want_ds, s)
+    if (want_outlier && so$sampling_thresh > 0) st$sampling <- sampling_keep(cfg)
+    st$stage <- "done"
+    for (k in setdiff(names(stores), "hits")) parts_drop(stores[[k]])
+    stores <- stores["hits"]
+    ds <- new.env()
+    cells <- new.env()
+    checkpoint(force = TRUE)
   }
-  if (length(want_ds)) res$datasets <- ds_decide(ds, want_ds, s)
-  if (want_outlier && so$sampling_thresh > 0) res$sampling <- sampling_keep(cfg)
-  if (length(hits)) {
-    h <- do.call(rbind, hits)
-    key <- paste(h$unit, h$row)
-    bits <- tapply(h$bits, key, function(b) Reduce(bitwOr, b))
-    first <- !duplicated(key)
-    res$rows <- data.frame(unit = h$unit[first], row = h$row[first], bits = as.integer(bits[key[first]]))
+  group_result(st, dir, stores$hits)
+}
+
+# The lookup of a finished group stage.
+group_result <- function(st, dir, hits = NULL) {
+  if (is.null(hits) && !is.null(dir)) {
+    hits <- new_parts(file.path(dir, "hits"), "h")
+    hits$rows <- st$stores$hits %||% hits$rows
   }
-  res
+  list(hits = hits, raster = st$raster, grid = st$grid,
+       datasets = st$datasets %||% list(dataset_ddmm = character(), dataset_rounded = character()),
+       sampling = st$sampling)
 }
 
 # Records of a taxon in an order fixed by their content (ages, coordinates,
@@ -610,17 +706,11 @@ ds_decide <- function(ds, tests, s) {
   out
 }
 
-# Bits of the group tests for the rows first..first+n-1 of unit u.
-group_bits <- function(res, chunk, u, first, cols) {
+# Bits of the group tests for the rows first..first+n-1 of unit u; `reader`
+# comes from hits_reader(res$hits).
+group_bits <- function(res, chunk, u, first, cols, reader) {
   n <- nrow(chunk)
-  bits <- integer(n)
-  if (nrow(res$rows)) {
-    r <- res$rows[res$rows$unit == u, , drop = FALSE]
-    if (nrow(r)) {
-      m <- match(first + seq_len(n) - 1L, r$row)
-      bits[!is.na(m)] <- r$bits[m[!is.na(m)]]
-    }
-  }
+  bits <- hits_lookup(reader, u, first, n)
   if (length(res$raster)) {
     sp <- as.character(chunk[[cols$species]])
     lon <- to_numeric(chunk[[cols$lon]]); lat <- to_numeric(chunk[[cols$lat]])

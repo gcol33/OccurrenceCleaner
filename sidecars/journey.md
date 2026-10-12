@@ -64,14 +64,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `flag_occurrences()`, `has_flag()`, `tally_flags()` and what each step does
 
 ### readme.flag-tests  [A4]
-- idea: discovery, optional
-- job: Says `flag_tests()` lists every test with its definition and needed columns, for choosing tests beyond the defaults.
-- leaves: where the test catalog is, without making it a step
+- idea: what runs on a table; the catalog
+- job: Says `test_plan()` shows which tests run on a table and why each other test does not, and `flag_tests()` lists every test with its definition and needed columns.
+- leaves: where to see the selection and the catalog, without making either a step
 
 ### readme.input  [A2]
 - idea: what goes in
-- job: Says the input is a data frame or an on-disk table, coordinates are decimal degrees (WGS84), columns are matched by Darwin Core names in any case or set with `occ_columns()`, and a test missing its column stops with an error naming it.
-- leaves: the minimum input and what happens when a column is missing
+- job: Says the input is a data frame or an on-disk table, coordinates are decimal degrees (WGS84), columns are matched by Darwin Core names in any case or set with `occ_columns()`; without `tests` every test whose columns are present runs, with `tests` only the named ones, and a named test missing its column stops with an error naming it.
+- leaves: the minimum input, the default selection, and what happens when a column is missing
 
 ### readme.example  (code)
 - idea: smallest call, output shown
@@ -83,10 +83,15 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Says a flag is TRUE on failure, why each of the first three records is flagged and that the fourth passes, and that the `flags` column holds all tests as bits.
 - leaves: the reading of a flag column; the `flags` column, one bit per test
 
+### readme.two-choices  [A3]
+- idea: which tests run vs which records are excluded
+- job: Says running a test only adds its flag, so the default runs every test the data allows, and that exclusion is a separate choice made afterwards with a cleaning rule; defines the rule (tests used when filtering, excluded if any flags it).
+- leaves: the two decisions kept apart; what a rule is
+
 ### readme.rules  [A3]  (code)
-- idea: a rule names tests; a flagged record may be valid; two rules compared; kept records
-- job: Defines a rule, says a flagged record may still be valid (a real observation within 10 km of a capital), so users decide which tests suit their analysis, applies one rule with `has_flag()`, compares two with `tally_flags()` and keeps the records the mild rule passes, output shown.
-- leaves: rules are chosen after flagging, compared without flagging again, and end in the table for the analysis
+- idea: a flagged record may be valid; the reader chooses; two rules compared; kept records
+- job: Says a flagged record may still be valid (a real observation within 10 km of a capital), so you choose the tests; gives the SDM rule (fossil and living specimens plus coordinate problems) as one choice among others; applies one rule with `has_flag()`, compares two with `tally_flags()` and keeps the records the mild rule passes, output shown.
+- leaves: rules are chosen after flagging, compared on the same flags, and end in the table for the analysis
 
 ### readme.rules-link  [A3]
 - idea: rules article
@@ -200,14 +205,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Defines a cleaning rule, removes records flagged by any test of the rule with `has_flag()`, says it stops when a named test was not run, and prints the retained records.
 - leaves: `cleaned`, one copy of each duplicate kept
 
-### gs.reference-tests  [A1 A5]  (section)
-- idea: default tests against reference data
-- job: Runs the default tests (GBIF expanded at its first mention) and explains which records the capital and sea tests flag; two records pass every test run here.
-- leaves: `default_tests()`; the land scale (1:110 million default) changes `sea` near coasts, linked to Reference data
+### gs.reference-tests  [A1 A3 A5]  (section)
+- idea: every test the columns allow; running vs excluding; the reference tests
+- job: Says that without `tests` every test whose columns are present runs, that running only adds flags and exclusion is a later rule; names the tests coordinates and species allow (reference points and polygons, GBIF and AHOI expanded, the species outlier test) and that the header names the missing columns, `test_plan()` the tests; runs it and says which records the capital, urban, sea, equal and AHOI tests flag; the outlier test flags none; two records pass every test run here.
+- leaves: the default selection, `test_plan()`; the land scale (1:110 million default) changes `sea` near coasts, linked to Reference data
 
 ### gs.valid  [A3]
 - idea: a flag may mark a valid record; summary
-- job: Says a flagged record may be valid and users choose the tests; before `summary()`, explains the default rule `all` (every test run) and that summary only counts; then shows that a rule excludes each record once (per-test counts 8, excluded 5).
+- job: Says a flagged record may be valid and you choose the tests, with the SDM rule as one choice among others; before `summary()`, explains the default rule `all` (every test run) and that summary only counts; then shows that a rule excludes each record once (per-test counts 11, excluded 5).
 - leaves: `summary()`, the rule `all`, the `only` column, overlapping flags counted once
 
 ### gs.rules  [A3]  (section)
@@ -222,12 +227,12 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.own-data  (section)
 - idea: bridge to own data
-- job: Writes the records to a CSV with other column names, reads it back, maps the names with `occ_columns()`, and says only the path and names change for another file.
+- job: Writes the records to a CSV with other column names, reads it back, maps the names with `occ_columns()`, says only the path and names change for another file, and that the same 12 tests run as on `x`.
 - leaves: `read.csv()`, `occ_columns()`, `columns =`
 
 ### gs.errors  (section)
 - idea: common errors and their fixes
-- job: Opens with the situation (other column names; `y` holds `lon`, `lat`, `taxon`; `columns` maps them), then shows three real error messages (missing column, unknown test, rule naming a test not run), each followed by the corrected call and its result.
+- job: Opens with the situation (other column names; `y` holds `lon`, `lat`, `taxon`; `columns` maps them), then shows three real error messages (no column a test reads, unknown test, rule naming a test not run), each followed by the corrected call and its result; between the first and second, a mapping that leaves out `species` runs without error and the header shows 10 tests and `species` missing.
 - leaves: `occ_columns()` (linked back to Flagging other data), `flag_tests()`, rerun or drop the test
 
 ### gs.metadata  [A4]  (section)
@@ -237,8 +242,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.disk  [A2]  (section)
 - idea: a table on disk
-- job: Writes the seven records to two `.vtr` files (setup visible; vectra introduced), flags the directory with the identifier mapped (`occ_columns(id = "id")`, default `gbifID`), says the result for a path describes the output directory, tallies it (same counts as the data frame), says duplicates are found within each file only and the two beech records share a file, says a rerun skips flagged files, links the on-disk article.
-- leaves: `out`, `keep`, the id mapping, per-file duplicates, resuming
+- job: Writes the seven records to two `.vtr` files (setup visible; vectra introduced), flags the directory with the identifier mapped (`occ_columns(id = "id")`, default `gbifID`), says the result for a path describes the output directory, tallies it (same counts as the data frame), says the duplicate test compares records across the files as in the data frame, says a rerun skips flagged files, links the on-disk article.
+- leaves: `out`, `keep`, the id mapping, resuming
 
 ### gs.next  (list)
 - idea: routing
@@ -326,9 +331,9 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
 
 ### tests.flag-word  [A3]  (section)
-- idea: one bit per test; layout version; default tests
+- idea: one bit per test; layout version; which tests run
 - job: Lists every test from `flag_tests()` (definition with default buffer, needed fields, source, CoordinateCleaner counterpart), defines the flag word, shows a mask and says why the layout is versioned.
-- leaves: the full test table (the README links here for it); `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `default_tests()`
+- leaves: the full test table (the README links here for it); `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `test_plan()` on a one-record table
 
 ### tests.invalid  [A1]  (section)
 - idea: invalid gets no other spatial flag
@@ -356,8 +361,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `reference_habitat()`; `genus` and `kingdom` columns; the land and buffers of the habitat tests; `basis_fossil` for marine fossils
 
 ### tests.urban  [A1]  (section)
-- idea: urban polygons; not a default
-- job: Defines `urban` and why it is off by default.
+- idea: urban polygons; runs with coordinates; a rule may leave it out
+- job: Defines `urban`, says it runs whenever coordinates are present and a rule can leave it out because city records are often correct, gives the plant-garden use, and notes that `clean_coordinates()` leaves it out by default.
 - leaves: an urban record outside the capital buffer is still urban
 
 ### tests.country  [A1]  (section)
@@ -398,8 +403,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: an input with known errors
 
 ### rules.flag-once  [A3]
-- idea: defaults plus issue and fossil tests
-- job: Flags the records once with the tests the article uses.
+- idea: the CoordinateCleaner tests plus issue and fossil tests, named
+- job: Names the twelve tests the article compares (`cc_tests` plus three) and says the default would run every test the columns allow; flags the records.
 - leaves: the `occ_flags` object `summary()` and `plot()` dispatch on
 
 ### rules.per-test  [A3]  (section)
@@ -440,49 +445,59 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ## Large tables on disk (how-to, A2 home)
 
 ### disk.opener  [A2]
-- idea: snapshot too big for memory; what the article covers
-- job: States why streaming is needed and lists the article's topics. Links Get started for installation.
-- leaves: inputs accepted, output beside kept columns
+- idea: snapshot-sized input, streamed
+- job: Defines GBIF, Parquet and vectra at first use, says what `flag_occurrences()` accepts on disk and where the article ends (flags on disk, tallied, a selection joined to its records); links Get started for installation; steps list flag, tally, select/join, resume.
+- leaves: the four steps
 
 ### disk.input  [A2]  (section)
-- idea: three parts stand in for a snapshot
-- job: Builds a three-file input with GBIF's lower-case names.
-- leaves: the accepted input types
+- idea: three `.vtr` parts, one copy across files
+- job: Defines `.vtr`, writes three parts of 3,000 records and replaces the last record of part 3 by a copy of the first record of part 1.
+- leaves: `src`, `p1`, `p3`, the cross-file copy
 
 ### disk.flag  [A2]  (section)
-- idea: out, keep, id; units, parts, markers
-- job: Flags into an output directory and explains units, part files, markers and the metadata file.
-- leaves: memory is bounded by chunk size and `part_rows`
-
-### disk.resume  [A2]  (section)
-- idea: rerun skips done units; config mismatch stops
-- job: Shows resuming after an interruption and that a different configuration cannot write into the same directory.
-- leaves: `.done` markers; `resume = FALSE`; one directory, one configuration
+- idea: `out`, `keep`, the identifier, the test plan
+- job: Flags the directory, prints the `occ_flagged` object, shows `test_plan()` for the tests that did not run, names `duplicate` and `outlier` as grouped tests run in a group stage before the record pass.
+- leaves: `out`, `f`, grouped tests
 
 ### disk.tally  [A2 A3]  (section)
-- idea: tally streams parts
-- job: Tallies straight from disk and shows the error for a column not kept.
-- leaves: grouping columns must be kept at flag time
+- idea: counts per group without loading the records
+- job: Tallies by kingdom and year class under the `coordinatecleaner` rule (same tests as in the rules article), shows the table, states the sea share computed inline and that sea accounts for most removed records, shows the error for a grouping column not kept.
+- leaves: `coordinatecleaner`, kept columns are the grouping columns
 
 ### disk.read  [A2]  (section)
-- idea: flagged_table, collect, join on id
-- job: Reads the flags as a vectra table and joins them back to the records.
-- leaves: `flagged_table()`, lazy queries, the identifier join
+- idea: bounded selection, rule after collecting, join on disk
+- job: Opens `flagged_table()`, filters on a kept column and `flags != 0L` (any test that ran) before collecting, applies the rule with `has_flag()` after collecting since vectra filters cannot test bits, joins the selection to the records on disk by `gbifid`.
+- leaves: lazy queries, the identifier join
 
 ### disk.duplicates  [A1 A2]  (section)
-- idea: duplicates within a unit only
-- job: Shows that duplicates are found within each input file and how to get whole-table duplicates.
-- leaves: split by species, or run `duplicate` on the collected taxa
+- idea: duplicates across files, as in one data frame
+- job: Shows the cross-file copy flagged and the original not; states the input order (files sorted, rows within each file).
+- leaves: streamed and in-memory duplicate flags agree
 
 ### disk.node  [A2]  (section)
-- idea: a vectra node is one unit
-- job: Flags a filtered subset without writing it out.
-- leaves: filter pushdown
+- idea: a vectra query is one unit without grouped tests
+- job: Flags a filtered query, shows in `test_plan()` that `duplicate` and `outlier` do not run on it and why; naming them is an error.
+- leaves: filter pushdown, grouped tests need a path
+
+### disk.resume  [A2]  (section)
+- idea: rerun to resume; configuration record
+- job: Reruns the call (all units skipped), removes one marker (that unit redone; the finished run's group files are gone, so the group stage repeats), says the group stage checkpoints, `resume = FALSE` starts over; shows the configuration record refusing a rerun with another `keep`; says sizes and modification times are not a content hash.
+- leaves: resuming, the configuration check
+
+### disk.layout  [A2]  (section)
+- idea: the files in `out`
+- job: Describes part files and `part_rows`, `flags_config.rds` and `flags_meta.rds`; lists the directory and the metadata.
+- leaves: `read_flagged()`
+
+### disk.memory  [A2]  (section)
+- idea: what memory and disk a run uses
+- job: Lists what the record pass and the group stage hold in memory and write to disk; links the Streamed runs section of the help page.
+- leaves: bounded memory
 
 ### disk.snapshot  [A2]  (section)
-- idea: the real snapshot call; speed; restartable
-- job: Gives the call for a GBIF snapshot and what the benchmark does and does not cover.
-- leaves: in-memory timing; streaming adds I/O not measured
+- idea: the real snapshot call
+- job: Gives `test_plan()` on the snapshot, the flag call and a tally with two rules; says the issue column is read as a `;`-separated string, how many times the group stage reads the files, and what an interruption repeats in each stage.
+- leaves: the snapshot workflow
 
 ## Cleaning GBIF data (how-to, end to end)
 
@@ -497,14 +512,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the `truth` column; the `issue` format
 
 ### gbif.flag  [A3 A5]  (section)
-- idea: all tests once; reference stamp; per-test summary
-- job: Flags every test once and shows the per-test shares and the reference stamp.
+- idea: every test the columns allow; what ran; reference stamp; per-test summary
+- job: Flags without `tests`, shows the reference stamp, lists with `test_plan()` the 21 tests that ran and the missing input of the 9 others (fossil, dataset, habitat, range), then the per-test shares (274 of 2,276 flagged).
 - leaves: `occ_reference` to store with any cleaned table
 
 ### gbif.truth  [A1 A4]
 - idea: which test catches which error
-- job: Cross-tabulates truth against tests and explains the catches, the misses and the two flagged clean records.
-- leaves: negated and whole-degree records are beyond any record test; GBIF warnings catch swaps on land
+- job: Cross-tabulates truth against tests and explains the catches, the misses (5 whole-degree records on the France and Germany centroids, 1 at an institution, the rest uncaught) and the two flagged clean records.
+- leaves: negated and most whole-degree records are beyond any record test; GBIF warnings catch swaps on land
 
 ### gbif.map  [A3]  (section)
 - idea: where flagged records are

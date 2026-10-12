@@ -38,7 +38,7 @@ reference:
 - title: Flagging
   contents:
   - flag_occurrences
-  - default_tests
+  - test_plan
   - occ_columns
 - title: Tests
   contents:

@@ -37,6 +37,18 @@ cpp_hash_strings <- function(x) {
     .Call(`_OccurrenceCleaner_cpp_hash_strings`, x)
 }
 
+cpp_key_hash <- function(cols) {
+    .Call(`_OccurrenceCleaner_cpp_key_hash`, cols)
+}
+
+cpp_seen_new <- function() {
+    .Call(`_OccurrenceCleaner_cpp_seen_new`)
+}
+
+cpp_seen_mark <- function(set, h1, h2, h3, h4) {
+    .Call(`_OccurrenceCleaner_cpp_seen_mark`, set, h1, h2, h3, h4)
+}
+
 cpp_outlier_dist <- function(lon, lat) {
     .Call(`_OccurrenceCleaner_cpp_outlier_dist`, lon, lat)
 }

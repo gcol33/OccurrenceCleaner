@@ -206,7 +206,7 @@ c(cc_flagged = sum(!CoordinateCleaner::cc_outl(r, value = "flagged", verbose = F
 
 ### Duplicates in streamed input
 
-On a data frame `duplicate` is evaluated over the whole table, as `cc_dupl()` is. On a table streamed from disk it is evaluated within each input file; the on-disk article shows how to make the files the right units for that.
+`duplicate` is evaluated over the whole table, as `cc_dupl()` is, on a data frame and on a table streamed from disk.
 
 ### Gazetteers
 
@@ -252,9 +252,9 @@ The largest differences are in the capital and centroid tests: at ten million re
 
 For the proximity tests, CoordinateCleaner tests the records against a buffer polygon around the reference points, and this package looks up each record's nearest reference point in a kd-tree.
 
-### All default tests
+### The CoordinateCleaner tests in one call
 
-With its own reference data, `flag_occurrences()` runs all of `default_tests()` in one call in 1.91 s on one million records and 19.45 s on ten million. The benchmark times this call for OccurrenceCleaner only.
+With its own reference data, `flag_occurrences()` runs the nine CoordinateCleaner tests that need only coordinates and a species (`invalid`, `zero`, `equal`, `capital`, `centroid`, `institution`, `gbif_headquarters`, `sea` and `duplicate`) in one call in 1.91 s on one million records and 19.45 s on ten million. The benchmark times this call for OccurrenceCleaner only.
 
 [Large tables on disk](on-disk.html) shows how a table on disk is read in chunks. The benchmark script is `bench/benchmark.R` in the source repository, and its results are in `bench/results/`.
 

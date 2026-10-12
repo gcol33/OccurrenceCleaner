@@ -56,7 +56,7 @@ test_that("streamed output refuses a different custom gazetteer", {
   expect_match(f$reference, "custom: capital")
   expect_error(flag_occurrences(src, tests = "capital", out = out, verbose = FALSE,
                                 gazetteers = list(capital = data.frame(lon = 20, lat = 50))),
-               "different tests, layout or reference")
+               "different configuration \\(reference")
 })
 
 test_that("custom gazetteers give CoordinateCleaner's flags with the same ref", {

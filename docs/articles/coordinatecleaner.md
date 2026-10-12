@@ -9,19 +9,8 @@ to its test here, runs both packages on the same records, lists every
 case where the flags differ and why, and names the parts of
 CoordinateCleaner that have no counterpart. The chunks that call
 CoordinateCleaner run only when it is installed; it is a suggested
-package, not a dependency.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up.
+package, not a dependency. Installation is covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
 
@@ -328,11 +317,9 @@ flags them.
 
 ### Duplicates in streamed input
 
-On a data frame `duplicate` is evaluated over the whole table, as
+`duplicate` is evaluated over the whole table, as
 [`cc_dupl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html)
-is. On a table streamed from disk it is evaluated within each input
-file; the on-disk article shows how to make the files the right units
-for that.
+is, on a data frame and on a table streamed from disk.
 
 ### Gazetteers
 
@@ -408,14 +395,15 @@ For the proximity tests, CoordinateCleaner tests the records against a
 buffer polygon around the reference points, and this package looks up
 each record’s nearest reference point in a kd-tree.
 
-### All default tests
+### The CoordinateCleaner tests in one call
 
 With its own reference data,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-runs all of
-[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
-in one call in 1.91 s on one million records and 19.45 s on ten million.
-The benchmark times this call for OccurrenceCleaner only.
+runs the nine CoordinateCleaner tests that need only coordinates and a
+species (`invalid`, `zero`, `equal`, `capital`, `centroid`,
+`institution`, `gbif_headquarters`, `sea` and `duplicate`) in one call
+in 1.91 s on one million records and 19.45 s on ten million. The
+benchmark times this call for OccurrenceCleaner only.
 
 [Large tables on
 disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.md)

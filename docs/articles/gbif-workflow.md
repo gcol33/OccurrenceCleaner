@@ -1,23 +1,12 @@
 # Cleaning GBIF data
 
 This article runs the whole cleaning workflow on a table shaped like a
-GBIF download: flag every record once with all the tests that apply,
+GBIF download: flag every record with all the tests its columns allow,
 look at what each test caught, and then compare several cleaning rules
 over the same flags before choosing one. The data are simulated so that
 every error is known, which makes it possible to check that each test
-catches what it should and nothing else.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up.
+catches what it should and nothing else. Installation is covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
 
@@ -114,25 +103,61 @@ how both the simple-format download and the snapshot read through
 [vectra](https://gillescolling.com/vectra/) deliver them; a list column
 of character vectors works too.
 
-## Flagging every test once
+## Flagging with every test the columns allow
 
-The nineteen tests in the first bits of the layout can run here, because
-the table has coordinates, a species, a country code and the three GBIF
-fields. The others need fossil ages, a dataset key or species ranges, or
-compare records within a species; the articles on fossils, on outliers
-and dataset tests, and on custom gazetteers cover them.
+Without `tests`,
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+runs every test whose columns are in the table. Running a test only adds
+its flags; which records to exclude is chosen later, as a cleaning rule.
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
 only needs to be told the identifier, since the other defaults match
 case-insensitively:
 
 ``` r
 
-all_tests <- flag_tests()$test[flag_tests()$bit < 19]
-f <- flag_occurrences(occ, tests = all_tests, columns = occ_columns(id = "gbifid"))
+f <- flag_occurrences(occ, columns = occ_columns(id = "gbifid"))
 dim(f)
-#> [1] 2276   32
+#> [1] 2276   34
 attr(f, "occ_reference")
 #> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"
+```
+
+[`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+lists the tests that ran and the reason each other test did not. The
+table has coordinates, a species, a country code and the three GBIF
+fields, so the coordinate, GBIF and species outlier tests run. The
+fossil tests, the dataset tests, the habitat tests and the range test
+need columns or range polygons the table does not have; the articles on
+fossils, on outliers and dataset tests, and on custom gazetteers cover
+them:
+
+``` r
+
+p <- test_plan(f)
+all_tests <- p$test[p$run]
+all_tests
+#>  [1] "invalid"                  "zero"                    
+#>  [3] "equal"                    "capital"                 
+#>  [5] "centroid"                 "institution"             
+#>  [7] "gbif_headquarters"        "sea"                     
+#>  [9] "urban"                    "country_mismatch"        
+#> [11] "duplicate"                "issue_coordinate"        
+#> [13] "issue_taxon"              "issue_date"              
+#> [15] "issue_rounded"            "basis_fossil"            
+#> [17] "basis_living"             "establishment_introduced"
+#> [19] "establishment_managed"    "outlier"                 
+#> [21] "aohi"
+p[!p$run, c("test", "missing")]
+#>                      test        missing
+#> 20              age_equal min_ma, max_ma
+#> 22            age_outlier min_ma, max_ma
+#> 23 spatiotemporal_outlier min_ma, max_ma
+#> 24      age_range_outlier min_ma, max_ma
+#> 25           dataset_ddmm     datasetKey
+#> 26        dataset_rounded     datasetKey
+#> 27                  range range polygons
+#> 29          sea_nonmarine          genus
+#> 30            land_marine          genus
 ```
 
 The result is the input with an integer `flags` column and one logical
@@ -156,7 +181,7 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | zero                  |      20 |  0.88 |    0 |
 | equal                 |      20 |  0.88 |    0 |
 | capital               |      75 |  3.30 |    0 |
-| centroid              |      14 |  0.62 |    4 |
+| centroid              |      14 |  0.62 |    2 |
 | institution           |       2 |  0.09 |    1 |
 | gbif_headquarters     |      15 |  0.66 |    0 |
 | sea                   |      44 |  1.93 |    1 |
@@ -168,9 +193,11 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | issue_rounded         |      20 |  0.88 |    0 |
 | basis_living          |      20 |  0.88 |   13 |
 | establishment_managed |      21 |  0.92 |   14 |
-| (any)                 |     268 | 11.78 |      |
+| outlier               |      45 |  1.98 |    0 |
+| aohi                  |      41 |  1.80 |    6 |
+| (any)                 |     274 | 12.04 |      |
 
-The `(any)` row is the rule as a whole: 263 of the 2,276 records carry
+The `(any)` row is the rule as a whole: 274 of the 2,276 records carry
 at least one flag. The `only` column is the number of records a rule
 would keep if that one test were dropped from it.
 
@@ -214,12 +241,15 @@ the `sea` test still covers it. The zero coordinates fail `zero`,
 The negated longitudes show the limit of the spatial tests. Only 18 of
 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
-tell it from a correct one. None of the 30 records entered at whole
-degrees is caught: a whole-degree point in Austria is still in Austria,
-and GBIF’s `COORDINATE_ROUNDED` warning does not mark them, since it
-records that GBIF itself rounded a coordinate to five decimals. Low
-precision of this kind is read from `coordinateuncertaintyinmeters` when
-the source states it; these 30 records state none.
+tell it from a correct one. Of the 30 records entered at whole degrees,
+five are caught by `centroid`, because they fall on the whole-degree
+country centroids of France (2 E, 46 N) and Germany (9 E, 51 N), and one
+by `institution`. The others are not caught: a whole-degree point in
+Austria is still in Austria, and GBIF’s `COORDINATE_ROUNDED` warning
+does not mark them, since it records that GBIF itself rounded a
+coordinate to five decimals. Low precision of this kind is read from
+`coordinateuncertaintyinmeters` when the source states it; these 30
+records state none.
 
 Of the 2,000 clean records, 1,998 carry no flag in these columns. The
 other two lie at 13.0 E, 47.6 to 47.7 N, inside the Austrian box but
@@ -262,29 +292,32 @@ combo <- vapply(flagged$flags, function(w)
 knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tests", "records"))
 ```
 
-| tests                                                      | records |
-|:-----------------------------------------------------------|--------:|
-| capital + urban                                            |      50 |
-| duplicate                                                  |      41 |
-| urban                                                      |      19 |
-| country_mismatch + issue_coordinate                        |      16 |
-| issue_taxon + issue_rounded                                |      15 |
-| zero + equal + sea + country_mismatch + duplicate          |      15 |
-| establishment_managed                                      |      14 |
-| sea + country_mismatch                                     |      14 |
-| basis_living                                               |      13 |
-| capital + gbif_headquarters + country_mismatch + duplicate |      10 |
-| capital + centroid + urban                                 |       9 |
-| sea + country_mismatch + issue_coordinate                  |       9 |
+| tests | records |
+|:---|---:|
+| capital + urban | 44 |
+| duplicate | 41 |
+| urban | 19 |
+| country_mismatch + issue_coordinate + outlier | 16 |
+| issue_taxon + issue_rounded | 15 |
+| zero + equal + sea + country_mismatch + duplicate + outlier + aohi | 15 |
+| establishment_managed | 14 |
+| sea + country_mismatch | 14 |
+| basis_living | 13 |
+| capital + gbif_headquarters + country_mismatch + duplicate | 10 |
+| sea + country_mismatch + issue_coordinate + outlier | 9 |
+| duplicate + basis_living | 7 |
 
 The most common combination is `capital + urban`: a capital lies inside
 its own urban area, so in a rule that already includes `capital`, adding
 `urban` removes only the city records more than 10 km from the capital
-point. 15 of the 20 zero-coordinate records carry five tests at once:
-the four above plus `duplicate`, since they share their coordinates and
-often their species. Records with a single flag (`duplicate`,
-`issue_rounded`, `establishment_managed`, `basis_living`) are the ones a
-rule keeps or loses depending on whether that one test is in it.
+point. Of the 20 zero-coordinate records, 15 carry seven tests at once:
+`zero`, `equal`, `sea`, `country_mismatch`, `outlier`, `aohi` (the
+inventory has a point at (0, 0)) and `duplicate`, since they share their
+coordinates and often their species. The swapped records lie far from
+the other records of their species, so `outlier` flags all 25 of them.
+Records with a single flag (`duplicate`, `issue_rounded`,
+`establishment_managed`, `basis_living`) are the ones a rule keeps or
+loses depending on whether that one test is in it.
 
 ## Comparing cleaning rules
 
@@ -321,12 +354,14 @@ knitr::kable(t_all[, c("n", paste0("removed_", names(rules)))])
 
 | n | removed_cc | removed_cc_country | removed_cc_gbif | removed_wild | removed_strict |
 |---:|---:|---:|---:|---:|---:|
-| 2276 | 125 | 146 | 166 | 207 | 268 |
+| 2276 | 125 | 146 | 166 | 207 | 274 |
 
-The ladder removes 119 records under `cc` and 263 under `strict`. The
-country check adds 21, the GBIF warnings 20, the living and cultivated
-records 41, and duplicates the remaining 62 (the 20 records with
-`issue_rounded` are already removed through `issue_taxon`).
+The ladder removes 125 records under `cc` and 274 under `strict`. The
+country check adds 21, the GBIF warnings 20 and the living and
+cultivated records 41. `strict` adds the remaining 67 through
+`duplicate` (42 records, 40 of them the injected copies), `urban` (20)
+and `aohi` (6), some records carrying more than one; the 20 records with
+`issue_rounded` are already removed through `issue_taxon`.
 
 For one rule, [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 on the summary draws a bar per test: the full bar is the share the test
@@ -355,8 +390,8 @@ knitr::kable(t_k[, c("kingdom", "n", paste0("share_", names(rules)))])
 
 | kingdom  |   n | share_cc | share_cc_country | share_cc_gbif | share_wild | share_strict |
 |:---------|----:|---------:|-----------------:|--------------:|-----------:|-------------:|
-| Animalia | 897 |    0.062 |            0.072 |         0.085 |      0.109 |        0.128 |
-| Fungi    | 461 |    0.028 |            0.035 |         0.043 |      0.063 |        0.095 |
+| Animalia | 897 |    0.062 |            0.072 |         0.085 |      0.109 |        0.132 |
+| Fungi    | 461 |    0.028 |            0.035 |         0.043 |      0.063 |        0.102 |
 | Plantae  | 918 |    0.061 |            0.071 |         0.076 |      0.087 |        0.119 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
@@ -452,19 +487,23 @@ table(clean$truth)
 ```
 
 The `wild` rule keeps 1,998 of the 2,000 clean records and removes every
-injected error except the 40 duplicates, which it does not target, the
-30 whole-degree records and the 7 negated records, which no record test
-can see. The 20 records with a fuzzy taxon match are removed through
-`issue_taxon`, although their coordinates are fine.
+injected error except the 40 duplicates, which it does not target, and
+24 of the 30 whole-degree records and the 7 negated records, which no
+record test can see. The 20 records with a fuzzy taxon match are removed
+through `issue_taxon`, although their coordinates are fine.
 
 ## Practical guidance
 
-- **Run every test that the columns allow, once.** The pass over the
-  records is the expensive step; rules are a bit-mask query afterwards.
-  On an AMD Ryzen 7 5700G the nine default tests took 1.9 s for one
-  million records in memory (see the timings in [Coming from
-  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)),
-  so there is little reason to run fewer tests than the data support.
+- **Run every test the columns allow.**
+  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+  does so without `tests`, and
+  [`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+  shows what did not run and why. The pass over the records is the
+  expensive step; rules are a bit-mask query afterwards. On an AMD Ryzen
+  7 5700G the nine CoordinateCleaner tests that need only coordinates
+  and a species took 1.9 s for one million records in memory (see the
+  timings in [Coming from
+  CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#speed)).
 
 - **`country_mismatch` needs a country code and flags records without
   one.** A record with no code, or one that falls at sea, is flagged, as
@@ -484,9 +523,8 @@ can see. The 20 records with a fuzzy taxon match are removed through
   it is the same coordinates and the same `species` value. Adding
   `duplicate_by = "eventdate"` keeps repeat visits apart;
   `duplicate_cell = 0.1` treats records in the same 0.1-degree cell as
-  duplicates, which suits a grid-based analysis. On streamed input
-  duplicates are found within each input file only (see the on-disk
-  article).
+  duplicates, which suits a grid-based analysis. On streamed input the
+  test compares records across all input files, as on a data frame.
 
 - **GBIF issue tests are GBIF’s own processing results.** They catch
   errors that the spatial tests cannot see (a swapped coordinate that

@@ -14,20 +14,10 @@ replaces the layer of single tests with a user’s own, as the `ref`
 arguments of CoordinateCleaner’s `cc_*()` functions do. This article
 filters and extends the shipped point tables, builds polygon layers with
 [sf](https://r-spatial.github.io/sf/), replaces the genus habitats, and
-shows how a custom layer is recorded with the flags.
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up. The polygon examples also need
-[sf](https://r-spatial.github.io/sf/).
+shows how a custom layer is recorded with the flags. Installation is
+covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
+The polygon examples also need [sf](https://r-spatial.github.io/sf/).
 
 ``` r
 

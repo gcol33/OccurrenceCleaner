@@ -4,8 +4,8 @@
 
 - [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
   : Flag occurrence records
-- [`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
-  : Default tests
+- [`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+  : Which tests run on an input
 - [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
   : Name the record fields
 

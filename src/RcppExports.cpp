@@ -128,6 +128,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_key_hash
+List cpp_key_hash(List cols);
+RcppExport SEXP _OccurrenceCleaner_cpp_key_hash(SEXP colsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type cols(colsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_key_hash(cols));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_seen_new
+SEXP cpp_seen_new();
+RcppExport SEXP _OccurrenceCleaner_cpp_seen_new() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_seen_new());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_seen_mark
+LogicalVector cpp_seen_mark(SEXP set, IntegerVector h1, IntegerVector h2, IntegerVector h3, IntegerVector h4);
+RcppExport SEXP _OccurrenceCleaner_cpp_seen_mark(SEXP setSEXP, SEXP h1SEXP, SEXP h2SEXP, SEXP h3SEXP, SEXP h4SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type set(setSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type h1(h1SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type h2(h2SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type h3(h3SEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type h4(h4SEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_seen_mark(set, h1, h2, h3, h4));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_outlier_dist
 List cpp_outlier_dist(NumericVector lon, NumericVector lat);
 RcppExport SEXP _OccurrenceCleaner_cpp_outlier_dist(SEXP lonSEXP, SEXP latSEXP) {
@@ -205,6 +241,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_OccurrenceCleaner_cpp_polygon_near", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_near, 4},
     {"_OccurrenceCleaner_cpp_polygon_info", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_info, 1},
     {"_OccurrenceCleaner_cpp_hash_strings", (DL_FUNC) &_OccurrenceCleaner_cpp_hash_strings, 1},
+    {"_OccurrenceCleaner_cpp_key_hash", (DL_FUNC) &_OccurrenceCleaner_cpp_key_hash, 1},
+    {"_OccurrenceCleaner_cpp_seen_new", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_new, 0},
+    {"_OccurrenceCleaner_cpp_seen_mark", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_mark, 5},
     {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 2},
     {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 5},
     {"_OccurrenceCleaner_cpp_lag_cov", (DL_FUNC) &_OccurrenceCleaner_cpp_lag_cov, 2},

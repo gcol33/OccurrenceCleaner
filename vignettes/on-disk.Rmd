@@ -11,161 +11,225 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-A GBIF snapshot has billions of records in a directory of Parquet files, far more than fits in memory. `flag_occurrences()` takes such a directory, a single file or a vectra query in place of a data frame, reads it in chunks through [vectra](https://gillescolling.com/vectra/), and writes the flags to disk next to the columns kept for grouping. This article walks through the output layout, resuming an interrupted run, tallying from disk, and the one test whose result depends on how the input is split. Installation is covered in [Get started](OccurrenceCleaner.html).
+A snapshot of GBIF (the Global Biodiversity Information Facility) holds billions of occurrence records in a directory of Parquet files, a column-oriented file format. That is far more than fits in memory. `flag_occurrences()` accepts such a directory, a single file or a query in place of a data frame. It reads the input in chunks through [vectra](https://gillescolling.com/vectra/), the column-store package OccurrenceCleaner uses for tables on disk, and writes the flags to an output directory. This article ends with flags on disk, tallied by group, and a selected subset joined back to its full records. Installation is covered in [Get started](OccurrenceCleaner.html).
+
+1. **Flag** a directory of files into an output directory with `flag_occurrences()`.
+
+2. **Tally** what each test flags and each rule removes with `tally_flags()`.
+
+3. **Select** flagged records and **join** them to the full records with `flagged_table()`.
+
+4. **Resume** an interrupted run by repeating the call.
+
+## Example
 
 ```{r setup, message = FALSE}
 library(OccurrenceCleaner)
 ```
 
-## Example input
+### Example input
 
-Three `.vtr` files stand in for the parts of a snapshot. Each contains 3,000 records with GBIF's lower-case column names:
+Three files stand in for the parts of a snapshot. They are `.vtr` files, the on-disk table format of vectra; a directory of Parquet files, a single Parquet, `.csv` or `.tsv` file, and a vectra query are read the same way. Each file has 3,000 records with GBIF's lower-case column names, at random points in a box over western and central Europe:
 
 ```{r input}
 set.seed(7)
 make_part <- function(n, offset) {
-  data.frame(gbifid = as.character(offset + seq_len(n)),
-             kingdom = sample(c("Animalia", "Plantae", "Fungi"), n, TRUE),
-             species = sample(sprintf("sp%02d", 1:30), n, TRUE),
-             year = sample(1880:2024, n, TRUE),
-             decimallongitude = round(runif(n, -10, 30), 3),
-             decimallatitude = round(runif(n, 36, 60), 3))
+  data.frame(
+    gbifid = as.character(offset + seq_len(n)),
+    kingdom = sample(c("Animalia", "Plantae", "Fungi"), n, TRUE),
+    species = sample(sprintf("sp%02d", 1:30), n, TRUE),
+    year = sample(1880:2024, n, TRUE),
+    decimallongitude = round(runif(n, -10, 30), 3),
+    decimallatitude = round(runif(n, 36, 60), 3))
 }
+p1 <- make_part(3000, 0)
+p2 <- make_part(3000, 3000)
+p3 <- make_part(3000, 6000)
+```
+
+The last record of part 3 is replaced by a copy of the first record of part 1, with its own identifier, so the same species and coordinates appear in two files:
+
+```{r input-write}
+p3[3000, -1] <- p1[1, -1]
 src <- file.path(tempdir(), "snapshot")
 dir.create(src, showWarnings = FALSE)
-for (i in 1:3) vectra::write_vtr(make_part(3000, (i - 1) * 3000), file.path(src, sprintf("occurrence-%d.vtr", i)))
+parts <- list(p1, p2, p3)
+for (i in 1:3) {
+  path <- file.path(src, sprintf("occurrence-%d.vtr", i))
+  vectra::write_vtr(parts[[i]], path)
+}
 list.files(src)
 ```
 
-A directory of Parquet parts, a single Parquet, `.vtr`, `.csv` or `.tsv` file, and any `vectra_node` are read the same way.
+### Flagging into an output directory
 
-## Flagging into an output directory
-
-For on-disk input, `out` names the output directory and `keep` the columns copied next to the flags. The record identifier (`gbifid` here, set through `occ_columns(id = ...)`) is kept whenever it is present, so the flags can be joined back to the full records later:
+For on-disk input, `out` names the output directory and `keep` the columns copied next to the flags for grouping later. The record identifier (`gbifid` here, set through `occ_columns(id = ...)`) is kept whenever it is present, so the flags can be joined back to the full records:
 
 ```{r flag}
 out <- file.path(tempdir(), "flags")
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
-f$n
-f$parts
+f
 ```
 
-Each input file is one unit of work. Within a unit, records are read chunk by chunk, flagged, and buffered; a `.vtr` part file is written once at least `part_rows` rows (2 million by default) have accumulated, and at the end of the unit. A `.done` marker per unit records that it finished, and `flags_meta.rds` records the tests, the layout version, the reference, the columns and the package version:
+Without `tests`, the run covers every test the columns allow. The printed object lists them, and `test_plan()` gives the reason for each test that did not run:
 
-```{r layout}
-list.files(out)
-m <- read_flagged(out)
-str(m[c("tests", "layout_version", "reference", "keep", "n", "units", "package_version")])
+```{r flag-plan}
+p <- test_plan(f)
+p[!p$run, c("test", "reason")]
 ```
 
-Memory use is set by the chunk size of [vectra](https://gillescolling.com/vectra/) and by `part_rows`, not by the size of the input: one input chunk and the buffered output rows (the identifier, the `keep` columns and a four-byte flag word per record) are held at a time.
+`duplicate` and `outlier` are grouped tests: they compare a record with other records of its key or species anywhere in the input. They run in a group stage that reads the input before the record pass, which the messages above report.
 
-## Resuming
+### Tallying from disk
 
-A rerun of the same call skips every unit whose `.done` marker exists. Removing the marker of one unit, as an interruption during that unit would leave it, means only that unit is flagged again:
+`tally_flags()` takes the `occ_flagged` object or the output directory and reads the flag files in chunks. It counts, per group, the records each test flags and each rule removes, without loading the records. A grouping column must have been kept when flagging.
 
-```{r resume}
-file.remove(file.path(out, "occurrence-2.done"))
-f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
-                      columns = occ_columns(id = "gbifid"))
-```
-
-A unit that is redone first has its old part files deleted, so a half-written unit never leaves stale parts behind. `resume = FALSE` redoes every unit.
-
-An output directory belongs to one configuration. A rerun into it with different tests, a different reference or land scale, or a different flag layout stops instead of mixing flags:
-
-```{r mismatch, error = TRUE}
-flag_occurrences(src, out = out, tests = c("invalid", "zero"), keep = c("kingdom", "year"))
-```
-
-## Tallying from disk
-
-`tally_flags()` accepts the `occ_flagged` object or the output directory and streams the parts, so the counts per group of records each test flags and each rule removes are built over the whole snapshot without loading it. Grouping columns must have been kept when flagging:
+The rule `coordinatecleaner` holds the same tests as in [Choosing a cleaning rule](rules.html): the default tests of CoordinateCleaner's `clean_coordinates()` that need only coordinates and a species, apart from its outlier test.
 
 ```{r tally}
-cc <- c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea")
-t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)), rules = list(cc = cc))
-knitr::kable(t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital", "removed_cc", "kept_cc")])
+coordinatecleaner <- c("invalid", "zero", "equal", "capital", "centroid",
+                       "institution", "gbif_headquarters", "sea")
+t <- tally_flags(out, by = "kingdom", bins = list(year = c(1950, 2000)),
+                 rules = list(coordinatecleaner = coordinatecleaner))
+sel <- t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital",
+             "removed_coordinatecleaner")]
 ```
 
-Most of these records are flagged by `sea`, because the simulated points were drawn uniformly over a box that includes the Mediterranean, the Bay of Biscay and the North Sea. A grouping column that was not kept is an error that names it:
+```{r tally-table, echo = FALSE}
+knitr::kable(sel)
+```
+
+```{r tally-share, include = FALSE}
+sea_share <- round(100 * sum(t$flagged_sea) / sum(t$n))
+removed <- sum(t$removed_coordinatecleaner)
+```
+
+The sea test flags `r sea_share` % of all records, and it accounts for most of the `r format(removed, big.mark = ",")` records the rule removes: the points were drawn uniformly over a box that includes the Mediterranean, the Bay of Biscay and the North Sea. A grouping column that was not kept is an error that names it:
 
 ```{r tally-missing, error = TRUE}
 tally_flags(out, by = "species")
 ```
 
-## Reading the flags
+### Selecting and joining flagged records
 
-`flagged_table()` opens all parts as one [vectra](https://gillescolling.com/vectra/) table. vectra verbs run on it lazily, and `vectra::collect()` brings the result into memory. A vectra query runs once, so each use starts from a fresh `flagged_table()`:
+`flagged_table()` opens the flag files as one vectra table. vectra verbs run on it lazily and read only what the query needs; `vectra::collect()` brings the result into memory. A vectra query runs once, so each use starts from a fresh `flagged_table()`.
+
+A filter on a kept column bounds what is collected. For a snapshot, choose one that keeps the result small, such as one class or one region. `flags != 0L` keeps the records flagged by any test that ran, which here includes `duplicate` and `outlier` as well as the tests of the rule above:
 
 ```{r read}
-ft <- flagged_table(out)
-flagged <- vectra::collect(vectra::filter(ft, flags != 0L))
+fungi <- vectra::filter(flagged_table(out), kingdom == "Fungi", flags != 0L)
+flagged <- vectra::collect(fungi)
 nrow(flagged)
-head(flagged)
 ```
 
-The flag word is an integer column, so `has_flag()` applies to it after collecting:
+vectra filters cannot test a single bit of the flag word, so a rule is applied after collecting, with `has_flag()`:
 
-```{r read-has}
-table(kingdom = flagged$kingdom, capital = has_flag(flagged$flags, "capital"))
+```{r read-rule}
+table(removed = has_flag(flagged$flags, coordinatecleaner))
 ```
 
-To attach the flags to the full records, join on the identifier. For a snapshot, the join is best done by vectra on disk; for a small subset, in memory:
+To attach the flags to the full records, join on the identifier. vectra runs the join on disk, so only the joined rows of the selection are collected:
 
 ```{r join}
-recs <- vectra::collect(vectra::tbl(file.path(src, "occurrence-1.vtr")))
-fl <- vectra::collect(flagged_table(out))
-merged <- merge(recs, fl[, c("gbifid", "flags")], by = "gbifid")
-nrow(merged)
+files <- list.files(src, full.names = TRUE)
+records <- do.call(vectra::bind_rows, lapply(files, vectra::tbl))
+fungi <- vectra::filter(flagged_table(out), kingdom == "Fungi", flags != 0L)
+fungi <- vectra::select(fungi, gbifid, flags)
+merged <- vectra::collect(vectra::inner_join(fungi, records, by = "gbifid"))
+head(merged[, c("gbifid", "species", "decimallongitude", "flags")])
 ```
 
-## Duplicates and the unit of work
+### Duplicates across files
 
-`duplicate` compares a record with the earlier records of the same unit. On a data frame the unit is the whole table; on a directory it is one input file, so two identical records in different files are not flagged. A copy of a record from part 1 placed in part 3 shows it:
+The duplicate test compares each record with every record before it in the input order: the files in sorted order and the rows within each file. The copy in the last row of part 3 is flagged and the original in part 1 is not, as they would be in one data frame holding all three parts in that order:
 
 ```{r dupl}
-p1 <- vectra::collect(vectra::tbl(file.path(src, "occurrence-1.vtr")))
-p3 <- vectra::collect(vectra::tbl(file.path(src, "occurrence-3.vtr")))
-copy <- p1[1, ]; copy$gbifid <- "copy-1"
-vectra::write_vtr(rbind(p3, copy), file.path(src, "occurrence-3.vtr"))
-g <- flag_occurrences(src, out = file.path(tempdir(), "flags-dupl"), tests = "duplicate",
-                      columns = occ_columns(id = "gbifid"), verbose = FALSE)
-d <- vectra::collect(flagged_table(g))
-has_flag(d$flags[d$gbifid == "copy-1"], "duplicate")
+d <- vectra::collect(flagged_table(out))
+pair <- d[d$gbifid %in% c(p1$gbifid[1], p3$gbifid[3000]), ]
+data.frame(gbifid = pair$gbifid, duplicate = has_flag(pair$flags, "duplicate"))
 ```
 
-A table that is split by species, so that all records of one species are in the same file, makes the per-file test equal to the whole-table test, since a duplicate must share the species. A GBIF snapshot is not split that way. For whole-table duplicates on a snapshot, the duplicate test is run on the records of the taxa under study after collecting them, where it sees all of them at once.
+### Selecting records before flagging
 
-## Selecting before flagging
-
-A `vectra_node` is flagged as one unit, which makes it the way to flag a subset without writing it out first. [vectra](https://gillescolling.com/vectra/) pushes the filter down into the scan:
+A vectra query can be flagged without writing the subset out first; vectra applies the filter while it scans the file. A query runs once, so it is flagged as one unit, and the grouped tests, which read the input more than once, do not run on it. `test_plan()` on the result lists them with that reason:
 
 ```{r node}
-node <- vectra::filter(vectra::tbl(file.path(src, "occurrence-1.vtr")), kingdom == "Plantae")
-h <- flag_occurrences(node, out = file.path(tempdir(), "flags-plants"), keep = "kingdom",
-                      columns = occ_columns(id = "gbifid"), verbose = FALSE)
+plants <- vectra::filter(vectra::tbl(file.path(src, "occurrence-1.vtr")),
+                         kingdom == "Plantae")
+h <- flag_occurrences(plants, out = file.path(tempdir(), "flags-plants"),
+                      keep = "kingdom", columns = occ_columns(id = "gbifid"),
+                      verbose = FALSE)
 h$n
+p <- test_plan(h)
+p[p$test %in% c("duplicate", "outlier"), c("test", "run", "reason")]
 ```
+
+Naming a grouped test for a query is an error; flag the file or directory path instead, and select the records afterwards.
+
+### Resuming an interrupted run
+
+Each input file is one unit of work, and a finished unit leaves a `.done` marker in `out`. Repeating the call skips every finished unit, so a run that was stopped is continued by running the same call again:
+
+```{r resume}
+f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
+                      columns = occ_columns(id = "gbifid"))
+```
+
+An interruption during a unit leaves that unit without its marker. Removing a marker by hand has the same effect, and only that unit is flagged again:
+
+```{r resume-one}
+file.remove(file.path(out, "occurrence-2.done"))
+f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
+                      columns = occ_columns(id = "gbifid"))
+```
+
+A unit that is redone has its old part files deleted first. The group stage keeps its state in `out/.group` until the run finishes. It saves a checkpoint after a file or a bucket of records once five minutes have passed, and at the end of each of its passes, so an interruption there repeats at most the work since the last checkpoint, and an interruption in the record pass reuses its result. Here the run had finished and its group files were deleted, so the redone unit first repeats the group stage. `resume = FALSE` deletes the earlier output and starts over.
+
+Before writing any output, a run records its configuration: the tests, columns, `keep`, reference, buffers, test settings, duplicate options, package version, and each input file with its size and modification time. A later call into the same directory must match it, or it stops and names what differs:
+
+```{r mismatch, error = TRUE}
+flag_occurrences(src, out = out, keep = "kingdom",
+                 columns = occ_columns(id = "gbifid"))
+```
+
+Sizes and modification times detect a replaced, grown or touched file; they are not a hash of the file contents.
+
+### The output directory
+
+The flags are written as `.vtr` part files. Within a unit, records are read chunk by chunk, flagged and buffered, and a part file is written once at least `part_rows` rows (two million by default) have accumulated, and at the end of the unit. `flags_config.rds` holds the configuration record and `flags_meta.rds` the summary of the finished run:
+
+```{r layout}
+list.files(out)
+m <- read_flagged(out)
+str(m[c("tests", "layout_version", "keep", "n", "units")])
+```
+
+### Memory and disk
+
+The record pass holds one input chunk, up to `part_rows` buffered output rows (the identifier, the `keep` columns and a four-byte flag word per record) and the group-test results for the current block of about one million rows. The group stage holds up to two million bucketed rows before writing them, the record counts per species, the histograms per dataset, the duplicate keys of one bucket (about four million records per bucket on a large input) and the records of one species for the outlier test. On disk it writes up to 24 bytes per record for `duplicate`, plus the coordinates of the records the outlier test compares; these files are deleted when the run finishes. The Streamed runs section of `?flag_occurrences` lists the details.
 
 ## A GBIF snapshot
 
-GBIF's Parquet snapshot (the `occurrence.parquet` directory) names the Darwin Core columns in lower case, which the case-insensitive defaults of `occ_columns()` find. A pass over every test the snapshot supports, which is all but the fossil tests and the range test, keeping the columns a loss analysis groups by. The grouped tests (`outlier` and the two dataset tests, which read `datasetkey`) add a pass over all files before the record pass:
+GBIF's Parquet snapshot (the `occurrence.parquet` directory) names its columns in lower case. They follow Darwin Core, the standard set of field names for biodiversity records, and the case-insensitive defaults of `occ_columns()` find them. `test_plan()` on the directory lists the tests the columns allow before anything runs, and `keep` names the columns a loss analysis groups by:
 
 ```{r snapshot, eval = FALSE}
+snapshot <- "gbif_snapshot/occurrence.parquet"
+p <- test_plan(snapshot)
+p[!p$run, c("test", "reason")]
+
 f <- flag_occurrences(
-  "gbif_snapshot/occurrence.parquet",
-  tests = setdiff(flag_tests()$test, c("age_equal", "age_outlier", "spatiotemporal_outlier",
-                                       "age_range_outlier", "range")),
+  snapshot,
   out = "flags",
-  keep = c("kingdom", "phylum", "class", "year", "coordinateuncertaintyinmeters"),
+  keep = c("kingdom", "phylum", "class", "year",
+           "coordinateuncertaintyinmeters"),
   land_scale = 50)
 
-tally_flags(f, by = c("kingdom", "class"),
-            bins = list(year = c(1900, 1950, 1970, 1990, 2010),
-                        coordinateuncertaintyinmeters = c(10, 100, 1000, 10000)),
-            rules = list(cc = cc, cc_country = c(cc, "country_mismatch")))
+bins <- list(year = c(1900, 1950, 1970, 1990, 2010),
+             coordinateuncertaintyinmeters = c(10, 100, 1000, 10000))
+rules <- list(coordinatecleaner = coordinatecleaner,
+              with_country = c(coordinatecleaner, "country_mismatch"))
+tally_flags(f, by = c("kingdom", "class"), bins = bins, rules = rules)
 ```
 
-Read through [vectra](https://gillescolling.com/vectra/), the snapshot's `issue` column arrives as a string of issue names separated by `;`, which the issue tests read directly. The in-memory speed of the nine default tests was 17.8 s for ten million records on an AMD Ryzen 7 5700G (`bench/benchmark.R` in the source repository); a streamed run adds the Parquet reading and the writing of the parts, which were not part of that benchmark. Since each Parquet file is one resumable unit, a run over a snapshot can be stopped and restarted at any point and loses at most the file in progress.
+Read through vectra, the snapshot's `issue` column arrives as a string of issue names separated by `;`, which the issue tests read directly. With the outlier and dataset tests, which read `datasetkey`, the group stage reads every file twice before the record pass; with `duplicate` alone it reads them once. An interruption during the group stage repeats the work since its last checkpoint, and one during the record pass repeats the file in progress.

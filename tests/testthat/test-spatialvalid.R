@@ -6,14 +6,14 @@ recs <- function() {
 
 test_that("as_spatialvalid writes CoordinateCleaner's column names, TRUE for pass", {
   x <- recs()
-  f <- flag_occurrences(x)
+  f <- flag_occurrences(x, tests = cc_default)
   sv <- as_spatialvalid(f)
   expect_s3_class(sv, c("spatialvalid", "data.frame"), exact = TRUE)
   expect_identical(names(sv), c(names(x), ".val", ".zer", ".equ", ".cap", ".cen", ".inst", ".gbf",
                                 ".sea", ".dpl", ".summary"))
   expect_identical(sv$.cap, !f$flag_capital)
   expect_identical(sv$.dpl, !f$flag_duplicate)
-  expect_identical(sv$.summary, !has_flag(f$flags, default_tests()))
+  expect_identical(sv$.summary, !has_flag(f$flags, cc_default))
   expect_identical(attr(sv, "occ_reference"), attr(f, "occ_reference"))
 })
 

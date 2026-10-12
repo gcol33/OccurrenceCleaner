@@ -4,8 +4,10 @@
 \alias{test_urban}
 \title{Test: urban areas}
 \description{
-Flags records inside the Natural Earth 1:50 million urban-area polygons. Not in
-\code{\link[=default_tests]{default_tests()}}, as urban records are often correct.
+Flags records inside the Natural Earth 1:50 million urban-area polygons.
+CoordinateCleaner's \code{clean_coordinates()} leaves this test out by default,
+as urban records are often correct; here it runs whenever coordinates are
+present, and a cleaning rule can leave it out.
 }
 \section{Fields}{
  \code{lon}, \code{lat}.

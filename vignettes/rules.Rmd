@@ -32,7 +32,7 @@ library(OccurrenceCleaner)
 
 ### Records with known errors
 
-The example records are random points on land in Europe, drawn by rejecting points the `sea` test flags, with species, kingdom, year and the GBIF fields a download carries. Older records get larger coordinate uncertainty and are more often rounded, as in real GBIF data.
+The example records are random points on land in Europe, drawn by rejecting points the `sea` test flags, with species, kingdom, year and the GBIF fields a download carries. All coordinates are rounded to four decimals. Older records get a larger coordinate uncertainty and are more often assigned GBIF's `COORDINATE_ROUNDED` issue.
 
 ```{r}
 set.seed(42)
@@ -58,7 +58,7 @@ x$issue <- ifelse(runif(n) < ifelse(old, 0.3, 0.03), "COORDINATE_ROUNDED", "")
 x$issue[sample(n, 40)] <- "TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"
 ```
 
-Then we add records within 3 km of five capitals, at (0, 0), and in the Atlantic, along with exact copies of earlier records.
+Add records within 3 km of five capitals, at (0, 0), and in the Atlantic, along with exact copies of earlier records.
 
 ```{r}
 capitals <- data.frame(lon = c(16.37, 2.35, 13.40, -3.70, 12.50),
@@ -77,10 +77,12 @@ nrow(x)
 
 ### Flag once
 
-The tests are the defaults (the CoordinateCleaner-equivalent tests that need only coordinates and a species), the GBIF issue flags on coordinates and rounding, and the fossil test on the basis of record.
+The tests are the CoordinateCleaner tests that need only coordinates and a species, the GBIF issue flags on coordinates and rounding, and the fossil test on the basis of record. Without `tests`, `flag_occurrences()` would run every test the columns allow; naming them here keeps the comparison to these twelve.
 
 ```{r}
-tests <- c(default_tests(), "issue_coordinate", "issue_rounded", "basis_fossil")
+cc_tests <- c("invalid", "zero", "equal", "capital", "centroid", "institution",
+              "gbif_headquarters", "sea", "duplicate")
+tests <- c(cc_tests, "issue_coordinate", "issue_rounded", "basis_fossil")
 f <- flag_occurrences(x, tests = tests)
 class(f)
 ```
@@ -107,42 +109,50 @@ plot(f)
 
 ### Comparing rules
 
-Candidate rules go into `rules` as a named list. Here `strict` uses all the tests, `cc` the [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) tests without the duplicate test, and `minimal` only the tests for coordinates that cannot be right.
+Candidate rules go into `rules` as a named list. This example compares three:
+
+- `strict` uses all twelve tests.
+
+- `coordinatecleaner` uses the tests of this set that [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()` runs by default. That default leaves out the duplicate test, because an exact copy repeats a record's coordinates without placing them wrongly.
+
+- `minimal` uses only the tests for coordinates that cannot be right.
 
 ```{r}
 rules <- list(strict = tests,
-              cc = setdiff(default_tests(), "duplicate"),
+              coordinatecleaner = setdiff(cc_tests, "duplicate"),
               minimal = c("invalid", "zero", "sea"))
 s <- summary(f, rules = rules)
 s[s$test == "(any)", c("rule", "n", "flagged", "pct")]
 ```
 
-The summary is a data frame of class `occ_summary`, so rows can be selected as usual; the selection above keeps one row per rule. `plot()` draws one rule at a time:
+The summary is a data frame of class `occ_summary`, so rows can be selected as usual; the selection above keeps one row per rule. `plot()` draws one rule at a time. This plot and the grouped summaries below use `coordinatecleaner`, the rule applied at the end of this article:
 
 ```{r}
-plot(s, rule = "cc")
+plot(s, rule = "coordinatecleaner")
 ```
 
-Under `cc`, no record at (0, 0) is counted under `only`, since `zero`, `equal` and `sea` all flag it; dropping any one of the three from the rule keeps every such record removed. The capital test, by contrast, is the sole reason for most of its records.
+Under `coordinatecleaner`, no record at (0, 0) is counted under `only`, since `zero`, `equal` and `sea` all flag it; dropping any one of the three from the rule keeps every such record removed. The capital test, by contrast, is the sole reason for most of its records.
 
 ### By group
 
 The arguments of `tally_flags()` pass through `summary()`, so `by` splits the shares by any column of the records.
 
 ```{r}
-s <- summary(f, rules = rules["cc"], by = "kingdom")
+s <- summary(f, rules = rules["coordinatecleaner"], by = "kingdom")
 s[s$test %in% c("capital", "sea", "(any)"), ]
 ```
 
 With grouping, `plot()` shows a grid of tests by groups, shaded by the share each test flags in each group, with the rule itself in the bottom row.
 
 ```{r, fig.height = 5.5}
-plot(f, rules = rules["cc"], by = "kingdom")
+plot(f, rules = rules["coordinatecleaner"], by = "kingdom")
 ```
 
 ### Record age and coordinate precision
 
 Year and coordinate uncertainty stay raw columns of the records and are cut into classes only when tallying. `bins` takes the break points and adds a `<column>_bin` grouping column, with missing values in their own class.
+
+This section reads the shares under `strict`, the only one of the three rules that includes `issue_rounded`, so the share of records with GBIF's rounding issue can be followed across age and uncertainty classes.
 
 ```{r}
 t <- tally_flags(f, rules = rules,
@@ -170,18 +180,28 @@ s[s$test %in% c("issue_rounded", "(any)"),
 
 ### Where the removed records are
 
-On a flagged data frame, `plot(type = "map")` draws the records over the Natural Earth land, coloured by whether the first rule of `rules` removes them.
+On a flagged data frame, `plot(type = "map")` draws the records over the Natural Earth land, coloured by whether the first rule of `rules` removes them. The map returns to `coordinatecleaner`, the rule applied below.
 
 ```{r, fig.height = 5}
-plot(f, type = "map", rules = rules["cc"])
+plot(f, type = "map", rules = rules["coordinatecleaner"])
 ```
 
 ### Applying the rule
 
+Choose the tests by what your analysis needs. The example applies `coordinatecleaner`, which removes records whose coordinates are impossible or may point to a capital, a country centroid, an institution, GBIF's headquarters or the sea. Results under this rule can be compared with data cleaned by `clean_coordinates()` at its defaults. Other tests may be added for a given analysis:
+
+- `basis_fossil` when the analysis concerns living populations.
+
+- `duplicate` when each location should count once, for example in a presence-only distribution model.
+
+- `issue_coordinate` to exclude records with GBIF's georeferencing warnings.
+
+`issue_rounded` is left out, because GBIF sets `COORDINATE_ROUNDED` when it rounds a coordinate given with more than five decimals, which moves the point by at most about 1 m. A precision threshold is better taken from `coordinateUncertaintyInMeters`.
+
 `has_flag()` returns `TRUE` for every record carrying at least one test of the rule, so the cleaned table is the complement.
 
 ```{r}
-clean <- f[!has_flag(f$flags, rules$cc), ]
+clean <- f[!has_flag(f$flags, rules$coordinatecleaner), ]
 nrow(clean)
 ```
 

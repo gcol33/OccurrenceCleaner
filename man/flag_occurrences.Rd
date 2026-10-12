@@ -25,8 +25,10 @@ flag_occurrences(
 \arguments{
 \item{x}{A data frame, a \code{vectra_node}, or a path (file or directory).}
 
-\item{tests}{Character vector of test names, see \code{\link[=flag_tests]{flag_tests()}}. Default
-\code{\link[=default_tests]{default_tests()}}. A test whose fields are missing from \code{x} is an error.}
+\item{tests}{Character vector of test names, see \code{\link[=flag_tests]{flag_tests()}}. \code{NULL}
+(the default) runs every test whose columns are in \code{x} (and \code{range} when
+\code{gazetteers} has range polygons); see \code{\link[=test_plan]{test_plan()}}. A named test whose
+columns are missing from \code{x} is an error.}
 
 \item{columns}{Field names, see \code{\link[=occ_columns]{occ_columns()}}.}
 
@@ -86,31 +88,41 @@ column of \code{columns} is kept when present.}
 part is written once at least this many rows have accumulated, and at the
 end of each input unit.}
 
-\item{resume}{Skip input units whose output already exists.}
+\item{resume}{Continue a run in \code{out}: skip input files whose \code{.done}
+marker exists and resume the group stage from its checkpoint. \code{FALSE}
+deletes the earlier output in \code{out} and starts over.}
 
 \item{verbose}{Report progress for streamed input.}
 }
 \value{
 For a data frame: \code{x} with an integer column \code{flags} and one logical
 column \verb{flag_<test>} per test, class \code{occ_flags} added in front, and
-attributes \code{occ_tests}, \code{occ_layout_version}, \code{occ_reference} and
-\code{occ_columns}. \link[=summary.occ_flags]{summary()} reports the share of records
+attributes \code{occ_tests}, \code{occ_test_plan}, \code{occ_layout_version},
+\code{occ_reference} and \code{occ_columns}. \link[=summary.occ_flags]{summary()} reports the share of records
 each test flags, \link[=plot.occ_flags]{plot()} draws it or maps the records. For streamed input: an object of
 class \code{occ_flagged} describing the output directory, which \code{\link[=tally_flags]{tally_flags()}}
 accepts; the parts are \code{.vtr} files holding the \code{id} and \code{keep} columns and
 \code{flags}, readable with \code{vectra::tbl()}.
 }
 \description{
-Runs a set of record tests over species occurrence records and writes one
-flag per record per test. Nothing is removed and no threshold is baked in: a
-cleaning rule is a set of tests, applied afterwards with \code{\link[=has_flag]{has_flag()}} or
-summarised with \code{\link[=tally_flags]{tally_flags()}}.
+Runs record tests over species occurrence records and writes one flag per
+record per test. Nothing is removed and no threshold is baked in.
 }
 \details{
-The grouped tests (\code{outlier}, the three fossil outlier tests and the two
-dataset tests) compare a record with the other records of its species,
-taxon or dataset; they run in a pass over the whole input before the record
-tests, which on streamed input reads every file once or twice more.
+Two choices are kept apart. Which tests run: by default every test whose
+inputs are available, so a screening sees every potential problem the
+columns allow; \code{\link[=test_plan]{test_plan()}} lists the tests that ran and the reason each
+other test did not. Which records are excluded: a cleaning rule, a set of
+tests chosen afterwards and applied with \code{\link[=has_flag]{has_flag()}} or compared with
+\code{\link[=tally_flags]{tally_flags()}}. A rule for species distribution modelling might exclude
+fossil and living specimens along with the coordinate problems; a study of
+fossil ranges would keep the fossils and exclude other flags.
+
+The grouped tests (\code{duplicate}, \code{outlier}, the three fossil outlier tests
+and the two dataset tests) compare a record with the other records of its
+key, species, taxon or dataset; they run in a group stage before the record
+tests, which on streamed input reads every file once or twice more and
+keeps its buckets and results in \code{out/.group}.
 
 The input is either a data frame, or an on-disk table streamed in chunks: a
 \code{vectra_node} (from \code{vectra::tbl_parquet()}, \code{vectra::tbl_csv()},
@@ -119,6 +131,34 @@ The input is either a data frame, or an on-disk table streamed in chunks: a
 a directory each file is one resumable unit of work; the return follows the
 input, see Value.
 }
+\section{Streamed runs}{
+
+Before writing any output, a run records its configuration in
+\code{out/flags_config.rds}: the tests, columns, \code{keep}, reference, buffers,
+settings, duplicate options, package version, and each input file with its
+size and modification time. A later call into the same \code{out} must match the
+record, or it stops and names what differs; \code{resume = FALSE} clears the
+directory instead. Sizes and modification times detect a replaced, grown or
+touched file; they are not a hash of the contents.
+
+The group stage checkpoints its state after a file or a bucket whenever
+five minutes have passed, and at the end of each pass, so an interruption
+repeats at most the work since the last checkpoint. The record pass writes
+a \code{.done} marker per input file; an interruption there repeats the file in
+progress.
+
+Memory in the record pass is one input chunk, up to \code{part_rows} buffered
+output rows and the group-test hits of the current block of 2^20 rows. The
+group stage holds two million bucketed rows before writing them (more
+above four billion records), the per-species record counts, per-dataset
+histograms and raster cell counts of large species, the duplicate keys of
+one bucket (at most four million records on average when the input has more
+than 256 million), and the records of one species (fewer
+than 10,000 for the exact outlier test) or one fossil taxon. Its disk use is
+at most 24 bytes per record for \code{duplicate}, plus the coordinates of the
+records of the outlier and fossil tests.
+}
+
 \section{Tests}{
 
 See \code{\link[=flag_tests]{flag_tests()}} for the layout. Tests equivalent to \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} use
@@ -146,8 +186,6 @@ polygon the point falls in, taking the ISO codes from Natural Earth's
 \code{ISO_A3} hold \code{-99} (France, Norway, Kosovo); CoordinateCleaner compares
 \code{ISO_A3} only, so it flags every record in France and Norway.
 Records without a code, or at sea, are flagged as in CoordinateCleaner.
-\item \code{duplicate} on streamed input is evaluated within each input file (Parquet
-part), not across the whole table.
 \item \code{outlier} flags the records of outlier cells in the raster approximation
 (species of 10,000 records or more, or \code{thinning = TRUE}); in
 CoordinateCleaner 3.0.1 that path never flags a record.

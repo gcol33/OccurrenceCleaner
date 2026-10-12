@@ -8,7 +8,6 @@ test_that("flag layout is versioned and consistent", {
   cc <- ft$source == "CoordinateCleaner"
   expect_true(all(grepl("^c[cfd]_", ft$equivalent[cc])))
   expect_true(all(is.na(ft$equivalent[!cc])))
-  expect_true(all(default_tests() %in% ft$test))
 })
 
 test_that("flag_mask and has_flag follow the layout", {
@@ -38,4 +37,76 @@ test_that("column resolution is exact first, then case-insensitive", {
   expect_error(resolve_columns(cols, c("Species", "SPECIES"), "species"), "not found")
   expect_error(resolve_columns(cols, c("x", "y"), c("lon")), "set it with occ_columns")
   expect_identical(resolve_columns(cols, "x", "id", optional = "id"), list())
+})
+
+test_that("without tests, every test whose columns are present runs", {
+  x <- data.frame(species = c("a", "a", "b"), decimalLongitude = c(12.58, 0, 16.37),
+                  decimalLatitude = c(55.67, 0, 48.21))
+  p <- test_plan(x)
+  expect_identical(p$test, flag_tests()$test)
+  expect_true(all(c("invalid", "capital", "urban", "aohi", "duplicate", "outlier") %in% p$test[p$run]))
+  expect_false(any(c("country_mismatch", "issue_rounded", "basis_fossil", "age_equal",
+                     "dataset_ddmm", "sea_nonmarine", "range") %in% p$test[p$run]))
+  expect_identical(p$reason[p$test == "country_mismatch"], "no column `countryCode`")
+  expect_identical(p$reason[p$test == "range"], "no range polygons in `gazetteers`")
+  expect_true(all(is.na(p$reason[p$run])))
+  f <- flag_occurrences(x)
+  expect_identical(attr(f, "occ_tests"), p$test[p$run])
+  expect_identical(test_plan(f), p)
+  expect_identical(test_plan(f[1:2, ]), p)
+  expect_identical(p$missing[p$test == "country_mismatch"], "countryCode")
+  expect_identical(p$missing[p$test == "age_outlier"], "min_ma, max_ma")
+  expect_output(print(f), "not run, missing input: countryCode, issue, basisOfRecord", fixed = TRUE)
+  expect_true(all(paste0("flag_", p$test[p$run]) %in% names(f)))
+})
+
+test_that("columns named through occ_columns widen the plan", {
+  x <- data.frame(sp = "a", x = 16.37, y = 48.21, cc = "AT", basisOfRecord = "FOSSIL_SPECIMEN")
+  p <- test_plan(x, columns = occ_columns(lon = "x", lat = "y", species = "sp", country = "cc"))
+  expect_true(all(c("capital", "duplicate", "country_mismatch", "basis_fossil") %in% p$test[p$run]))
+  f <- flag_occurrences(x, columns = occ_columns(lon = "x", lat = "y", species = "sp", country = "cc"))
+  expect_true(f$flag_basis_fossil)
+})
+
+test_that("named tests run as named; a missing column is still an error", {
+  x <- data.frame(decimalLongitude = c(16.37, 0), decimalLatitude = c(48.21, 0))
+  f <- flag_occurrences(x, tests = c("zero", "capital"))
+  p <- test_plan(f)
+  expect_identical(p$test[p$run], c("zero", "capital"))
+  expect_true(all(p$reason[!p$run] == "not requested"))
+  expect_false(any(grepl("not run", capture.output(print(f)))))
+  expect_error(flag_occurrences(x, tests = "duplicate"), "species")
+  expect_error(flag_occurrences(x, tests = character()), "character vector")
+})
+
+test_that("an input no test can read is an error", {
+  expect_error(flag_occurrences(data.frame(a = 1)), "no test can run.*decimalLongitude")
+  y <- data.frame(taxon = "a", decimalLongitude = 16.37, decimalLatitude = 48.21)
+  f <- flag_occurrences(y)
+  expect_false(any(c("duplicate", "outlier") %in% attr(f, "occ_tests")))
+  expect_output(print(f), "missing input: countryCode, species, issue", fixed = TRUE)
+})
+
+test_that("streamed input records its plan; a single-run node leaves out the grouped tests", {
+  skip_if_not_installed("vectra")
+  src <- tempfile("plan"); dir.create(src)
+  d <- data.frame(species = c("a", "a", "b"), decimalLongitude = c(12.58, 0, 16.37),
+                  decimalLatitude = c(55.67, 0, 48.21), datasetKey = "d1")
+  vectra::write_vtr(d, file.path(src, "a.vtr"))
+  p <- test_plan(src)
+  expect_true(all(c("outlier", "dataset_ddmm") %in% p$test[p$run]))
+  out <- tempfile("out")
+  res <- flag_occurrences(src, out = out, verbose = FALSE)
+  expect_identical(res$tests, p$test[p$run])
+  expect_identical(test_plan(res), p)
+  expect_identical(test_plan(out), p)
+  expect_output(print(res), "not run:   missing input: countryCode")
+  out2 <- tempfile("out")
+  res2 <- flag_occurrences(vectra::tbl(file.path(src, "a.vtr")), out = out2, verbose = FALSE)
+  p2 <- test_plan(res2)
+  expect_false(any(c("outlier", "dataset_ddmm") %in% p2$test[p2$run]))
+  expect_match(p2$reason[p2$test == "outlier"], "more than once")
+  expect_true("capital" %in% res2$tests)
+  expect_error(test_plan(vectra::tbl(file.path(src, "a.vtr"))), "read only once")
+  unlink(c(src, out, out2), recursive = TRUE)
 })

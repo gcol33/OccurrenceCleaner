@@ -19,7 +19,6 @@
 <url><loc>https://gillescolling.com/OccurrenceCleaner/LICENSE.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/news/index.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.html</loc></url>
-<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/default_tests.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/download_reference.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/flag_mask.html</loc></url>
@@ -56,6 +55,7 @@
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_institution.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_invalid.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_outlier.html</loc></url>
+<url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_plan.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_range.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html</loc></url>
 <url><loc>https://gillescolling.com/OccurrenceCleaner/reference/test_spatiotemporal_outlier.html</loc></url>

@@ -16,19 +16,8 @@ in the article on custom gazetteers, and `aohi` in the article on
 outliers and dataset tests. Each test also has a help page of its own
 ([`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md),
 [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.md),
-…).
-
-## Installation
-
-``` r
-
-# install.packages("pak")
-pak::pak("gcol33/OccurrenceCleaner")
-```
-
-Needs a C++ compiler;
-[Installation](https://gillescolling.com/OccurrenceCleaner/#installation)
-shows how to set one up.
+…). Installation is covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 ``` r
 
@@ -96,8 +85,6 @@ CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordina
 The remaining tests use GBIF’s `issue`, `basisOfRecord` and
 `establishmentMeans` fields, or compare the land polygons with the
 habitat of the record’s genus (`sea_nonmarine`, `land_marine`).
-[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md)
-lists the tests that require only coordinates and a species name.
 
 A record’s flag word is the sum of `2^bit` over the tests it fails, so a
 word of 10 (`2^1 + 2^3`) means `zero` and `capital`.
@@ -119,19 +106,23 @@ redefined test) increases the version, and flags written to disk record
 the version they were made with, so a stored flag word is never read
 against the wrong layout.
 
-Tests run only when asked for, through `tests`. Without the argument,
+Without `tests`,
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-runs
-[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
-the CoordinateCleaner-equivalent tests that need only coordinates and a
-species:
+runs every test whose columns are in the data, and `range` when range
+polygons are given. `tests` names a subset instead.
+[`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
+lists, for a table, which tests would run and the missing input of each
+other test:
 
 ``` r
 
-default_tests()
-#> [1] "invalid"           "zero"              "equal"            
-#> [4] "capital"           "centroid"          "institution"      
-#> [7] "gbif_headquarters" "sea"               "duplicate"
+x <- data.frame(species = "a", decimalLongitude = 16.37, decimalLatitude = 48.21)
+p <- test_plan(x)
+p$test[p$run]
+#>  [1] "invalid"           "zero"              "equal"            
+#>  [4] "capital"           "centroid"          "institution"      
+#>  [7] "gbif_headquarters" "sea"               "urban"            
+#> [10] "duplicate"         "outlier"           "aohi"
 ```
 
 ## Coordinate validity: `invalid`
@@ -369,13 +360,12 @@ apart.
 ## Urban areas: `urban`
 
 `urban` flags records inside the Natural Earth 1:50 million urban-area
-polygons. It is not in
-[`default_tests()`](https://gillescolling.com/OccurrenceCleaner/reference/default_tests.md),
-as in
+polygons. It runs whenever coordinates are present. Records in cities
+are often correct, so a rule can leave `urban` out; as a separate column
+it can remove garden and street-tree records of plants.
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html),
-because records in cities are often correct; it is useful as a separate
-column, for example to remove garden and street-tree records of plants:
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
+leaves this test out by default:
 
 ``` r
 

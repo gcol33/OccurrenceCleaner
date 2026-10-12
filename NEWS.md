@@ -1,5 +1,7 @@
 # OccurrenceCleaner 0.2.0
 
+* Without `tests`, `flag_occurrences()` runs every test whose inputs are available: the columns each test reads, and range polygons for `range`. Running a test only adds flags; which records to exclude stays a cleaning rule chosen afterwards. `default_tests()` is removed; name CoordinateCleaner's set explicitly when it is wanted.
+* `test_plan()` lists, for an input, the tests that would run and why each other test would not, and for flag output the tests that ran and why the others did not. Flagged data frames (attribute `occ_test_plan`) and on-disk output (`flags_meta.rds`) record it, and `print()` names the tests that could not run.
 * `gentiana`: the 33,025 GBIF records of the genus *Gentiana* in Austria under CC0 or CC BY 4.0 from the snapshot of 2026-10-01, for examples and the case study of the package paper.
 * `print()` methods for `occ_flags` (a header and the first records, with the tests each failed), `occ_tally` (records removed and kept per rule) and `occ_columns`; `occ_flagged` prints its reference on one line. `summary()` stays the full per-test report.
 * `has_flag()` takes a flagged data frame as well as the flag words.
@@ -9,6 +11,9 @@
 * `plot()` keeps a label on every bar however many tests a rule holds; the map takes `xlim` and `ylim`.
 
 ## Streamed input
+* `duplicate` compares each record with every record before it in the whole input, on disk as in a data frame: streamed input gets the same flags as the same records in one data frame, in file and row order. Earlier versions compared records within one chunk at a time, so copies in different chunks or files were missed. `duplicate` is now a grouped test: it buckets a 124-bit hash of each record's key on disk and needs a path rather than a single-run `vectra_node`.
+* A streamed run records its configuration in `out/flags_config.rds` before writing any output (tests, columns, `keep`, reference, buffers, settings, duplicate options, package version, and each input file's size and modification time); a later call into the same `out` must match it, or it stops and names what differs. Earlier versions checked only the tests, layout and reference, and only after a run had finished.
+* The group stage checkpoints its state in `out/.group` after a file or a bucket once five minutes have passed and at the end of each pass, so an interrupted run resumes from the last checkpoint. Its hits are stored on disk by file and block of rows, and the record pass reads one block at a time; the bucket count grows with the input, and a bucket too large for memory is split further.
 * Files on disk are read with only the columns the tests, `keep` and `duplicate_by` use, in the record pass and in the group pass.
 * The group pass counts species with summed per-chunk tables, tallies large species with one split per chunk, holds bucket rows in memory and writes them in batches, and computes the exact outlier distances once per pair. On three GBIF snapshot files (1.9 million records) the group pass takes 101 s instead of 344 s.
 * A `vectra_node` given as input runs once, so the grouped tests, which read the input more than once, stop with a message asking for the path instead.

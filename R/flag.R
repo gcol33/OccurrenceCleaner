@@ -1,14 +1,22 @@
 #' Flag occurrence records
 #'
-#' Runs a set of record tests over species occurrence records and writes one
-#' flag per record per test. Nothing is removed and no threshold is baked in: a
-#' cleaning rule is a set of tests, applied afterwards with [has_flag()] or
-#' summarised with [tally_flags()].
+#' Runs record tests over species occurrence records and writes one flag per
+#' record per test. Nothing is removed and no threshold is baked in.
 #'
-#' The grouped tests (`outlier`, the three fossil outlier tests and the two
-#' dataset tests) compare a record with the other records of its species,
-#' taxon or dataset; they run in a pass over the whole input before the record
-#' tests, which on streamed input reads every file once or twice more.
+#' Two choices are kept apart. Which tests run: by default every test whose
+#' inputs are available, so a screening sees every potential problem the
+#' columns allow; [test_plan()] lists the tests that ran and the reason each
+#' other test did not. Which records are excluded: a cleaning rule, a set of
+#' tests chosen afterwards and applied with [has_flag()] or compared with
+#' [tally_flags()]. A rule for species distribution modelling might exclude
+#' fossil and living specimens along with the coordinate problems; a study of
+#' fossil ranges would keep the fossils and exclude other flags.
+#'
+#' The grouped tests (`duplicate`, `outlier`, the three fossil outlier tests
+#' and the two dataset tests) compare a record with the other records of its
+#' key, species, taxon or dataset; they run in a group stage before the record
+#' tests, which on streamed input reads every file once or twice more and
+#' keeps its buckets and results in `out/.group`.
 #'
 #' The input is either a data frame, or an on-disk table streamed in chunks: a
 #' `vectra_node` (from `vectra::tbl_parquet()`, `vectra::tbl_csv()`,
@@ -16,6 +24,32 @@
 #' (such as a GBIF snapshot), or a path to a `.vtr` or delimited text file. For
 #' a directory each file is one resumable unit of work; the return follows the
 #' input, see Value.
+#'
+#' @section Streamed runs:
+#' Before writing any output, a run records its configuration in
+#' `out/flags_config.rds`: the tests, columns, `keep`, reference, buffers,
+#' settings, duplicate options, package version, and each input file with its
+#' size and modification time. A later call into the same `out` must match the
+#' record, or it stops and names what differs; `resume = FALSE` clears the
+#' directory instead. Sizes and modification times detect a replaced, grown or
+#' touched file; they are not a hash of the contents.
+#'
+#' The group stage checkpoints its state after a file or a bucket whenever
+#' five minutes have passed, and at the end of each pass, so an interruption
+#' repeats at most the work since the last checkpoint. The record pass writes
+#' a `.done` marker per input file; an interruption there repeats the file in
+#' progress.
+#'
+#' Memory in the record pass is one input chunk, up to `part_rows` buffered
+#' output rows and the group-test hits of the current block of 2^20 rows. The
+#' group stage holds two million bucketed rows before writing them (more
+#' above four billion records), the per-species record counts, per-dataset
+#' histograms and raster cell counts of large species, the duplicate keys of
+#' one bucket (at most four million records on average when the input has more
+#' than 256 million), and the records of one species (fewer
+#' than 10,000 for the exact outlier test) or one fossil taxon. Its disk use is
+#' at most 24 bytes per record for `duplicate`, plus the coordinates of the
+#' records of the outlier and fossil tests.
 #'
 #' @section Tests:
 #' See [flag_tests()] for the layout. Tests equivalent to [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) use
@@ -42,8 +76,6 @@
 #'   `ISO_A3` hold `-99` (France, Norway, Kosovo); CoordinateCleaner compares
 #'   `ISO_A3` only, so it flags every record in France and Norway.
 #'   Records without a code, or at sea, are flagged as in CoordinateCleaner.
-#' * `duplicate` on streamed input is evaluated within each input file (Parquet
-#'   part), not across the whole table.
 #' * `outlier` flags the records of outlier cells in the raster approximation
 #'   (species of 10,000 records or more, or `thinning = TRUE`); in
 #'   CoordinateCleaner 3.0.1 that path never flags a record.
@@ -59,8 +91,10 @@
 #'   arguments of CoordinateCleaner's functions do.
 #'
 #' @param x A data frame, a `vectra_node`, or a path (file or directory).
-#' @param tests Character vector of test names, see [flag_tests()]. Default
-#'   [default_tests()]. A test whose fields are missing from `x` is an error.
+#' @param tests Character vector of test names, see [flag_tests()]. `NULL`
+#'   (the default) runs every test whose columns are in `x` (and `range` when
+#'   `gazetteers` has range polygons); see [test_plan()]. A named test whose
+#'   columns are missing from `x` is an error.
 #' @param columns Field names, see [occ_columns()].
 #' @param reference `"OccurrenceCleaner"` (own gazetteers, the default) or
 #'   `"CoordinateCleaner"` (that package's tables, read at run time). See
@@ -108,12 +142,14 @@
 #' @param part_rows Target rows per output part file for streamed input: a
 #'   part is written once at least this many rows have accumulated, and at the
 #'   end of each input unit.
-#' @param resume Skip input units whose output already exists.
+#' @param resume Continue a run in `out`: skip input files whose `.done`
+#'   marker exists and resume the group stage from its checkpoint. `FALSE`
+#'   deletes the earlier output in `out` and starts over.
 #' @param verbose Report progress for streamed input.
 #' @return For a data frame: `x` with an integer column `flags` and one logical
 #'   column `flag_<test>` per test, class `occ_flags` added in front, and
-#'   attributes `occ_tests`, `occ_layout_version`, `occ_reference` and
-#'   `occ_columns`. [summary()][summary.occ_flags] reports the share of records
+#'   attributes `occ_tests`, `occ_test_plan`, `occ_layout_version`,
+#'   `occ_reference` and `occ_columns`. [summary()][summary.occ_flags] reports the share of records
 #'   each test flags, [plot()][plot.occ_flags] draws it or maps the records. For streamed input: an object of
 #'   class `occ_flagged` describing the output directory, which [tally_flags()]
 #'   accepts; the parts are `.vtr` files holding the `id` and `keep` columns and
@@ -132,21 +168,37 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
                              verbose = TRUE) {
-  tests <- check_tests(tests)
-  reference <- match.arg(reference)
-  if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
-  if ("range" %in% tests && is.null(gazetteers$range))
-    stop("the range test needs species range polygons: gazetteers = list(range = <sf>)")
-  custom <- prepare_gazetteers(gazetteers, columns)
-  cfg <- list(tests = tests, columns = columns, reference = reference, land_scale = land_scale,
-              buffers = check_buffers(buffers), settings = check_settings(settings),
-              duplicate_by = duplicate_by,
-              duplicate_cell = duplicate_cell, custom = custom$index,
-              layout_version = .layout_version,
-              reference_label = reference_label(reference, land_scale, custom$label))
-  if (is.data.frame(x)) return(flag_df(x, cfg))
+  cfg <- flag_config(tests, columns, match.arg(reference), gazetteers, land_scale, buffers, settings,
+                     duplicate_by, duplicate_cell)
+  if (is.data.frame(x)) {
+    if (is.null(tests)) cfg <- apply_plan(cfg, plan_tests(names(x), columns, cfg$has_range))
+    return(flag_df(x, cfg))
+  }
   flag_stream(x, cfg, out = out, keep = keep, part_rows = part_rows, resume = resume,
               verbose = verbose)
+}
+
+# The validated configuration of a call: tests, columns, reference layers and
+# the settings of the tests.
+flag_config <- function(tests = NULL, columns = occ_columns(), reference = "OccurrenceCleaner",
+                        gazetteers = NULL, land_scale = 110, buffers = NULL, settings = NULL,
+                        duplicate_by = NULL, duplicate_cell = NULL) {
+  if (!is.null(tests)) {
+    tests <- check_tests(tests)
+    if ("range" %in% tests && is.null(gazetteers$range))
+      stop("the range test needs species range polygons: gazetteers = list(range = <sf>)")
+  }
+  if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
+  if (!inherits(columns, "occ_columns")) stop("`columns` must come from occ_columns()")
+  custom <- prepare_gazetteers(gazetteers, columns)
+  list(tests = tests, plan = if (!is.null(tests)) requested_plan(tests),
+       has_range = !is.null(gazetteers$range),
+       columns = columns, reference = reference, land_scale = land_scale,
+       buffers = check_buffers(buffers), settings = check_settings(settings),
+       duplicate_by = duplicate_by,
+       duplicate_cell = duplicate_cell, custom = custom$index,
+       layout_version = .layout_version,
+       reference_label = reference_label(reference, land_scale, custom$label))
 }
 
 .default_buffers <- list(capital = 10000, centroid = 1000, institution = 100,
@@ -173,11 +225,12 @@ flag_df <- function(x, cfg) {
   r <- flag_chunk(x, cfg, cols)
   if (any(cfg$tests %in% .group_tests)) {
     g <- group_pass(list(list(name = "data", open = function() x)), cfg, cols)
-    r$flags <- bitwOr(r$flags, group_bits(g, x, 1L, 1L, cols))
+    r$flags <- bitwOr(r$flags, group_bits(g, x, 1L, 1L, cols, hits_reader(g$hits)))
   }
   x$flags <- r$flags
   for (t in cfg$tests) x[[paste0("flag_", t)]] <- has_flag(r$flags, t)
   attr(x, "occ_tests") <- cfg$tests
+  attr(x, "occ_test_plan") <- cfg$plan
   attr(x, "occ_layout_version") <- cfg$layout_version
   attr(x, "occ_reference") <- cfg$reference_label
   attr(x, "occ_columns") <- cfg$columns
@@ -196,7 +249,7 @@ flag_chunk <- function(d, cfg, cols) {
   }
   spatial <- intersect(tests, c("invalid", "zero", "equal", "capital", "centroid", "institution",
                                 "gbif_headquarters", "sea", "urban", "country_mismatch",
-                                "duplicate", "range", "aohi", .habitat_tests))
+                                "range", "aohi", .habitat_tests))
   if (length(spatial)) {
     lon <- to_numeric(d[[cols$lon]])
     lat <- to_numeric(d[[cols$lat]])
@@ -261,18 +314,6 @@ flag_chunk <- function(d, cfg, cols) {
         hit[i] <- !inside
       }
       set_bit("range", hit)
-    }
-    if ("duplicate" %in% tests) {
-      kx <- lon; ky <- lat
-      if (!is.null(cfg$duplicate_cell)) {
-        kx <- floor(lon / cfg$duplicate_cell); ky <- floor(lat / cfg$duplicate_cell)
-      }
-      key <- data.frame(kx, ky, as.character(d[[cols$species]]), stringsAsFactors = FALSE)
-      for (extra in cfg$duplicate_by) {
-        if (!extra %in% names(d)) stop("`duplicate_by` column `", extra, "` not found in the input")
-        key[[extra]] <- d[[extra]]
-      }
-      set_bit("duplicate", ok & duplicated(key))
     }
   }
   issue_tests <- intersect(tests, c("issue_coordinate", "issue_taxon", "issue_date", "issue_rounded"))
