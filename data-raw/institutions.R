@@ -664,13 +664,15 @@ co <- co[co$institution_key %in% institutions$key, ]
 ih_in <- ih_ok & (ih$code %in% institutions$code | paste0("ih:", ih$irn) %in% institutions$key)
 ih_o <- ih_blank(ih$organization); ih_dv <- ih_blank(ih$division); ih_dp <- ih_blank(ih$department)
 ih_hn <- ih_blank(ih$herbariumName)
+ih_key <- ifelse(paste0("ih:", ih$irn) %in% institutions$key, paste0("ih:", ih$irn),
+                 institutions$key[match(ih$code, institutions$code)])[ih_in]
 known <- rbind(
-  data.frame(iso2 = institutions$country, name = institutions$name),
-  data.frame(iso2 = rep(d$country[keep], lengths(g_add)), name = unlist(g_add)),
-  data.frame(iso2 = co$country, name = c(co$name, paste_some(co$institution_name, co$name))),
+  data.frame(iso2 = institutions$country, name = institutions$name, key = institutions$key),
+  data.frame(iso2 = rep(d$country[keep], lengths(g_add)), name = unlist(g_add), key = rep(d$key[keep], lengths(g_add))),
+  data.frame(iso2 = co$country, name = c(co$name, paste_some(co$institution_name, co$name)), key = co$institution_key),
   data.frame(iso2 = ih$iso2[ih_in], name = c(paste_some(ih_o, ih_dv)[ih_in], paste_some(ih_o, ih_dp)[ih_in],
                                              paste_some(ih_o, ih_dv, ih_dp)[ih_in], paste_some(ih_o, ih_hn)[ih_in],
-                                             ih_hn[ih_in], paste_some(ih_o, ih_dp, ih_dv)[ih_in])))
+                                             ih_hn[ih_in], paste_some(ih_o, ih_dp, ih_dv)[ih_in]), key = ih_key))
 known <- known[!is.na(known$name) & nzchar(known$name), ]
 cc_open <- cc[!paste(cc$iso2, ascii_key(cc$name)) %in% paste(known$iso2, ascii_key(known$name)), ]
 
@@ -734,9 +736,9 @@ nominatim <- function(q, iso2) {
 # Nominatim also returns loose matches; a result is taken when its name holds
 # at least half the words of the institution's name (before the first comma),
 # or when it lies within 25 km of CoordinateCleaner's point.
-name_words <- function(s) setdiff(strsplit(ascii_key(s), " ")[[1]],
-                                  c("the", "of", "and", "de", "la", "del", "des", "du", "di", "der", "und", "e", "y",
-                                    "et", "for", "at", "in", "d", "l", ""))
+name_stop <- c("the", "of", "and", "de", "la", "del", "des", "du", "di", "der", "und", "e", "y", "et", "for", "at",
+               "in", "d", "l", "")
+name_words <- function(s) setdiff(strsplit(ascii_key(s), " ")[[1]], name_stop)
 km_to <- function(lon, lat, x, y) 6371.0088 * 2 * asin(sqrt(sin((y - lat) * pi / 360)^2 +
   cos(lat * pi / 180) * cos(y * pi / 180) * sin((x - lon) * pi / 360)^2))
 cc_osm <- function(r) {
@@ -834,6 +836,138 @@ coordinatecleaner <- coordinatecleaner[!paste(coordinatecleaner$lon, coordinatec
                                          paste(institutions$lon, institutions$lat), ]
 
 institutions <- rbind(institutions, coordinatecleaner)
+
+# Location check against OpenStreetMap. For every institution of
+# CoordinateCleaner's table, the named OpenStreetMap feature of that
+# institution (university, college, research institute or office, museum, zoo,
+# aquarium, botanical garden) within 25 km of CoordinateCleaner's point is the
+# reference: when CoordinateCleaner's point lies closer to the feature's extent
+# than every point of this table that stands for the institution, the
+# feature's own point is added.
+osm_tags <- c("amenity=university", "amenity=college", "amenity=research_institute", "office=research",
+              "tourism=museum", "tourism=zoo", "tourism=aquarium", "garden:type=botanical")
+osm_retrieved <- "2026-10-13"
+osm_files <- file.path(cache, paste0("osm_", sub("=", "_", sub(":", "_", osm_tags)), ".json"))
+for (k in seq_along(osm_tags)) if (!file.exists(osm_files[k])) {
+  kv <- strsplit(osm_tags[k], "=")[[1]]
+  q <- sprintf('[out:json][timeout:800];nwr["%s"="%s"]["name"];out tags center bb;', kv[1], kv[2])
+  r <- curl::curl_fetch_disk("https://overpass-api.de/api/interpreter", osm_files[k],
+                             handle = curl::handle_setform(curl::new_handle(useragent = ua, timeout = 900), data = q))
+  stopifnot(r$status_code == 200, is.null(jsonlite::fromJSON(osm_files[k])$remark))
+}
+osm_name_tag <- "^(name|official_name|alt_name|short_name|old_name|int_name|loc_name)(:.*)?$"
+osm <- do.call(rbind, lapply(osm_files, function(f) {
+  el <- jsonlite::fromJSON(f, simplifyVector = FALSE)$elements
+  pt <- function(e, a) as.numeric(if (!is.null(e[[a]])) e[[a]] else if (!is.null(e$center)) e$center[[a]] else NA)
+  bb <- function(e, a, b) {
+    v <- if (is.null(e$bounds)) e[[b]] else e$bounds[[a]]
+    if (is.null(v)) NA_real_ else as.numeric(v)
+  }
+  data.frame(
+    key = vapply(el, function(e) paste0("osm:", e$type, "/", e$id), character(1)),
+    name = vapply(el, function(e) e$tags$name, character(1)),
+    names = vapply(el, function(e) {
+      t <- e$tags[grepl(osm_name_tag, names(e$tags))]
+      paste(unique(trimws(unlist(strsplit(unlist(t), ";", fixed = TRUE)))), collapse = "|")
+    }, character(1)),
+    lon = vapply(el, pt, numeric(1), "lon"),
+    lat = vapply(el, pt, numeric(1), "lat"),
+    xmin = vapply(el, bb, numeric(1), "minlon", "lon"),
+    xmax = vapply(el, bb, numeric(1), "maxlon", "lon"),
+    ymin = vapply(el, bb, numeric(1), "minlat", "lat"),
+    ymax = vapply(el, bb, numeric(1), "maxlat", "lat"),
+    stringsAsFactors = FALSE)
+}))
+# A relation without a centre is placed at the middle of its extent.
+mid <- is.na(osm$lon) & valid_xy(osm$xmin, osm$ymin) & valid_xy(osm$xmax, osm$ymax)
+osm$lon[mid] <- (osm$xmin[mid] + osm$xmax[mid]) / 2
+osm$lat[mid] <- (osm$ymin[mid] + osm$ymax[mid]) / 2
+osm <- osm[!duplicated(osm$key) & valid_xy(osm$lon, osm$lat), ]
+rownames(osm) <- NULL
+
+# A feature is the institution when every distinctive word of one of its names
+# (a word that is not a generic word for an institution, a field or a place
+# rank) occurs in CoordinateCleaner's name, and its distinctive words cover at
+# least half of those of CoordinateCleaner's name; a name of generic words only
+# has to equal the part before the first comma. Of several such features the
+# one sharing most words wins, then the one nearest CoordinateCleaner's point.
+generic_words <- c(
+  "university", "universidad", "universidade", "universite", "universita", "universitat", "universiteit",
+  "uniwersytet", "univ", "college", "colegio", "faculty", "facultad", "faculdade", "school", "escuela", "national",
+  "nacional", "nationale", "nazionale", "state", "estatal", "federal", "museum", "museo", "musee", "museu", "muzeum",
+  "museet", "natural", "naturales", "naturelle", "naturale", "history", "historia", "histoire", "naturkunde",
+  "science", "sciences", "ciencias", "scientific", "botanical", "botanic", "botanico", "botanique", "botanischer",
+  "garden", "gardens", "jardin", "jardim", "giardino", "garten", "hortus", "arboretum", "herbarium", "herbario",
+  "herbier", "herbar", "zoo", "zoological", "zoologico", "zoologique", "zoologischer", "aquarium", "institute",
+  "institut", "instituto", "istituto", "research", "investigacion", "investigaciones", "pesquisa", "pesquisas",
+  "recherche", "centre", "center", "centro", "station", "estacion", "laboratory", "laboratorio", "department",
+  "departamento", "departement", "dept", "division", "section", "unit", "agricultural", "agriculture", "forest",
+  "forestry", "fisheries", "marine", "biology", "biological", "biologia", "botany", "zoology", "geology", "society",
+  "foundation", "fundacion", "campus", "city", "municipal", "regional", "provincial", "academy", "academia",
+  "royal", "ministry", "public", "park", "parque", "parc", "i", "ii", "iii")
+osm_names <- strsplit(osm$names, "|", fixed = TRUE)
+osm_flat <- lapply(strsplit(ascii_key(unlist(osm_names)), " ", fixed = TRUE), setdiff, name_stop)
+osm_words <- split(osm_flat, rep(seq_len(nrow(osm)), lengths(osm_names)))
+osm_cell <- function(lat, lon) paste(floor(lat / 0.25), floor(lon / 0.25))
+osm_cells <- split(seq_len(nrow(osm)), osm_cell(osm$lat, osm$lon))
+osm_near <- function(lon, lat, km) {
+  dy <- ceiling(km / 111 / 0.25)
+  dx <- min(720, ceiling(km / (111 * max(cos(lat * pi / 180), 0.01)) / 0.25))
+  i <- floor(lat / 0.25) + (-dy:dy)
+  j <- (floor(lon / 0.25) + (-dx:dx) + 720) %% 1440 - 720
+  f <- unlist(osm_cells[paste(rep(i, each = length(j)), rep(j, length(i)))], use.names = FALSE)
+  f[km_to(lon, lat, osm$lon[f], osm$lat[f]) <= km]
+}
+osm_extent_km <- function(lon, lat, f) km_to(lon, lat, pmin(pmax(lon, osm$xmin[f]), osm$xmax[f]),
+                                            pmin(pmax(lat, osm$ymin[f]), osm$ymax[f]))
+osm_match <- function(r) {
+  f <- osm_near(r$decimalLongitude, r$decimalLatitude, 25)
+  wq <- name_words(r$query); dq <- setdiff(wq, generic_words); wfirst <- name_words(r$first)
+  if (!length(f) || !length(wq)) return(NA_integer_)
+  score <- vapply(f, function(j) max(vapply(osm_words[[j]], function(wf) {
+    df <- setdiff(wf, generic_words)
+    ok <- if (length(df)) all(df %in% wq) && mean(dq %in% df) >= 0.5 else length(wf) && setequal(wf, wfirst)
+    if (ok) sum(wf %in% wq) else 0
+  }, numeric(1))), numeric(1))
+  if (max(score) == 0) return(NA_integer_)
+  best <- f[score == max(score)]
+  best[which.min(osm_extent_km(r$decimalLongitude, r$decimalLatitude, best))]
+}
+# The points of this table that stand for an institution of CoordinateCleaner's
+# table: those it is held under by name, the point placed for it, and points
+# within 25 km sharing at least 60 percent of its name's words.
+held_key <- split(known$key, paste(known$iso2, ascii_key(known$name)))
+inst_words <- lapply(ifelse(is.na(institutions$name), "", institutions$name), name_words)
+cc_points <- function(r) {
+  near <- which(km_to(r$decimalLongitude, r$decimalLatitude, institutions$lon, institutions$lat) <= 25)
+  want <- name_words(r$query)
+  share <- if (length(want)) vapply(near, function(j) mean(want %in% inst_words[[j]]), numeric(1)) else numeric()
+  unique(c(which(institutions$key %in% held_key[[paste(r$iso2, ascii_key(r$name))]]),
+           which(institutions$source == "CoordinateCleaner list" & institutions$name == r$shown &
+                   institutions$country %in% r$iso2),
+           near[share >= 0.6]))
+}
+cc$shown <- gsub("\032", "?", cc$name, useBytes = TRUE)
+cc_check <- do.call(rbind, lapply(seq_len(nrow(cc)), function(i) {
+  r <- cc[i, ]
+  own <- cc_points(r)
+  f <- osm_match(r)
+  d_own <- if (length(own)) min(km_to(r$decimalLongitude, r$decimalLatitude, institutions$lon[own],
+                                      institutions$lat[own])) else Inf
+  data.frame(row = i, feature = f, d_own = d_own,
+             ext_cc = if (is.na(f)) NA else osm_extent_km(r$decimalLongitude, r$decimalLatitude, f),
+             ext_own = if (is.na(f) || !length(own)) NA else
+               min(osm_extent_km(institutions$lon[own], institutions$lat[own], rep(f, length(own)))))
+}))
+cc_fix <- cc_check[!is.na(cc_check$feature) & (is.na(cc_check$ext_own) | cc_check$ext_own > cc_check$ext_cc), ]
+osm_added <- data.frame(key = osm$key[cc_fix$feature], code = NA_character_, name = cc$shown[cc_fix$row],
+                        country = cc$iso2[cc_fix$row], city = cc$city[cc_fix$row],
+                        type = unname(cc_type[cc$type[cc_fix$row]]), active = NA,
+                        master_source = "OpenStreetMap feature of that name", lon = osm$lon[cc_fix$feature],
+                        lat = osm$lat[cc_fix$feature], source = "CoordinateCleaner list", extension = FALSE,
+                        stringsAsFactors = FALSE)
+osm_added <- osm_added[!duplicated(osm_added$key) & !zero_xy(osm_added$lon, osm_added$lat), ]
+institutions <- rbind(institutions, osm_added)
 # A point that only an extension source adds, at coordinates another row
 # already has, adds nothing to the test.
 institutions <- institutions[order(institutions$extension), ]
