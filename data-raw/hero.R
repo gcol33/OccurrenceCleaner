@@ -120,8 +120,10 @@ p <- ggplot() +
   annotation_raster(density, 0, nx, 0, ny, interpolate = FALSE) +
   geom_point(data = flagged, aes(x, y, colour = group, size = n), alpha = 0.75) +
   scale_size_area(max_size = 2.6, trans = "sqrt", guide = "none") +
-  geom_text(data = key, aes(x, y, label = label, colour = group), size = 11,
-            fontface = "bold", hjust = 0.5, lineheight = 0.85) +
+  geom_label(data = key, aes(x, y, label = label, colour = group), size = 11,
+             fontface = "bold", hjust = 0.5, lineheight = 0.85,
+             fill = grDevices::adjustcolor("white", alpha.f = 0.65),
+             linewidth = 0, border.colour = NA, label.r = grid::unit(0.2, "lines")) +
   scale_colour_manual(values = cols, guide = "none") +
   coord_equal(xlim = c(0, nx), ylim = c(0, ny), expand = FALSE) +
   theme_void() +

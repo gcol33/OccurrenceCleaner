@@ -444,7 +444,7 @@ out <- flag_occurrences(src, out = tempfile("flags"),
                         keep = "species", verbose = FALSE)
 out
 #> <occ_flagged> 7 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp0wyG25\flags9868394d273b
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpOIKBLK\flagsae6c2af4c6
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4

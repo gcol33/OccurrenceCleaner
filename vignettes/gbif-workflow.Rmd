@@ -229,9 +229,9 @@ knitr::kable(ladder, row.names = FALSE)
 
 The ladder removes 125 records under `coordinatecleaner` and 274 under `strict`. The country check adds 21, the GBIF warnings 20 and the living and cultivated records 41. `strict` adds the remaining 67 through `duplicate` (42 records, 40 of them the injected copies), `urban` (20) and `aohi` (6), some records carrying more than one; the 20 records with `issue_rounded` are already removed through `issue_taxon`.
 
-For one rule, `plot()` on the summary draws a bar per test: the full bar is the share the test flags, the dark part the share for which it is the only reason the rule removes the record. A test with a long light bar and a short dark one mostly flags records that other tests in the rule remove anyway:
+For one rule, `plot()` on the summary draws a bar per test: the full bar is the share the test flags, the dark part the share for which it is the only reason the rule removes the record. A test with a long light bar and a short dark one mostly flags records that other tests in the rule remove anyway. `invalid` is 0 here because every example record has valid coordinates:
 
-```{r rule-bars, fig.height = 4}
+```{r rule-bars, fig.height = 6}
 plot(summary(f, rules = rules["coordinatecleaner_gbif"]))
 ```
 

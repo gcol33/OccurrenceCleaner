@@ -418,7 +418,8 @@ For one rule, [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 on the summary draws a bar per test: the full bar is the share the test
 flags, the dark part the share for which it is the only reason the rule
 removes the record. A test with a long light bar and a short dark one
-mostly flags records that other tests in the rule remove anyway:
+mostly flags records that other tests in the rule remove anyway.
+`invalid` is 0 here because every example record has valid coordinates:
 
 ``` r
 
