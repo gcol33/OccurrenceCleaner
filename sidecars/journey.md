@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and a full snapshot (billions of records in 288 GB of Parquet files) processed on a desktop computer in a single R process, files read in chunks so memory stays bounded whatever the dataset size, no cluster, interrupted runs resume, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 18,245 institution locations, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and a full snapshot (billions of records in 288 GB of Parquet files) processed on a desktop computer in a single R process, files read in chunks so memory stays bounded whatever the dataset size, no cluster, interrupted runs resume, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 23,895 institution locations holding every institution of CoordinateCleaner's list, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -564,7 +564,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.vs-cc  [A1 A5]  (section)
 - idea: same places, different tables
-- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: BGCI gardens with BGCI's own coordinates where CoordinateCleaner geocoded them, with measured coverage; Wikipedia and GeoNames rows rebuilt from their sources), and shows the capital difference in flags.
+- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: every institution of CoordinateCleaner's list held, by name or placed from Wikidata, OpenStreetMap or GeoNames, counted by how; its own geocoded points against the source points, with measured coverage), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.extension  [A1 A5]  (section)
@@ -590,7 +590,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### ref.choose  [A1 A5]  (section)
 - idea: which reference to use
 - job: Says when to use each reference; `reference = "CoordinateCleaner"` uses its own tables, needs it installed, and reproduces its flags subject to the documented differences.
-- leaves: own gazetteers (Natural Earth, Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI) by default; CoordinateCleaner's to compare with published work
+- leaves: own gazetteers (Natural Earth, Factbook, World Borders, GEOLocate, GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry, OpenStreetMap) by default; CoordinateCleaner's to compare with published work
 
 ## Outliers and dataset tests (how-to, A6 home)
 
@@ -718,7 +718,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### gaz.points  [A5]  (section)
 - idea: reference_points returns a test's points
 - job: Shows the shipped capital and institution points with their attributes.
-- leaves: `reference_points()`; institution `source` (GRSciColl, Wikidata, BGCI or GeoNames), `type` and `master_source`
+- leaves: `reference_points()`; institution `source` (GRSciColl, Wikidata, Wikipedia, BGCI, GeoNames, Index Herbariorum, GBIF registry or CoordinateCleaner list), `type` and `master_source`
 
 ### gaz.filtered  [A5]  (section)
 - idea: herbaria only, wider buffer

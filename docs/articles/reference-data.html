@@ -124,10 +124,10 @@ covered in <a href="OccurrenceCleaner.html">Get started</a>.</p>
 <span><span class="va">ri</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_info.html">reference_info</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="15%">
-<col width="30%">
-<col width="17%">
-<col width="36%">
+<col width="16%">
+<col width="47%">
+<col width="11%">
+<col width="24%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Layer</th>
@@ -233,12 +233,31 @@ covered in <a href="OccurrenceCleaner.html">Get started</a>.</p>
 <td align="left"><span style="white-space: nowrap">2026-10-10</span></td>
 </tr>
 <tr class="odd">
+<td align="left">institutions_index_herbariorum</td>
+<td align="left">Index Herbariorum (New York Botanical Garden)</td>
+<td align="left">2026-10-13</td>
+<td align="left"><span style="white-space: nowrap">2026-10-13</span></td>
+</tr>
+<tr class="even">
+<td align="left">institutions_gbif_registry</td>
+<td align="left">GBIF registry, publishing organisations</td>
+<td align="left">2026-10-13</td>
+<td align="left"><span style="white-space: nowrap">2026-10-13</span></td>
+</tr>
+<tr class="odd">
+<td align="left">institutions_coordinatecleaner_list</td>
+<td align="left">CoordinateCleaner 3.0.1 institution list, placed by
+Wikidata, OpenStreetMap (Nominatim) and GeoNames</td>
+<td align="left">3.0.1</td>
+<td align="left"><span style="white-space: nowrap">2026-10-13</span></td>
+</tr>
+<tr class="even">
 <td align="left">aohi</td>
 <td align="left">AHOI (Park et al. 2023)</td>
 <td align="left">2022-10-10</td>
 <td align="left"><span style="white-space: nowrap">2026-10-10</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">habitat</td>
 <td align="left">IRMNG (Rees 2026)</td>
 <td align="left">2026-10-06</td>
@@ -260,8 +279,8 @@ the download URL, the SHA-256 checksum of the source file and the
 licence. The tests read these layers:</p>
 <table class="table">
 <colgroup>
-<col width="11%">
-<col width="88%">
+<col width="6%">
+<col width="93%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">test</th>
@@ -284,8 +303,10 @@ and label points, admin-1 label points</td>
 <td align="left">institution</td>
 <td align="left">GBIF GRSciColl institutions, Wikidata botanical
 gardens, natural history museums, zoos, aquaria and herbaria, museums of
-Wikipedia’s lists of natural history museums, and BGCI gardens, with
-coordinates</td>
+Wikipedia’s lists of natural history museums, BGCI gardens, Index
+Herbariorum herbaria and GBIF publishing organisations, with
+coordinates, and every further institution of CoordinateCleaner’s table
+placed from Wikidata, OpenStreetMap or GeoNames</td>
 </tr>
 <tr class="even">
 <td align="left">gbif_headquarters</td>
@@ -381,6 +402,34 @@ BGCI terms (<a href="https://www.bgci.org/terms-and-conditions/" class="external
 <code>source</code> column of
 <code>reference_points("institution")</code> says which registry each
 point comes from.</p>
+<p>Two more registries are read whole, both on 2026-10-13. Index
+Herbariorum, the herbarium registry of the New York Botanical Garden,
+gives a location for 4,805 herbaria; the 1,062 that GRSciColl does not
+place under the same herbarium code are added. The GBIF registry gives
+coordinates for 2,468 of its 3,639 publishing organisations, and all of
+them are added.</p>
+<p>Every further institution of CoordinateCleaner’s table with
+coordinates is then placed from its name, city and country. These are
+the institutions that no row above holds under their name, under the
+full Index Herbariorum name of a herbarium, or under an alternative or
+collection name GRSciColl gives. They are looked up in turn:</p>
+<ol style="list-style-type: decimal">
+<li><p>in Wikidata, by the full name or the part before the first
+comma;</p></li>
+<li><p>in OpenStreetMap through Nominatim, taking a result whose name
+holds at least half the institution’s words, or one within 25 km of
+CoordinateCleaner’s point;</p></li>
+<li><p>at the GeoNames populated place of the city CoordinateCleaner or
+GRSciColl lists for it.</p></li>
+</ol>
+<p>When a source returns several candidates, the one nearest
+CoordinateCleaner’s point is taken, but the coordinates are always the
+source’s. An institution none of these places is held when a shipped
+point within 25 km carries at least 60 % of its name’s words. Otherwise
+it gets the populated place named in its name, or, as a last resort, the
+populated place of its country nearest CoordinateCleaner’s point. These
+rows carry <code>source</code> “CoordinateCleaner list”, and
+<code>master_source</code> says how each was placed.</p>
 <p>The genus habitats of <code>sea_nonmarine</code> and
 <code>land_marine</code> come from the Interim Register of Marine and
 Nonmarine Genera (IRMNG), Darwin Core archive of 2026-10-06, under CC BY
@@ -411,9 +460,9 @@ repository.</p>
 but they are not the same tables. Measured on 2026-10-09:</p>
 <table class="table">
 <colgroup>
-<col width="7%">
-<col width="30%">
-<col width="62%">
+<col width="5%">
+<col width="22%">
+<col width="71%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">gazetteer</th>
@@ -445,9 +494,11 @@ centroids and label points marked as extension</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">18,245 (6,080 GRSciColl, without the five at zero
-coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames), of
-which 10,580 from CoordinateCleaner’s sources</td>
+<td align="left">23,895 (6,080 GRSciColl, without the five at zero
+coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames,
+1,062 Index Herbariorum, 2,468 GBIF registry, 2,120 for the rest of
+CoordinateCleaner’s list), of which 16,230 from CoordinateCleaner’s
+sources</td>
 </tr>
 </tbody>
 </table>
@@ -484,33 +535,33 @@ CoordinateCleaner’s rows are shipped points at distance 0. Of the other
 54, 50 lie more than 10 km from any shipped point: 15 hold coordinates
 of older releases that Natural Earth has since changed, and 39 match no
 tagged release.</p></li>
-<li><p><strong>Institutions.</strong> CoordinateCleaner takes 712
-botanic gardens from Botanic Gardens Conservation International (BGCI),
-627 points from Wikipedia and 3 from GeoNames. It geocoded 641 of the
-BGCI gardens itself from their names and addresses, while the package
-takes BGCI’s own coordinates, for 3,652 gardens, and Wikidata’s
-botanical gardens besides; for 87 % of CoordinateCleaner’s BGCI gardens
-a shipped point lies within 1 km and for 96 % within 5 km, though only
-46 % within the 100 m buffer, since the sources mark different spots of
-a garden’s grounds. The Wikipedia rows are rebuilt from the same
-Wikipedia list with Wikidata coordinates, and the GeoNames rows from
-GeoNames. CoordinateCleaner geocoded 398 of its Wikipedia rows by hand,
-to 1 km; the package places the same museums from the list itself, by
-the museum’s Wikidata coordinates or by the town or university the list
-names. For 92 % of the 345 hand-placed rows with coordinates a shipped
-point lies within 5 km and for 82 % within 1 km (91 % and 76 % for the
-points from CoordinateCleaner’s own sources). Most of the rest are
-placed differently by CoordinateCleaner: every Iranian university
-museum, for example, sits at one point in Isfahan there, and the Museo
-Marino of Boca del Río, Veracruz, in Venezuela. GRSciColl has also added
-institutions since CoordinateCleaner’s table was compiled. The points
-from sources CoordinateCleaner’s table does not draw on (Wikidata beyond
-the English list’s museums, and the other language editions of the list)
-carry <code>extension</code> <code>TRUE</code> in
+<li>
+<p><strong>Institutions.</strong> Every institution of
+CoordinateCleaner’s table with coordinates has a point in the package’s
+table, except one expert group listed in Antarctica. Of its 9,773
+institutions, 6,313 are held under their name and 329 by a nearby point
+that shares their name’s words. The other 3,130 are placed from their
+names: 1,052 from Wikidata, 646 from OpenStreetMap, 684 at the town
+CoordinateCleaner or GRSciColl lists, and 252 at a town their name
+holds. For 496, no source places the institution itself, and the point
+is the town nearest CoordinateCleaner’s point.</p>
+<p>The points still differ, because CoordinateCleaner placed nearly
+every institution by its own geocoding. It geocoded 641 of its 712 BGCI
+gardens from their names and addresses, where the package takes BGCI’s
+own coordinates, and it placed 398 of its Wikipedia museums by hand, to
+1 km. Some of its points sit far from the institution: every Iranian
+university museum, for example, sits at one point in Isfahan there, and
+the Museo Marino of Boca del Río, Veracruz, in Venezuela. For 32 % of
+its points a shipped point lies within the 100 m buffer, for 73 % within
+1 km and for 91 % within 5 km. The points from sources
+CoordinateCleaner’s table does not draw on (Wikidata beyond the English
+list’s museums, and the other language editions of the list) carry
+<code>extension</code> <code>TRUE</code> in
 <code>reference_points("institution")</code>, so the test can be run on
 CoordinateCleaner’s sources alone. With CoordinateCleaner installed, its
 table can be added at run time (see the article on custom
-gazetteers).</p></li>
+gazetteers).</p>
+</li>
 </ul>
 <p>The capital difference shows directly in the flags. Records at a few
 alternative or official capitals, under both references:</p>
@@ -13792,7 +13843,7 @@ the version of each layer:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
@@ -13807,8 +13858,8 @@ one output directory never mixes flags from two references.</p>
 <ul>
 <li><p><code>reference = "OccurrenceCleaner"</code> (the default) needs
 no other package, has a version and checksum for every layer, and uses
-current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames and BGCI
-data.</p></li>
+current Natural Earth, GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI,
+Index Herbariorum, GBIF registry and OpenStreetMap data.</p></li>
 <li><p>Set <code>reference = "CoordinateCleaner"</code> to use <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 own reference tables, for example to compare with a published analysis
 that used it. This requires CoordinateCleaner to be installed and

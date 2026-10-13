@@ -29,12 +29,17 @@ test_that("proximity tests use the default buffers and the own gazetteers", {
   cen <-OccurrenceCleaner:::ref_centroids
   tirol <- cen[!is.na(cen$code) & cen$code == "AUT-2320", ][1, ]  # Vorarlberg label point
   inst <- OccurrenceCleaner:::ref_institutions
-  nhm <- inst[grepl("Naturhistorisches Museum Wien", inst$name), ][1, ]
+  # an Austrian GRSciColl institution with no other point within 300 m
+  at <- inst[inst$source == "GRSciColl" & inst$country %in% "AT", ]
+  alone <- vapply(seq_len(nrow(at)), function(i)
+    sort(geosphere::distGeo(c(at$lon[i], at$lat[i]), cbind(inst$lon, inst$lat)))[2] > 300, logical(1))
+  lone <- at[alone, ][1, ]
+  b_inst <- 37
   near <- function(p, d, b = 37) geosphere::destPoint(c(p$lon, p$lat), b, d)
   x <- pts(decimalLongitude = c(near(vienna, 9990, b_vienna)[1], near(vienna, 10010, b_vienna)[1], near(tirol, 990)[1], near(tirol, 1010)[1],
-                                near(nhm, 99)[1], near(nhm, 101)[1], 12.58, near(data.frame(lon = 12.58, lat = 55.67), 1001)[1]),
+                                near(lone, 99, b_inst)[1], near(lone, 101, b_inst)[1], 12.58, near(data.frame(lon = 12.58, lat = 55.67), 1001)[1]),
            decimalLatitude = c(near(vienna, 9990, b_vienna)[2], near(vienna, 10010, b_vienna)[2], near(tirol, 990)[2], near(tirol, 1010)[2],
-                               near(nhm, 99)[2], near(nhm, 101)[2], 55.67, near(data.frame(lon = 12.58, lat = 55.67), 1001)[2]))
+                               near(lone, 99, b_inst)[2], near(lone, 101, b_inst)[2], 55.67, near(data.frame(lon = 12.58, lat = 55.67), 1001)[2]))
   f <- flag_occurrences(x, tests = c("capital", "centroid", "institution", "gbif_headquarters"))
   expect_identical(f$flag_capital[1:2], c(TRUE, FALSE))
   expect_identical(f$flag_centroid[3:4], c(TRUE, FALSE))

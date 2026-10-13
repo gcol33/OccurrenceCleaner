@@ -225,11 +225,11 @@
 - stated-at: @p:rules.per-test; @p:rules.compare
 
 ### institutions-wikidata
-- metric: 7,810 Wikidata points (3,263 BotanicalGarden, 1,835 Museum, 2,609 ZooAquarium, 103 Herbarium), incl. 110 museums by natural-history subject and the list museums with their own coordinates; 700 museums of Wikipedia's lists of natural history museums (en revision 1376233148 and the ar, de, fr, nl, pt, eo editions; 2,331 entries) placed by linked place or GeoNames populated place (en 385); 3 GeoNames places; 3,652 BGCI gardens (3,765 listed, 3,653 with coordinates, 1 at zero); 18,245 institution points shipped in all, 10,580 from CoordinateCleaner's sources and 7,665 marked `extension`
-- metric: CoordinateCleaner's 345 hand-placed Wikipedia rows with coordinates (CD/JA/RS, contributor initials): a shipped point within 100 m / 1 km / 5 km for 52 / 82 / 92 % (46 / 76 / 91 % for the points with `extension` FALSE)
-- metric: CoordinateCleaner geocoded 641 of its 712 BGCI gardens itself; coverage of its BGCI rows by the shipped points: 46 % within 100 m, 87 % within 1 km, 96 % within 5 km
-- source: data-raw/institutions.R, queried 2026-10-10; dev_notes/reference_data.md
-- stated-at: @p:readme.usecases (18,245 points, 7,665 extension, seven Wikipedia languages); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
+- metric: 7,810 Wikidata points (3,263 BotanicalGarden, 1,835 Museum, 2,609 ZooAquarium, 103 Herbarium), incl. 110 museums by natural-history subject and the list museums with their own coordinates; 700 museums of Wikipedia's lists of natural history museums (en revision 1376233148 and the ar, de, fr, nl, pt, eo editions; 2,331 entries) placed by linked place or GeoNames populated place (en 385); 3 GeoNames places; 3,652 BGCI gardens (3,765 listed, 3,653 with coordinates, 1 at zero); 1,062 Index Herbariorum herbaria not placed by GRSciColl (4,805 with a location); 2,468 GBIF registry publishing organisations with coordinates (of 3,639); 2,120 points for the rest of CoordinateCleaner's list; 23,895 institution points shipped in all, 16,230 from CoordinateCleaner's sources and 7,665 marked `extension`
+- metric: CoordinateCleaner's 9,773 institutions with coordinates: 6,313 held under their name, 329 by a point within 25 km sharing >= 60 % of their name words, 3,130 placed by name (Wikidata 1,052, OpenStreetMap 646, GeoNames town of the listed city 684, town named in the name 252, town nearest CoordinateCleaner's point 496), 1 not placed (SCAR expert group, Antarctica)
+- metric: a shipped point within 100 m / 1 km / 5 km of CoordinateCleaner's point for 32 / 73 / 91 % of its 9,773 institutions (28 / 70 / 90 % for the points with `extension` FALSE); CoordinateCleaner geocoded nearly every row itself (641 of its 712 BGCI gardens, 398 Wikipedia museums by hand)
+- source: data-raw/institutions.R, queried 2026-10-10 and 2026-10-13; dev_notes/reference_data.md
+- stated-at: @p:readme.usecases (23,895 points, 7,665 extension, seven Wikipedia languages, every CoordinateCleaner institution); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine

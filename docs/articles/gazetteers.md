@@ -62,10 +62,18 @@ table(caps$class)
 inst <- reference_points("institution")
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
-#>        BotanicalGarden                 Museum              Herbarium 
-#>                   7003                   3218                   3085 
-#>            ZooAquarium      UniversityCollege OtherInstitutionalType 
-#>                   2732                    284                    152
+#>                           BotanicalGarden 
+#>                                      7063 
+#>                                 Herbarium 
+#>                                      4619 
+#>                                    Museum 
+#>                                      3495 
+#>                               ZooAquarium 
+#>                                      2766 
+#>                         UniversityCollege 
+#>                                       707 
+#> OtherTypeResearchInstitutionBiorepository 
+#>                                       182
 ```
 
 The institution table joins the GBIF registry of scientific collections
@@ -73,11 +81,16 @@ The institution table joins the GBIF registry of scientific collections
 aquaria and herbaria of Wikidata, the museums of Wikipedia’s lists of
 natural history museums (the English list and six other language
 editions), the gardens of Botanic Gardens Conservation International
-(BGCI) and three GeoNames places: `source` says which registry each
-point comes from, `type` what kind of institution it is, and
-`master_source`, for GRSciColl entries, where GBIF took the entry from
-(Index Herbariorum, GRSciColl itself, or the GBIF registry), and for the
-Wikipedia museums that the list places only by town, where the town’s
+(BGCI), three GeoNames places, the herbaria of Index Herbariorum that
+GRSciColl does not place, the publishing organisations of the GBIF
+registry, and every further institution of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+list, placed by its name from Wikidata, OpenStreetMap or GeoNames.
+`source` says which registry each point comes from, `type` what kind of
+institution it is, and `master_source`, for GRSciColl entries, where
+GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the
+GBIF registry); for the Wikipedia museums that the list places only by
+town and for the rows of CoordinateCleaner’s list, it says where the
 coordinates come from. `extension` is `TRUE` for the points from sources
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s own
 table does not draw on (Wikidata beyond the museums of the English list,
@@ -98,7 +111,7 @@ use a wider buffer for them:
 
 herbaria <- inst[inst$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 3085
+#> [1] 4619
 near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -107,13 +120,13 @@ f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution 
                            gazetteers = list(institution = herbaria))
 data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
-#>                               near      type  all herbaria_only
-#> 1    Andorra Research + Innovation Herbarium TRUE          TRUE
-#> 2                   UAE University Herbarium TRUE          TRUE
-#> 3                 Kabul University Herbarium TRUE          TRUE
-#> 4                             <NA>    Museum TRUE         FALSE
-#> 5 Natural History Museum Abu Dhabi    Museum TRUE         FALSE
-#> 6   Sharjah Natural History Museum    Museum TRUE         FALSE
+#>                                  near      type  all herbaria_only
+#> 1       Andorra Research + Innovation Herbarium TRUE          TRUE
+#> 2 CENMA, Institut d Estudis Andorrans Herbarium TRUE          TRUE
+#> 3                      UAE University Herbarium TRUE          TRUE
+#> 4                                <NA>    Museum TRUE         FALSE
+#> 5    Natural History Museum Abu Dhabi    Museum TRUE         FALSE
+#> 6      Sharjah Natural History Museum    Museum TRUE         FALSE
 ```
 
 Each record lies about 0.005 degrees (a few hundred metres) east of an
@@ -151,16 +164,18 @@ which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.
 
-The institution table is one of them. CoordinateCleaner geocoded most of
-its botanic gardens and many of its museums itself, so its points can
-mark a different spot of the same institution. With CoordinateCleaner
-installed, the union adds them to the shipped points at run time:
+The institution table is one of them. The shipped table holds every
+institution of CoordinateCleaner’s list, at the coordinates of its
+sources. CoordinateCleaner placed nearly every institution by its own
+geocoding, so its point can mark a different spot of the same
+institution. With CoordinateCleaner installed, the union adds its points
+to the shipped ones at run time:
 
 ``` r
 
 inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
 nrow(inst_both)
-#> [1] 28018
+#> [1] 33668
 ```
 
 `gazetteers = list(institution = inst_both)` then flags records near an
@@ -316,7 +331,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, aohi 2022-10-10, habitat 2026-10-06); custom: institution 3085 points md5 69360e0c3f54a8d8744cba3d2211610f"
+#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06); custom: institution 4619 points md5 de31ae28eb3e56baed9761e483f19aa7"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

@@ -41,11 +41,13 @@ Natural Earth country code and name with its prefix); `name`, `adm0_a3`,
 Earth, `key` the Factbook code, ISO3 code or GEOLocate query with its
 prefix); `key`, `code`, `name`, `country`, `city`, `type`, `active`,
 `master_source`, `source`, `extension` for institutions (`source` is
-GRSciColl, Wikidata, Wikipedia, GeoNames or BGCI, `key` the GRSciColl
-key, Wikidata item, the Wikipedia list language, revision and line, or
-the GeoNames or BGCI id with its prefix; for Wikipedia rows `city` is
-the place they are located by and `master_source` where its coordinates
-come from; `extension` is TRUE for points from sources
+GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF
+registry or CoordinateCleaner list, `key` the GRSciColl key, Wikidata
+item, the Wikipedia list language, revision and line, or the GeoNames,
+BGCI, Index Herbariorum, GBIF organisation or OpenStreetMap id with its
+prefix; for Wikipedia rows `city` is the place they are located by; for
+Wikipedia and CoordinateCleaner list rows `master_source` is where the
+coordinates come from; `extension` is TRUE for points from sources
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
 table does not draw on, for capitals, centroids and institutions alike);
 `id`, `taxon` (the group the hotspot was found in: Aves, Insecta,

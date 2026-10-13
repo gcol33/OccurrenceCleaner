@@ -117,11 +117,13 @@ or the Natural Earth country code and name with its prefix); <code>name</code>, 
 CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, <code>key</code>
 the Factbook code, ISO3 code or GEOLocate query with its prefix); <code>key</code>, <code>code</code>, <code>name</code>, <code>country</code>, <code>city</code>,
 <code>type</code>, <code>active</code>, <code>master_source</code>, <code>source</code>, <code>extension</code> for
-institutions (<code>source</code> is GRSciColl, Wikidata, Wikipedia, GeoNames or
-BGCI, <code>key</code> the GRSciColl key, Wikidata item, the Wikipedia list
-language, revision and line, or the GeoNames or BGCI id with its prefix;
-for Wikipedia rows <code>city</code> is the place they are located by and
-<code>master_source</code> where its coordinates come from; <code>extension</code> is TRUE for
+institutions (<code>source</code> is GRSciColl, Wikidata, Wikipedia, GeoNames,
+BGCI, Index Herbariorum, GBIF registry or CoordinateCleaner list, <code>key</code>
+the GRSciColl key, Wikidata item, the Wikipedia list language, revision
+and line, or the GeoNames, BGCI, Index Herbariorum, GBIF organisation or
+OpenStreetMap id with its prefix; for Wikipedia rows <code>city</code> is the place
+they are located by; for Wikipedia and CoordinateCleaner list rows
+<code>master_source</code> is where the coordinates come from; <code>extension</code> is TRUE for
 points from sources <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>'s table does not draw on, for
 capitals, centroids and institutions alike); <code>id</code>,
 <code>taxon</code> (the group the hotspot was found in: Aves, Insecta, Mammalia,

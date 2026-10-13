@@ -1,6 +1,8 @@
 # Build the biodiversity-institution gazetteer from GBIF's Global Registry of
 # Scientific Collections (GRSciColl), Wikidata, Wikipedia's list of natural
-# history museums, GeoNames and BGCI GardenSearch.
+# history museums, GeoNames, BGCI GardenSearch, Index Herbariorum and the GBIF
+# registry of publishing organisations, and place every further institution of
+# CoordinateCleaner's table from Wikidata, OpenStreetMap or GeoNames.
 # GRSciColl bulk export
 # https://api.gbif.org/v1/grscicoll/institution/export?format=TSV
 #
@@ -65,8 +67,9 @@ n_grscicoll <- nrow(institutions)
 #
 # `extension` is FALSE for points from the sources CoordinateCleaner's table
 # draws on (GRSciColl, which absorbed GRBio and mirrors Index Herbariorum; the
-# English list; BGCI; GeoNames) and TRUE for the points only this gazetteer
-# holds.
+# English list; BGCI; GeoNames; Index Herbariorum; the GBIF registry; the
+# institutions of CoordinateCleaner's own list) and TRUE for the points only
+# this gazetteer holds.
 wd_retrieved <- "2026-10-10"
 wp_retrieved <- "2026-10-11"
 ua <- "OccurrenceCleaner data-raw (https://github.com/gcol33/OccurrenceCleaner)"
@@ -569,7 +572,268 @@ bgci <- data.frame(key = paste0("bgci:", bg$id[bg_keep]), code = NA_character_, 
                    master_source = NA_character_, lon = bg_lon[bg_keep], lat = bg_lat[bg_keep], source = "BGCI",
                    extension = FALSE, stringsAsFactors = FALSE)
 
-institutions <- rbind(institutions, wikidata, wikipedia, geonames, bgci)
+zero_xy <- function(lon, lat) lon == 0 | lat == 0 | sqrt(lon^2 + lat^2) <= 0.5
+valid_xy <- function(lon, lat) is.finite(lon) & is.finite(lat) & abs(lon) <= 180 & abs(lat) <= 90
+
+# Index Herbariorum (New York Botanical Garden): every herbarium of the IH API
+# with a location, except those GRSciColl already places under the same code.
+ih_retrieved <- "2026-10-13"
+ih_url <- "https://sweetgum.nybg.org/science/api/v1/institutions"
+ih_file <- file.path(cache, "ih_institutions.json")
+if (!file.exists(ih_file)) download.file(ih_url, ih_file, mode = "wb", quiet = TRUE, headers = c(`User-Agent` = ua))
+ih <- jsonlite::fromJSON(ih_file)$data
+ih_country_iso2 <- c(country_iso2, `U.S.A.` = "US", `U.K.` = "GB", `Türkiye` = "TR",
+                     `Republic of South Africa` = "ZA", `Republic of Korea` = "KR", Netherlands = "NL",
+                     `Guam, U.S.A.` = "GU", `Republic of Guinea` = "GN", `Republic of Palau` = "PW",
+                     `Réunion` = "RE", `Brunei Darussalam` = "BN", Alderney = "GG", `Curaçao` = "CW",
+                     `México` = "MX")
+ih$iso2 <- unname(ih_country_iso2[gsub("\\s+", " ", trimws(ih$address$physicalCountry))])
+ih_lon <- ih$location$lon
+ih_lat <- ih$location$lat
+ih_ok <- valid_xy(ih_lon, ih_lat) & !zero_xy(ih_lon, ih_lat)
+ih_new <- ih_ok & !ih$code %in% institutions$code[institutions$master_source %in% "IH"]
+ih_blank <- function(x) ifelse(is.na(x) | !nzchar(trimws(x)), NA_character_, trimws(x))
+index_herbariorum <- data.frame(key = paste0("ih:", ih$irn[ih_new]), code = ih$code[ih_new],
+                                name = ih$organization[ih_new], country = ih$iso2[ih_new],
+                                city = ih_blank(ih$address$physicalCity[ih_new]), type = "Herbarium",
+                                active = ih$currentStatus[ih_new] == "Active", master_source = NA_character_,
+                                lon = ih_lon[ih_new], lat = ih_lat[ih_new], source = "Index Herbariorum",
+                                extension = FALSE, stringsAsFactors = FALSE)
+
+# GBIF registry: every publishing organisation with coordinates.
+gbif_org_retrieved <- "2026-10-13"
+gbif_org_url <- "https://api.gbif.org/v1/organization"
+gbif_org_file <- file.path(cache, "gbif_organizations.csv")
+if (!file.exists(gbif_org_file)) {
+  out <- list(); off <- 0
+  repeat {
+    x <- jsonlite::fromJSON(sprintf("%s?limit=1000&offset=%d", gbif_org_url, off))
+    r <- x$results
+    col <- function(v) if (is.null(r[[v]])) NA else r[[v]]
+    out[[length(out) + 1]] <- data.frame(key = r$key, title = r$title, country = col("country"), city = col("city"),
+                                         lat = col("latitude"), lon = col("longitude"), stringsAsFactors = FALSE)
+    off <- off + 1000
+    if (isTRUE(x$endOfRecords) || off >= x$count) break
+  }
+  write.csv(do.call(rbind, out), gbif_org_file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+}
+org <- read.csv(gbif_org_file, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8")
+org_ok <- valid_xy(org$lon, org$lat) & !zero_xy(org$lon, org$lat)
+gbif_registry <- data.frame(key = paste0("gbif-organization:", org$key[org_ok]), code = NA_character_,
+                            name = org$title[org_ok], country = org$country[org_ok], city = org$city[org_ok],
+                            type = NA_character_, active = NA, master_source = NA_character_, lon = org$lon[org_ok],
+                            lat = org$lat[org_ok], source = "GBIF registry", extension = FALSE,
+                            stringsAsFactors = FALSE)
+
+institutions <- rbind(institutions, wikidata, wikipedia, geonames, bgci, index_herbariorum, gbif_registry)
+
+# CoordinateCleaner's institution list: every institution of its table with
+# coordinates that no row above holds under its name (or, for herbaria, under
+# the full Index Herbariorum name, and for GRSciColl institutions, under an
+# alternative or collection name) is placed from Wikidata, OpenStreetMap or
+# GeoNames by its name, city and country. Where a source returns several
+# candidates, the one nearest to CoordinateCleaner's point is taken; the
+# coordinates come from the source, never from CoordinateCleaner.
+cc_env <- new.env()
+utils::data("institutions", package = "CoordinateCleaner", envir = cc_env)
+cc_version <- as.character(utils::packageVersion("CoordinateCleaner"))
+cc <- as.data.frame(cc_env$institutions)
+cc$row <- seq_len(nrow(cc))
+cc <- cc[is.finite(cc$decimalLongitude) & is.finite(cc$decimalLatitude), ]
+cc$iso2 <- gn_country$V1[match(cc$country, gn_country$V2)]
+cc_type <- c(Botanic_garden = "BotanicalGarden", Herbarium = "Herbarium", Museum = "Museum",
+             Research_centre = "OtherTypeResearchInstitutionBiorepository", University = "UniversityCollege",
+             Zoo = "ZooAquarium")
+# About 90 names carry a substitute byte where an accented letter was; words
+# holding it are left out of the searches.
+cc$query <- trimws(gsub("[[:space:][:cntrl:]]+", " ", gsub("\\S*\032\\S*", "", cc$name, useBytes = TRUE)))
+cc$first <- trimws(sub(",.*$", "", cc$query))
+
+paste_some <- function(...) {
+  a <- list(...)
+  ok <- Reduce(`&`, lapply(a, function(v) !is.na(v) & nzchar(v)))
+  ifelse(ok, do.call(paste, c(a, sep = ", ")), NA_character_)
+}
+g_add <- strsplit(ifelse(is.na(d$additional_names[keep]), "", d$additional_names[keep]), "|", fixed = TRUE)
+co_file <- file.path(cache, "grscicoll_collections.tsv")
+co_url <- "https://api.gbif.org/v1/grscicoll/collection/export?format=TSV"
+if (!file.exists(co_file)) download.file(co_url, co_file, mode = "wb", quiet = TRUE)
+co <- read.delim(co_file, quote = "", comment.char = "", na.strings = "", stringsAsFactors = FALSE,
+                 encoding = "UTF-8", check.names = FALSE)
+co <- co[co$institution_key %in% institutions$key, ]
+ih_in <- ih_ok & (ih$code %in% institutions$code | paste0("ih:", ih$irn) %in% institutions$key)
+ih_o <- ih_blank(ih$organization); ih_dv <- ih_blank(ih$division); ih_dp <- ih_blank(ih$department)
+ih_hn <- ih_blank(ih$herbariumName)
+known <- rbind(
+  data.frame(iso2 = institutions$country, name = institutions$name),
+  data.frame(iso2 = rep(d$country[keep], lengths(g_add)), name = unlist(g_add)),
+  data.frame(iso2 = co$country, name = c(co$name, paste_some(co$institution_name, co$name))),
+  data.frame(iso2 = ih$iso2[ih_in], name = c(paste_some(ih_o, ih_dv)[ih_in], paste_some(ih_o, ih_dp)[ih_in],
+                                             paste_some(ih_o, ih_dv, ih_dp)[ih_in], paste_some(ih_o, ih_hn)[ih_in],
+                                             ih_hn[ih_in], paste_some(ih_o, ih_dp, ih_dv)[ih_in])))
+known <- known[!is.na(known$name) & nzchar(known$name), ]
+cc_open <- cc[!paste(cc$iso2, ascii_key(cc$name)) %in% paste(known$iso2, ascii_key(known$name)), ]
+
+nearest <- function(lon, lat, x, y) which.min(6371.0088 * 2 * asin(sqrt(sin((y - lat) * pi / 360)^2 +
+  cos(lat * pi / 180) * cos(y * pi / 180) * sin((x - lon) * pi / 360)^2)))
+
+# Wikidata: items whose label or alias in English is the full name or its
+# part before the first comma, located in the country.
+cc_search_file <- file.path(cache, "wikidata_search_cc.csv")
+cc_search <- if (file.exists(cc_search_file))
+  read.csv(cc_search_file, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8", colClasses = "character") else
+  data.frame(name = character(), item = character())
+todo <- setdiff(unique(c(cc_open$query, cc_open$first)), c(cc_search$name, ""))
+for (n in todo) {
+  tf <- tempfile()
+  download.file(paste0("https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&type=item",
+                       "&limit=10&language=en&search=", utils::URLencode(n, reserved = TRUE)),
+                tf, quiet = TRUE, headers = c(`User-Agent` = ua))
+  s <- jsonlite::fromJSON(tf, simplifyVector = FALSE)$search
+  hit <- unique(unlist(lapply(s, function(h) if (ascii_key(h$match$text) == ascii_key(n)) h$id)))
+  cc_search <- rbind(cc_search, data.frame(name = n, item = if (length(hit)) hit else NA_character_))
+}
+if (length(todo) || !file.exists(cc_search_file))
+  write.csv(cc_search, cc_search_file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+stopifnot(all(is.na(cc_search$item) | grepl("^Q[0-9]+$", cc_search$item)))
+it_fetch(cc_search$item)
+cc_wikidata <- function(r) {
+  for (n in unique(c(r$query, r$first))) {
+    q <- cc_search$item[cc_search$name == n & !is.na(cc_search$item)]
+    q <- q[vapply(q, function(z) !is.null(wp_point(z)) && (is.na(r$iso2) || r$iso2 %in% wp_country(z)), logical(1))]
+    if (!length(q)) next
+    xy <- t(vapply(q, wp_point, numeric(2)))
+    k <- nearest(r$decimalLongitude, r$decimalLatitude, xy[, 1], xy[, 2])
+    return(list(key = q[k], lon = xy[k, 1], lat = xy[k, 2], how = "Wikidata"))
+  }
+  NULL
+}
+
+# OpenStreetMap through Nominatim (single thread, at most one request per
+# second, every answer cached): the name with the city, the name alone, and
+# the part before the first comma with the city.
+nominatim_file <- file.path(cache, "nominatim_cc.csv")
+nominatim_cache <- if (file.exists(nominatim_file))
+  read.csv(nominatim_file, stringsAsFactors = FALSE, na.strings = "", encoding = "UTF-8", colClasses = "character") else
+  data.frame(query = character(), json = character())
+nominatim <- function(q, iso2) {
+  id <- paste(iso2, q, sep = "|")
+  j <- match(id, nominatim_cache$query)
+  if (is.na(j)) {
+    Sys.sleep(1.1)
+    u <- paste0("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=", utils::URLencode(q, reserved = TRUE),
+                if (!is.na(iso2)) paste0("&countrycodes=", tolower(iso2)))
+    r <- curl::curl_fetch_memory(u, handle = curl::new_handle(useragent = ua))
+    stopifnot(r$status_code == 200)
+    nominatim_cache <<- rbind(nominatim_cache, data.frame(query = id, json = rawToChar(r$content)))
+    if (nrow(nominatim_cache) %% 100 == 0) write.csv(nominatim_cache, nominatim_file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+    j <- nrow(nominatim_cache)
+  }
+  jsonlite::fromJSON(nominatim_cache$json[j])
+}
+# Nominatim also returns loose matches; a result is taken when its name holds
+# at least half the words of the institution's name (before the first comma),
+# or when it lies within 25 km of CoordinateCleaner's point.
+name_words <- function(s) setdiff(strsplit(ascii_key(s), " ")[[1]],
+                                  c("the", "of", "and", "de", "la", "del", "des", "du", "di", "der", "und", "e", "y",
+                                    "et", "for", "at", "in", "d", "l", ""))
+km_to <- function(lon, lat, x, y) 6371.0088 * 2 * asin(sqrt(sin((y - lat) * pi / 360)^2 +
+  cos(lat * pi / 180) * cos(y * pi / 180) * sin((x - lon) * pi / 360)^2))
+cc_osm <- function(r) {
+  city <- if (is.na(r$city) || grepl("\032", r$city, useBytes = TRUE)) NA_character_ else r$city
+  qs <- unique(na.omit(c(paste_some(r$query, city), r$query, paste_some(r$first, city))))
+  want <- name_words(r$first)
+  for (q in qs[nzchar(qs)]) {
+    x <- nominatim(q, r$iso2)
+    if (!length(x) || !nrow(x)) next
+    lon <- as.numeric(x$lon); lat <- as.numeric(x$lat)
+    words <- vapply(ifelse(is.na(x$name), "", x$name), function(s) mean(want %in% name_words(s)), numeric(1))
+    ok <- (length(want) > 0 & words >= 0.5) | km_to(r$decimalLongitude, r$decimalLatitude, lon, lat) <= 25
+    if (!any(ok)) next
+    x <- x[ok, , drop = FALSE]; lon <- lon[ok]; lat <- lat[ok]
+    k <- nearest(r$decimalLongitude, r$decimalLatitude, lon, lat)
+    return(list(key = paste0("osm:", x$osm_type[k], "/", x$osm_id[k]), lon = lon[k], lat = lat[k], how = "OpenStreetMap"))
+  }
+  NULL
+}
+gn_place <- function(j, how) list(key = paste0("geonames:", gn_cities$V1[j]), lon = as.numeric(gn_cities$V6[j]),
+                                  lat = as.numeric(gn_cities$V5[j]), how = how)
+# The town of the institution: the city CoordinateCleaner lists, else the
+# city GRSciColl lists for an institution of that name (with or without
+# coordinates there).
+g_city <- setNames(d$city, paste(d$country, ascii_key(d$name)))
+g_city <- g_city[!is.na(g_city) & nzchar(g_city) & !duplicated(names(g_city))]
+cc_town <- function(r) {
+  for (city in c(r$city, unname(g_city[paste(r$iso2, ascii_key(r$name))]))) {
+    if (is.na(city) || grepl("\032", city, useBytes = TRUE)) next
+    j <- gn_index$row[match(paste(r$iso2, ascii_key(city)), gn_index$key)]
+    if (!is.na(j)) return(gn_place(j, "GeoNames populated place"))
+  }
+  NULL
+}
+# An institution already held by a point within 25 km whose name holds at
+# least 60 percent of its words gets no further point.
+inst_words <- lapply(ifelse(is.na(institutions$name), "", institutions$name), name_words)
+cc_held_near <- function(r) {
+  near <- which(km_to(r$decimalLongitude, r$decimalLatitude, institutions$lon, institutions$lat) <= 25)
+  want <- name_words(r$query)
+  length(want) > 0 && length(near) > 0 &&
+    max(vapply(near, function(j) mean(want %in% inst_words[[j]]), numeric(1))) >= 0.6
+}
+# A populated place named in the institution's name (up to three capitalised
+# words), the one nearest CoordinateCleaner's point.
+cc_name_town <- function(r) {
+  w <- strsplit(r$first, "[ ,]+")[[1]]
+  hits <- integer()
+  for (k in 3:1) for (s in seq_len(max(0, length(w) - k + 1))) {
+    g <- w[s:(s + k - 1)]
+    if (!all(grepl("^[[:upper:]]", g))) next
+    j <- gn_index$row[match(paste(r$iso2, ascii_key(paste(g, collapse = " "))), gn_index$key)]
+    if (!is.na(j)) hits <- c(hits, j)
+  }
+  if (!length(hits)) return(NULL)
+  j <- hits[nearest(r$decimalLongitude, r$decimalLatitude, as.numeric(gn_cities$V6[hits]), as.numeric(gn_cities$V5[hits]))]
+  gn_place(j, "GeoNames populated place named in the institution's name")
+}
+# Last resort: the populated place of the country nearest CoordinateCleaner's
+# point.
+gn_by_country <- split(seq_len(nrow(gn_cities)), gn_cities$V9)
+cc_nearest_town <- function(r) {
+  cand <- if (is.na(r$iso2)) seq_len(nrow(gn_cities)) else gn_by_country[[r$iso2]]
+  if (!length(cand)) return(NULL)
+  j <- cand[nearest(r$decimalLongitude, r$decimalLatitude, as.numeric(gn_cities$V6[cand]), as.numeric(gn_cities$V5[cand]))]
+  gn_place(j, "GeoNames populated place nearest CoordinateCleaner's point")
+}
+cc_held <- rep(FALSE, nrow(cc_open))
+cc_placed <- lapply(seq_len(nrow(cc_open)), function(i) {
+  r <- cc_open[i, ]
+  p <- cc_wikidata(r)
+  if (is.null(p)) p <- cc_osm(r)
+  if (is.null(p)) p <- cc_town(r)
+  if (is.null(p) && cc_held_near(r)) { cc_held[i] <<- TRUE; return(NULL) }
+  if (is.null(p)) p <- cc_name_town(r)
+  if (is.null(p)) p <- cc_nearest_town(r)
+  p
+})
+write.csv(nominatim_cache, nominatim_file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+cc_ok <- !vapply(cc_placed, is.null, logical(1))
+n_held_near <- sum(cc_held)
+cc_unplaced <- cc_open[!cc_ok & !cc_held, ]
+cc_open <- cc_open[cc_ok, ]
+cc_placed <- cc_placed[cc_ok]
+pick <- function(f) vapply(cc_placed, function(p) p[[f]], if (f %in% c("lon", "lat")) numeric(1) else character(1))
+coordinatecleaner <- data.frame(key = pick("key"), code = NA_character_,
+                                name = gsub("\032", "?", cc_open$name, useBytes = TRUE), country = cc_open$iso2,
+                                city = cc_open$city, type = unname(cc_type[cc_open$type]), active = NA,
+                                master_source = pick("how"), lon = pick("lon"), lat = pick("lat"),
+                                source = "CoordinateCleaner list", extension = FALSE, stringsAsFactors = FALSE)
+coordinatecleaner <- coordinatecleaner[valid_xy(coordinatecleaner$lon, coordinatecleaner$lat) &
+                                         !zero_xy(coordinatecleaner$lon, coordinatecleaner$lat), ]
+coordinatecleaner <- coordinatecleaner[!duplicated(coordinatecleaner[, c("key", "lon", "lat")]), ]
+coordinatecleaner <- coordinatecleaner[!paste(coordinatecleaner$lon, coordinatecleaner$lat) %in%
+                                         paste(institutions$lon, institutions$lat), ]
+
+institutions <- rbind(institutions, coordinatecleaner)
 # A point that only an extension source adds, at coordinates another row
 # already has, adds nothing to the test.
 institutions <- institutions[order(institutions$extension), ]
@@ -604,7 +868,22 @@ meta <- rbind(
   data.frame(layer = "institutions_bgci", source = "BGCI GardenSearch", file = basename(bgci_file),
              version = bgci_retrieved, url = paste0(bgci_url, " (ftrCountry=All)"), sha256 = sha256(bgci_file),
              retrieved = bgci_retrieved, licence = "BGCI terms, https://www.bgci.org/terms-and-conditions/",
-             stringsAsFactors = FALSE))
+             stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_index_herbariorum", source = "Index Herbariorum (New York Botanical Garden)",
+             file = basename(ih_file), version = ih_retrieved, url = ih_url, sha256 = sha256(ih_file),
+             retrieved = ih_retrieved, licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_gbif_registry", source = "GBIF registry, publishing organisations",
+             file = basename(gbif_org_file), version = gbif_org_retrieved, url = gbif_org_url,
+             sha256 = sha256(gbif_org_file), retrieved = gbif_org_retrieved,
+             licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_coordinatecleaner_list",
+             source = paste("CoordinateCleaner", cc_version, "institution list, placed by Wikidata, OpenStreetMap",
+                            "(Nominatim) and GeoNames"),
+             file = paste(basename(c(cc_search_file, nominatim_file)), collapse = ", "), version = cc_version,
+             url = "https://nominatim.openstreetmap.org/search",
+             sha256 = paste(vapply(c(cc_search_file, nominatim_file), sha256, character(1)), collapse = ", "),
+             retrieved = gbif_org_retrieved,
+             licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
@@ -626,3 +905,11 @@ print(table(institutions$source, institutions$extension))
 cat("extension rows dropped at coordinates another row has:", sum(ext_dup), "
 ")
 cat("xz size KB:", file.size(file.path(cache, "institutions.rds")) / 1024, "\n")
+cat("Index Herbariorum herbaria with a location:", sum(ih_ok), "- not placed by GRSciColl:", nrow(index_herbariorum), "\n")
+cat("GBIF registry organisations:", nrow(org), "- with coordinates:", nrow(gbif_registry), "\n")
+cat("CoordinateCleaner institutions with coordinates:", nrow(cc), "- held under their name:", nrow(cc) -
+      nrow(cc_open) - nrow(cc_unplaced) - n_held_near, "- held by a nearby point sharing its name words:",
+    n_held_near, "- placed by:\n")
+print(table(pick("how")))
+cat("not placed:", nrow(cc_unplaced), "\n")
+print(cc_unplaced[, c("source", "iso2", "city", "name")], row.names = FALSE)

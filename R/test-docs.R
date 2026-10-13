@@ -156,7 +156,7 @@ NULL
 #' Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 #' distance, closed ball): herbaria, museums, botanic gardens, zoos and
 #' universities holding collections, where specimens are often georeferenced
-#' to the institution. The default gazetteer contains 18,245 points: the 6,080
+#' to the institution. The default gazetteer contains 23,895 points: the 6,080
 #' institutions with coordinates in GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), less five whose coordinates the `zero` test flags
 #' (they lie near (0, 0) or have a longitude of exactly 0, and are geocoding
@@ -169,31 +169,46 @@ NULL
 #' placed at the place the list gives for them, by its Wikidata coordinates
 #' or the GeoNames populated place of that name (`source` "Wikipedia",
 #' `master_source` says which); the three GeoNames places (CC BY 4.0) of
-#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table; and 3,652 gardens of Botanic Gardens
+#' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table; 3,652 gardens of Botanic Gardens
 #' Conservation International (BGCI) GardenSearch, retrieved 2026-10-10, used
-#' under the BGCI terms (https://www.bgci.org/terms-and-conditions/). The
-#' `source` column of [reference_points()] tells them apart.
+#' under the BGCI terms (https://www.bgci.org/terms-and-conditions/); 1,062
+#' herbaria of Index Herbariorum that GRSciColl does not place, and 2,468
+#' publishing organisations of the GBIF registry, both retrieved 2026-10-13;
+#' and 2,120 points for the institutions of CoordinateCleaner's table that
+#' none of these holds under their name (`source` "CoordinateCleaner list"),
+#' placed from Wikidata, OpenStreetMap (through Nominatim) or the GeoNames
+#' populated place of the institution's city, by its name, city and country;
+#' `master_source` says which. The `source` column of [reference_points()]
+#' tells them apart.
+#'
+#' Every institution of CoordinateCleaner's table with coordinates has a
+#' point here except one, an expert group listed in Antarctica. Where a source
+#' gives several candidates for an institution, the one nearest
+#' CoordinateCleaner's point is taken; the coordinates are always the
+#' source's. For 496 institutions no source places the institution itself,
+#' and the point is the populated place of its country nearest
+#' CoordinateCleaner's point.
 #'
 #' The column `extension` marks the 7,665 points from sources
 #' CoordinateCleaner's table does not draw on: Wikidata beyond the museums of
 #' the English list, and the lists of the other language editions. The other
-#' 10,580 points come from the registries CoordinateCleaner's table is
+#' 16,230 points come from the registries CoordinateCleaner's table is
 #' compiled from (GRSciColl, which absorbed GRBio and mirrors Index
-#' Herbariorum, the English list, GeoNames and BGCI). Passing the points with
-#' `extension` FALSE as `gazetteers = list(institution = ...)` restricts the
-#' test to those sources (see the examples).
+#' Herbariorum, Index Herbariorum itself, the GBIF registry, the English list,
+#' GeoNames and BGCI) and from its own list of institutions. Passing the points
+#' with `extension` FALSE as `gazetteers = list(institution = ...)` restricts
+#' the test to those sources (see the examples).
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section Buffer: `buffers = list(institution = 100)`, in metres.
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. Its `institutions` table
-#'   (9,773 points with coordinates) geocodes most of its 712 BGCI gardens
-#'   and many of its Wikipedia museums itself, so its points can lie apart
-#'   from the source coordinates used here. For 92 percent of the 345
-#'   Wikipedia museums it placed by hand a point of the default gazetteer lies
-#'   within 5 km, for 52 percent within 100 m (91 and 46 percent for the
-#'   points with `extension` FALSE). `reference = "CoordinateCleaner"`
-#'   uses that table, and
+#'   (9,773 points with coordinates) places nearly every institution by its
+#'   own geocoding, so its points can lie apart from the source coordinates
+#'   used here: for 32 percent of its points a point of the default gazetteer
+#'   lies within 100 m, for 73 percent within 1 km and for 91 percent within
+#'   5 km (28, 70 and 90 percent for the points with `extension` FALSE).
+#'   `reference = "CoordinateCleaner"` uses that table, and
 #'   `rbind()` of [reference_points()] under both references, passed as
 #'   `gazetteers = list(institution = ...)`, flags records near either.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame

@@ -26,11 +26,13 @@ or the Natural Earth country code and name with its prefix); \code{name}, \code{
 CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, \code{key}
 the Factbook code, ISO3 code or GEOLocate query with its prefix); \code{key}, \code{code}, \code{name}, \code{country}, \code{city},
 \code{type}, \code{active}, \code{master_source}, \code{source}, \code{extension} for
-institutions (\code{source} is GRSciColl, Wikidata, Wikipedia, GeoNames or
-BGCI, \code{key} the GRSciColl key, Wikidata item, the Wikipedia list
-language, revision and line, or the GeoNames or BGCI id with its prefix;
-for Wikipedia rows \code{city} is the place they are located by and
-\code{master_source} where its coordinates come from; \code{extension} is TRUE for
+institutions (\code{source} is GRSciColl, Wikidata, Wikipedia, GeoNames,
+BGCI, Index Herbariorum, GBIF registry or CoordinateCleaner list, \code{key}
+the GRSciColl key, Wikidata item, the Wikipedia list language, revision
+and line, or the GeoNames, BGCI, Index Herbariorum, GBIF organisation or
+OpenStreetMap id with its prefix; for Wikipedia rows \code{city} is the place
+they are located by; for Wikipedia and CoordinateCleaner list rows
+\code{master_source} is where the coordinates come from; \code{extension} is TRUE for
 points from sources \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s table does not draw on, for
 capitals, centroids and institutions alike); \code{id},
 \code{taxon} (the group the hotspot was found in: Aves, Insecta, Mammalia,

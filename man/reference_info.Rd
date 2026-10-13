@@ -22,7 +22,10 @@ and country polygons from Natural Earth (public domain), country centroids
 from the CIA World Factbook, the thematicmapping.org World Borders Dataset
 and the GEOLocate service, and
 biodiversity institutions from GBIF's Global Registry of
-Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With \code{reference = "CoordinateCleaner"} the
+Scientific Collections (GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI
+GardenSearch, Index Herbariorum and the GBIF registry, with every further
+institution of \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner}'s table placed from Wikidata,
+OpenStreetMap or GeoNames. With \code{reference = "CoordinateCleaner"} the
 point gazetteers are read from the user's \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} installation
 (\code{countryref}, \code{institutions}) and the polygon layers are downloaded through
 \href{https://docs.ropensci.org/rnaturalearth/}{rnaturalearth} exactly as that package does, which gives its flags up to the

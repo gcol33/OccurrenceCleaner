@@ -89,17 +89,17 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 1 of 2)
 #> progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s
 #> group tests: reading 3 file(s) (pass 2 of 2)
-#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s
+#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~10 s | elapsed 0 s
 #> progress: group pass (counts) done [0 s]
-#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s
+#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~10 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
-#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s
 #> progress: group pass (buckets) done [0 s]
-#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
-#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~8 s | elapsed 0 s
+#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~10 s | elapsed 0 s
 #> progress: duplicate buckets done [0 s]
-#> progress: outlier buckets, 0 of 9,000 rows | step ETA 7 s | run 2%, ETA ~8 s | elapsed 0 s
+#> progress: outlier buckets, 0 of 9,000 rows | step ETA 9 s | run 2%, ETA ~10 s | elapsed 0 s
 #> progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
 #> progress: outlier buckets done [0 s]
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
@@ -114,7 +114,7 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: record pass done [0 s]
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKGkDeN\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpOAXQGH\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -345,13 +345,13 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 1 of 2)
 #> progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s
 #> group tests: reading 3 file(s) (pass 2 of 2)
-#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s
+#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~4 s | elapsed 0 s
 #> progress: group pass (counts) done [0 s]
-#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s
+#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~4 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
-#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~7 s | elapsed 0 s
 #> progress: group pass (buckets) done [0 s]
-#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~7 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
 #> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~7 s | elapsed 0 s
 #> progress: duplicate buckets done [0 s]

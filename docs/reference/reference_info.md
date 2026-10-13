@@ -25,7 +25,10 @@ urban areas and country polygons from Natural Earth (public domain),
 country centroids from the CIA World Factbook, the thematicmapping.org
 World Borders Dataset and the GEOLocate service, and biodiversity
 institutions from GBIF's Global Registry of Scientific Collections
-(GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With
+(GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI GardenSearch, Index
+Herbariorum and the GBIF registry, with every further institution of
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
+table placed from Wikidata, OpenStreetMap or GeoNames. With
 `reference = "CoordinateCleaner"` the point gazetteers are read from the
 user's
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)

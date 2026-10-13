@@ -49,15 +49,16 @@ exclude. OccurrenceCleaner supports:
   reports how many records each rule removes per taxon, period or
   precision class, providing counts for a methods section or data paper.
 - **An extended list of institutions.** Records are checked against
-  18,245 museum, herbarium and botanic garden locations to identify
+  23,895 museum, herbarium and botanic garden locations to identify
   coordinates that may refer to the institution holding the specimen.
   The list combines the GBIF Registry of Scientific Collections
   (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in
-  seven languages, GeoNames and Botanic Gardens Conservation
-  International (BGCI). It includes 7,665 locations from sources beyond
-  those used by CoordinateCleaner. These additional locations are
-  included by default; you can restrict the test to CoordinateCleaner’s
-  sources ([Extension
+  seven languages, GeoNames, Botanic Gardens Conservation International
+  (BGCI), Index Herbariorum and the GBIF registry, and holds every
+  institution of CoordinateCleaner’s list. It includes 7,665 locations
+  from sources beyond those used by CoordinateCleaner. These additional
+  locations are included by default; you can restrict the test to
+  CoordinateCleaner’s sources ([Extension
   points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
   the type of record, and whether the organism is recorded as native or

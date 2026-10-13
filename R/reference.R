@@ -10,7 +10,10 @@
 #' from the CIA World Factbook, the thematicmapping.org World Borders Dataset
 #' and the GEOLocate service, and
 #' biodiversity institutions from GBIF's Global Registry of
-#' Scientific Collections (GRSciColl), Wikidata, GeoNames and BGCI GardenSearch. With `reference = "CoordinateCleaner"` the
+#' Scientific Collections (GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI
+#' GardenSearch, Index Herbariorum and the GBIF registry, with every further
+#' institution of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table placed from Wikidata,
+#' OpenStreetMap or GeoNames. With `reference = "CoordinateCleaner"` the
 #' point gazetteers are read from the user's [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
 #' [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) exactly as that package does, which gives its flags up to the
@@ -106,11 +109,13 @@ sha256_file <- function(path) {
 #'   CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, `key`
 #'   the Factbook code, ISO3 code or GEOLocate query with its prefix); `key`, `code`, `name`, `country`, `city`,
 #'   `type`, `active`, `master_source`, `source`, `extension` for
-#'   institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames or
-#'   BGCI, `key` the GRSciColl key, Wikidata item, the Wikipedia list
-#'   language, revision and line, or the GeoNames or BGCI id with its prefix;
-#'   for Wikipedia rows `city` is the place they are located by and
-#'   `master_source` where its coordinates come from; `extension` is TRUE for
+#'   institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames,
+#'   BGCI, Index Herbariorum, GBIF registry or CoordinateCleaner list, `key`
+#'   the GRSciColl key, Wikidata item, the Wikipedia list language, revision
+#'   and line, or the GeoNames, BGCI, Index Herbariorum, GBIF organisation or
+#'   OpenStreetMap id with its prefix; for Wikipedia rows `city` is the place
+#'   they are located by; for Wikipedia and CoordinateCleaner list rows
+#'   `master_source` is where the coordinates come from; `extension` is TRUE for
 #'   points from sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table does not draw on, for
 #'   capitals, centroids and institutions alike); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
