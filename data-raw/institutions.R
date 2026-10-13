@@ -847,13 +847,30 @@ institutions <- rbind(institutions, coordinatecleaner)
 osm_tags <- c("amenity=university", "amenity=college", "amenity=research_institute", "office=research",
               "tourism=museum", "tourism=zoo", "tourism=aquarium", "garden:type=botanical")
 osm_retrieved <- "2026-10-13"
-osm_files <- file.path(cache, paste0("osm_", sub("=", "_", sub(":", "_", osm_tags)), ".json"))
-for (k in seq_along(osm_tags)) if (!file.exists(osm_files[k])) {
-  kv <- strsplit(osm_tags[k], "=")[[1]]
-  q <- sprintf('[out:json][timeout:800];nwr["%s"="%s"]["name"];out tags center bb;', kv[1], kv[2])
-  r <- curl::curl_fetch_disk("https://overpass-api.de/api/interpreter", osm_files[k],
-                             handle = curl::handle_setform(curl::new_handle(useragent = ua, timeout = 900), data = q))
-  stopifnot(r$status_code == 200, is.null(jsonlite::fromJSON(osm_files[k])$remark))
+# Museums, the largest class, are fetched in tiles of 60 by 60 degrees.
+osm_tiles <- expand.grid(s = c(-90, -30, 30), w = seq(-180, 120, 60))
+osm_jobs <- rbind(
+  data.frame(tag = setdiff(osm_tags, "tourism=museum"), bbox = "", tile = ""),
+  data.frame(tag = "tourism=museum", bbox = sprintf("(%d,%d,%d,%d)", osm_tiles$s, osm_tiles$w,
+                                                     pmin(osm_tiles$s + 60, 90), osm_tiles$w + 60),
+             tile = sprintf("_s%d_w%d", osm_tiles$s, osm_tiles$w)))
+osm_files <- file.path(cache, paste0("osm_", sub("=", "_", sub(":", "_", osm_jobs$tag)), osm_jobs$tile, ".json"))
+osm_servers <- c("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter")
+for (k in seq_along(osm_files)) if (!file.exists(osm_files[k])) {
+  kv <- strsplit(osm_jobs$tag[k], "=")[[1]]
+  q <- sprintf('[out:json][timeout:800];nwr["%s"="%s"]["name"]%s;out tags center bb;', kv[1], kv[2], osm_jobs$bbox[k])
+  tf <- tempfile(fileext = ".json")
+  for (try in 1:12) {
+    r <- tryCatch(curl::curl_fetch_disk(osm_servers[(try - 1) %% 2 + 1], tf,
+                                        handle = curl::handle_setform(curl::new_handle(useragent = ua, timeout = 900),
+                                                                      data = q)),
+                  error = function(e) NULL)
+    x <- if (!is.null(r) && r$status_code == 200) tryCatch(jsonlite::fromJSON(tf), error = function(e) NULL)
+    if (!is.null(x$elements) && is.null(x$remark)) break
+    Sys.sleep(120)
+  }
+  stopifnot(!is.null(x$elements), is.null(x$remark))
+  file.copy(tf, osm_files[k])
 }
 osm_name_tag <- "^(name|official_name|alt_name|short_name|old_name|int_name|loc_name)(:.*)?$"
 osm <- do.call(rbind, lapply(osm_files, function(f) {
