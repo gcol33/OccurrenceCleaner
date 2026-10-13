@@ -699,9 +699,7 @@ first_unique <- function(prev, m, k) {
   if (nrow(u) > k) u[seq_len(k), , drop = FALSE] else u
 }
 
-valid_coords <- function(lon, lat) {
-  is.finite(lon) & is.finite(lat) & lon >= -180 & lon <= 180 & lat >= -90 & lat <= 90
-}
+valid_coords <- function(lon, lat) cpp_valid_coords(lon, lat)
 
 # Dataset accumulators. Pass 0: coordinate ranges and up to min_unique_ds_size
 # distinct coordinates; pass 1: filled ddmm cells and histogram counts.

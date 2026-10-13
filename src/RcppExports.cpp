@@ -10,6 +10,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// cpp_valid_coords
+LogicalVector cpp_valid_coords(NumericVector lon, NumericVector lat);
+RcppExport SEXP _OccurrenceCleaner_cpp_valid_coords(SEXP lonSEXP, SEXP latSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_valid_coords(lon, lat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_point_index
 SEXP cpp_point_index(NumericVector lon, NumericVector lat);
 RcppExport SEXP _OccurrenceCleaner_cpp_point_index(SEXP lonSEXP, SEXP latSEXP) {
@@ -248,6 +260,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_OccurrenceCleaner_cpp_valid_coords", (DL_FUNC) &_OccurrenceCleaner_cpp_valid_coords, 2},
     {"_OccurrenceCleaner_cpp_point_index", (DL_FUNC) &_OccurrenceCleaner_cpp_point_index, 2},
     {"_OccurrenceCleaner_cpp_point_within", (DL_FUNC) &_OccurrenceCleaner_cpp_point_within, 5},
     {"_OccurrenceCleaner_cpp_point_nearest", (DL_FUNC) &_OccurrenceCleaner_cpp_point_nearest, 3},

@@ -274,9 +274,9 @@ flag_chunk <- function(d, cfg, cols) {
   if (length(spatial)) {
     lon <- to_numeric(d[[cols$lon]])
     lat <- to_numeric(d[[cols$lat]])
-    bad <- !is.finite(lon) | !is.finite(lat) | lon < -180 | lon > 180 | lat < -90 | lat > 90
+    ok <- valid_coords(lon, lat)
+    bad <- !ok
     if ("invalid" %in% tests) set_bit("invalid", bad)
-    ok <- !bad
     lon_ok <- lon; lat_ok <- lat
     lon_ok[bad] <- NA_real_; lat_ok[bad] <- NA_real_
     if ("zero" %in% tests) {

@@ -10,6 +10,24 @@
 
 using namespace Rcpp;
 
+// TRUE where both coordinates are finite, longitude in [-180, 180] and
+// latitude in [-90, 90] (degrees).
+// [[Rcpp::export]]
+LogicalVector cpp_valid_coords(NumericVector lon, NumericVector lat) {
+  const R_xlen_t n = lon.size();
+  if (lat.size() != n) stop("lon and lat differ in length");
+  LogicalVector out(no_init(n));
+  int* o = LOGICAL(out);
+  const double* px = REAL(lon);
+  const double* py = REAL(lat);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    const double x = px[i], y = py[i];
+    o[i] = std::isfinite(x) && std::isfinite(y) && x >= -180.0 && x <= 180.0 &&
+           y >= -90.0 && y <= 90.0;
+  }
+  return out;
+}
+
 // Build a nearest-neighbour index over reference points (degrees).
 // [[Rcpp::export]]
 SEXP cpp_point_index(NumericVector lon, NumericVector lat) {
