@@ -28,3 +28,4 @@
 ^\.[a-z]+\.log$
 ^README\.html$
 ^\.build_site\.log$
+^CITATION\.cff$
