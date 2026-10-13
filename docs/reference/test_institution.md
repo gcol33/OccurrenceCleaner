@@ -71,6 +71,12 @@ source's. For 496 institutions no source places the institution itself,
 and the point is the populated place of its country nearest
 CoordinateCleaner's point.
 
+The exception is "SCAR - Expert Group on Birds and Marine Mammals".
+CoordinateCleaner places it at 45.1439 N, 0.5558 E. Its entry in the
+GBIF registry was deleted on 2021-05-31 and has no coordinates. It has
+no point here because no independently verified physical location of the
+group could be established.
+
 The column `extension` marks the 7,665 points from sources
 CoordinateCleaner's table does not draw on: Wikidata beyond the museums
 of the English list, and the lists of the other language editions. The
