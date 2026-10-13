@@ -11,3 +11,5 @@ src/*.dll
 data-raw/cache/
 .run*
 .bench.log
+
+README.html
