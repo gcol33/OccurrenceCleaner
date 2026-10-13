@@ -115,15 +115,26 @@ key <- data.frame(
                   sprintf(ifelse(share[names(groups)] < 1, "%.2f", "%.1f"), share[names(groups)]))
 )
 
+# Soft white glow that traces the letters: the label drawn in faint white at
+# offsets on concentric circles (in counting-grid pixels) under the coloured
+# text. The copies stack to opaque at the glyph and thin out with distance.
+halo_layers <- function(key, radii = seq(2, 12, by = 2), n = 16, alpha = 0.07) {
+  a <- seq(0, 2 * pi, length.out = n + 1L)[-1L]
+  unlist(lapply(radii, function(r) lapply(a, function(t)
+    geom_text(data = transform(key, x = x + r * cos(t), y = y + r * sin(t)),
+              aes(x, y, label = label), colour = "white", alpha = alpha, size = 11,
+              fontface = "bold", hjust = 0.5, lineheight = 0.85))),
+    recursive = FALSE)
+}
+
 cols <- vapply(groups, `[[`, "", "colour")
 p <- ggplot() +
   annotation_raster(density, 0, nx, 0, ny, interpolate = FALSE) +
   geom_point(data = flagged, aes(x, y, colour = group, size = n), alpha = 0.75) +
   scale_size_area(max_size = 2.6, trans = "sqrt", guide = "none") +
-  geom_label(data = key, aes(x, y, label = label, colour = group), size = 11,
-             fontface = "bold", hjust = 0.5, lineheight = 0.85,
-             fill = grDevices::adjustcolor("white", alpha.f = 0.65),
-             linewidth = 0, border.colour = NA, label.r = grid::unit(0.2, "lines")) +
+  halo_layers(key) +
+  geom_text(data = key, aes(x, y, label = label, colour = group), size = 11,
+            fontface = "bold", hjust = 0.5, lineheight = 0.85) +
   scale_colour_manual(values = cols, guide = "none") +
   coord_equal(xlim = c(0, nx), ylim = c(0, ny), expand = FALSE) +
   theme_void() +
