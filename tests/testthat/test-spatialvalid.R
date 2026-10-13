@@ -58,4 +58,22 @@ test_that("as_spatialvalid matches clean_coordinates(value = 'spatialvalid')", {
   for (v in names(theirs)) expect_identical(ours[[v]], theirs[[v]], info = v)
   expect_identical(CoordinateCleaner:::summary.spatialvalid(ours)[names(theirs)[grepl("^\\.", names(theirs))]],
                    CoordinateCleaner:::summary.spatialvalid(theirs))
+  skip_if_not_installed("ggplot2")
+  for (details in c(FALSE, TRUE)) {
+    p_ours <- suppressWarnings(CoordinateCleaner:::plot.spatialvalid(ours, details = details))
+    p_theirs <- suppressWarnings(CoordinateCleaner:::plot.spatialvalid(theirs, details = details))
+    expect_identical(ggplot2::layer_data(p_ours, 2), ggplot2::layer_data(p_theirs, 2), info = details)
+  }
+})
+
+test_that("CoordinateCleaner's plot method draws a converted result with additions", {
+  skip_if_not_installed("CoordinateCleaner")
+  skip_if_not_installed("ggplot2")
+  x <- recs()
+  x$issue <- c("ZERO_COORDINATE", "", "", "")
+  sv <- as_spatialvalid(flag_occurrences(x, tests = c("zero", "capital", "issue_coordinate")),
+                        tests = c("capital", "issue_coordinate"))
+  p <- suppressWarnings(CoordinateCleaner:::plot.spatialvalid(sv, details = TRUE))
+  expect_identical(nrow(ggplot2::layer_data(p, 2)), nrow(x))
+  expect_identical(sort(unique(p$layers[[2]]$data$flag)), c("AAAclean", "cap", "issue_coordinate"))
 })
