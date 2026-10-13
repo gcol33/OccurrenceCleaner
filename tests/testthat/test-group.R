@@ -21,11 +21,11 @@ test_that("outlier matches cc_outl on the exact path for every method", {
   skip_if_not_installed("CoordinateCleaner")
   x <- species_data()
   for (m in c("quantile", "mad", "distance")) {
-    ours <- flag_occurrences(x, tests = "outlier", settings = list(outlier = list(method = m)))$flag_outlier
+    ours <- flag_threads(x, tests = "outlier", settings = list(outlier = list(method = m)))$flag_outlier
     expect_identical(ours, cc(CoordinateCleaner::cc_outl, x, method = m), info = m)
   }
   # species with fewer than min_occs distinct points are not tested
-  expect_false(any(flag_occurrences(x, tests = "outlier")$flag_outlier[x$species == "c"]))
+  expect_false(any(flag_threads(x, tests = "outlier")$flag_outlier[x$species == "c"]))
 })
 
 test_that("the raster approximation flags the records of outlier cells", {
@@ -33,7 +33,7 @@ test_that("the raster approximation flags the records of outlier cells", {
   n <- 12000
   x <- data.frame(species = "a", decimalLongitude = c(runif(n - 20, 10, 20), runif(20, 120, 130)),
                   decimalLatitude = c(runif(n - 20, 40, 50), runif(20, -30, -20)))
-  f <- flag_occurrences(x, tests = "outlier")$flag_outlier
+  f <- flag_threads(x, tests = "outlier")$flag_outlier
   expect_identical(which(f), (n - 19):n)
   # CoordinateCleaner 3.0.1 computes the same cell statistics but its mapping
   # from flagged cells back to records returns no records.
@@ -73,7 +73,7 @@ test_that("age_range_outlier matches cf_range at taxon level", {
   skip_if_not_installed("CoordinateCleaner")
   f <- fossil_data()
   for (m in c("quantile", "mad")) {
-    ours <- flag_occurrences(f, tests = "age_range_outlier", columns = fossil_cols,
+    ours <- flag_threads(f, tests = "age_range_outlier", columns = fossil_cols,
                              settings = list(age_range_outlier = list(method = m)))$flag_age_range_outlier
     expect_identical(ours, cc(CoordinateCleaner::cf_range, f, lon = "lng", lat = "lat", method = m), info = m)
   }
@@ -85,9 +85,9 @@ test_that("age_outlier and spatiotemporal_outlier match cf_age and cf_outl when 
   f$max_ma <- f$min_ma
   f$min_ma[1:3] <- f$max_ma[1:3] <- c(200, 210, 190)
   f$lng[4:5] <- 150
-  expect_identical(flag_occurrences(f, tests = "age_outlier", columns = fossil_cols)$flag_age_outlier,
+  expect_identical(flag_threads(f, tests = "age_outlier", columns = fossil_cols)$flag_age_outlier,
                    cc(CoordinateCleaner::cf_age, f, lon = "lng", lat = "lat"))
-  expect_identical(flag_occurrences(f, tests = "spatiotemporal_outlier", columns = fossil_cols)$flag_spatiotemporal_outlier,
+  expect_identical(flag_threads(f, tests = "spatiotemporal_outlier", columns = fossil_cols)$flag_spatiotemporal_outlier,
                    cc(CoordinateCleaner::cf_outl, f, lon = "lng", lat = "lat"))
 })
 
@@ -116,7 +116,7 @@ test_that("dataset_ddmm and dataset_rounded match cd_ddmm and cd_round", {
                                        round(runif(400, 0, 20) * 2) / 2 + 0.01),
                   decimalLatitude = c(runif(400, 0, 20), floor(runif(400, 0, 20)) + sample(0:59, 400, TRUE) / 100,
                                       round(runif(400, 30, 50) * 2) / 2 + 0.01))
-  f <- flag_occurrences(y, tests = c("dataset_ddmm", "dataset_rounded"))
+  f <- flag_threads(y, tests = c("dataset_ddmm", "dataset_rounded"))
   expect_identical(f$flag_dataset_ddmm, cc(CoordinateCleaner::cd_ddmm, y, ds = "datasetKey"))
   expect_identical(f$flag_dataset_rounded, cc(CoordinateCleaner::cd_round, y, ds = "datasetKey", graphs = FALSE))
   expect_identical(c(tapply(f$flag_dataset_ddmm, y$datasetKey, all)), c(big = FALSE, ddmm = TRUE, grid = TRUE))
@@ -149,7 +149,7 @@ test_that("rounding kernels equal stats::cov and the windowed quantile fence", {
 test_that("small datasets and records without a dataset are not flagged", {
   y <- data.frame(datasetKey = c(rep("small", 3), rep(NA, 5)), decimalLongitude = c(1.1, 2.2, 3.3, 1:5),
                   decimalLatitude = c(1.1, 2.2, 3.3, 1:5))
-  f <- flag_occurrences(y, tests = c("dataset_ddmm", "dataset_rounded"))
+  f <- flag_threads(y, tests = c("dataset_ddmm", "dataset_rounded"))
   expect_false(any(f$flag_dataset_rounded))
   expect_false(any(f$flag_dataset_ddmm[is.na(y$datasetKey)]))
 })
@@ -161,13 +161,13 @@ test_that("range matches cc_iucn, with and without a buffer", {
   rg <- sf::st_sf(species = c("a", "b"), geometry = sf::st_sfc(
     sf::st_polygon(list(rbind(c(5, 45), c(15, 45), c(15, 55), c(5, 55), c(5, 45)))),
     sf::st_polygon(list(rbind(c(-70, -20), c(-50, -20), c(-50, 0), c(-70, 0), c(-70, -20)))), crs = 4326))
-  expect_identical(flag_occurrences(x, tests = "range", gazetteers = list(range = rg))$flag_range,
+  expect_identical(flag_threads(x, tests = "range", gazetteers = list(range = rg))$flag_range,
                    cc(CoordinateCleaner::cc_iucn, x, range = rg))
-  expect_identical(flag_occurrences(x, tests = "range", gazetteers = list(range = rg),
+  expect_identical(flag_threads(x, tests = "range", gazetteers = list(range = rg),
                                     buffers = list(range = 100000))$flag_range,
                    cc(CoordinateCleaner::cc_iucn, x, range = rg, buffer = 100000))
   # species without a range polygon are not flagged
-  expect_false(any(flag_occurrences(x, tests = "range", gazetteers = list(range = rg))$flag_range[x$species == "c"]))
+  expect_false(any(flag_threads(x, tests = "range", gazetteers = list(range = rg))$flag_range[x$species == "c"]))
   expect_error(flag_occurrences(x, tests = "range"), "range polygons")
 })
 
@@ -178,7 +178,7 @@ test_that("aohi matches cc_aohi up to the 72-gon band", {
   a <- reference_points("aohi", "CoordinateCleaner")
   p <- geosphere::destPoint(as.matrix(a[sample(nrow(a), 400, TRUE), ]), runif(400, 0, 360), runif(400, 5000, 15000))
   z <- data.frame(species = "a", decimalLongitude = p[, 1], decimalLatitude = p[, 2])
-  ours <- flag_occurrences(z, tests = "aohi", reference = "CoordinateCleaner")$flag_aohi
+  ours <- flag_threads(z, tests = "aohi", reference = "CoordinateCleaner")$flag_aohi
   theirs <- cc(CoordinateCleaner::cc_aohi, z)
   expect_true(all(ours[theirs]))
   extra <- which(ours & !theirs)

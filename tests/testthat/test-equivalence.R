@@ -27,7 +27,7 @@ check_proximity <- function(test, fn, r, sides, n = 3000, seed = 1, ...) {
   ref <- OccurrenceCleaner:::point_gazetteer(test, "CoordinateCleaner")
   ref <- ref[is.finite(ref$lon) & is.finite(ref$lat), ]
   x <- around(ref, r, n, seed)
-  ours <- flag_occurrences(x, tests = test, reference = "CoordinateCleaner")[[paste0("flag_", test)]]
+  ours <- flag_threads(x, tests = test, reference = "CoordinateCleaner")[[paste0("flag_", test)]]
   theirs <- cc(fn, x, ...)
   # everything CoordinateCleaner flags, we flag
   expect_true(all(ours[theirs]), info = test)
@@ -69,12 +69,12 @@ test_that("invalid, equal and duplicate match exactly", {
                   decimalLongitude = c(runif(n - 6, -200, 200), NA, 0, 10, -10, 180, 5),
                   decimalLatitude = c(runif(n - 6, -100, 100), 1, 0, 10, 10, -90, 5))
   x[sample(n, 200), c("decimalLongitude", "decimalLatitude", "species")] <- x[sample(n, 200), c("decimalLongitude", "decimalLatitude", "species")]
-  f <- flag_occurrences(x, tests = c("invalid", "equal", "duplicate"))
+  f <- flag_threads(x, tests = c("invalid", "equal", "duplicate"))
   expect_identical(f$flag_invalid, cc(CoordinateCleaner::cc_val, x))
   ok <- !f$flag_invalid
   expect_identical(f$flag_equal[ok], cc(CoordinateCleaner::cc_equ, x[ok, ]))
   expect_identical(f$flag_duplicate[ok], cc(CoordinateCleaner::cc_dupl, x[ok, ]))
-  expect_identical(flag_occurrences(x[ok, ], tests = "duplicate", duplicate_by = "species")$flag_duplicate,
+  expect_identical(flag_threads(x[ok, ], tests = "duplicate", duplicate_by = "species")$flag_duplicate,
                    cc(CoordinateCleaner::cc_dupl, x[ok, ], additions = "species"))
 })
 
@@ -84,7 +84,7 @@ test_that("zero matches cc_zero outside the 0.5 degree disc", {
   set.seed(6)
   x <- data.frame(species = "a", decimalLongitude = c(runif(500, -2, 2), 0, 0, 3, 0.2),
                   decimalLatitude = c(runif(500, -2, 2), 0, 7, 0, 0.1))
-  f <- flag_occurrences(x, tests = "zero")
+  f <- flag_threads(x, tests = "zero")
   theirs <- cc(CoordinateCleaner::cc_zero, x)
   disc <- sqrt(x$decimalLongitude^2 + x$decimalLatitude^2) <= 0.5
   expect_identical(f$flag_zero[!disc], theirs[!disc])
@@ -106,13 +106,13 @@ test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natura
   x <- rbind(x, data.frame(species = "a", decimalLongitude = near[, 1], decimalLatitude = near[, 2]))
   x$countrycode <- sample(c("FRA", "DEU", "BRA", "USA", NA), nrow(x), TRUE)
 
-  f <- flag_occurrences(x, tests = c("sea", "urban"), reference = "CoordinateCleaner")
+  f <- flag_threads(x, tests = c("sea", "urban"), reference = "CoordinateCleaner")
   sea <- cc(CoordinateCleaner::cc_sea, x)
   expect_identical(f$flag_sea, sea)
   urban <- cc(CoordinateCleaner::cc_urb, x)
   expect_identical(f$flag_urban, urban)
 
-  f <- flag_occurrences(x, tests = "country_mismatch", reference = "CoordinateCleaner", columns = occ_columns(country = "countrycode"))
+  f <- flag_threads(x, tests = "country_mismatch", reference = "CoordinateCleaner", columns = occ_columns(country = "countrycode"))
   mismatch <- cc(CoordinateCleaner::cc_coun, x, iso3 = "countrycode")
   expect_identical(f$flag_country_mismatch, mismatch)
 })
@@ -122,7 +122,7 @@ test_that("country_mismatch reads the filled ISO codes of CoordinateCleaner's co
   skip_if_not_installed("rnaturalearthdata")
   x <- data.frame(decimalLongitude = c(2.35, 10.75, 21.17), decimalLatitude = c(48.85, 59.91, 42.67),
                   countryCode = c("FR", "NO", "XK"))
-  f <- flag_occurrences(x, tests = "country_mismatch", reference = "CoordinateCleaner")
+  f <- flag_threads(x, tests = "country_mismatch", reference = "CoordinateCleaner")
   expect_identical(f$flag_country_mismatch, c(FALSE, FALSE, FALSE))
 })
 
@@ -130,7 +130,7 @@ test_that("own gazetteers flag the same records as CoordinateCleaner's at the sa
   # Not an equivalence claim (the gazetteers differ, see dev_notes); a smoke
   # check that the default reference runs and flags capitals and GBIF HQ.
   x <- data.frame(species = "a", decimalLongitude = c(2.3522, 12.58, 16.3738), decimalLatitude = c(48.8566, 55.67, 48.2082))
-  f <- flag_occurrences(x, tests = c("capital", "gbif_headquarters"))
+  f <- flag_threads(x, tests = c("capital", "gbif_headquarters"))
   expect_identical(f$flag_capital, c(TRUE, TRUE, TRUE))
   expect_identical(f$flag_gbif_headquarters, c(FALSE, TRUE, FALSE))
 })
