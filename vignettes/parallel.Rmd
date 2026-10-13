@@ -85,7 +85,7 @@ best <- do.call(rbind, lapply(split(timings, timings$workload), function(d) d[wh
 at <- function(w, k) timings$seconds[timings$workload == w & timings$threads == k]
 ```
 
-`r names(speedup)[1]` run `r speedup[1]` times faster with `r max(timings$threads)` threads than with one. The outlier test is fastest with `r best$threads[best$workload == "Outlier test"]` threads, `r round(at("Outlier test", 1) / min(at("Outlier test", sort(unique(timings$threads)))), 1)` times faster than with one, and takes `r at("Outlier test", 24)` s with 24 threads against `r at("Outlier test", 16)` s with 16. The machine has 8 performance cores and 16 efficiency cores, 32 logical processors in all, so the gain per added thread falls beyond 8 threads.
+`r names(speedup)[1]` run `r speedup[1]` times faster with `r max(timings$threads)` threads than with one, and the outlier test `r speedup[2]` times faster. The machine has 8 performance cores and 16 efficiency cores, 32 logical processors in all, so the gain per added thread falls beyond 8 threads.
 
 ```{r timings-plot, eval = has_ggplot, echo = FALSE, fig.height = 4, fig.alt = "Speedup against one thread for two sets of tests, plotted against the number of threads, with the line of ideal speedup."}
 library(ggplot2)
@@ -93,9 +93,12 @@ timings$speedup <- ave(timings$seconds, timings$workload,
                        FUN = function(s) s[1] / s)
 ggplot(timings, aes(threads, speedup, colour = workload)) +
   geom_abline(slope = 1, intercept = 0, linetype = 2, colour = "#5C6166") +
+  annotate("text", x = 9.4, y = 8.8, label = "speedup = threads", hjust = 0,
+           size = 4.2, colour = "#5C6166") +
   geom_line(linewidth = 1) +
   geom_point(size = 2.5) +
   scale_x_continuous(breaks = sort(unique(timings$threads))) +
+  coord_cartesian(xlim = c(1, max(timings$threads)), ylim = c(1, 9)) +
   scale_colour_manual(values = c("#2E6F9E", "#B5342B"), name = NULL) +
   labs(x = "threads", y = "speedup") +
   theme_minimal(base_size = 17) +
@@ -104,7 +107,7 @@ ggplot(timings, aes(threads, speedup, colour = workload)) +
         plot.background = element_rect(fill = "transparent", colour = NA))
 ```
 
-The dashed line is a speedup equal to the number of threads. The measurement covers one machine and one record mix. A table with few species, or one species holding most records, gives the outlier test fewer units of work to spread.
+The measurement covers one machine and one record mix. A table with few species, or one species holding most records, gives the outlier test fewer units of work to spread.
 
 ## Enabling OpenMP
 

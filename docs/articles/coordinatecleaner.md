@@ -1,20 +1,25 @@
 # Compatibility with CoordinateCleaner
 
+OccurrenceCleaner extends the record-cleaning tests developed in
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) defines
-the record tests this package runs. It sets out what each test looks
-for, its default buffer and the public sources of its reference points,
-together with the outlier statistics, the dataset tests for converted
-and rounded coordinates, and the fossil tests. It went through rOpenSci
-software peer review in 2018 and is the reference that methods sections
-cite for these tests.
+(Zizka et al. [2019](https://doi.org/10.1111/2041-210X.13152)) to tables
+containing millions to billions of records. It processes large datasets
+in chunks from disk, including snapshots of the Global Biodiversity
+Information Facility (GBIF), and adds tests based on GBIF metadata and
+genus habitats.
 
-OccurrenceCleaner runs the same tests on tables of millions to billions
-of records, including a GBIF snapshot read from disk in chunks. It
-stores one flag per test next to each record, so you can choose which
-tests exclude a record after flagging and compare several such rules on
-one pass. It is a new package, first released in 2026, and has not been
-reviewed outside its own test suite.
+Each test stores a flag alongside the original record. You can then
+inspect what was flagged, compare cleaning rules, and choose which
+records to exclude without rerunning the tests. This makes it practical
+to explore how cleaning choices affect an entire dataset.
+
+CoordinateCleaner provides the underlying test definitions, default
+distances, and methods for identifying coordinate errors, outliers,
+dataset-wide patterns, and fossil-age problems. It underwent rOpenSci
+software peer review in 2018 and remains the methodological reference to
+cite for these tests. OccurrenceCleaner was first released in 2026; its
+agreement with CoordinateCleaner is checked by its test suite, and it
+has yet to undergo independent software review.
 
 This article shows where the two packages agree, under which settings,
 and where their results change and why. It maps each CoordinateCleaner
