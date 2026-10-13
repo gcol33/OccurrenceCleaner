@@ -509,8 +509,6 @@ attr(f, "occ_layout_version")
 #> [1] 4
 ```
 
-The full reference label
-
 ``` r
 
 flag_reference(f)

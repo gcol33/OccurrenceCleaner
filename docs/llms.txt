@@ -434,24 +434,26 @@ separate licences:
 
 ## Citation
 
-``` R
 If you use OccurrenceCleaner, please cite the package and
-CoordinateCleaner (Zizka et al. 2019, doi:10.1111/2041-210X.13152),
+CoordinateCleaner (Zizka et al. 2019, <doi:10.1111/2041-210X.13152>),
 which provides the test definitions and default buffers.
 
-  Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
-  Occurrence Records_. R package version 0.2.0,
-  <https://gillescolling.com/OccurrenceCleaner/>.
+``` text
+Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
+Occurrence Records_. R package version 0.2.0,
+<https://gillescolling.com/OccurrenceCleaner/>.
+```
 
-A BibTeX entry for LaTeX users is
+BibTeX:
 
-  @Manual{colling2026occurrencecleaner,
-    title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
-    author = {Gilles Colling},
-    year = {2026},
-    note = {R package version 0.2.0},
-    url = {https://gillescolling.com/OccurrenceCleaner/},
-  }
+``` bibtex
+@Manual{colling2026occurrencecleaner,
+  title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
+  author = {Gilles Colling},
+  year = {2026},
+  note = {R package version 0.2.0},
+  url = {https://gillescolling.com/OccurrenceCleaner/},
+}
 ```
 
 Download the citation as
@@ -592,7 +594,7 @@ or
 - [Cleaning GBIF
   data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md):
 
-  A table shaped like a GBIF download, from flagging every test to the
+  A GBIF download or a similar table, from flagging every test to the
   retained records, with the catches checked against known errors.
 
 - [Choosing a cleaning

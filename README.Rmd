@@ -244,8 +244,13 @@ OccurrenceCleaner is licensed under MIT. Two external resources have separate li
 
 ## Citation
 
-```{r citation, echo = FALSE, comment = ""}
-print(citation("OccurrenceCleaner"), bibtex = TRUE)
+```{r citation, echo = FALSE, results = "asis"}
+cit <- citation("OccurrenceCleaner")
+fence <- function(lang, x) cat("```", lang, "\n", paste(x, collapse = "\n\n"), "\n```\n\n", sep = "")
+cat(attr(cit, "mheader"), "\n\n", sep = "")
+fence("text", format(cit, style = "text"))
+cat("BibTeX:\n\n")
+fence("bibtex", format(cit, style = "bibtex"))
 ```
 
 Download the citation as [BibTeX](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib) or [RIS](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.ris).

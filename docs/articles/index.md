@@ -5,7 +5,7 @@
 - [Cleaning GBIF
   data](https://gillescolling.com/OccurrenceCleaner/articles/gbif-workflow.md):
 
-  A table shaped like a GBIF download, from flagging every test to the
+  A GBIF download or a similar table, from flagging every test to the
   retained records, with the catches checked against known errors.
 
 - [Choosing a cleaning

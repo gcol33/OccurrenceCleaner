@@ -1,7 +1,7 @@
 ---
 title: "Cleaning GBIF data"
 description: >
-  A table shaped like a GBIF download, from flagging every test to the retained records, with the catches checked against known errors.
+  A GBIF download or a similar table, from flagging every test to the retained records, with the catches checked against known errors.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Cleaning GBIF data}
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.heig
 options(knitr.kable.NA = "")
 ```
 
-This article runs the whole cleaning workflow on a table shaped like a GBIF download: flag every record with all the tests its columns allow, look at what each test caught, and then compare several cleaning rules over the same flags before choosing one. The data are simulated so that every error is known, which makes it possible to check that each test catches what it should and nothing else. Installation is covered in [Get started](OccurrenceCleaner.html).
+This article runs the whole cleaning workflow on a GBIF download or a similar table: flag every record with all the tests its columns allow, look at what each test caught, and then compare several cleaning rules over the same flags before choosing one. The data are simulated so that every error is known, which makes it possible to check that each test catches what it should and nothing else. Installation is covered in [Get started](OccurrenceCleaner.html).
 
 ## Example data
 
@@ -120,14 +120,9 @@ p[!p$run, c("test", "missing")]
 
 The result is the input with an integer `flags` column and one logical column per test. A `FALSE` in a flag column means that the test did not flag the record. It does not mean that every test examined the record: a test that did not run has no column, and a grouped test leaves a species with too few records untested. `flag_reference()` returns the label of the reference data that produced the flags, with the version of every layer. It is worth storing next to any cleaned table that goes into an analysis.
 
-<details>
-<summary>The full reference label</summary>
-
 ```{r reference}
 flag_reference(f)
 ```
-
-</details>
 
 `summary()` turns the flags into shares per test. With one rule of every test, it gives for each test the records it flags, their percentage, and the records for which it is the only flag:
 

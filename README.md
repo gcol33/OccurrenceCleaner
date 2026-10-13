@@ -76,11 +76,11 @@ settings used in OccurrenceCleaner.
 The package compiles C++ code. Install the build tools for your
 operating system first:
 
-| Operating system | Build tools |
-|----|----|
-| Windows | [Rtools](https://cran.r-project.org/bin/windows/Rtools/) |
-| macOS | Run `xcode-select --install` in Terminal |
-| Debian / Ubuntu | Install `r-base-dev` |
+| Operating system | Build tools                                              |
+|------------------|----------------------------------------------------------|
+| Windows          | [Rtools](https://cran.r-project.org/bin/windows/Rtools/) |
+| macOS            | Run `xcode-select --install` in Terminal                 |
+| Debian / Ubuntu  | Install `r-base-dev`                                     |
 
 Check that R can find the compiler:
 
@@ -421,23 +421,27 @@ separate licences:
 
 ## Citation
 
-    If you use OccurrenceCleaner, please cite the package and
-    CoordinateCleaner (Zizka et al. 2019, doi:10.1111/2041-210X.13152),
-    which provides the test definitions and default buffers.
+If you use OccurrenceCleaner, please cite the package and
+CoordinateCleaner (Zizka et al. 2019, <doi:10.1111/2041-210X.13152>),
+which provides the test definitions and default buffers.
 
-      Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
-      Occurrence Records_. R package version 0.2.0,
-      <https://gillescolling.com/OccurrenceCleaner/>.
+``` text
+Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
+Occurrence Records_. R package version 0.2.0,
+<https://gillescolling.com/OccurrenceCleaner/>.
+```
 
-    A BibTeX entry for LaTeX users is
+BibTeX:
 
-      @Manual{colling2026occurrencecleaner,
-        title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
-        author = {Gilles Colling},
-        year = {2026},
-        note = {R package version 0.2.0},
-        url = {https://gillescolling.com/OccurrenceCleaner/},
-      }
+``` bibtex
+@Manual{colling2026occurrencecleaner,
+  title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
+  author = {Gilles Colling},
+  year = {2026},
+  note = {R package version 0.2.0},
+  url = {https://gillescolling.com/OccurrenceCleaner/},
+}
+```
 
 Download the citation as
 [BibTeX](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib)

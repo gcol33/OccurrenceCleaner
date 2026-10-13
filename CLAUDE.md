@@ -103,6 +103,9 @@ recompiles.
 ## Conventions
 
 - Branch `main`, commit directly.
+- Every edit to `README.Rmd`, a vignette, roxygen or `inst/CITATION` is followed by a rebuild before
+  committing: `devtools::build_readme()` for the README, then `Rscript build_site.R` for `docs/`.
+  Never plain pkgdown.
 - Roxygen and Rd text ASCII only.
 - CI workflows trigger on `push`, `pull_request` and `workflow_dispatch`; no `schedule:`.
 - Docs follow the house docs skills (`docs-style` with `docs-readme` or `docs-articles`);

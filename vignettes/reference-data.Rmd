@@ -284,14 +284,9 @@ f
 attr(f, "occ_layout_version")
 ```
 
-<details>
-<summary>The full reference label</summary>
-
 ```{r stamp-label}
 flag_reference(f)
 ```
-
-</details>
 
 `reference = "CoordinateCleaner"` stamps the installed [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) version instead. For streamed input the same label is written to the output directory, and a rerun into that directory with a different reference, land scale, set of tests or layout stops with an error, so one output directory never mixes flags from two references.
 
