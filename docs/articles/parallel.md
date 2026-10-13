@@ -1,12 +1,14 @@
 # Running on several threads
 
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-runs its slowest steps on several threads when you set `n_threads`.
-Threads are parallel workers inside one R process, provided by OpenMP, a
-standard for shared-memory parallelism in C++. This article shows how to
-set the number of threads, which tests use them, why the flags do not
-depend on the number, how much time they save on one machine and how to
-build the package with OpenMP. Installation is covered in [Get
+can use several CPU threads to speed up its most time-consuming steps.
+Set `n_threads` to choose how many threads work in parallel within the
+same R process. The package uses OpenMP to manage them.
+
+This article explains which tests use multiple threads, how to choose
+the thread count, and why changing it leaves the flags unchanged. It
+also reports timings from one machine and explains how to enable OpenMP
+when building the package. For installation instructions, see [Get
 started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
 
 1.  **Set** the number of threads with `n_threads`.

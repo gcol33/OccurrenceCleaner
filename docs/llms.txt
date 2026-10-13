@@ -42,15 +42,15 @@ exclude. OccurrenceCleaner supports:
   [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html)
   counts exclusions by rule and by taxon, period or precision class for
   reporting in a methods section or data paper.
-- **More institution locations.** Records are checked against 23,895
-  museum, herbarium and botanic garden locations to flag coordinates
-  that may identify where a specimen is held. The list includes all but
-  one of the institutions in CoordinateCleaner’s list plus 7,665
-  locations from [additional collection registries and geographic
-  sources](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
-  All locations are used by default; the test can also be restricted to
-  CoordinateCleaner’s sources ([Extension
-  points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
+- **More institution locations.** OccurrenceCleaner checks records
+  against 23,895 locations of museums, herbaria, botanic gardens and
+  other institutions to flag coordinates that may refer to the
+  collection’s address. The reference table includes 7,665 additional
+  locations from [Wikidata and Wikipedia’s natural history museum
+  lists](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
+  All locations are checked by default. You can also [restrict the test
+  to CoordinateCleaner’s
+  sources](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
   the type of record, and whether the organism is recorded as native or
   introduced. Habitat information for the recorded genus helps
