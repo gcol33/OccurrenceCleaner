@@ -101,13 +101,13 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: group pass (counts) done [0 s]
 #> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~10 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
-#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
 #> progress: group pass (buckets) done [0 s]
-#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
-#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~10 s | elapsed 0 s
+#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~9 s | elapsed 0 s
 #> progress: duplicate buckets done [0 s]
-#> progress: outlier buckets, 0 of 9,000 rows | step ETA 9 s | run 2%, ETA ~10 s | elapsed 0 s
+#> progress: outlier buckets, 0 of 9,000 rows | step ETA 8 s | run 2%, ETA ~9 s | elapsed 0 s
 #> progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
 #> progress: outlier buckets done [0 s]
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
@@ -126,7 +126,7 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpApKQop\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpINoRyL\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -366,9 +366,9 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: group pass (counts) done [0 s]
 #> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
-#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~5 s | elapsed 0 s
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~6 s | elapsed 0 s
 #> progress: group pass (buckets) done [0 s]
-#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~5 s | elapsed 0 s
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~6 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
 #> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~6 s | elapsed 0 s
 #> progress: duplicate buckets done [0 s]
@@ -459,12 +459,11 @@ readLines(file.path(out, "progress.txt"))
 #> [1] "record 9000 9000 0.3 0.0 0.0 1.0000"
 ```
 
-`n_threads` spreads the exact outlier test over species and the
-proximity and point-in-polygon queries over records; `n_threads = 0`
-uses every thread OpenMP hands out. Each species and each record is
-computed on one thread, so the flags are the same for any number of
-threads. Reading the input, the other tests and the bookkeeping of the
-group stage run on one thread.
+`n_threads` spreads the exact outlier test and the proximity and
+point-in-polygon queries over several threads, and the flags are the
+same for any number of threads. [Running on several
+threads](https://gillescolling.com/OccurrenceCleaner/articles/parallel.md)
+lists the tests that use them and the measured speedup.
 
 ### Memory and disk
 

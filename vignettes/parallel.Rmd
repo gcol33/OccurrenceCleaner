@@ -1,0 +1,113 @@
+---
+title: "Running on several threads"
+description: >
+  Spread the outlier test and the proximity and polygon queries over several threads, check that the flags stay the same, read the measured speedup and set up OpenMP on each platform.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Running on several threads}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4.5,
+                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
+has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
+timings <- read.csv(system.file("extdata", "thread_timings.csv",
+                                package = "OccurrenceCleaner"))
+one <- timings[timings$threads == 1, ]
+top <- timings[timings$threads == max(timings$threads), ]
+speedup <- setNames(round(one$seconds / top$seconds, 1), one$workload)
+```
+
+`flag_occurrences()` runs its slowest steps on several threads when you set `n_threads`. Threads are parallel workers inside one R process, provided by OpenMP, a standard for shared-memory parallelism in C++. This article shows how to set the number of threads, which tests use them, why the flags do not depend on the number, how much time they save on one machine and how to build the package with OpenMP. Installation is covered in [Get started](OccurrenceCleaner.html).
+
+1. **Set** the number of threads with `n_threads`.
+
+2. **Check** that the flags are the same for any number.
+
+3. **Read** the measured speedup of each kind of test.
+
+4. **Enable** OpenMP where the compiler does not include it.
+
+## Setting the number of threads
+
+`n_threads = 1` is the default and runs everything on one thread. A larger number requests that many threads, and `0` uses every thread OpenMP offers on the machine. The records below are simulated: 20,000 points in the Alps, spread over 40 species.
+
+```{r data}
+library(OccurrenceCleaner)
+set.seed(7)
+n <- 20000
+x <- data.frame(species = sample(sprintf("sp%02d", 1:40), n, TRUE),
+                decimalLongitude = runif(n, 6, 16),
+                decimalLatitude = runif(n, 45.5, 48))
+tests <- c("capital", "centroid", "sea", "outlier")
+f1 <- flag_occurrences(x, tests = tests, n_threads = 1, verbose = FALSE)
+f4 <- flag_occurrences(x, tests = tests, n_threads = 4, verbose = FALSE)
+```
+
+A request above the number of threads OpenMP offers is reduced to that number, and a message says so. `OccurrenceCleaner:::cpp_max_threads()` returns the limit of the current build.
+
+## Tests that use the threads
+
+Two kinds of work are spread over threads:
+
+- The outlier test computes the distances between the records of one species. Each species is one unit of work, and a species with many records is split by rows over several threads.
+
+- The record tests that query reference data run per record: the proximity tests (`capital`, `centroid`, `institution`, `gbif_headquarters` and `aohi`) and the point-in-polygon tests (`sea`, `urban`, the habitat tests and `range`).
+
+Reading the input, the other tests and the bookkeeping of the group stage run on one thread. On a table on disk each chunk of records is processed with the same number of threads (see [Large tables on disk](on-disk.html)).
+
+## Identical flags
+
+Each species and each record is computed on one thread, and the distances of a species are added in the order of its records. The result does not depend on the number of threads or on how the work is divided between them.
+
+```{r identical}
+identical(f4$flags, f1$flags)
+```
+## Speedup
+
+The timings below come from `data-raw/threads.R`, which times `flag_occurrences()` on simulated records with 1, 2, 4 and 8 threads and keeps the median of three runs. It ran on an `r timings$cpu[1]` under R `r timings$r_version[1]`, with the other tests switched off.
+
+```{r timings-table, echo = FALSE}
+wide <- reshape(timings[, c("workload", "n", "threads", "seconds")],
+                idvar = c("workload", "n"), timevar = "threads",
+                direction = "wide")
+names(wide) <- sub("seconds.", "", names(wide))
+wide$n <- format(wide$n, big.mark = ",", scientific = FALSE, trim = TRUE)
+knitr::kable(wide, row.names = FALSE, col.names = c("Tests", "Records",
+             paste(sort(unique(timings$threads)), "thread(s), s")),
+             align = "lrrrrr")
+```
+
+`r names(speedup)[1]` run `r speedup[1]` times faster with `r max(timings$threads)` threads than with one. The outlier test runs `r speedup[2]` times faster.
+
+```{r timings-plot, eval = has_ggplot, echo = FALSE, fig.height = 4, fig.alt = "Speedup against one thread for two sets of tests, plotted against the number of threads, with the line of ideal speedup."}
+library(ggplot2)
+timings$speedup <- ave(timings$seconds, timings$workload,
+                       FUN = function(s) s[1] / s)
+ggplot(timings, aes(threads, speedup, colour = workload)) +
+  geom_abline(slope = 1, intercept = 0, linetype = 2, colour = "#5C6166") +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = sort(unique(timings$threads))) +
+  scale_colour_manual(values = c("#2E6F9E", "#B5342B"), name = NULL) +
+  labs(x = "threads", y = "speedup") +
+  theme_minimal(base_size = 17) +
+  theme(legend.position = "bottom",
+        panel.background = element_rect(fill = "transparent", colour = NA),
+        plot.background = element_rect(fill = "transparent", colour = NA))
+```
+
+The dashed line is a speedup equal to the number of threads. The measurement covers one machine and one record mix. A table with few species, or one species holding most records, gives the outlier test fewer units of work to spread.
+
+## Enabling OpenMP
+
+OpenMP comes with the compiler. Rtools on Windows and the default compiler on Linux include it, and the package uses it from the first installation. Apple's compiler on macOS does not. There, install the runtime with `brew install libomp` and add these lines to `~/.R/Makevars` before installing the package:
+
+```
+CPPFLAGS += -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp
+LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
+```
+
+On Intel Macs the Homebrew prefix is `/usr/local/opt/libomp`. A build without OpenMP installs and runs every test on one thread, so `n_threads` has no effect. `OccurrenceCleaner:::cpp_max_threads()` returns `1` for such a build and the number of available threads otherwise.

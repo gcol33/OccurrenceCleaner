@@ -20,6 +20,13 @@
   Flag a directory of files too large for memory, tally from disk, join
   flags back to records and resume an interrupted run.
 
+- [Running on several
+  threads](https://gillescolling.com/OccurrenceCleaner/articles/parallel.md):
+
+  Spread the outlier test and the proximity and polygon queries over
+  several threads, check that the flags stay the same, read the measured
+  speedup and set up OpenMP on each platform.
+
 - [Cleaning fossil
   records](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md):
 

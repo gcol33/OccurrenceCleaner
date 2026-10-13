@@ -29,3 +29,5 @@
 ^README\.html$
 ^\.build_site\.log$
 ^CITATION\.cff$
+^\.lib_bench$
+^\.bench_install\.log$

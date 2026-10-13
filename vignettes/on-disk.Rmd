@@ -235,7 +235,7 @@ A run writes its progress to `progress.txt` in the output directory, one line ov
 readLines(file.path(out, "progress.txt"))
 ```
 
-`n_threads` spreads the exact outlier test over species and the proximity and point-in-polygon queries over records; `n_threads = 0` uses every thread OpenMP hands out. Each species and each record is computed on one thread, so the flags are the same for any number of threads. Reading the input, the other tests and the bookkeeping of the group stage run on one thread.
+`n_threads` spreads the exact outlier test and the proximity and point-in-polygon queries over several threads, and the flags are the same for any number of threads. [Running on several threads](parallel.html) lists the tests that use them and the measured speedup.
 
 ### Memory and disk
 

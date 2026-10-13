@@ -502,6 +502,38 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Gives `test_plan()` on the snapshot, the flag call and a tally with two rules; says the issue column is read as a `;`-separated string, how many times the group stage reads the files, and what an interruption repeats in each stage.
 - leaves: the snapshot workflow
 
+## Running on several threads (how-to, A2)
+
+### par.opener  [A2]
+- idea: `n_threads` in `flag_occurrences()`, what it buys
+- job: Defines threads and OpenMP at first use, says what `n_threads` does, lists what the article shows (set, check identical flags, read the speedup, enable OpenMP) and links Get started for installation; steps list.
+- leaves: the four steps
+
+### par.set  [A2]  (section)
+- idea: one simulated table, `n_threads` 1 and 4
+- job: Describes the simulated records, runs the same tests with one and four threads, says `0` uses every thread OpenMP offers and that a larger request is reduced with a message.
+- leaves: `x`, `tests`, `f1`, `f4`
+
+### par.tests  [A2]  (section)
+- idea: which work is spread
+- job: Lists the outlier test (per species, a large species split by rows) and the per-record proximity and point-in-polygon tests; names what stays on one thread; links the on-disk article.
+- leaves: the split between threaded and single-thread work
+
+### par.identical  [A2]  (section)
+- idea: flags do not depend on the thread count
+- job: States that each species and record is computed on one thread, in record order, and shows `identical()` on the two flag vectors.
+- leaves: `identical(f4$flags, f1$flags)`
+
+### par.speedup  [A2]  (section)
+- idea: measured scaling on one machine
+- job: Names the script that produced the timings and the machine from the shipped table, shows the table and the speedup figure with the ideal line, and scopes the claim to one machine and record mix.
+- leaves: `inst/extdata/thread_timings.csv`, `data-raw/threads.R`
+
+### par.openmp  [A2]  (section)
+- idea: where OpenMP comes from
+- job: Says Rtools and the default Linux compiler include OpenMP, gives the Homebrew recipe for macOS (Apple Silicon and Intel prefixes), and says how to read the thread limit of a build and that a build without OpenMP runs on one thread. The README Installation links this section (2026-10-13).
+- leaves: the macOS `~/.R/Makevars` lines
+
 ## Cleaning GBIF data (how-to, end to end)
 
 ### gbif.opener  [A3]

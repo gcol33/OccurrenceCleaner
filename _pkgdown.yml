@@ -102,6 +102,7 @@ articles:
   - gbif-workflow
   - rules
   - on-disk
+  - parallel
   - fossils
   - gazetteers
 - title: Background

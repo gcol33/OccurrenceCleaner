@@ -96,6 +96,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - tests: explanation of each test (A4 home)
 - rules: how-to choose and compare rules (A3 home)
 - on-disk: how-to stream a snapshot (A2 home)
+- parallel: how-to use `n_threads`, check the flags stay the same, measured speedup, OpenMP setup (A2)
 - gbif-workflow: how-to, a GBIF download end to end
 - reference-data: explanation of the gazetteers (A5 home)
 - gazetteers ("Custom reference points and polygons", under Workflows): how-to use custom points, polygons and species ranges (A5)

@@ -80,18 +80,11 @@ compiler.
 
 Multithreading (`n_threads` in
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md))
-needs OpenMP. Rtools on Windows and the default compiler on Linux
-include it. Apple’s compiler on macOS does not: install the runtime with
-`brew install libomp` and add these lines to `~/.R/Makevars` before
-installing the package:
-
-    CPPFLAGS += -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp
-    LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
-
-On Intel Macs the Homebrew prefix is `/usr/local/opt/libomp` instead.
+needs OpenMP, which Rtools and the default Linux compiler include. On
+macOS it needs one extra installation step, described in [Running on
+several
+threads](https://gillescolling.com/OccurrenceCleaner/articles/parallel.html#enabling-openmp).
 Without OpenMP the package installs and runs every test on one thread.
-`OccurrenceCleaner:::cpp_max_threads()` returns the number of threads
-available, and `1` means the build has no OpenMP.
 
 ## Usage
 

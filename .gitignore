@@ -13,3 +13,5 @@ data-raw/cache/
 .bench.log
 
 README.html
+.lib_bench/
+.bench_install.log

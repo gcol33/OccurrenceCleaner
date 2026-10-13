@@ -62,6 +62,7 @@
     <li><a class="dropdown-item" href="articles/gbif-workflow.html">Cleaning GBIF data</a></li>
     <li><a class="dropdown-item" href="articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="articles/parallel.html">Running on several threads</a></li>
     <li><a class="dropdown-item" href="articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -125,10 +126,7 @@
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gcol33/OccurrenceCleaner"</span><span class="op">)</span></span></code></pre></div>
 <p>The package compiles C++ code: <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> on Windows, <code>xcode-select --install</code> on macOS, <code>r-base-dev</code> on Debian and Ubuntu. <code>pkgbuild::has_build_tools(debug = TRUE)</code> checks that R finds the compiler.</p>
-<p>Multithreading (<code>n_threads</code> in <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code>) needs OpenMP. Rtools on Windows and the default compiler on Linux include it. Apple’s compiler on macOS does not: install the runtime with <code>brew install libomp</code> and add these lines to <code>~/.R/Makevars</code> before installing the package:</p>
-<pre><code>CPPFLAGS += -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp
-LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
-<p>On Intel Macs the Homebrew prefix is <code>/usr/local/opt/libomp</code> instead. Without OpenMP the package installs and runs every test on one thread. <code>OccurrenceCleaner:::cpp_max_threads()</code> returns the number of threads available, and <code>1</code> means the build has no OpenMP.</p>
+<p>Multithreading (<code>n_threads</code> in <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code>) needs OpenMP, which Rtools and the default Linux compiler include. On macOS it needs one extra installation step, described in <a href="https://gillescolling.com/OccurrenceCleaner/articles/parallel.html#enabling-openmp">Running on several threads</a>. Without OpenMP the package installs and runs every test on one thread.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -141,7 +139,7 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 <p><code><a href="reference/test_plan.html">test_plan()</a></code> shows which tests run on a table and why each other test does not. <code><a href="reference/flag_tests.html">flag_tests()</a></code> lists every test with its definition and the columns it needs.</p>
 <p>The input is a data frame, or a path to a table on disk (<a href="#processing-large-datasets-on-disk">Processing large datasets on disk</a>). Coordinates are longitude and latitude in decimal degrees (WGS84). Columns are matched by their Darwin Core names, the standard field names for biodiversity data, regardless of capitalisation. Other column names are mapped with <code><a href="reference/occ_columns.html">occ_columns()</a></code>.</p>
 <p>Each test reads a few columns, and by default every test whose columns are present runs. To run only some tests, name them in <code>tests</code>. If a named test lacks one of its columns, the call stops and reports which column is missing.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -161,7 +159,7 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 <p>A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna, and the fourth, in rural Upper Austria, passes every test. The integer <code>flags</code> column encodes every test of a record, one bit per test.</p>
 <p>Running a test only adds its flag, so the default runs every test the data allows. Which records to exclude is a separate choice, made afterwards with a cleaning rule. A rule specifies which tests to use when filtering: a record is excluded if any test in the rule flags it.</p>
 <p>A flagged record may still be valid: a real observation can lie within 10 km of a capital, so you choose the tests that suit your analysis. A rule for species distribution modelling might exclude fossil and living specimens along with coordinate problems, and another study can choose a different set. You can compare several rules on the same flags, then select the records to keep:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
 <span>            <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="va">mild</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"gbif_headquarters"</span><span class="op">)</span></span>
@@ -202,7 +200,7 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 <h2 id="outliers-and-dataset-tests">Outliers and dataset tests<a class="anchor" aria-label="anchor" href="#outliers-and-dataset-tests"></a>
 </h2>
 <p>The outlier and dataset tests judge a record against the rest of its species or dataset, so they run in a pass over the whole input before the record tests, streamed input included. Their options go in <code>settings</code>, with CoordinateCleaner’s defaults:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span><span class="op">)</span></span>
 <span><span class="va">mad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"mad"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, tests <span class="op">=</span> <span class="va">tests</span>, settings <span class="op">=</span> <span class="va">mad</span><span class="op">)</span></span></code></pre></div>
@@ -212,7 +210,7 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 <h2 id="fossil-records">Fossil records<a class="anchor" aria-label="anchor" href="#fossil-records"></a>
 </h2>
 <p>A table from the Paleobiology Database goes through <code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> too, with the age test and the fossil outlier tests of CoordinateCleaner’s <code>clean_fossils()</code>. Its column names are given once through <code><a href="reference/occ_columns.html">occ_columns()</a></code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
 <span>           <span class="st">"age_equal"</span>, <span class="st">"age_range_outlier"</span>, <span class="st">"spatiotemporal_outlier"</span><span class="op">)</span></span>
 <span><span class="va">pbdb_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="st">"lng"</span>, lat <span class="op">=</span> <span class="st">"lat"</span>, species <span class="op">=</span> <span class="st">"accepted_name"</span><span class="op">)</span></span>
@@ -224,7 +222,7 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 </h2>
 <p><code><a href="reference/flag_occurrences.html">flag_occurrences()</a></code> uses <a href="https://gillescolling.com/vectra/" class="external-link">vectra</a> to process tables stored on disk, including GBIF snapshots. It accepts a directory of Parquet files, a <code>.vtr</code> file, a delimited text file or a vectra query node.</p>
 <p>The function flags and writes each input file separately. If processing is interrupted, rerunning the call skips completed files. The <code>keep</code> argument specifies which input columns to save alongside the flags for grouping:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span>, <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
 <span>                      out <span class="op">=</span> <span class="st">"flags"</span>, keep <span class="op">=</span> <span class="va">keep</span><span class="op">)</span></span>
@@ -300,23 +298,23 @@ LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp</code></pre>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>If you use OccurrenceCleaner, please cite the package and</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">CoordinateCleaner</span> (Zizka et al. <span class="dv">2019</span>, doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>),</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>which provides the test definitions and default buffers.</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  Occurrence Records_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span><span class="er">&gt;</span>.</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="sc">@</span>Manual{colling2026occurrencecleaner,</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    title <span class="ot">=</span> {OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species Occurrence Records},</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span>},</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  }</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>If you use OccurrenceCleaner, please cite the package and</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">CoordinateCleaner</span> (Zizka et al. <span class="dv">2019</span>, doi<span class="sc">:</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">2041-210</span>X<span class="fl">.13152</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>which provides the test definitions and default buffers.</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  Colling <span class="fu">G</span> (<span class="dv">2026</span>). _OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  Occurrence Records_. R package version <span class="dv">0</span>.<span class="fl">2.0</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span><span class="er">&gt;</span>.</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="sc">@</span>Manual{colling2026occurrencecleaner,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    title <span class="ot">=</span> {OccurrenceCleaner<span class="sc">:</span> Fast Quality Checks <span class="cf">for</span> Species Occurrence Records},</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    author <span class="ot">=</span> {Gilles Colling},</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2026</span>},</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span>},</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span></code></pre></div>
 <p>Download the citation as <a href="https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib">BibTeX</a> or <a href="https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.ris">RIS</a>.</p>
 </div>
 </div>

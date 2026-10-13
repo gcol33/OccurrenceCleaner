@@ -37,6 +37,7 @@
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/parallel.html">Running on several threads</a></li>
     <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -76,6 +77,8 @@
         <dd><p>What each test and each rule removes, by taxon, record age and coordinate precision, and how to apply the rule you choose.</p>
         </dd><dt><a href="on-disk.html">Large tables on disk</a></dt>
         <dd><p>Flag a directory of files too large for memory, tally from disk, join flags back to records and resume an interrupted run.</p>
+        </dd><dt><a href="parallel.html">Running on several threads</a></dt>
+        <dd><p>Spread the outlier test and the proximity and polygon queries over several threads, check that the flags stay the same, read the measured speedup and set up OpenMP on each platform.</p>
         </dd><dt><a href="fossils.html">Cleaning fossil records</a></dt>
         <dd><p>The age tests and PyRate export for Paleobiology Database records.</p>
         </dd><dt><a href="gazetteers.html">Custom reference points and polygons</a></dt>

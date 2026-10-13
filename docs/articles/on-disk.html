@@ -64,6 +64,7 @@
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/parallel.html">Running on several threads</a></li>
     <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -203,13 +204,13 @@ The call and its progress messages
 <span><span class="co">#&gt; progress: group pass (counts) done [0 s]</span></span>
 <span><span class="co">#&gt; progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~10 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: duplicate: 64 bucket(s)</span></span>
-<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: group pass (buckets) done [0 s]</span></span>
-<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~11 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: outlier: 26 bucket(s)</span></span>
-<span><span class="co">#&gt; progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~10 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~9 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: duplicate buckets done [0 s]</span></span>
-<span><span class="co">#&gt; progress: outlier buckets, 0 of 9,000 rows | step ETA 9 s | run 2%, ETA ~10 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: outlier buckets, 0 of 9,000 rows | step ETA 8 s | run 2%, ETA ~9 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: outlier buckets done [0 s]</span></span>
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
@@ -225,7 +226,7 @@ The call and its progress messages
 </details><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 9,000 records in 3 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpApKQop\flags</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpINoRyL\flags</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi</span></span>
 <span><span class="co">#&gt;   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
@@ -504,9 +505,9 @@ Messages after removing one marker
 <span><span class="co">#&gt; progress: group pass (counts) done [0 s]</span></span>
 <span><span class="co">#&gt; progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: duplicate: 64 bucket(s)</span></span>
-<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~5 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~6 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: group pass (buckets) done [0 s]</span></span>
-<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~5 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~6 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: outlier: 26 bucket(s)</span></span>
 <span><span class="co">#&gt; progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~6 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: duplicate buckets done [0 s]</span></span>
@@ -586,12 +587,10 @@ the same line is printed every minute.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"progress.txt"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "record 9000 9000 0.3 0.0 0.0 1.0000"</span></span></code></pre></div>
-<p><code>n_threads</code> spreads the exact outlier test over species
-and the proximity and point-in-polygon queries over records;
-<code>n_threads = 0</code> uses every thread OpenMP hands out. Each
-species and each record is computed on one thread, so the flags are the
-same for any number of threads. Reading the input, the other tests and
-the bookkeeping of the group stage run on one thread.</p>
+<p><code>n_threads</code> spreads the exact outlier test and the
+proximity and point-in-polygon queries over several threads, and the
+flags are the same for any number of threads. <a href="parallel.html">Running on several threads</a> lists the tests that
+use them and the measured speedup.</p>
 </div>
 <div class="section level3">
 <h3 id="memory-and-disk">Memory and disk<a class="anchor" aria-label="anchor" href="#memory-and-disk"></a>
