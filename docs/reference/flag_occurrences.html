@@ -92,7 +92,8 @@ record per test. Nothing is removed and no threshold is baked in.</p>
 <span>  keep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  part_rows <span class="op">=</span> <span class="fl">2e+06</span>,</span>
 <span>  resume <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  n_threads <span class="op">=</span> <span class="fl">1L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -200,6 +201,12 @@ deletes the earlier output in <code>out</code> and starts over.</p></dd>
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Report progress for streamed input.</p></dd>
 
+
+<dt id="arg-n-threads">n_threads<a class="anchor" aria-label="anchor" href="#arg-n-threads"></a></dt>
+<dd><p>Number of threads for the outlier test and the spatial
+queries. <code>0</code> uses every thread OpenMP hands out; a request above that is
+reduced to it, with a message.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -250,6 +257,24 @@ five minutes have passed, and at the end of each pass, so an interruption
 repeats at most the work since the last checkpoint. The record pass writes
 a <code>.done</code> marker per input file; an interruption there repeats the file in
 progress.</p>
+<p>A streamed run writes its progress to <code>out/progress.txt</code>, one line
+overwritten on every report: the step, items done and total, seconds
+elapsed, and the estimated seconds left in the step and in the run, and the
+share of the run done. The estimate for the steps ahead uses per-record
+costs measured on a part of the GBIF snapshot, scaled to the speed of the
+run so far, so it is rough until the slower steps have started. With
+<code>verbose</code>, the same is reported on the console every minute.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="threads">Threads<a class="anchor" aria-label="anchor" href="#threads"></a></h2>
+
+
+<p><code>n_threads</code> spreads the exact outlier test over species and the
+proximity and point-in-polygon queries of the record tests over records.
+Each species and each record is computed on one thread, so the flags do not
+depend on the number of threads. Reading the input, the other tests and the
+bookkeeping of the group stage run on one thread. Without OpenMP support in
+the compiler every query runs on one thread.</p>
 <p>Memory in the record pass is one input chunk, up to <code>part_rows</code> buffered
 output rows and the group-test hits of the current block of 2^20 rows. The
 group stage holds two million bucketed rows before writing them (more
@@ -290,9 +315,10 @@ Records without a code, or at sea, are flagged as in CoordinateCleaner.</p></li>
 <li><p><code>outlier</code> flags the records of outlier cells in the raster approximation
 (species of 10,000 records or more, or <code>thinning = TRUE</code>); in
 CoordinateCleaner 3.0.1 that path never flags a record.</p></li>
-<li><p><code>age_outlier</code> and <code>spatiotemporal_outlier</code> draw ages from a stream seeded
-per taxon, so they agree with <code>cf_age()</code> and <code>cf_outl()</code> in distribution;
-when every age range has zero width the flags are identical.</p></li>
+<li><p><code>age_outlier</code> and <code>spatiotemporal_outlier</code> draw ages by the same
+procedure as <code>cf_age()</code> and <code>cf_outl()</code> but from a stream seeded per
+taxon, so a single run can differ record by record; when every age range
+has zero width the flags are identical.</p></li>
 <li><p><code>dataset_rounded</code> leaves datasets below <code>min_unique_ds_size</code> untested,
 where <code>cd_round()</code> stops with an error; the dataset tests do not flag
 records without a dataset key.</p></li>

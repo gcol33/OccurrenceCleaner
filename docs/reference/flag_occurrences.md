@@ -21,7 +21,8 @@ flag_occurrences(
   keep = NULL,
   part_rows = 2e+06,
   resume = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  n_threads = 1L
 )
 ```
 
@@ -143,6 +144,12 @@ flag_occurrences(
 
   Report progress for streamed input.
 
+- n_threads:
+
+  Number of threads for the outlier test and the spatial queries. `0`
+  uses every thread OpenMP hands out; a request above that is reduced to
+  it, with a message.
+
 ## Value
 
 For a data frame: `x` with an integer column `flags` and one logical
@@ -207,6 +214,24 @@ interruption repeats at most the work since the last checkpoint. The
 record pass writes a `.done` marker per input file; an interruption
 there repeats the file in progress.
 
+A streamed run writes its progress to `out/progress.txt`, one line
+overwritten on every report: the step, items done and total, seconds
+elapsed, and the estimated seconds left in the step and in the run, and
+the share of the run done. The estimate for the steps ahead uses
+per-record costs measured on a part of the GBIF snapshot, scaled to the
+speed of the run so far, so it is rough until the slower steps have
+started. With `verbose`, the same is reported on the console every
+minute.
+
+## Threads
+
+`n_threads` spreads the exact outlier test over species and the
+proximity and point-in-polygon queries of the record tests over records.
+Each species and each record is computed on one thread, so the flags do
+not depend on the number of threads. Reading the input, the other tests
+and the bookkeeping of the group stage run on one thread. Without OpenMP
+support in the compiler every query runs on one thread.
+
 Memory in the record pass is one input chunk, up to `part_rows` buffered
 output rows and the group-test hits of the current block of 2^20 rows.
 The group stage holds two million bucketed rows before writing them
@@ -258,10 +283,10 @@ package tests:
   `thinning = TRUE`); in CoordinateCleaner 3.0.1 that path never flags a
   record.
 
-- `age_outlier` and `spatiotemporal_outlier` draw ages from a stream
-  seeded per taxon, so they agree with `cf_age()` and `cf_outl()` in
-  distribution; when every age range has zero width the flags are
-  identical.
+- `age_outlier` and `spatiotemporal_outlier` draw ages by the same
+  procedure as `cf_age()` and `cf_outl()` but from a stream seeded per
+  taxon, so a single run can differ record by record; when every age
+  range has zero width the flags are identical.
 
 - `dataset_rounded` leaves datasets below `min_unique_ds_size` untested,
   where `cd_round()` stops with an error; the dataset tests do not flag

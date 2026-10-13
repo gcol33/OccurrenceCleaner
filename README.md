@@ -21,20 +21,28 @@ OccurrenceCleaner checks species occurrence records for potential
 problems, such as coordinates at country centroids or museums, in the
 sea, or far from other records of the same species.
 
-The package extends the occurrence checks in
+The package extends
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. 2019), adding tests, expanding the reference data and
-processing datasets as large as a full snapshot of the Global
-Biodiversity Information Facility (GBIF). Each test stores its result as
-a flag alongside the record. All records remain available, so you can
-inspect their flags, compare how different combinations of tests affect
-the dataset, and choose which records to exclude. It supports:
+(Zizka et al. 2019), the R package that defines these tests and runs
+them on a data frame in memory. OccurrenceCleaner runs the same tests as
+nearest-neighbour queries in C++ and streams tables from disk, so they
+can be applied to a full snapshot of the Global Biodiversity Information
+Facility (GBIF). It also adds tests of its own and expands the reference
+data.
+
+Each test stores its result as a flag alongside the record. All records
+remain available, so you can inspect their flags, compare how different
+combinations of tests affect the dataset, and choose which records to
+exclude. OccurrenceCleaner supports:
 
 - **Large tables.** Ten million records go through the capital proximity
   test in 1.4 seconds on a desktop machine
   ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)).
-  A GBIF snapshot containing billions of records is processed from its
-  Parquet files, with progress saved so processing can resume.
+  A full GBIF snapshot containing billions of records in 288 GB of
+  Parquet files can be processed on a desktop computer using a single R
+  process. Files are processed in chunks, keeping memory use bounded
+  regardless of dataset size, without requiring a cluster. Progress is
+  saved, allowing interrupted runs to resume.
 - **Comparing cleaning rules.** Compute the flags once, then choose
   which tests determine whether to exclude a record.
   [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html)
@@ -92,11 +100,14 @@ columns it needs.
 The input is a data frame, or a path to a table on disk ([Processing
 large datasets on disk](#processing-large-datasets-on-disk)).
 Coordinates are longitude and latitude in decimal degrees (WGS84).
-Columns are found by their Darwin Core names in any case, and other
-names are set with `occ_columns()`. Each test reads only the columns it
-needs. Without `tests`, every test whose columns are present runs. With
-`tests`, only the named tests run, and a named test whose column is
-missing stops with an error naming it.
+Columns are matched by their Darwin Core names, the standard field names
+for biodiversity data, regardless of capitalisation. Other column names
+are mapped with `occ_columns()`.
+
+Each test reads a few columns, and by default every test whose columns
+are present runs. To run only some tests, name them in `tests`. If a
+named test lacks one of its columns, the call stops and reports which
+column is missing.
 
 ``` r
 library(OccurrenceCleaner)
@@ -121,7 +132,7 @@ A flag is TRUE when the record fails the test. The first record lies
 within 1 km of the GBIF headquarters in Copenhagen and within 10 km of
 the capital, the second is a zero coordinate at sea, the third is in
 Vienna, and the fourth, in rural Upper Austria, passes every test. The
-integer `flags` column holds all tests of a record, one bit per test.
+integer `flags` column encodes every test of a record, one bit per test.
 
 Running a test only adds its flag, so the default runs every test the
 data allows. Which records to exclude is a separate choice, made
@@ -243,8 +254,8 @@ goes from a PBDB download to PyRate input files.
 
 `flag_occurrences()` uses [vectra](https://gillescolling.com/vectra/) to
 process tables stored on disk, including GBIF snapshots. It accepts a
-directory of Parquet files, a `.vtr` file, a delimited file or a
-`vectra_node`.
+directory of Parquet files, a `.vtr` file, a delimited text file or a
+vectra query node.
 
 The function flags and writes each input file separately. If processing
 is interrupted, rerunning the call skips completed files. The `keep`

@@ -2,6 +2,14 @@
 
 ## OccurrenceCleaner 0.2.0
 
+- `flag_occurrences(n_threads = )` runs the exact outlier test and the
+  proximity and point-in-polygon queries on several threads (OpenMP).
+  The flags do not depend on the number of threads.
+- A streamed run reports its progress and an estimate of the time left,
+  for the current step and for the whole run, in `out/progress.txt` and,
+  with `verbose`, on the console every minute.
+- The issue tests read the issue column of a chunk in one vectorised
+  pass.
 - [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
   returns the records of a flagged data frame that no test of a rule
   flagged, by default every test that ran, keeping the flag columns and

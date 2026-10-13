@@ -21,9 +21,11 @@ options(width = 80)
 
 OccurrenceCleaner checks species occurrence records for potential problems, such as coordinates at country centroids or museums, in the sea, or far from other records of the same species.
 
-The package extends the occurrence checks in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), adding tests, expanding the reference data and processing datasets as large as a full snapshot of the Global Biodiversity Information Facility (GBIF). Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. It supports:
+The package extends [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), the R package that defines these tests and runs them on a data frame in memory. OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk, so they can be applied to a full snapshot of the Global Biodiversity Information Facility (GBIF). It also adds tests of its own and expands the reference data.
 
-- **Large tables.** Ten million records go through the capital proximity test in 1.4 seconds on a desktop machine ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)). A GBIF snapshot containing billions of records is processed from its Parquet files, with progress saved so processing can resume.
+Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. OccurrenceCleaner supports:
+
+- **Large tables.** Ten million records go through the capital proximity test in 1.4 seconds on a desktop machine ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)). A full GBIF snapshot containing billions of records in 288 GB of Parquet files can be processed on a desktop computer using a single R process. Files are processed in chunks, keeping memory use bounded regardless of dataset size, without requiring a cluster. Progress is saved, allowing interrupted runs to resume.
 - **Comparing cleaning rules.** Compute the flags once, then choose which tests determine whether to exclude a record. [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html) reports how many records each rule removes per taxon, period or precision class, providing counts for a methods section or data paper.
 - **An extended list of institutions.** Records are checked against 18,245 museum, herbarium and botanic garden locations to identify coordinates that may refer to the institution holding the specimen. The list combines the GBIF Registry of Scientific Collections (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in seven languages, GeoNames and Botanic Gardens Conservation International (BGCI). It includes 7,665 locations from sources beyond those used by CoordinateCleaner. These additional locations are included by default; you can restrict the test to CoordinateCleaner’s sources ([Extension points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues, the type of record, and whether the organism is recorded as native or introduced. Habitat information for the recorded genus helps distinguish marine from terrestrial taxa.
@@ -47,7 +49,9 @@ The package compiles C++ code: [Rtools](https://cran.r-project.org/bin/windows/R
 
 `test_plan()` shows which tests run on a table and why each other test does not. `flag_tests()` lists every test with its definition and the columns it needs.
 
-The input is a data frame, or a path to a table on disk ([Processing large datasets on disk](#processing-large-datasets-on-disk)). Coordinates are longitude and latitude in decimal degrees (WGS84). Columns are found by their Darwin Core names in any case, and other names are set with `occ_columns()`. Each test reads only the columns it needs. Without `tests`, every test whose columns are present runs. With `tests`, only the named tests run, and a named test whose column is missing stops with an error naming it.
+The input is a data frame, or a path to a table on disk ([Processing large datasets on disk](#processing-large-datasets-on-disk)). Coordinates are longitude and latitude in decimal degrees (WGS84). Columns are matched by their Darwin Core names, the standard field names for biodiversity data, regardless of capitalisation. Other column names are mapped with `occ_columns()`.
+
+Each test reads a few columns, and by default every test whose columns are present runs. To run only some tests, name them in `tests`. If a named test lacks one of its columns, the call stops and reports which column is missing.
 
 ```{r flag}
 library(OccurrenceCleaner)
@@ -63,7 +67,7 @@ f[, c("species", "flag_zero", "flag_capital",
       "flag_gbif_headquarters", "flag_sea")]
 ```
 
-A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna, and the fourth, in rural Upper Austria, passes every test. The integer `flags` column holds all tests of a record, one bit per test.
+A flag is TRUE when the record fails the test. The first record lies within 1 km of the GBIF headquarters in Copenhagen and within 10 km of the capital, the second is a zero coordinate at sea, the third is in Vienna, and the fourth, in rural Upper Austria, passes every test. The integer `flags` column encodes every test of a record, one bit per test.
 
 Running a test only adds its flag, so the default runs every test the data allows. Which records to exclude is a separate choice, made afterwards with a cleaning rule. A rule specifies which tests to use when filtering: a record is excluded if any test in the rule flags it.
 
@@ -123,7 +127,7 @@ flag_occurrences(pbdb, tests = tests, columns = pbdb_cols)
 
 ## Processing large datasets on disk
 
-`flag_occurrences()` uses [vectra](https://gillescolling.com/vectra/) to process tables stored on disk, including GBIF snapshots. It accepts a directory of Parquet files, a `.vtr` file, a delimited file or a `vectra_node`.
+`flag_occurrences()` uses [vectra](https://gillescolling.com/vectra/) to process tables stored on disk, including GBIF snapshots. It accepts a directory of Parquet files, a `.vtr` file, a delimited text file or a vectra query node.
 
 The function flags and writes each input file separately. If processing is interrupted, rerunning the call skips completed files. The `keep` argument specifies which input columns to save alongside the flags for grouping:
 

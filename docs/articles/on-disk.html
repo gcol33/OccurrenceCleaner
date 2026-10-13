@@ -183,16 +183,34 @@ the flags can be joined back to the full records:</p>
 <span>                      columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)</span></span>
 <span><span class="co">#&gt; group tests: reading 3 file(s) (pass 1 of 2)</span></span>
+<span><span class="co">#&gt; progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: reading 3 file(s) (pass 2 of 2)</span></span>
+<span><span class="co">#&gt; progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (counts) done [0 s]</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: duplicate: 64 bucket(s)</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets) done [0 s]</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: outlier: 26 bucket(s)</span></span>
-<span><span class="co">#&gt; group tests: done [0.7 s]</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~8 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets done [0 s]</span></span>
+<span><span class="co">#&gt; progress: outlier buckets, 0 of 9,000 rows | step ETA 7 s | run 2%, ETA ~8 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: outlier buckets done [0 s]</span></span>
+<span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: large species done [0 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.3 s]</span></span>
+<span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; occurrence-1: 3000 rows in 1 part(s) [0.1 s]</span></span>
 <span><span class="co">#&gt; occurrence-2: 3000 rows in 1 part(s) [0 s]</span></span>
 <span><span class="co">#&gt; occurrence-3: 3000 rows in 1 part(s) [0 s]</span></span>
+<span><span class="co">#&gt; progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: record pass done [0 s]</span></span>
 <span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 9,000 records in 3 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKorb68\flags</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKGkDeN\flags</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi</span></span>
 <span><span class="co">#&gt;   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
@@ -444,9 +462,12 @@ the same call again:</p>
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">src</span>, out <span class="op">=</span> <span class="va">out</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"year"</span><span class="op">)</span>,</span>
 <span>                      columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)</span></span>
+<span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; occurrence-1: done (3000 rows), skipped</span></span>
 <span><span class="co">#&gt; occurrence-2: done (3000 rows), skipped</span></span>
-<span><span class="co">#&gt; occurrence-3: done (3000 rows), skipped</span></span></code></pre></div>
+<span><span class="co">#&gt; occurrence-3: done (3000 rows), skipped</span></span>
+<span><span class="co">#&gt; progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: record pass done [0 s]</span></span></code></pre></div>
 <p>An interruption during a unit leaves that unit without its marker.
 Removing a marker by hand has the same effect, and only that unit is
 flagged again:</p>
@@ -457,13 +478,31 @@ flagged again:</p>
 <span>                      columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)</span></span>
 <span><span class="co">#&gt; group tests: reading 3 file(s) (pass 1 of 2)</span></span>
+<span><span class="co">#&gt; progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: reading 3 file(s) (pass 2 of 2)</span></span>
+<span><span class="co">#&gt; progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (counts) done [0 s]</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: duplicate: 64 bucket(s)</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: group pass (buckets) done [0 s]</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; group tests: outlier: 26 bucket(s)</span></span>
-<span><span class="co">#&gt; group tests: done [0.2 s]</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~7 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: duplicate buckets done [0 s]</span></span>
+<span><span class="co">#&gt; progress: outlier buckets, 0 of 9,000 rows | step ETA 6 s | run 2%, ETA ~7 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: outlier buckets done [0 s]</span></span>
+<span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: large species done [0 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.3 s]</span></span>
+<span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; occurrence-1: done (3000 rows), skipped</span></span>
 <span><span class="co">#&gt; occurrence-2: 3000 rows in 1 part(s) [0 s]</span></span>
-<span><span class="co">#&gt; occurrence-3: done (3000 rows), skipped</span></span></code></pre></div>
+<span><span class="co">#&gt; occurrence-3: done (3000 rows), skipped</span></span>
+<span><span class="co">#&gt; progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: record pass done [0 s]</span></span></code></pre></div>
 <p>A unit that is redone has its old part files deleted first. The group
 stage keeps its state in <code>out/.group</code> until the run finishes.
 It saves a checkpoint after a file or a bucket of records once five
@@ -501,6 +540,7 @@ default) have accumulated, and at the end of the unit.
 <span><span class="co">#&gt; [3] "occurrence-1.done"          "occurrence-2.done"         </span></span>
 <span><span class="co">#&gt; [5] "occurrence-3.done"          "part-occurrence-1-0001.vtr"</span></span>
 <span><span class="co">#&gt; [7] "part-occurrence-2-0001.vtr" "part-occurrence-3-0001.vtr"</span></span>
+<span><span class="co">#&gt; [9] "progress.txt"</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_flagged.html">read_flagged</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tests"</span>, <span class="st">"layout_version"</span>, <span class="st">"keep"</span>, <span class="st">"n"</span>, <span class="st">"units"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 5</span></span>
@@ -509,6 +549,29 @@ default) have accumulated, and at the end of the unit.
 <span><span class="co">#&gt;  $ keep          : chr [1:2] "kingdom" "year"</span></span>
 <span><span class="co">#&gt;  $ n             : num 9000</span></span>
 <span><span class="co">#&gt;  $ units         : chr [1:3] "occurrence-1" "occurrence-2" "occurrence-3"</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="progress-and-threads">Progress and threads<a class="anchor" aria-label="anchor" href="#progress-and-threads"></a>
+</h3>
+<p>A run writes its progress to <code>progress.txt</code> in the output
+directory, one line overwritten on every report: the step, the items
+done and their total, the seconds elapsed, the estimated seconds left in
+the step and in the run, and the share of the run done. A detached run
+whose console output is buffered can be followed by reading this file.
+The estimate for the step in progress comes from its own rate; the steps
+after it are estimated from per-record costs measured on a part of the
+GBIF snapshot, scaled to the speed of the run so far, so it is rough
+until the slower steps have started. With <code>verbose = TRUE</code>
+the same line is printed every minute.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"progress.txt"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "record 9000 9000 0.3 0.0 0.0 1.0000"</span></span></code></pre></div>
+<p><code>n_threads</code> spreads the exact outlier test over species
+and the proximity and point-in-polygon queries over records;
+<code>n_threads = 0</code> uses every thread OpenMP hands out. Each
+species and each record is computed on one thread, so the flags are the
+same for any number of threads. Reading the input, the other tests and
+the bookkeeping of the group stage run on one thread.</p>
 </div>
 <div class="section level3">
 <h3 id="memory-and-disk">Memory and disk<a class="anchor" aria-label="anchor" href="#memory-and-disk"></a>
@@ -537,7 +600,7 @@ case-insensitive defaults of <code><a href="../reference/occ_columns.html">occ_c
 <code><a href="../reference/test_plan.html">test_plan()</a></code> on the directory lists the tests the columns
 allow before anything runs, and <code>keep</code> names the columns a
 loss analysis groups by:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">snapshot</span> <span class="op">&lt;-</span> <span class="st">"gbif_snapshot/occurrence.parquet"</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_plan.html">test_plan</a></span><span class="op">(</span><span class="va">snapshot</span><span class="op">)</span></span>
 <span><span class="va">p</span><span class="op">[</span><span class="op">!</span><span class="va">p</span><span class="op">$</span><span class="va">run</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
@@ -547,7 +610,8 @@ loss analysis groups by:</p>
 <span>  out <span class="op">=</span> <span class="st">"flags"</span>,</span>
 <span>  keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"phylum"</span>, <span class="st">"class"</span>, <span class="st">"year"</span>,</span>
 <span>           <span class="st">"coordinateuncertaintyinmeters"</span><span class="op">)</span>,</span>
-<span>  land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span>  land_scale <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  n_threads <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1900</span>, <span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2010</span><span class="op">)</span>,</span>
 <span>             coordinateuncertaintyinmeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span>

@@ -87,16 +87,34 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
 #> tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)
 #> group tests: reading 3 file(s) (pass 1 of 2)
+#> progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s
 #> group tests: reading 3 file(s) (pass 2 of 2)
+#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s
+#> progress: group pass (counts) done [0 s]
+#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~12 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
+#> progress: group pass (buckets) done [0 s]
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~10 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
-#> group tests: done [0.7 s]
+#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~8 s | elapsed 0 s
+#> progress: duplicate buckets done [0 s]
+#> progress: outlier buckets, 0 of 9,000 rows | step ETA 7 s | run 2%, ETA ~8 s | elapsed 0 s
+#> progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: outlier buckets done [0 s]
+#> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: large species done [0 s]
+#> group tests: done [0.3 s]
+#> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
 #> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
+#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+#> progress: record pass done [0 s]
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKorb68\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpKGkDeN\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -305,9 +323,12 @@ so a run that was stopped is continued by running the same call again:
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
 #> tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)
+#> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
 #> occurrence-1: done (3000 rows), skipped
 #> occurrence-2: done (3000 rows), skipped
 #> occurrence-3: done (3000 rows), skipped
+#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+#> progress: record pass done [0 s]
 ```
 
 An interruption during a unit leaves that unit without its marker.
@@ -322,13 +343,31 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
 #> tests: 12 run; not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests)
 #> group tests: reading 3 file(s) (pass 1 of 2)
+#> progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s
 #> group tests: reading 3 file(s) (pass 2 of 2)
+#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s
+#> progress: group pass (counts) done [0 s]
+#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~2 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s
+#> progress: group pass (buckets) done [0 s]
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~8 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
-#> group tests: done [0.2 s]
+#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~7 s | elapsed 0 s
+#> progress: duplicate buckets done [0 s]
+#> progress: outlier buckets, 0 of 9,000 rows | step ETA 6 s | run 2%, ETA ~7 s | elapsed 0 s
+#> progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: outlier buckets done [0 s]
+#> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
+#> progress: large species done [0 s]
+#> group tests: done [0.3 s]
+#> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
 #> occurrence-1: done (3000 rows), skipped
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: done (3000 rows), skipped
+#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+#> progress: record pass done [0 s]
 ```
 
 A unit that is redone has its old part files deleted first. The group
@@ -373,6 +412,7 @@ list.files(out)
 #> [3] "occurrence-1.done"          "occurrence-2.done"         
 #> [5] "occurrence-3.done"          "part-occurrence-1-0001.vtr"
 #> [7] "part-occurrence-2-0001.vtr" "part-occurrence-3-0001.vtr"
+#> [9] "progress.txt"
 m <- read_flagged(out)
 str(m[c("tests", "layout_version", "keep", "n", "units")])
 #> List of 5
@@ -382,6 +422,32 @@ str(m[c("tests", "layout_version", "keep", "n", "units")])
 #>  $ n             : num 9000
 #>  $ units         : chr [1:3] "occurrence-1" "occurrence-2" "occurrence-3"
 ```
+
+### Progress and threads
+
+A run writes its progress to `progress.txt` in the output directory, one
+line overwritten on every report: the step, the items done and their
+total, the seconds elapsed, the estimated seconds left in the step and
+in the run, and the share of the run done. A detached run whose console
+output is buffered can be followed by reading this file. The estimate
+for the step in progress comes from its own rate; the steps after it are
+estimated from per-record costs measured on a part of the GBIF snapshot,
+scaled to the speed of the run so far, so it is rough until the slower
+steps have started. With `verbose = TRUE` the same line is printed every
+minute.
+
+``` r
+
+readLines(file.path(out, "progress.txt"))
+#> [1] "record 9000 9000 0.3 0.0 0.0 1.0000"
+```
+
+`n_threads` spreads the exact outlier test over species and the
+proximity and point-in-polygon queries over records; `n_threads = 0`
+uses every thread OpenMP hands out. Each species and each record is
+computed on one thread, so the flags are the same for any number of
+threads. Reading the input, the other tests and the bookkeeping of the
+group stage run on one thread.
 
 ### Memory and disk
 
@@ -422,7 +488,8 @@ f <- flag_occurrences(
   out = "flags",
   keep = c("kingdom", "phylum", "class", "year",
            "coordinateuncertaintyinmeters"),
-  land_scale = 50)
+  land_scale = 50,
+  n_threads = 0)
 
 bins <- list(year = c(1900, 1950, 1970, 1990, 2010),
              coordinateuncertaintyinmeters = c(10, 100, 1000, 10000))

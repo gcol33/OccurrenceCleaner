@@ -130,14 +130,13 @@ started</a>.</p>
 <div class="section level2">
 <h2 id="running-both-packages-on-the-same-records">Running both packages on the same records<a class="anchor" aria-label="anchor" href="#running-both-packages-on-the-same-records"></a>
 </h2>
-<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> runs several CoordinateCleaner tests
-in one call and, with <code>value = "spatialvalid"</code>, returns one
-logical column per test with every record kept.
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> returns the same layout: a
-<code>flag_&lt;test&gt;</code> column per test. The sign is opposite:
-CoordinateCleaner’s columns are <code>TRUE</code> for records that pass,
-the <code>flag_&lt;test&gt;</code> columns are <code>TRUE</code> for
-records that fail.</p>
+<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> runs several
+tests in one call and, asked for the <code>spatialvalid</code> layout,
+keeps every record and returns one logical column per test.
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> returns the same layout, one column per
+test, with the opposite sign: CoordinateCleaner’s columns are
+<code>TRUE</code> for records that pass, the flag columns are
+<code>TRUE</code> for records that fail.</p>
 <p>Generate 4,000 records within 30 km of five capitals, then set 20 of
 them to (0, 0), 20 to equal longitude and latitude, and 10 to within 0.3
 degrees of (0, 0):</p>
@@ -315,9 +314,9 @@ test both packages share, and requires identical flags except in the
 cases described under <a href="#where-the-results-differ">Where the
 results differ</a>. A second run of the suite uses the development
 version of CoordinateCleaner from GitHub, so a change there shows up as
-a failing test. <code>duplicate</code> is compared on a data frame and
-on a table streamed from disk, where it is evaluated over the whole
-table as <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_dupl.html" class="external-link">cc_dupl()</a></code> is.</p>
+a failing test. The duplicate test is compared both on a data frame and
+on a table streamed from disk, where it still looks at the whole table,
+as CoordinateCleaner does.</p>
 <p>These tests show agreement on the sampled records. They do not show
 that either package’s flags are right for a given analysis; that depends
 on the data and the question, as CoordinateCleaner’s own tutorial points
@@ -351,33 +350,40 @@ tracker</a>.</p>
 <div class="section level2">
 <h2 id="function-mapping">Function mapping<a class="anchor" aria-label="anchor" href="#function-mapping"></a>
 </h2>
-<p>OccurrenceCleaner uses a single function,
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>, to run its tests. CoordinateCleaner’s
-individual test functions become names passed through
-<code>tests</code>, while their settings are supplied through list
-arguments.</p>
-<p>Each test also has a corresponding <code>clean_&lt;test&gt;()</code>
-function that removes flagged records, much like CoordinateCleaner’s
-<code>cc_*()</code> functions with <code>value = "clean"</code>.</p>
-<p>CoordinateCleaner also provides functions that combine tests. <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link"><code>clean_coordinates()</code></a>
-and <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link"><code>clean_fossils()</code></a>
-return one column per test by default, while <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link"><code>clean_dataset()</code></a>
-returns a separate table for each dataset.</p>
+<p>CoordinateCleaner has one function per test, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_cap.html" class="external-link">cc_cap()</a></code>
+for capitals, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code> for the sea and so on, and three
+functions that run several tests at once: <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link"><code>clean_coordinates()</code></a>
+and <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link"><code>clean_fossils()</code></a>,
+which return one column per test, and <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link"><code>clean_dataset()</code></a>,
+which returns a table per dataset. OccurrenceCleaner has one function
+for every test, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>. A test is chosen by
+name, its buffer is set in <code>buffers</code> and its other options in
+<code>settings</code>.</p>
+<p>The first table gives each test’s name in the three places it
+appears: CoordinateCleaner’s test function, the <code>tests</code>
+argument of CoordinateCleaner’s combined functions, and the
+<code>tests</code> argument of <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>. The
+second table maps the arguments and the forms of output, and the third
+the functions around the tests.</p>
+<p>A test’s cleaning function, <code><a href="../reference/test_capital.html">clean_capital()</a></code> for the
+capital test and so on, removes the flagged records as
+CoordinateCleaner’s test functions do by default; <a href="#removing-the-flagged-records">Removing the flagged records</a>
+shows both chains.</p>
 <p>The packages share no function names, so both can be attached without
-hiding any CoordinateCleaner functions.</p>
+one hiding the other’s functions.</p>
 <div class="section level3">
 <h3 id="tests">Tests<a class="anchor" aria-label="anchor" href="#tests"></a>
 </h3>
 <table class="table">
 <colgroup>
+<col width="37%">
 <col width="38%">
-<col width="39%">
-<col width="22%">
+<col width="24%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">CoordinateCleaner function</th>
-<th align="left">name in clean_*()</th>
-<th align="left">test here</th>
+<th align="left">Test function</th>
+<th align="left">tests in clean_coordinates() and others</th>
+<th align="left">tests in flag_occurrences()</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -504,15 +510,18 @@ that pass it.</p>
 </h3>
 <table class="table">
 <colgroup>
-<col width="51%">
-<col width="48%">
+<col width="24%">
+<col width="34%">
+<col width="41%">
 </colgroup>
 <thead><tr class="header">
+<th align="left">Setting</th>
 <th align="left">CoordinateCleaner</th>
 <th align="left">OccurrenceCleaner</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">Running several tests</td>
 <td align="left">
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>,
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link">clean_fossils()</a></code>, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link">clean_dataset()</a></code>
@@ -520,34 +529,41 @@ that pass it.</p>
 <td align="left"><code>flag_occurrences(x, tests = ...)</code></td>
 </tr>
 <tr class="even">
+<td align="left">Buffer around the reference points</td>
 <td align="left">
 <code>capitals_rad</code>, <code>centroids_rad</code>,
 <code>inst_rad</code>, …</td>
 <td align="left"><code>buffers = list(capital = ..., centroid = ..., institution = ...)</code></td>
 </tr>
 <tr class="odd">
+<td align="left">Options of the outlier and dataset tests</td>
 <td align="left">
 <code>method</code>, <code>mltpl</code>,
-<code>size_thresh</code>, <code>replicates</code>, … of the outlier and
-dataset tests</td>
+<code>size_thresh</code>, <code>replicates</code>, …</td>
 <td align="left"><code>settings = list(outlier = list(method = ...), ...)</code></td>
 </tr>
 <tr class="even">
-<td align="left"><code>cc_outl(sampling_thresh = ...)</code></td>
+<td align="left">Record counts for the sampling correction of the
+outlier test</td>
 <td align="left">
-<code>settings = list(outlier = list(sampling_thresh = ...))</code>
-with <code>gazetteers = list(sampling = ...)</code>
+<code>cc_outl(sampling_thresh = ...)</code>, counts
+queried from GBIF</td>
+<td align="left">the same option in <code>settings</code>, with the
+counts given as a table in
+<code>gazetteers = list(sampling = ...)</code>
 </td>
 </tr>
 <tr class="odd">
+<td align="left">Your own reference points</td>
 <td align="left">
-<code>cc_cap(ref = ...)</code>,
-<code>cc_sea(ref = ...)</code>, …; <code>capitals_ref</code>,
-<code>seas_ref</code>, … in <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>
+<code>ref</code> of each test function;
+<code>capitals_ref</code>, <code>seas_ref</code>, … in
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>
 </td>
 <td align="left"><code>gazetteers = list(capital = ..., sea = ...)</code></td>
 </tr>
 <tr class="even">
+<td align="left">Scale of the land polygons in the sea test</td>
 <td align="left">
 <code>seas_scale</code> (default 50)</td>
 <td align="left">
@@ -555,30 +571,32 @@ with <code>gazetteers = list(sampling = ...)</code>
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code>)</td>
 </tr>
 <tr class="odd">
+<td align="left">Columns that define a duplicate</td>
 <td align="left"><code>cc_dupl(additions = ...)</code></td>
 <td align="left"><code>duplicate_by</code></td>
 </tr>
 <tr class="even">
+<td align="left">Limit on the width of a fossil’s age range</td>
 <td align="left"><code>cf_range(method = "time", max_range = ...)</code></td>
-<td align="left">
-<code>tally_flags(bins = ...)</code> on
-<code>max_ma - min_ma</code>
-</td>
+<td align="left">no test; <code>tally_flags(bins = ...)</code> on the
+range width</td>
 </tr>
 <tr class="odd">
+<td align="left">Removing the flagged records</td>
 <td align="left"><code>value = "clean"</code></td>
 <td align="left">
-<code>clean_&lt;test&gt;()</code>;
-<code>keep_unflagged(f, tests = rule)</code> after flagging</td>
+<code><a href="../reference/test_capital.html">clean_capital()</a></code> and the other cleaning
+functions, or <code>keep_unflagged(f, tests = rule)</code> after
+flagging</td>
 </tr>
 <tr class="even">
+<td align="left">Keeping every record with its flags</td>
 <td align="left">
 <code>value = "flagged"</code> or
 <code>"spatialvalid"</code>
 </td>
-<td align="left">the <code>flag_&lt;test&gt;</code> columns;
-<code>as_spatialvalid(f)</code> for the <code>spatialvalid</code>
-layout</td>
+<td align="left">the flag columns; <code>as_spatialvalid(f)</code> for
+the <code>spatialvalid</code> layout</td>
 </tr>
 </tbody>
 </table>
@@ -638,18 +656,15 @@ these counts as arguments and records them in the reference label.</p>
 <p>The PyRate export function is named <code><a href="../reference/export_pyrate.html">export_pyrate()</a></code>
 rather than <a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link"><code>write_pyrate()</code></a>,
 so both functions remain available when the packages are attached.</p>
-<p>To use code written for CoordinateCleaner’s <code>spatialvalid</code>
-objects, convert the result with <code>as_spatialvalid(f)</code>. This
-keeps the original record columns and adds one column per test, using
-CoordinateCleaner’s names (<code>.cap</code>, <code>.zer</code>,
-<code>.otl</code>, etc.). A value of <code>TRUE</code> means the record
-passed the test. The result also includes <code>.summary</code> and has
-the class <code>spatialvalid</code>, so existing <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>
-and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods and filters based on
-<code>.summary</code> continue to work.</p>
-<p>The package tests verify this conversion by comparing every column
-against the output of
-<code>clean_coordinates(value = "spatialvalid")</code>.</p>
+<p>Code written for CoordinateCleaner’s <code>spatialvalid</code>
+objects works on a converted result, <code>as_spatialvalid(f)</code>.
+The conversion keeps the record columns and adds one column per test
+under CoordinateCleaner’s names, <code>TRUE</code> where the record
+passed, together with the <code>.summary</code> column and the class, so
+CoordinateCleaner’s <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
+methods and filters on <code>.summary</code> run unchanged. The package
+tests compare every column of the conversion with the output of
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_spatialvalid.html">as_spatialvalid</a></span><span class="op">(</span><span class="va">oc</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sv</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".zer"</span>, <span class="st">".equ"</span>, <span class="st">".cap"</span>, <span class="st">".dpl"</span>, <span class="st">".summary"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -743,35 +758,37 @@ the difference comes entirely from how they define the boundary.</p>
 <div class="section level4">
 <h4 id="records-without-valid-coordinates">Records without valid coordinates<a class="anchor" aria-label="anchor" href="#records-without-valid-coordinates"></a>
 </h4>
-<p>The packages also handle missing or out-of-range coordinates
-differently. CoordinateCleaner returns <code>NA</code> for some tests
-(<code>cc_zero</code>, <code>cc_equ</code>), treats these records as
-clean in <code>cc_cap</code>, and flags the second of two such records
-in <code>cc_dupl</code>.</p>
-<p>OccurrenceCleaner instead assigns the <code>invalid</code> flag and
-skips the other spatial tests. Including <code>invalid</code> in a
-cleaning rule removes these records; excluding it leaves them without
-any spatial flags.</p>
+<p>A record with a missing or out-of-range coordinate is treated
+differently by each package. In CoordinateCleaner the outcome depends on
+the test: the zero and equal tests return <code>NA</code> for it, the
+capital test treats it as clean, and the duplicate test flags the second
+of two such records. OccurrenceCleaner gives it the <code>invalid</code>
+flag and skips the other spatial tests. Including <code>invalid</code>
+in a cleaning rule removes these records; leaving it out keeps them,
+with no spatial flag.</p>
 </div>
 <div class="section level4">
 <h4 id="random-age-draws">Random age draws<a class="anchor" aria-label="anchor" href="#random-age-draws"></a>
 </h4>
-<p>CoordinateCleaner’s fossil tests draw one age from each record’s
-range, run the test five times and keep the majority vote. The draws
-come from the session’s random stream in input order, so the flags
-change with the seed and with the row order. OccurrenceCleaner draws the
-same way but seeds a stream per taxon and orders the draws by record
-content, so the same records give the same flags whatever their order
-and however they are split across files. The seed is a setting of the
-age outlier test (<code>seed</code> under <code>age_outlier</code> in
-<code>settings</code>). When every age range has zero width nothing is
-drawn and the two packages agree exactly.</p>
+<p>CoordinateCleaner’s fossil tests draw one age uniformly from each
+record’s age range, run the test five times and keep the majority vote.
+The draws come from the session’s random stream in input order, so the
+flags change with the seed and with the row order. OccurrenceCleaner
+follows the same procedure but seeds a stream per taxon and orders the
+draws by record content, so the same records give the same flags
+whatever their order and however they are split across files. The seed
+is a setting of the age outlier test (<code>seed</code> under
+<code>age_outlier</code> in <code>settings</code>). When every age range
+has zero width nothing is drawn and the two packages give identical
+flags. When ages have to be drawn, the flags of a single run can differ
+record by record between the packages, even though the procedure is the
+same; the test suite checks only the zero-width case.</p>
 </div>
 <div class="section level4">
 <h4 id="records-without-a-dataset-key">Records without a dataset key<a class="anchor" aria-label="anchor" href="#records-without-a-dataset-key"></a>
 </h4>
-<p>Records without a dataset key are not flagged by either dataset test
-here; <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html" class="external-link">cd_ddmm()</a></code> flags them.</p>
+<p>Records without a dataset key are left unflagged by both dataset
+tests here; CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_ddmm.html" class="external-link">cd_ddmm()</a></code> flags them.</p>
 </div>
 <div class="section level4">
 <h4 id="country-codes">Country codes<a class="anchor" aria-label="anchor" href="#country-codes"></a>
@@ -827,22 +844,23 @@ the buffer off and keeps only the exact-zero check.</p>
 <div class="section level4">
 <h4 id="records-in-france-norway-and-kosovo">Records in France, Norway and Kosovo<a class="anchor" aria-label="anchor" href="#records-in-france-norway-and-kosovo"></a>
 </h4>
-<p>In CoordinateCleaner 3.0.1, <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> flags every record
-that falls in France, Norway or Kosovo. Natural Earth’s
-<code>ISO_A3</code> column holds <code>-99</code> for these three
-countries. <code>country_mismatch</code> reads the ISO codes from the
-<code>ISO_A2_EH</code> and <code>ISO_A3_EH</code> columns, which are
-filled for them.</p>
+<p>CoordinateCleaner 3.0.1 flags every record in France, Norway and
+Kosovo as a country mismatch. Natural Earth gives these three countries
+no ISO code in the column CoordinateCleaner reads (the value is
+<code>-99</code>), so no record can match. OccurrenceCleaner reads
+Natural Earth’s alternative code columns (<code>ISO_A2_EH</code>,
+<code>ISO_A3_EH</code>), which are filled for all three.</p>
 </div>
 <div class="section level4">
 <h4 id="outliers-of-large-species">Outliers of large species<a class="anchor" aria-label="anchor" href="#outliers-of-large-species"></a>
 </h4>
-<p><code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code> tests species of 10,000 records or more, and
-every species with <code>thinning = TRUE</code>, on a raster
-approximation: it counts records per cell of a 0.5-degree grid, computes
-the distance statistics between cells, and selects the outlier cells. In
-CoordinateCleaner 3.0.1 this path flags no records. Twenty records 1,000
-km from the other 11,980 of their species show it:</p>
+<p>For species of 10,000 records or more, and for every species when
+<code>thinning = TRUE</code>, CoordinateCleaner’s outlier test switches
+to a raster approximation: it counts records per cell of a 0.5-degree
+grid, computes the distance statistics between cells, and selects the
+outlier cells. In CoordinateCleaner 3.0.1 this path flags no records.
+Twenty records 1,000 km from the other 11,980 of their species show
+it:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">12000</span></span>
@@ -852,20 +870,19 @@ km from the other 11,980 of their species show it:</p>
 <span>  oc_flagged <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">r</span>, tests <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_outlier</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; cc_flagged oc_flagged </span></span>
 <span><span class="co">#&gt;          0         20</span></span></code></pre></div>
-<p><code>outlier</code> uses the same grid, weights and statistics and
-flags the records of the outlier cells. Below 10,000 records, where
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">cc_outl()</a></code> computes exact distances, the two give identical
-flags.</p>
+<p>OccurrenceCleaner’s outlier test uses the same grid, weights and
+statistics and flags the records of the outlier cells. Below 10,000
+records, where CoordinateCleaner computes exact distances, the two give
+identical flags.</p>
 </div>
 <div class="section level4">
 <h4 id="small-datasets">Small datasets<a class="anchor" aria-label="anchor" href="#small-datasets"></a>
 </h4>
-<p><a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html" class="external-link"><code>cd_round()</code></a>
-skips datasets with fewer than <code>min_unique_ds_size</code> distinct
-coordinates, but in version 3.0.1 an input holding such a dataset next
-to larger ones stops with an error, so no dataset is tested.
-<code>dataset_rounded</code> leaves the small dataset untested and tests
-the others.</p>
+<p>CoordinateCleaner’s <a href="https://ropensci.github.io/CoordinateCleaner/reference/cd_round.html" class="external-link"><code>cd_round()</code></a>
+skips datasets with fewer distinct coordinates than its minimum, but in
+version 3.0.1 an input that contains such a dataset next to larger ones
+stops with an error, so no dataset is tested. OccurrenceCleaner leaves
+the small dataset untested and tests the others.</p>
 </div>
 </div>
 </div>

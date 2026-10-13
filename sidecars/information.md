@@ -193,6 +193,11 @@
 - stated-at: @p:desc.scale ("a few million records ... in seconds"); @p:readme.usecases (capital test 1.4 s at 1e7, linked to @p:cc.speed; the CoordinateCleaner time only in the comparison article); @p:cc.speed; @p:gbif.guidance (1.9 s at 1e6); @p:disk.snapshot (17.8 s at 1e7)
 - note: vignette table matches dev_notes/benchmark.md (checked 2026-10-10)
 
+### snapshot-size
+- metric: size of the GBIF snapshot of 2026-10-01 on disk: 9,927 Parquet files, 287,983,533,156 bytes (288 GB); record count not stated as a number (no source in the repo)
+- source: `E:/research/raw/occurrences/gbif_snapshot/2026-10-01/DONE` (download doi:10.15468/dl.tup2g6, 1 October 2026); the full run in one R process on worky (AMD Ryzen 7 5700G, 64 GB) started 2026-10-12, peak memory to be read from `bench/results/snapshot/peak_mb.txt` when it finishes
+- stated-at: @p:readme.usecases (288 GB, a single R process on a desktop computer, chunked so memory stays bounded, no cluster)
+
 ### speed-ratio
 - metric: seconds per test, OccurrenceCleaner vs CoordinateCleaner
 - source: as speed-df

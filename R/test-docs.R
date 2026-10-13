@@ -516,11 +516,13 @@ NULL
 #'   `flag_thresh` (0.5), `uniq_loc` (`FALSE`: when `TRUE`, records sharing
 #'   taxon, coordinates rounded to 0.1 degrees and ages are tested once) and
 #'   `seed` (1).
-#' @section CoordinateCleaner: Equivalent to `cf_age()` at taxon level;
-#'   identical flags when no age has to be drawn (every range of zero width).
-#'   Otherwise both draw ages at random and the flags agree in distribution,
-#'   not record by record: [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws from the session's random
-#'   stream in input order.
+#' @section CoordinateCleaner: Equivalent to `cf_age()` at taxon level: the
+#'   same draw, replicates and majority rule. The flags are identical when no
+#'   age has to be drawn (every range of zero width). Otherwise the flags of a
+#'   single run can differ record by record, because
+#'   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) draws
+#'   from the session's random stream in input order and this test from a
+#'   stream seeded per taxon.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples
@@ -547,7 +549,8 @@ NULL
 #'   with the same options and defaults as `age_outlier`.
 #' @section CoordinateCleaner: Equivalent to `cf_outl()` at taxon level, the
 #'   `spatiotemp` test of `clean_fossils()`; identical flags when every range
-#'   has zero width, agreement in distribution otherwise.
+#'   has zero width, and otherwise a single run can differ record by record,
+#'   as for `age_outlier`.
 #' @family tests
 #' @seealso [flag_occurrences()], [flag_tests()]
 #' @examples

@@ -63,8 +63,9 @@ options and defaults as `age_outlier`.
 ## CoordinateCleaner
 
 Equivalent to `cf_outl()` at taxon level, the `spatiotemp` test of
-`clean_fossils()`; identical flags when every range has zero width,
-agreement in distribution otherwise.
+`clean_fossils()`; identical flags when every range has zero width, and
+otherwise a single run can differ record by record, as for
+`age_outlier`.
 
 ## See also
 

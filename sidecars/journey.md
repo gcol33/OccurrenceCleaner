@@ -43,17 +43,22 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Says what the package checks records for, with examples (one sentence).
 - leaves: the domain and the kinds of problem
 
-### readme.extends  [A1 A2 A3]
-- idea: builds on CC · additions · the flag mechanism · records kept, reader decides
-- job: Says the package builds on CoordinateCleaner's checks, adding tests, reference data and larger datasets (one sentence), defines a flag as the result each test stores alongside the record (one sentence), and says every record remains available so the reader inspects flags, compares test combinations and chooses the exclusion (one sentence, ending on the decision).
-- leaves: the parent, what is added, what a flag is, and that the reader decides
+### readme.extends  [A1 A2]
+- idea: extends CC · CC defines the tests and runs in memory · same tests as kd-tree queries, streamed, so a snapshot · additions
+- job: Says the package extends CoordinateCleaner (the package, not only its tests), glossed as the R package that defines these tests and runs them on a data frame in memory (one sentence), that OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk so they apply to a full GBIF snapshot (one sentence, expanding GBIF), and that it adds tests of its own and expands the reference data (one sentence).
+- leaves: the parent, what it is, why this package exists beside it, and what is added
+
+### readme.flags  [A3]
+- idea: the flag mechanism · records kept, reader decides
+- job: Defines a flag as the result each test stores alongside the record (one sentence), and says every record remains available so the reader inspects flags, compares test combinations and chooses the exclusion (one sentence, ending on the decision).
+- leaves: what a flag is, and that the reader decides
 
 ### readme.supports  (lead-in)
-- job: "OccurrenceCleaner supports:" introduces the list; the first item expands GBIF.
+- job: "OccurrenceCleaner supports:" introduces the list; GBIF is expanded in readme.extends.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and resumable processing of Parquet files, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 18,245 institution locations, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and a full snapshot (billions of records in 288 GB of Parquet files) processed on a desktop computer in a single R process, files read in chunks so memory stays bounded whatever the dataset size, no cluster, interrupted runs resume, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 18,245 institution locations, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -75,8 +80,13 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.input  [A2]
 - idea: what goes in
-- job: Says the input is a data frame or an on-disk table, coordinates are decimal degrees (WGS84), columns are matched by Darwin Core names in any case or set with `occ_columns()`; without `tests` every test whose columns are present runs, with `tests` only the named ones, and a named test missing its column stops with an error naming it.
-- leaves: the minimum input, the default selection, and what happens when a column is missing
+- job: Says the input is a data frame or an on-disk table (linking the on-disk section), coordinates are decimal degrees (WGS84), columns are matched by Darwin Core names (glossed as the standard field names for biodiversity data) regardless of capitalisation, and other names are mapped with `occ_columns()`.
+- leaves: the minimum input and how columns are found
+
+### readme.tests-run
+- idea: which tests run
+- job: Says each test reads a few columns and by default every test whose columns are present runs (one sentence), that naming tests in `tests` runs only those (one sentence), and that a named test lacking one of its columns stops the call with a message reporting the missing column (one sentence).
+- leaves: the default selection and what happens when a column is missing
 
 ### readme.example  (code)
 - idea: smallest call, output shown

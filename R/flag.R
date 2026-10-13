@@ -95,9 +95,10 @@
 #' * `outlier` flags the records of outlier cells in the raster approximation
 #'   (species of 10,000 records or more, or `thinning = TRUE`); in
 #'   CoordinateCleaner 3.0.1 that path never flags a record.
-#' * `age_outlier` and `spatiotemporal_outlier` draw ages from a stream seeded
-#'   per taxon, so they agree with `cf_age()` and `cf_outl()` in distribution;
-#'   when every age range has zero width the flags are identical.
+#' * `age_outlier` and `spatiotemporal_outlier` draw ages by the same
+#'   procedure as `cf_age()` and `cf_outl()` but from a stream seeded per
+#'   taxon, so a single run can differ record by record; when every age range
+#'   has zero width the flags are identical.
 #' * `dataset_rounded` leaves datasets below `min_unique_ds_size` untested,
 #'   where `cd_round()` stops with an error; the dataset tests do not flag
 #'   records without a dataset key.

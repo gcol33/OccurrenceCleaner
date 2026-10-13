@@ -51,7 +51,8 @@ with the same options and defaults as \code{age_outlier}.
 \section{CoordinateCleaner}{
  Equivalent to \code{cf_outl()} at taxon level, the
 \code{spatiotemp} test of \code{clean_fossils()}; identical flags when every range
-has zero width, agreement in distribution otherwise.
+has zero width, and otherwise a single run can differ record by record,
+as for \code{age_outlier}.
 }
 
 \examples{

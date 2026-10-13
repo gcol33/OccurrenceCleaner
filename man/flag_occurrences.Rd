@@ -212,9 +212,10 @@ Records without a code, or at sea, are flagged as in CoordinateCleaner.
 \item \code{outlier} flags the records of outlier cells in the raster approximation
 (species of 10,000 records or more, or \code{thinning = TRUE}); in
 CoordinateCleaner 3.0.1 that path never flags a record.
-\item \code{age_outlier} and \code{spatiotemporal_outlier} draw ages from a stream seeded
-per taxon, so they agree with \code{cf_age()} and \code{cf_outl()} in distribution;
-when every age range has zero width the flags are identical.
+\item \code{age_outlier} and \code{spatiotemporal_outlier} draw ages by the same
+procedure as \code{cf_age()} and \code{cf_outl()} but from a stream seeded per
+taxon, so a single run can differ record by record; when every age range
+has zero width the flags are identical.
 \item \code{dataset_rounded} leaves datasets below \code{min_unique_ds_size} untested,
 where \code{cd_round()} stops with an error; the dataset tests do not flag
 records without a dataset key.

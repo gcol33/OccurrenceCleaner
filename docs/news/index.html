@@ -70,6 +70,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="occurrencecleaner-020">OccurrenceCleaner 0.2.0<a class="anchor" aria-label="anchor" href="#occurrencecleaner-020"></a></h2>
 <ul><li>
+<code>flag_occurrences(n_threads = )</code> runs the exact outlier test and the proximity and point-in-polygon queries on several threads (OpenMP). The flags do not depend on the number of threads.</li>
+<li>A streamed run reports its progress and an estimate of the time left, for the current step and for the whole run, in <code>out/progress.txt</code> and, with <code>verbose</code>, on the console every minute.</li>
+<li>The issue tests read the issue column of a chunk in one vectorised pass.</li>
+<li>
 <code><a href="../reference/keep_unflagged.html">keep_unflagged()</a></code> returns the records of a flagged data frame that no test of a rule flagged, by default every test that ran, keeping the flag columns and attributes.</li>
 <li>Each test has a cleaning function, <code>clean_&lt;test&gt;()</code> (<code><a href="../reference/test_capital.html">clean_capital()</a></code>, <code><a href="../reference/test_outlier.html">clean_outlier()</a></code>, …), that runs the test and returns the rows of a data frame it does not flag, so tests can be chained in a pipe. Its arguments are the test’s buffer or options with their defaults, and it is documented on the test’s help page. The functions are generated from the test registry and run <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>; a chain applies each test to the records the previous steps kept.</li>
 <li>Without <code>tests</code>, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> runs every test whose inputs are available: the columns each test reads, and range polygons for <code>range</code>. Running a test only adds flags; which records to exclude stays a cleaning rule chosen afterwards. <code>default_tests()</code> is removed; name CoordinateCleaner’s set explicitly when it is wanted.</li>
