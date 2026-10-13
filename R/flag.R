@@ -40,6 +40,22 @@
 #' a `.done` marker per input file; an interruption there repeats the file in
 #' progress.
 #'
+#' A streamed run writes its progress to `out/progress.txt`, one line
+#' overwritten on every report: the step, items done and total, seconds
+#' elapsed, and the estimated seconds left in the step and in the run, and the
+#' share of the run done. The estimate for the steps ahead uses per-record
+#' costs measured on a part of the GBIF snapshot, scaled to the speed of the
+#' run so far, so it is rough until the slower steps have started. With
+#' `verbose`, the same is reported on the console every minute.
+#'
+#' @section Threads:
+#' `n_threads` spreads the exact outlier test over species and the
+#' proximity and point-in-polygon queries of the record tests over records.
+#' Each species and each record is computed on one thread, so the flags do not
+#' depend on the number of threads. Reading the input, the other tests and the
+#' bookkeeping of the group stage run on one thread. Without OpenMP support in
+#' the compiler every query runs on one thread.
+#'
 #' Memory in the record pass is one input chunk, up to `part_rows` buffered
 #' output rows and the group-test hits of the current block of 2^20 rows. The
 #' group stage holds two million bucketed rows before writing them (more
@@ -146,6 +162,9 @@
 #'   marker exists and resume the group stage from its checkpoint. `FALSE`
 #'   deletes the earlier output in `out` and starts over.
 #' @param verbose Report progress for streamed input.
+#' @param n_threads Number of threads for the outlier test and the spatial
+#'   queries. `0` uses every thread OpenMP hands out; a request above that is
+#'   reduced to it, with a message.
 #' @return For a data frame: `x` with an integer column `flags` and one logical
 #'   column `flag_<test>` per test, class `occ_flags` added in front, and
 #'   attributes `occ_tests`, `occ_test_plan`, `occ_layout_version`,
@@ -167,9 +186,9 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              settings = NULL, duplicate_by = NULL,
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
-                             verbose = TRUE) {
+                             verbose = TRUE, n_threads = 1L) {
   cfg <- flag_config(tests, columns, match.arg(reference), gazetteers, land_scale, buffers, settings,
-                     duplicate_by, duplicate_cell)
+                     duplicate_by, duplicate_cell, n_threads)
   if (is.data.frame(x)) {
     if (is.null(tests)) cfg <- apply_plan(cfg, plan_tests(names(x), columns, cfg$has_range))
     return(flag_df(x, cfg))
@@ -182,7 +201,7 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
 # the settings of the tests.
 flag_config <- function(tests = NULL, columns = occ_columns(), reference = "OccurrenceCleaner",
                         gazetteers = NULL, land_scale = 110, buffers = NULL, settings = NULL,
-                        duplicate_by = NULL, duplicate_cell = NULL) {
+                        duplicate_by = NULL, duplicate_cell = NULL, n_threads = 1L) {
   if (!is.null(tests)) {
     tests <- check_tests(tests)
     if ("range" %in% tests && is.null(gazetteers$range))
@@ -197,7 +216,7 @@ flag_config <- function(tests = NULL, columns = occ_columns(), reference = "Occu
        buffers = check_buffers(buffers), settings = check_settings(settings),
        duplicate_by = duplicate_by,
        duplicate_cell = duplicate_cell, custom = custom$index,
-       layout_version = .layout_version,
+       layout_version = .layout_version, n_threads = resolve_threads(n_threads),
        reference_label = reference_label(reference, land_scale, custom$label))
 }
 
@@ -243,6 +262,7 @@ flag_chunk <- function(d, cfg, cols) {
   n <- nrow(d)
   flags <- integer(n)
   tests <- cfg$tests
+  nt <- cfg$n_threads %||% 1L
   set_bit <- function(test, hit) {
     hit[is.na(hit)] <- FALSE
     flags[hit] <<- bitwOr(flags[hit], flag_mask(test))
@@ -265,11 +285,11 @@ flag_chunk <- function(d, cfg, cols) {
     if ("equal" %in% tests) set_bit("equal", ok & abs(lon) == abs(lat))
     for (t in intersect(tests, c("capital", "centroid", "institution", "gbif_headquarters", "aohi"))) {
       idx <- cfg$custom[[t]] %||% point_index(t, cfg$reference)
-      set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]]))
+      set_bit(t, cpp_point_within(idx, lon_ok, lat_ok, cfg$buffers[[t]], nt))
     }
     if (any(c("sea", .habitat_tests) %in% tests)) {
       land <- cfg$custom$sea %||% polygon_index("sea", cfg$reference, cfg$land_scale)
-      on_land <- cpp_polygon_locate(land$index, lon_ok, lat_ok) > 0L
+      on_land <- cpp_polygon_locate(land$index, lon_ok, lat_ok, nt) > 0L
       if ("sea" %in% tests) set_bit("sea", ok & !on_land)
     }
     if (any(.habitat_tests %in% tests)) {
@@ -277,7 +297,7 @@ flag_chunk <- function(d, cfg, cols) {
                            if (!is.null(cols$kingdom)) d[[cols$kingdom]])
       off_coast <- function(hit, buffer) {
         if (buffer > 0 && any(hit))
-          hit[hit] <- !cpp_polygon_near(land$index, lon_ok[hit], lat_ok[hit], buffer)
+          hit[hit] <- !cpp_polygon_near(land$index, lon_ok[hit], lat_ok[hit], buffer, nt)
         hit
       }
       if ("sea_nonmarine" %in% tests)
@@ -287,12 +307,12 @@ flag_chunk <- function(d, cfg, cols) {
     }
     if ("urban" %in% tests) {
       p <- cfg$custom$urban %||% polygon_index("urban", cfg$reference, cfg$land_scale)
-      set_bit("urban", cpp_polygon_locate(p$index, lon_ok, lat_ok) > 0L)
+      set_bit("urban", cpp_polygon_locate(p$index, lon_ok, lat_ok, nt) > 0L)
     }
     if ("country_mismatch" %in% tests) {
       p <- cfg$custom$country_mismatch %||%
         polygon_index("country_mismatch", cfg$reference, cfg$land_scale)
-      f <- cpp_polygon_locate(p$index, lon_ok, lat_ok)
+      f <- cpp_polygon_locate(p$index, lon_ok, lat_ok, nt)
       code <- toupper(trimws(as.character(d[[cols$country]])))
       code[!nzchar(code) | is.na(code)] <- NA_character_
       a3 <- p$features$iso_a3[ifelse(f > 0L, f, NA_integer_)]
@@ -308,9 +328,9 @@ flag_chunk <- function(d, cfg, cols) {
       hit <- logical(n)
       for (k in intersect(unique(sp[ok]), names(rg))) {
         i <- which(ok & sp == k)
-        inside <- cpp_polygon_locate(rg[[k]], lon_ok[i], lat_ok[i]) > 0L
+        inside <- cpp_polygon_locate(rg[[k]], lon_ok[i], lat_ok[i], nt) > 0L
         if (cfg$buffers$range > 0 && any(!inside))
-          inside[!inside] <- cpp_polygon_near(rg[[k]], lon_ok[i][!inside], lat_ok[i][!inside], cfg$buffers$range)
+          inside[!inside] <- cpp_polygon_near(rg[[k]], lon_ok[i][!inside], lat_ok[i][!inside], cfg$buffers$range, nt)
         hit[i] <- !inside
       }
       set_bit("range", hit)
@@ -319,7 +339,9 @@ flag_chunk <- function(d, cfg, cols) {
   issue_tests <- intersect(tests, c("issue_coordinate", "issue_taxon", "issue_date", "issue_rounded"))
   if (length(issue_tests)) {
     iss <- issue_sets(d[[cols$issue]])
-    for (t in issue_tests) set_bit(t, vapply(iss, function(s) any(s %in% .issue_groups[[t]]), logical(1)))
+    rec <- rep.int(seq_along(iss), lengths(iss))
+    names_all <- unlist(iss, use.names = FALSE)
+    for (t in issue_tests) set_bit(t, seq_len(n) %in% rec[names_all %in% .issue_groups[[t]]])
   }
   if (any(c("basis_fossil", "basis_living") %in% tests)) {
     b <- toupper(trimws(as.character(d[[cols$basis]])))
@@ -339,6 +361,18 @@ flag_chunk <- function(d, cfg, cols) {
     set_bit("age_equal", lo >= hi)
   }
   list(flags = flags)
+}
+
+# Threads granted for a request: `0` or less is every thread OpenMP hands
+# out, a larger request is reduced to that, with a message.
+resolve_threads <- function(n_threads) {
+  if (!is.numeric(n_threads) || length(n_threads) != 1L || is.na(n_threads))
+    stop("`n_threads` must be a single number")
+  cap <- cpp_max_threads()
+  req <- as.integer(n_threads)
+  if (req <= 0L) return(cap)
+  if (req > cap) message("n_threads: ", req, " requested, running ", cap, " (the OpenMP limit)")
+  min(req, cap)
 }
 
 to_numeric <- function(v) {

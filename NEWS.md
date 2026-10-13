@@ -1,5 +1,8 @@
 # OccurrenceCleaner 0.2.0
 
+* `flag_occurrences(n_threads = )` runs the exact outlier test and the proximity and point-in-polygon queries on several threads (OpenMP). The flags do not depend on the number of threads.
+* A streamed run reports its progress and an estimate of the time left, for the current step and for the whole run, in `out/progress.txt` and, with `verbose`, on the console every minute.
+* The issue tests read the issue column of a chunk in one vectorised pass.
 * `keep_unflagged()` returns the records of a flagged data frame that no test of a rule flagged, by default every test that ran, keeping the flag columns and attributes.
 * Each test has a cleaning function, `clean_<test>()` (`clean_capital()`, `clean_outlier()`, ...), that runs the test and returns the rows of a data frame it does not flag, so tests can be chained in a pipe. Its arguments are the test's buffer or options with their defaults, and it is documented on the test's help page. The functions are generated from the test registry and run `flag_occurrences()`; a chain applies each test to the records the previous steps kept.
 * Without `tests`, `flag_occurrences()` runs every test whose inputs are available: the columns each test reads, and range polygons for `range`. Running a test only adds flags; which records to exclude stays a cleaning rule chosen afterwards. `default_tests()` is removed; name CoordinateCleaner's set explicitly when it is wanted.

@@ -63,6 +63,7 @@ Collate:
     'flag_tests.R'
     'habitat.R'
     'methods.R'
+    'progress.R'
     'pyrate.R'
     'reference.R'
     'shapefile.R'

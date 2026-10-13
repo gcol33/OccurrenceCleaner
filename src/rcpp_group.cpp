@@ -13,6 +13,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "threads.h"
+
 using namespace Rcpp;
 
 namespace {
@@ -182,37 +184,99 @@ LogicalVector cpp_seen_mark(SEXP set, IntegerVector h1, IntegerVector h2, Intege
   return out;
 }
 
-// For each point: the mean and the minimum of its haversine distances (km)
-// to the other points, leaving out zero distances (itself and points at the
-// same coordinates). A point with no non-zero distance gets NaN and Inf.
-// [[Rcpp::export]]
-List cpp_outlier_dist(NumericVector lon, NumericVector lat) {
-  const R_xlen_t n = lon.size();
-  if (lat.size() != n) stop("lon and lat differ in length");
-  // Each pair is computed once and added to both points, in increasing order
-  // of the other point's index, as a full row scan would add them.
-  std::vector<double> p(n), cp(n), s(n, 0.0), m(n, std::numeric_limits<double>::infinity());
-  std::vector<R_xlen_t> k(n, 0);
+// Haversine distance (km) between points a < b of a group, from latitudes in
+// radians p, their cosines cp and longitudes in degrees. Both ways of
+// scanning a group call it with the lower index first, so a pair always gives
+// the same value.
+static inline double hav_km(const double* lon, const double* p, const double* cp, R_xlen_t a,
+                            R_xlen_t b) {
+  const double s1 = std::sin((p[b] - p[a]) / 2), s2 = std::sin((lon[b] - lon[a]) * kDeg / 2);
+  double h = s1 * s1 + cp[a] * cp[b] * s2 * s2;
+  if (h > 1) h = 1;
+  return 2 * std::atan2(std::sqrt(h), std::sqrt(1 - h)) * kRadiusKm;
+}
+
+// For each of the n points of a group: the mean and the minimum of its
+// haversine distances (km) to the other points, leaving out zero distances
+// (itself and points at the same coordinates). A point with no non-zero
+// distance gets NaN and Inf. Every point's distances are added in increasing
+// order of the other point's index. On one thread each pair is computed once
+// and added to both points; with rows_threads > 1 the points are spread over
+// that many threads and each scans its own row, which computes every pair
+// twice but gives the same sums.
+static inline void outlier_dist_group(const double* lon, const double* lat, R_xlen_t n, double* mean,
+                                      double* mn, int rows_threads) {
+  std::vector<double> p(n), cp(n);
   for (R_xlen_t i = 0; i < n; ++i) {
     p[i] = lat[i] * kDeg;
     cp[i] = std::cos(p[i]);
   }
+  const double inf = std::numeric_limits<double>::infinity();
+  if (rows_threads > 1) {
+    OCC_OMP(omp parallel for num_threads(rows_threads) schedule(dynamic, 16))
+    for (R_xlen_t i = 0; i < n; ++i) {
+      double s = 0.0, m = inf;
+      R_xlen_t k = 0;
+      for (R_xlen_t j = 0; j < n; ++j) {
+        if (j == i) continue;
+        const double d = j < i ? hav_km(lon, p.data(), cp.data(), j, i) : hav_km(lon, p.data(), cp.data(), i, j);
+        if (!(d > 0)) continue;
+        s += d; ++k; if (d < m) m = d;
+      }
+      mean[i] = k ? s / static_cast<double>(k) : R_NaN;
+      mn[i] = m;
+    }
+    return;
+  }
+  std::vector<double> s(n, 0.0), m(n, inf);
+  std::vector<R_xlen_t> k(n, 0);
   for (R_xlen_t i = 0; i < n; ++i) {
     for (R_xlen_t j = i + 1; j < n; ++j) {
-      const double s1 = std::sin((p[j] - p[i]) / 2), s2 = std::sin((lon[j] - lon[i]) * kDeg / 2);
-      double a = s1 * s1 + cp[i] * cp[j] * s2 * s2;
-      if (a > 1) a = 1;
-      const double d = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a)) * kRadiusKm;
+      const double d = hav_km(lon, p.data(), cp.data(), i, j);
       if (!(d > 0)) continue;
       s[i] += d; ++k[i]; if (d < m[i]) m[i] = d;
       s[j] += d; ++k[j]; if (d < m[j]) m[j] = d;
     }
   }
-  NumericVector mean(n), mn(n);
   for (R_xlen_t i = 0; i < n; ++i) {
     mean[i] = k[i] ? s[i] / static_cast<double>(k[i]) : R_NaN;
     mn[i] = m[i];
   }
+}
+
+// The distances of outlier_dist_group() within each group of points: group g
+// is rows start[g] to start[g + 1] - 1 (0-based; the last entry of start is
+// the number of points). Groups of fewer than split_n points are spread over
+// the threads, one group per thread at a time; larger groups follow one after
+// the other, each spread over the threads by rows. The result does not
+// depend on the number of threads.
+// [[Rcpp::export]]
+List cpp_outlier_dist(NumericVector lon, NumericVector lat, IntegerVector start, int n_threads = 1,
+                      int split_n = 1000) {
+  const R_xlen_t n = lon.size();
+  if (lat.size() != n) stop("lon and lat differ in length");
+  const R_xlen_t ng = start.size() - 1;
+  if (ng < 0 || start[0] != 0 || start[ng] != n) stop("start must run from 0 to the number of points");
+  for (R_xlen_t g = 0; g < ng; ++g)
+    if (start[g + 1] < start[g]) stop("start must be non-decreasing");
+  NumericVector mean(n), mn(n);
+  const double* px = REAL(lon);
+  const double* py = REAL(lat);
+  const int* st = INTEGER(start);
+  double* pm = REAL(mean);
+  double* pn = REAL(mn);
+  const int nt = occ::threads(n_threads);
+  std::vector<R_xlen_t> small, large;
+  for (R_xlen_t g = 0; g < ng; ++g)
+    (nt > 1 && st[g + 1] - st[g] >= split_n ? large : small).push_back(g);
+  const R_xlen_t ns = static_cast<R_xlen_t>(small.size());
+  OCC_OMP(omp parallel for num_threads(nt) schedule(dynamic, 1))
+  for (R_xlen_t q = 0; q < ns; ++q) {
+    const R_xlen_t g = small[q];
+    outlier_dist_group(px + st[g], py + st[g], st[g + 1] - st[g], pm + st[g], pn + st[g], 1);
+  }
+  for (R_xlen_t g : large)
+    outlier_dist_group(px + st[g], py + st[g], st[g + 1] - st[g], pm + st[g], pn + st[g], nt);
   return List::create(_["mean"] = mean, _["min"] = mn);
 }
 

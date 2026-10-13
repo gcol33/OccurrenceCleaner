@@ -6,6 +6,7 @@
 #include "geodesic.h"
 #include "kdtree.h"
 #include "polygon_index.h"
+#include "threads.h"
 
 using namespace Rcpp;
 
@@ -22,22 +23,31 @@ SEXP cpp_point_index(NumericVector lon, NumericVector lat) {
 // metres) of the record. Records with non-finite coordinates are FALSE.
 // [[Rcpp::export]]
 LogicalVector cpp_point_within(SEXP index, NumericVector lon, NumericVector lat,
-                               double buffer_m) {
+                               double buffer_m, int n_threads = 1) {
   XPtr<occ::KdTree3> tree(index);
+  const occ::KdTree3* t = tree.get();
   const R_xlen_t n = lon.size();
   if (lat.size() != n) stop("lon and lat differ in length");
   LogicalVector out(n, FALSE);
+  int* o = LOGICAL(out);
+  const double* px = REAL(lon);
+  const double* py = REAL(lat);
   const double chord = occ::chord_bound(buffer_m);
-  std::vector<std::size_t> cand;
-  for (R_xlen_t i = 0; i < n; ++i) {
-    const double x = lon[i], y = lat[i];
-    if (!std::isfinite(x) || !std::isfinite(y)) continue;
-    tree->within(x, y, chord, cand);
-    for (std::size_t k = 0; k < cand.size(); ++k) {
-      const double d = occ::geodesic_m(x, y, tree->lon(cand[k]), tree->lat(cand[k]));
-      if (d <= buffer_m) {
-        out[i] = TRUE;
-        break;
+  const int nt = occ::threads(n_threads);
+  OCC_OMP(omp parallel num_threads(nt))
+  {
+    std::vector<std::size_t> cand;
+    OCC_OMP(omp for schedule(dynamic, 1024))
+    for (R_xlen_t i = 0; i < n; ++i) {
+      const double x = px[i], y = py[i];
+      if (!std::isfinite(x) || !std::isfinite(y)) continue;
+      t->within(x, y, chord, cand);
+      for (std::size_t k = 0; k < cand.size(); ++k) {
+        const double d = occ::geodesic_m(x, y, t->lon(cand[k]), t->lat(cand[k]));
+        if (d <= buffer_m) {
+          o[i] = TRUE;
+          break;
+        }
       }
     }
   }
@@ -111,33 +121,50 @@ SEXP cpp_polygon_index(NumericVector x, NumericVector y, IntegerVector ring_star
 
 // Feature (1-based) containing each point, 0 where none; NA coordinates give 0.
 // [[Rcpp::export]]
-IntegerVector cpp_polygon_locate(SEXP index, NumericVector lon, NumericVector lat) {
+IntegerVector cpp_polygon_locate(SEXP index, NumericVector lon, NumericVector lat, int n_threads = 1) {
   XPtr<occ::PolygonIndex> poly(index);
+  const occ::PolygonIndex* pi = poly.get();
   const R_xlen_t n = lon.size();
   if (lat.size() != n) stop("lon and lat differ in length");
   IntegerVector out(n, 0);
+  int* o = INTEGER(out);
+  const double* px = REAL(lon);
+  const double* py = REAL(lat);
+  const int nt = occ::threads(n_threads);
+  OCC_OMP(omp parallel for num_threads(nt) schedule(dynamic, 4096))
   for (R_xlen_t i = 0; i < n; ++i) {
-    const double x = lon[i], y = lat[i];
+    const double x = px[i], y = py[i];
     if (!std::isfinite(x) || !std::isfinite(y)) continue;
-    out[i] = poly->locate(x, y) + 1;
+    o[i] = pi->locate(x, y) + 1;
   }
   return out;
 }
 
 // TRUE where some polygon edge lies within buffer_m metres of the point.
 // [[Rcpp::export]]
-LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m) {
+LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m,
+                               int n_threads = 1) {
   XPtr<occ::PolygonIndex> poly(index);
+  const occ::PolygonIndex* pi = poly.get();
   const R_xlen_t n = lon.size();
   if (lat.size() != n) stop("lon and lat differ in length");
   LogicalVector out(n, FALSE);
+  int* o = LOGICAL(out);
+  const double* px = REAL(lon);
+  const double* py = REAL(lat);
+  const int nt = occ::threads(n_threads);
+  OCC_OMP(omp parallel for num_threads(nt) schedule(dynamic, 256))
   for (R_xlen_t i = 0; i < n; ++i) {
-    const double x = lon[i], y = lat[i];
+    const double x = px[i], y = py[i];
     if (!std::isfinite(x) || !std::isfinite(y)) continue;
-    out[i] = poly->near_edge(x, y, buffer_m);
+    o[i] = pi->near_edge(x, y, buffer_m);
   }
   return out;
 }
+
+// Threads the OpenMP runtime hands out; 1 without OpenMP.
+// [[Rcpp::export]]
+int cpp_max_threads() { return occ::threads(1 << 20); }
 
 // Diagnostics for a polygon index.
 // [[Rcpp::export]]

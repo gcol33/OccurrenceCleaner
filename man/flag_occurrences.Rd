@@ -19,7 +19,8 @@ flag_occurrences(
   keep = NULL,
   part_rows = 2e+06,
   resume = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  n_threads = 1L
 )
 }
 \arguments{
@@ -93,6 +94,10 @@ marker exists and resume the group stage from its checkpoint. \code{FALSE}
 deletes the earlier output in \code{out} and starts over.}
 
 \item{verbose}{Report progress for streamed input.}
+
+\item{n_threads}{Number of threads for the outlier test and the spatial
+queries. \code{0} uses every thread OpenMP hands out; a request above that is
+reduced to it, with a message.}
 }
 \value{
 For a data frame: \code{x} with an integer column \code{flags} and one logical
@@ -146,6 +151,24 @@ five minutes have passed, and at the end of each pass, so an interruption
 repeats at most the work since the last checkpoint. The record pass writes
 a \code{.done} marker per input file; an interruption there repeats the file in
 progress.
+
+A streamed run writes its progress to \code{out/progress.txt}, one line
+overwritten on every report: the step, items done and total, seconds
+elapsed, and the estimated seconds left in the step and in the run, and the
+share of the run done. The estimate for the steps ahead uses per-record
+costs measured on a part of the GBIF snapshot, scaled to the speed of the
+run so far, so it is rough until the slower steps have started. With
+\code{verbose}, the same is reported on the console every minute.
+}
+
+\section{Threads}{
+
+\code{n_threads} spreads the exact outlier test over species and the
+proximity and point-in-polygon queries of the record tests over records.
+Each species and each record is computed on one thread, so the flags do not
+depend on the number of threads. Reading the input, the other tests and the
+bookkeeping of the group stage run on one thread. Without OpenMP support in
+the compiler every query runs on one thread.
 
 Memory in the record pass is one input chunk, up to \code{part_rows} buffered
 output rows and the group-test hits of the current block of 2^20 rows. The

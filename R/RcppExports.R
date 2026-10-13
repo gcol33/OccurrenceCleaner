@@ -5,8 +5,8 @@ cpp_point_index <- function(lon, lat) {
     .Call(`_OccurrenceCleaner_cpp_point_index`, lon, lat)
 }
 
-cpp_point_within <- function(index, lon, lat, buffer_m) {
-    .Call(`_OccurrenceCleaner_cpp_point_within`, index, lon, lat, buffer_m)
+cpp_point_within <- function(index, lon, lat, buffer_m, n_threads = 1L) {
+    .Call(`_OccurrenceCleaner_cpp_point_within`, index, lon, lat, buffer_m, n_threads)
 }
 
 cpp_point_nearest <- function(index, lon, lat) {
@@ -21,12 +21,16 @@ cpp_polygon_index <- function(x, y, ring_start, ring_feature, cell, extent = as.
     .Call(`_OccurrenceCleaner_cpp_polygon_index`, x, y, ring_start, ring_feature, cell, extent)
 }
 
-cpp_polygon_locate <- function(index, lon, lat) {
-    .Call(`_OccurrenceCleaner_cpp_polygon_locate`, index, lon, lat)
+cpp_polygon_locate <- function(index, lon, lat, n_threads = 1L) {
+    .Call(`_OccurrenceCleaner_cpp_polygon_locate`, index, lon, lat, n_threads)
 }
 
-cpp_polygon_near <- function(index, lon, lat, buffer_m) {
-    .Call(`_OccurrenceCleaner_cpp_polygon_near`, index, lon, lat, buffer_m)
+cpp_polygon_near <- function(index, lon, lat, buffer_m, n_threads = 1L) {
+    .Call(`_OccurrenceCleaner_cpp_polygon_near`, index, lon, lat, buffer_m, n_threads)
+}
+
+cpp_max_threads <- function() {
+    .Call(`_OccurrenceCleaner_cpp_max_threads`)
 }
 
 cpp_polygon_info <- function(index) {
@@ -49,8 +53,8 @@ cpp_seen_mark <- function(set, h1, h2, h3, h4) {
     .Call(`_OccurrenceCleaner_cpp_seen_mark`, set, h1, h2, h3, h4)
 }
 
-cpp_outlier_dist <- function(lon, lat) {
-    .Call(`_OccurrenceCleaner_cpp_outlier_dist`, lon, lat)
+cpp_outlier_dist <- function(lon, lat, start, n_threads = 1L, split_n = 1000L) {
+    .Call(`_OccurrenceCleaner_cpp_outlier_dist`, lon, lat, start, n_threads, split_n)
 }
 
 cpp_cell_dist <- function(cx, cy, count, weighted, same_km) {

@@ -58,12 +58,17 @@ check_settings <- function(settings) {
 
 # ---- shared statistics ---------------------------------------------------------
 
-# Values above the upper fence: Q75 + mltpl * IQR, or median + mltpl * MAD.
+# The upper fence: Q75 + mltpl * IQR, or median + mltpl * MAD; NA when every
+# value is missing.
+fence_limit <- function(v, method, mltpl) {
+  if (all(is.na(v))) return(NA_real_)
+  if (method == "mad") stats::median(v, na.rm = TRUE) + stats::mad(v, na.rm = TRUE) * mltpl
+  else stats::quantile(v, 0.75, na.rm = TRUE, names = FALSE) + stats::IQR(v, na.rm = TRUE) * mltpl
+}
+
+# Values above the upper fence.
 fence_flags <- function(v, method, mltpl) {
-  if (!length(v) || all(is.na(v))) return(rep(FALSE, length(v)))
-  limit <- if (method == "mad") stats::median(v, na.rm = TRUE) + stats::mad(v, na.rm = TRUE) * mltpl
-           else stats::quantile(v, 0.75, na.rm = TRUE, names = FALSE) + stats::IQR(v, na.rm = TRUE) * mltpl
-  out <- v > limit
+  out <- v > fence_limit(v, method, mltpl)
   out[is.na(out)] <- FALSE
   out
 }
@@ -111,11 +116,30 @@ spread_flags <- function(g, rep_rows, flagged_rep) {
 
 # ---- species: geographic outliers ---------------------------------------------
 
-# Exact test on one species' records (< 10000 records, no thinning).
-outlier_exact <- function(lon, lat, s) {
-  d <- cpp_outlier_dist(lon, lat)
-  if (s$method == "distance") return(d$min > s$tdi)
-  fence_flags(d$mean, s$method, s$mltpl)
+# Exact test on the records of the species in `key` (each < 10000 records,
+# no thinning). A species is tested when it has at least min_occs distinct
+# coordinates; its records keep their input order, so the distance sums are
+# added in the same order whatever the other species or the threads.
+outlier_exact <- function(key, lon, lat, s, n_threads = 1L) {
+  hit <- logical(length(key))
+  if (!length(key)) return(hit)
+  o <- order(key, method = "radix")
+  k <- key[o]
+  grp <- cumsum(c(TRUE, k[-1L] != k[-length(k)]))
+  n_uniq <- tabulate(grp[!duplicated(data.frame(grp, lon[o], lat[o]))], grp[length(grp)])
+  sel <- n_uniq[grp] >= s$min_occs
+  if (!any(sel)) return(hit)
+  idx <- o[sel]
+  g <- grp[sel]
+  start <- c(0L, cumsum(rle(g)$lengths))
+  d <- cpp_outlier_dist(lon[idx], lat[idx], as.integer(start), n_threads)
+  h <- if (s$method == "distance") d$min > s$tdi else {
+    lim <- vapply(split(d$mean, g), fence_limit, 0, method = s$method, mltpl = s$mltpl)
+    d$mean > lim[match(g, as.integer(names(lim)))]
+  }
+  h[is.na(h)] <- FALSE
+  hit[idx] <- h
+  hit
 }
 
 # Raster grid of the approximation: the extent of all valid records widened by
@@ -318,21 +342,22 @@ duplicate_key <- function(chunk, cols, cfg, lon, lat) {
   key
 }
 
-# Call f(g) for each key group of one partition of a store. A partition of
-# more than `cap` rows on disk is split further by a salted hash of the key,
-# so only one group (all records of one species or taxon) has to fit in
-# memory.
-each_group <- function(p, k, f, cap = 5e6, depth = 0L) {
+# Call f(g) for each key group of one partition of a store.
+each_group <- function(p, k, f) each_part(p, k, function(d) for (g in split(d, d$key)) f(g))
+
+# Call f(d) on the rows of one partition of a store, all rows of a key
+# together. A partition of more than `cap` rows on disk is split further by a
+# salted hash of the key, so only one piece has to fit in memory.
+each_part <- function(p, k, f, cap = 5e6, depth = 0L) {
   n <- p$rows[[k]]
   if (is.null(p$dir) || n <= cap || depth >= 4L) {
-    d <- parts_read(p, k)
-    for (g in split(d, d$key)) f(g)
+    f(parts_read(p, k))
     return(invisible())
   }
   sub <- new_parts(if (!is.null(p$dir)) file.path(p$dir, paste0("sub-", k)), "b", p$flush_rows)
   m <- max(2, ceiling(n / cap) * 2)
   parts_each(p, k, function(d) parts_add(sub, d, cpp_hash_strings(paste0(d$key, "\r", depth)) %% m))
-  for (kk in parts_keys(sub)) each_group(sub, kk, f, cap, depth + 1L)
+  for (kk in parts_keys(sub)) each_part(sub, kk, f, cap, depth + 1L)
   parts_drop(sub)
   invisible()
 }
@@ -545,10 +570,9 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   })
 
   run_buckets("decide_outlier", "decide_taxon", stores$sp, function(k) {
-    each_group(stores$sp, k, function(g) {
-      if (sum(!duplicated(g[, c("lon", "lat")])) < so$min_occs) return()
-      hit <- outlier_exact(g$lon, g$lat, so)
-      hits_add(stores$hits, g$unit[hit], g$row[hit], "outlier")
+    each_part(stores$sp, k, function(d) {
+      hit <- outlier_exact(d$key, d$lon, d$lat, so, cfg$n_threads %||% 1L)
+      hits_add(stores$hits, d$unit[hit], d$row[hit], "outlier")
     })
   })
 

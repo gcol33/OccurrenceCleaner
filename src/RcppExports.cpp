@@ -23,8 +23,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_point_within
-LogicalVector cpp_point_within(SEXP index, NumericVector lon, NumericVector lat, double buffer_m);
-RcppExport SEXP _OccurrenceCleaner_cpp_point_within(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP buffer_mSEXP) {
+LogicalVector cpp_point_within(SEXP index, NumericVector lon, NumericVector lat, double buffer_m, int n_threads);
+RcppExport SEXP _OccurrenceCleaner_cpp_point_within(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP buffer_mSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
     Rcpp::traits::input_parameter< double >::type buffer_m(buffer_mSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_point_within(index, lon, lat, buffer_m));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_point_within(index, lon, lat, buffer_m, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -80,21 +81,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_polygon_locate
-IntegerVector cpp_polygon_locate(SEXP index, NumericVector lon, NumericVector lat);
-RcppExport SEXP _OccurrenceCleaner_cpp_polygon_locate(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP) {
+IntegerVector cpp_polygon_locate(SEXP index, NumericVector lon, NumericVector lat, int n_threads);
+RcppExport SEXP _OccurrenceCleaner_cpp_polygon_locate(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type index(indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_polygon_locate(index, lon, lat));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_polygon_locate(index, lon, lat, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_polygon_near
-LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m);
-RcppExport SEXP _OccurrenceCleaner_cpp_polygon_near(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP buffer_mSEXP) {
+LogicalVector cpp_polygon_near(SEXP index, NumericVector lon, NumericVector lat, double buffer_m, int n_threads);
+RcppExport SEXP _OccurrenceCleaner_cpp_polygon_near(SEXP indexSEXP, SEXP lonSEXP, SEXP latSEXP, SEXP buffer_mSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,7 +104,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
     Rcpp::traits::input_parameter< double >::type buffer_m(buffer_mSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_polygon_near(index, lon, lat, buffer_m));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_polygon_near(index, lon, lat, buffer_m, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_max_threads
+int cpp_max_threads();
+RcppExport SEXP _OccurrenceCleaner_cpp_max_threads() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_max_threads());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -165,14 +178,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_outlier_dist
-List cpp_outlier_dist(NumericVector lon, NumericVector lat);
-RcppExport SEXP _OccurrenceCleaner_cpp_outlier_dist(SEXP lonSEXP, SEXP latSEXP) {
+List cpp_outlier_dist(NumericVector lon, NumericVector lat, IntegerVector start, int n_threads, int split_n);
+RcppExport SEXP _OccurrenceCleaner_cpp_outlier_dist(SEXP lonSEXP, SEXP latSEXP, SEXP startSEXP, SEXP n_threadsSEXP, SEXP split_nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_outlier_dist(lon, lat));
+    Rcpp::traits::input_parameter< IntegerVector >::type start(startSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< int >::type split_n(split_nSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_outlier_dist(lon, lat, start, n_threads, split_n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -233,18 +249,19 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_OccurrenceCleaner_cpp_point_index", (DL_FUNC) &_OccurrenceCleaner_cpp_point_index, 2},
-    {"_OccurrenceCleaner_cpp_point_within", (DL_FUNC) &_OccurrenceCleaner_cpp_point_within, 4},
+    {"_OccurrenceCleaner_cpp_point_within", (DL_FUNC) &_OccurrenceCleaner_cpp_point_within, 5},
     {"_OccurrenceCleaner_cpp_point_nearest", (DL_FUNC) &_OccurrenceCleaner_cpp_point_nearest, 3},
     {"_OccurrenceCleaner_cpp_geodesic_m", (DL_FUNC) &_OccurrenceCleaner_cpp_geodesic_m, 4},
     {"_OccurrenceCleaner_cpp_polygon_index", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_index, 6},
-    {"_OccurrenceCleaner_cpp_polygon_locate", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_locate, 3},
-    {"_OccurrenceCleaner_cpp_polygon_near", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_near, 4},
+    {"_OccurrenceCleaner_cpp_polygon_locate", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_locate, 4},
+    {"_OccurrenceCleaner_cpp_polygon_near", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_near, 5},
+    {"_OccurrenceCleaner_cpp_max_threads", (DL_FUNC) &_OccurrenceCleaner_cpp_max_threads, 0},
     {"_OccurrenceCleaner_cpp_polygon_info", (DL_FUNC) &_OccurrenceCleaner_cpp_polygon_info, 1},
     {"_OccurrenceCleaner_cpp_hash_strings", (DL_FUNC) &_OccurrenceCleaner_cpp_hash_strings, 1},
     {"_OccurrenceCleaner_cpp_key_hash", (DL_FUNC) &_OccurrenceCleaner_cpp_key_hash, 1},
     {"_OccurrenceCleaner_cpp_seen_new", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_new, 0},
     {"_OccurrenceCleaner_cpp_seen_mark", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_mark, 5},
-    {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 2},
+    {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 5},
     {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 5},
     {"_OccurrenceCleaner_cpp_lag_cov", (DL_FUNC) &_OccurrenceCleaner_cpp_lag_cov, 2},
     {"_OccurrenceCleaner_cpp_window_outlier_counts", (DL_FUNC) &_OccurrenceCleaner_cpp_window_outlier_counts, 3},
