@@ -1,5 +1,7 @@
 ---
 title: "The tests in detail"
+description: >
+  What each test checks, the fields it reads and the arguments that change it.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{The tests in detail}
@@ -28,45 +30,17 @@ The remaining tests are covered in separate articles:
 
 - Geographic outliers, two dataset tests, and `aohi`: [Outliers and dataset tests](outliers.html).
 
-- Species ranges (`range`): [Using custom gazetteers](gazetteers.html).
+- Species ranges (`range`): [Custom reference points and polygons](gazetteers.html).
 
-Each test also has its own help page, such as [`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html) and [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html). Installation is covered in [Get started](OccurrenceCleaner.html).
+Each test also has its own help page, such as [`?test_capital`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.html) and [`?test_sea`](https://gillescolling.com/OccurrenceCleaner/reference/test_sea.html). The full list of tests and the integer that stores their results are at the end of the article. Installation is covered in [Get started](OccurrenceCleaner.html).
 
-## The flag word
+## Coordinate validity
 
-Every test owns one bit of an integer. `flag_tests()` lists the layout: each test's definition with its default buffer, the fields it needs and its [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) counterpart:
-
-```{r layout}
-library(OccurrenceCleaner)
-
-knitr::kable(flag_tests()[, c("bit", "test", "definition", "needs", "source", "equivalent")])
-attr(flag_tests(), "layout_version")
-```
-
-Tests with an entry in the `equivalent` column follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s record tests and default buffers. Differences are documented in [Compatibility with CoordinateCleaner](coordinatecleaner.html). The remaining tests use GBIF’s `issue`, `basisOfRecord` and `establishmentMeans` fields, or compare the land polygons with the habitat of the record’s genus (`sea_nonmarine`, `land_marine`).
-
-A record's flag word is the sum of `2^bit` over the tests it fails, so a word of 10 (`2^1 + 2^3`) means `zero` and `capital`. `flag_mask()` turns a set of tests into such a word and `has_flag()` asks whether a word carries any test of a set:
-
-```{r mask}
-flag_mask(c("zero", "capital"))
-has_flag(c(0L, 2L, 8L, 10L, 16L), c("zero", "capital"))
-```
-
-The layout carries a version number. A change to it (a new bit, a redefined test) increases the version, and flags written to disk record the version they were made with, so a stored flag word is never read against the wrong layout.
-
-Without `tests`, `flag_occurrences()` runs every test whose columns are in the data, and `range` when range polygons are given. `tests` names a subset instead. `test_plan()` lists, for a table, which tests would run and the missing input of each other test:
-
-```{r defaults}
-x <- data.frame(species = "a", decimalLongitude = 16.37, decimalLatitude = 48.21)
-p <- test_plan(x)
-p$test[p$run]
-```
-
-## Coordinate validity: `invalid`
-
-A coordinate is invalid when it is missing, not a number, or outside [-180, 180] x [-90, 90]. Text columns are coerced to numbers first, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_val`:
+`invalid` flags a coordinate that is missing, not a number, or outside [-180, 180] x [-90, 90]. Text columns are coerced to numbers first, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_val`:
 
 ```{r invalid}
+library(OccurrenceCleaner)
+
 x <- data.frame(species = "a",
                 decimalLongitude = c("16.37", "abc", NA, "200", "-180"),
                 decimalLatitude = c("48.21", "10", "10", "10", "-90"))
@@ -76,7 +50,7 @@ f[, c("decimalLongitude", "decimalLatitude", "flag_invalid", "flag_zero", "flag_
 
 A record that fails `invalid` gets no other spatial flag: there is no point to test, so `zero` and `sea` stay `FALSE` for the second to fourth rows. CoordinateCleaner instead returns `NA` or "clean" for such rows depending on the test; [Compatibility with CoordinateCleaner](coordinatecleaner.html) lists the cases. The boundary values (-180, -90) are valid.
 
-## Zero and equal coordinates: `zero`, `equal`
+## Zero and equal coordinates
 
 `zero` flags records with a longitude or latitude of exactly zero, and records within 0.5 degrees of (0, 0), measured as a planar distance in degrees. `equal` flags records whose absolute longitude equals their absolute latitude, a common data-entry error where one value was copied into both fields:
 
@@ -97,9 +71,9 @@ flag_occurrences(x[3:4, ], tests = "zero", buffers = list(zero = 0))$flag_zero
 
 With `zero = 0` only exact zeros are flagged, which is what [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1 does in practice; [Compatibility with CoordinateCleaner](coordinatecleaner.html) explains why its documented 0.5-degree buffer is not applied there.
 
-## Proximity tests: `capital`, `centroid`, `institution`, `gbif_headquarters`
+## Proximity to reference points
 
-These four flag records within a fixed distance of a reference point: 10 km of a country capital, 1 km of a country or province centroid, 100 m of a biodiversity institution, and 1 km of the GBIF headquarters in Copenhagen (12.58 E, 55.67 N). Records end up at such points when a collector, a database or a georeferencing tool assigns the coordinates of the place that holds or names the specimen instead of where it was found.
+`capital`, `centroid`, `institution` and `gbif_headquarters` flag records within a fixed distance of a reference point: 10 km of a country capital, 1 km of a country or province centroid, 100 m of a biodiversity institution, and 1 km of the GBIF headquarters in Copenhagen (12.58 E, 55.67 N). Records end up at such points when a collector, a database or a georeferencing tool assigns the coordinates of the place that holds or names the specimen instead of where it was found.
 
 The distance is the geodesic distance on the WGS84 ellipsoid, and the buffer is closed: a record at exactly the buffer distance is flagged. Candidates are found with a kd-tree on the unit sphere, and each candidate is decided with the Vincenty inverse formula. The GBIF headquarters, a single fixed point, show the edge directly. Points due north of it at 990 m to 1,010 m:
 
@@ -141,7 +115,7 @@ ggplot(data.frame(km = radii / 1000, share = share), aes(km, share)) +
 
 For records spread evenly over a disc, the share grows with the square of the buffer. `r if (exists("share")) paste0(round(100 * share[radii == 10000], 1), " %")` of the records lie within the default 10 km, close to the 6.25 % of the area that a 10 km circle covers in a 40 km disc (10^2^/40^2^); with 3,000 records the sampling error of that share is about 0.4 percentage points. At 30 km the share rises above the disc ratio (56 %) because the eastern edge of the disc lies within 30 km of Bratislava, 56 km from Vienna, and those records are flagged for the second capital. On real data the share depends on how the records are distributed around the capital, which the per-test tally of `tally_flags()` reports directly.
 
-## Land and sea: `sea`
+## Land and sea
 
 `sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110 million (the default, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()`; its `clean_coordinates()` uses 1:50 million), 1:50 million and 1:10 million, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
 
@@ -157,7 +131,7 @@ data.frame(x[, 2:3],
 
 The 1:10 million layer is downloaded once on first use (`download_reference()`) and cached. The reference-data article measures how many coastal records change between scales.
 
-## Habitat at sea and on land: `sea_nonmarine`, `land_marine`
+## Habitat at sea and on land
 
 `sea` flags every record off the land, whales and corals included. `sea_nonmarine` flags only the records off the land whose genus does not live in the sea, and `land_marine` the records on land whose genus lives only in the sea. The habitats come from the Interim Register of Marine and Nonmarine Genera (IRMNG; Rees 2026), and `reference_habitat()` lists the genera with the rule that classes them. Genera that IRMNG gives both habitats or no flags, such as gulls, seals or mangroves, are not tested. The genus is the first word of the `genus` column, so `occ_columns(genus = "species")` reads it from a binomial, and a `kingdom` column, when present, tells apart genus names used in two kingdoms (*Asterias* is a starfish and a plant genus):
 
@@ -169,9 +143,9 @@ f <- flag_occurrences(x, tests = c("sea", "sea_nonmarine", "land_marine"))
 f[, c("genus", "flag_sea", "flag_sea_nonmarine", "flag_land_marine")]
 ```
 
-The oak in the Atlantic fails both `sea` and `sea_nonmarine`; the starfish in Vienna fails `land_marine`; the starfish and the gull in the Atlantic fail only `sea`. The land is the layer of `sea`, so `land_scale` moves coastal records here too, and `buffers = list(sea_nonmarine = m, land_marine = m)` leaves records within `m` metres of the coast untested. Fossils of a living marine genus lie on land as well; `basis_fossil` in the same rule keeps them apart.
+The oak in the Atlantic fails both `sea` and `sea_nonmarine`; the starfish in Vienna fails `land_marine`; the starfish and the gull in the Atlantic fail only `sea`. The land is the layer of `sea`, so `land_scale` moves coastal records here too, and `buffers = list(sea_nonmarine = m, land_marine = m)` leaves records within `m` metres of the coast untested. Fossils of a living marine genus lie on land as well, and `land_marine` flags them. A rule that includes `basis_fossil` excludes fossil specimens in any case; a study that keeps its fossils should leave `land_marine` out of the rule, or apply the rule to the fossil records separately.
 
-## Urban areas: `urban`
+## Urban areas
 
 `urban` flags records inside the Natural Earth 1:50 million urban-area polygons. It runs whenever coordinates are present. Records in cities are often correct, so a rule can leave `urban` out; as a separate column it can remove garden and street-tree records of plants. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()` leaves this test out by default:
 
@@ -184,7 +158,7 @@ flag_occurrences(x, tests = c("urban", "capital"))[, c("decimalLongitude", "deci
 
 The first point is central Vienna. The second is in the north-east of the city, 11 km from the gazetteer's point for Vienna (16.365 E, 48.202 N): still inside the urban polygon, but outside the capital buffer. The third is in rural Styria.
 
-## Country codes: `country_mismatch`
+## Country codes
 
 `country_mismatch` flags records whose coordinates fall outside the country named by their country code, using the Natural Earth 1:50 million country polygons. The record's code is compared with the polygon's ISO alpha-2 code (as GBIF's `countryCode` gives it), its ISO alpha-3 code (as [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) expects), and Natural Earth's own `ADM0_A3` code, which is filled where ISO has none. Matching is case-insensitive and ignores surrounding spaces:
 
@@ -198,7 +172,7 @@ f[, c("countryCode", "flag_country_mismatch")]
 
 A record without a code is flagged, and so is a record at sea whatever its code, as in CoordinateCleaner. Both are often what a rule should remove, but in a table where many records lack a code the test flags all of them; the per-test tally shows how many before the test goes into a rule. The column is named through `occ_columns(country = ...)`.
 
-## Duplicates: `duplicate`
+## Duplicates
 
 `duplicate` flags every record that has the same longitude, latitude and species as an earlier record in the input. The first occurrence is kept unflagged, so removing the flagged records leaves one record per distinct key:
 
@@ -220,9 +194,9 @@ flag_occurrences(x, tests = "duplicate", duplicate_cell = 0.01)$flag_duplicate
 
 With `eventDate` as an addition only the second record is a duplicate. With a 0.01-degree cell the fifth record, about 7 m east of the others, joins them. The species column (`occ_columns(species = ...)`) can be a name or a taxon key; a key avoids treating two spellings of one name as different species.
 
-## GBIF issue flags: `issue_coordinate`, `issue_taxon`, `issue_date`, `issue_rounded`
+## GBIF issue flags
 
-GBIF attaches issue names to each record while processing it. Four tests group them: georeferencing problems, taxon matching, dates, and rounded coordinates. The `issue` column can be a string of names separated by `;` (or `,`, `|`, space) or a list column of character vectors; case does not matter:
+GBIF attaches issue names to each record while processing it. Four tests group them: `issue_coordinate` for georeferencing problems, `issue_taxon` for taxon matching, `issue_date` for dates and `issue_rounded` for rounded coordinates. The `issue` column can be a string of names separated by `;` (or `,`, `|`, space) or a list column of character vectors; case does not matter:
 
 ```{r issues}
 x <- data.frame(issue = c("COORDINATE_ROUNDED;GEODETIC_DATUM_ASSUMED_WGS84",
@@ -276,7 +250,38 @@ flag_occurrences(
 
 By default, `occ_columns()` uses Darwin Core names such as `decimalLongitude`, `decimalLatitude`, and `species`. It looks for an exact match first, then tries a case-insensitive match.
 
-The `needs` column in the test table lists the fields each test requires. An explicitly requested test raises an error if a required column is missing. When `tests` is omitted, the package selects the tests supported by the available columns.
+The `needs` column of `flag_tests()` lists the fields each test requires. An explicitly requested test raises an error if a required column is missing. When `tests` is omitted, the package selects the tests supported by the available columns.
+
+## All tests and the flag word
+
+`flag_tests()` lists every test: its definition with its default buffer, the fields it needs, and its [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) counterpart in the `equivalent` column. The table also has a `source` column, left out here, and a `bit` column, explained below:
+
+```{r layout}
+catalogue <- flag_tests()[, c("bit", "test", "definition", "needs", "equivalent")]
+```
+
+```{r layout-table, echo = FALSE}
+knitr::kable(catalogue, row.names = FALSE)
+```
+
+Tests with an entry in the `equivalent` column follow [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s record tests and default buffers. Differences are documented in [Compatibility with CoordinateCleaner](coordinatecleaner.html). The remaining tests use GBIF’s `issue`, `basisOfRecord` and `establishmentMeans` fields, or compare the land polygons with the habitat of the record’s genus (`sea_nonmarine`, `land_marine`).
+
+Every test owns one bit of an integer, the `bit` column. A record's flag word is the sum of `2^bit` over the tests it fails, so a word of 10 (`2^1 + 2^3`) means `zero` and `capital`. `flag_mask()` turns a set of tests into such a word and `has_flag()` asks whether a word carries any test of a set:
+
+```{r mask}
+flag_mask(c("zero", "capital"))
+has_flag(c(0L, 2L, 8L, 10L, 16L), c("zero", "capital"))
+```
+
+The layout carries a version number, `attr(flag_tests(), "layout_version")`. A change to it (a new bit, a redefined test) increases the version, and flags written to disk record the version they were made with, so a stored flag word is never read against the wrong layout.
+
+Without `tests`, `flag_occurrences()` runs every test whose columns are in the data, and `range` when range polygons are given. `tests` names a subset instead. `test_plan()` lists, for a table, which tests would run and the missing input of each other test:
+
+```{r defaults}
+x <- data.frame(species = "a", decimalLongitude = 16.37, decimalLatitude = 48.21)
+p <- test_plan(x)
+p$test[p$run]
+```
 
 ## References
 

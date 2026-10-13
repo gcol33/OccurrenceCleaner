@@ -44,8 +44,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the domain and the kinds of problem
 
 ### readme.extends  [A1 A2]
-- idea: extends CC · CC defines the tests and runs in memory · same tests as kd-tree queries, streamed, so a snapshot · additions
-- job: Says the package extends CoordinateCleaner (the package, not only its tests), glossed as the R package that defines these tests and runs them on a data frame in memory (one sentence), that OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk so they apply to a full GBIF snapshot (one sentence, expanding GBIF), and that it adds tests of its own and expands the reference data (one sentence).
+- idea: extension of CC for large-scale data · credit: CC authors define the tests, buffers and grouped-test options, run in memory · same tests as kd-tree queries, streamed, so a snapshot · additions
+- job: States the relation phrase, an extension of CoordinateCleaner tailored to large-scale occurrence data, with its citation (one sentence), credits Zizka and co-authors for the tests, their default buffers and the options of the outlier and dataset tests, which CoordinateCleaner runs on a data frame in memory (one sentence; the full credit stays in readme.acknowledgements), that OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk so they apply to a full GBIF snapshot (one sentence, expanding GBIF), and that it adds tests of its own and expands the reference data (one sentence).
 - leaves: the parent, what it is, why this package exists beside it, and what is added
 
 ### readme.flags  [A3]
@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time and a full snapshot (billions of records in 288 GB of Parquet files) processed on a desktop computer in a single R process, files read in chunks so memory stays bounded whatever the dataset size, no cluster, interrupted runs resume, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 23,895 institution locations holding every institution of CoordinateCleaner's list, their sources spelled out and the 7,665 extension points (included by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 23,895 institution locations holding every institution of CoordinateCleaner's list plus 7,665 extension points from additional collection registries and geographic sources (sources named in the reference-data article; used by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -163,11 +163,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: who made the tests and what was taken from them
 
 ### readme.license  (section)
+- idea: MIT; two external resources with their own licences
+- job: States the MIT licence, then lists CoordinateCleaner (GPL-3, optional dependency, not bundled) and the World Borders centroids (CC BY-SA).
+- leaves: which parts carry another licence and that nothing GPL is bundled
 
 ### readme.citation  (section, generated)
-- idea: cite both, one header saying what each credits; keyed entries
-- job: Prints `citation("OccurrenceCleaner")` with BibTeX: this package (version from DESCRIPTION) and Zizka et al. (2019).
-- leaves: the package reference ready to paste and the CoordinateCleaner DOI, from `inst/CITATION`
+- idea: cite both, one header saying what each credits; keyed entries; downloadable files
+- job: Prints `citation("OccurrenceCleaner")` with BibTeX: this package (version from DESCRIPTION) and Zizka et al. (2019). Links the generated `.bib` and `.ris` files on the site.
+- leaves: the package reference ready to paste or import, and the CoordinateCleaner DOI, from `inst/CITATION`
 
 ## ?OccurrenceCleaner
 
@@ -207,8 +210,8 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gs.flag-result  [A1]
 - idea: reading the flags
-- job: States the output contract (same rows, same order, input columns unchanged, flag columns added), says `flagged_by` belongs to the printed display only (not a column of the object), which record each test flags, and that a record without a flag passed only the tests run (record 3 in Vienna).
-- leaves: the contract; absence of a flag is relative to the tests run
+- job: States the output contract (same rows, same order, input columns unchanged, flag columns added), says `flagged_by` belongs to the printed display only (not a column of the object), which record each test flags, that a record without a flag passed only the tests run (record 3 in Vienna), that a record can also stay unflagged when a test ran but could not judge it (a fossil without an age, a species too small for the outlier test), and that `FALSE` means "not flagged by this test", not "examined and found correct".
+- leaves: the contract; absence of a flag is relative to the tests run; flagged, passed and untested kept apart from the first output on
 
 ### gs.flag-columns
 - idea: logical columns and the integer
@@ -241,14 +244,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the capital distance in metres (`zero` in degrees); defaults in `?flag_occurrences`
 
 ### gs.own-data  (section)
-- idea: bridge to own data
-- job: Writes the records to a CSV with other column names, reads it back, maps the names with `occ_columns()`, says only the path and names change for another file, and that the same 12 tests run as on `x`.
-- leaves: `read.csv()`, `occ_columns()`, `columns =`
+- idea: bridge to own data, taught once: the error, then the mapping
+- job: Writes the records to a CSV with other column names, reads it back, shows the error the unmapped call gives (the message names the coordinate columns it looked for and points to `occ_columns()`), maps the names with `occ_columns()`, says only the path and names change for another file, that the same 12 tests run as on `x`, and that a mapping which leaves out `species` runs without error with 10 tests and `species` listed as missing.
+- leaves: `read.csv()`, `occ_columns()`, `columns =`; all column-mapping material lives here (2026-10-13: the errors section no longer repeats it)
 
 ### gs.errors  (section)
-- idea: common errors and their fixes
-- job: Opens with the situation (other column names; `y` holds `lon`, `lat`, `taxon`; `columns` maps them), then shows three real error messages (no column a test reads, unknown test, rule naming a test not run), each followed by the corrected call and its result; between the first and second, a mapping that leaves out `species` runs without error and the header shows 10 tests and `species` missing.
-- leaves: `occ_columns()` (linked back to Flagging other data), `flag_tests()`, rerun or drop the test
+- idea: two more errors and their fixes
+- job: Shows two real error messages (unknown test name, rule naming a test not run), each followed by the corrected call and its result.
+- leaves: `flag_tests()`, rerun or drop the test
 
 ### gs.metadata  [A4]  (section)
 - idea: tests on GBIF fields
@@ -256,9 +259,9 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: that some tests read GBIF fields
 
 ### gs.disk  [A2]  (section)
-- idea: a table on disk
-- job: Writes the seven records to two `.vtr` files (setup visible; vectra introduced), flags the directory with the identifier mapped (`occ_columns(id = "id")`, default `gbifID`), says the result for a path describes the output directory, tallies it (same counts as the data frame), says the duplicate test compares records across the files as in the data frame, says a rerun skips flagged files, links the on-disk article.
-- leaves: `out`, `keep`, the id mapping, resuming
+- idea: a table on disk, kept short
+- job: Writes the seven records to two `.vtr` files (setup visible; vectra introduced), flags the directory with the identifier mapped (`occ_columns(id = "id")`, default `gbifID`), prints the result, says it describes the output directory whose files store the identifier, the `keep` columns and the flags, that `tally_flags()` reads them like a data frame, and hands over to the on-disk article (tallying, duplicates across files, joining, resuming). The tally and the duplicate sentence moved there (2026-10-13).
+- leaves: `out`, `keep`, the id mapping; where the disk workflow continues
 
 ### gs.next  (list)
 - idea: routing
@@ -284,7 +287,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### cc.both  [A1]  (section)
 - idea: clean_coordinates and flag_occurrences on the same records, matched reference
-- job: Introduces `clean_coordinates(value = "spatialvalid")` as the matching interface and the opposite sign; generates the records; runs seven tests in both with `reference = "CoordinateCleaner"`; tabulates flagged counts and agreement; names the two tests that differ.
+- job: Says in plain words that both packages return every record with one logical column per test, then gives the opposite sign in its own sentences (TRUE is pass in CoordinateCleaner, fail here) and that one output is inverted for the comparison; no function name in this prose, the calls are in the chunk below. Describes the 4,000 records near five capitals and lists the 50 overwritten records with the test each group is for (20 at the origin: zero and equal; 20 with equal coordinates: equal; 10 within 0.3 degrees of zero: the zero-buffer difference); runs seven tests in both with `reference = "CoordinateCleaner"`; tabulates flagged counts and agreement; names the two tests that differ.
 - leaves: agreement per test on matched settings; where the two differences come from
 
 ### cc.remove  [A1 A3]  (subsection)
@@ -304,7 +307,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### cc.mapping  [A1]  (section, tables)
 - idea: function and argument mapping
-- job: Says there is one flagging function, that each test has a `clean_<test>()` that removes what it flags, how that relates to CoordinateCleaner's `clean_*()` wrappers, and that no name is shared; maps tests, arguments and output, and the functions around the tests; `as_spatialvalid()`.
+- job: Says `flag_occurrences()` runs any selected combination of tests (not "one function for every test"), that each test has a `clean_<test>()` that removes what it flags, how that relates to CoordinateCleaner's `clean_*()` wrappers, and that no name is shared; maps tests, arguments and output, and the functions around the tests. After the third table: the sampling correction of the outlier test (optional, GBIF counts downloaded only when it is on; here a table whose checksum goes in the reference label), the PyRate export name, and `as_spatialvalid()` (contents of the converted result, names and sign, what runs on it, and the tested scope: validity, equal and duplicate columns against `clean_coordinates()`).
 - leaves: the vocabulary of both packages; both can be attached
 
 ### cc.differ  [A1]  (section)
@@ -329,10 +332,11 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Says what the article covers per test and which tests come from CoordinateCleaner. Links Get started for installation.
 - leaves: the split into equivalent tests and additions; `?test_<name>` pages exist
 
-### tests.flag-word  [A3]  (section)
-- idea: one bit per test; layout version; which tests run
-- job: Lists every test from `flag_tests()` (definition with default buffer, needed fields, source, CoordinateCleaner counterpart), defines the flag word, shows a mask and says why the layout is versioned.
+### tests.flag-word  [A3]  (section, "All tests and the flag word", last section before References since 2026-10-13)
+- idea: the full catalogue; one bit per test; layout version; which tests run
+- job: Lists every test from `flag_tests()` (bit, test, definition with default buffer, needed fields, CoordinateCleaner counterpart; the `source` column left out for width), defines the flag word, shows a mask and says why the layout is versioned.
 - leaves: the full test table (the README links here for it); `2^bit` sums, `flag_mask()`, `has_flag()`, `layout_version`, `test_plan()` on a one-record table
+- note: section headings of the per-test sections name the topic, not the test identifiers (sidebar width); each section's first sentence names its tests
 
 ### tests.invalid  [A1]  (section)
 - idea: invalid gets no other spatial flag
@@ -357,7 +361,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### tests.habitat  [A7]  (section)
 - idea: sea vs genus habitat; IRMNG; homonyms; coast and fossils
 - job: Defines `sea_nonmarine` and `land_marine`, where the habitats come from and which genera stay untested, and shows the three tests side by side.
-- leaves: `reference_habitat()`; `genus` and `kingdom` columns; the land and buffers of the habitat tests; `basis_fossil` for marine fossils
+- leaves: `reference_habitat()`; `genus` and `kingdom` columns; the land and buffers of the habitat tests; marine fossils on land are flagged by `land_marine`, a rule with `basis_fossil` excludes fossils in any case, a study keeping fossils leaves `land_marine` out
 
 ### tests.urban  [A1]  (section)
 - idea: urban polygons; runs with coordinates; a rule may leave it out
@@ -397,9 +401,9 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: flag, compare per test and rule, compare by group, select
 
 ### rules.example-data  [A3]  (section)
-- idea: simulated terrestrial European records with planted errors
-- job: Builds terrestrial records (each species in one kingdom, four-decimal coordinates) with GBIF fields; says older records were simulated with larger uncertainty and more `COORDINATE_ROUNDED`, so later age and uncertainty patterns follow from that; then moves disjoint sets of records to capitals, (0, 0) and the Atlantic and adds exact copies.
-- leaves: an input with planted problems and stated simulation assumptions
+- idea: simulated terrestrial European records with planted errors; code folded
+- job: Describes the records in prose first (terrestrial, each species in one kingdom, four-decimal coordinates, GBIF fields; older records simulated with larger uncertainty and more `COORDINATE_ROUNDED`, so later age and uncertainty patterns follow from that; disjoint sets moved to capitals, (0, 0) and the Atlantic, exact copies appended), puts the three simulation chunks in a `<details>` block, then shows `nrow(x)` and three rows.
+- leaves: an input with planted problems and stated simulation assumptions; the first package call follows the preview
 
 ### rules.flag-once  [A3]
 - idea: the CoordinateCleaner tests plus issue and fossil tests, named
@@ -414,7 +418,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### rules.compare  [A3]  (section)
 - idea: three candidate rules, named for this article
 - job: Defines `strict`, `coordinatecleaner` (the eight `clean_coordinates()` defaults in this set; its outlier test left out, duplicates not in its default) and `minimal` (screening for terrestrial records; `sea` removes valid marine records); limits `coordinatecleaner` to this plot and the kingdom comparison.
-- leaves: named rules in `summary()`; records failing several tests count under no `only`
+- leaves: named rules in `summary()`; records failing several tests contribute zero to every `only` count (said in those words)
 
 ### rules.by-group  [A3]  (section)
 - idea: by kingdom
@@ -449,13 +453,13 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the four steps
 
 ### disk.input  [A2]  (section)
-- idea: three `.vtr` parts, one copy across files
-- job: Defines `.vtr`, writes three parts of 3,000 records and replaces the last record of part 3 by a copy of the first record of part 1.
+- idea: three `.vtr` parts, one copy across files; code folded
+- job: Defines `.vtr`, says in prose that the last record of part 3 is a copy of the first record of part 1, puts the code that writes the three parts in a `<details>` block, then lists the files and three rows of part 1.
 - leaves: `src`, `p1`, `p3`, the cross-file copy
 
 ### disk.flag  [A2]  (section)
-- idea: `out`, `keep`, the identifier, the test plan
-- job: Flags the directory, prints the `occ_flagged` object, shows `test_plan()` for the tests that did not run, names `duplicate` and `outlier` as grouped tests run in a group stage before the record pass.
+- idea: `out`, `keep`, the identifier, the test plan; progress log folded
+- job: Flags the directory in a `<details>` block (the call with its progress messages), prints the `occ_flagged` object in its own chunk, shows `test_plan()` for the tests that did not run, names `duplicate` and `outlier` as grouped tests run in a group stage before the record pass.
 - leaves: `out`, `f`, grouped tests
 
 ### disk.tally  [A2 A3]  (section)
@@ -480,7 +484,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### disk.resume  [A2]  (section)
 - idea: rerun to resume; configuration record
-- job: Reruns the call (all units skipped), removes one marker (that unit redone; the finished run's group files are gone, so the group stage repeats), says the group stage checkpoints, `resume = FALSE` starts over; shows the configuration record refusing a rerun with another `keep`; says sizes and modification times are not a content hash.
+- job: Reruns the call (all units skipped) and removes one marker (that unit redone; the finished run's group files are gone, so the group stage repeats), both reruns in `<details>` blocks with the prose saying what their messages report; says the group stage checkpoints, `resume = FALSE` starts over; shows the configuration record refusing a rerun with another `keep`; says sizes and modification times are not a content hash.
 - leaves: resuming, the configuration check
 
 ### disk.layout  [A2]  (section)
@@ -506,18 +510,18 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: every error is labelled, so catches can be checked
 
 ### gbif.data  [A3 A4]  (section)
-- idea: clean records plus 236 labelled errors
-- job: Builds 2,000 clean records with GBIF columns, then adds labelled errors of nine kinds and 40 copies.
+- idea: 2,000 background records plus 276 labelled errors; code folded
+- job: Describes the table in prose first (2,276 records in GBIF's lower-case names; 2,000 background records drawn in a box per country, two of the Austrian points across the border in Bavaria, announced here; 276 planted errors of nine kinds labelled in `truth`, 40 copies among them), puts the two simulation chunks in a `<details>` block, then shows one record of three kinds and `table(occ$truth)`. The label is `background`, not `clean`, so the two Bavarian records need no reinterpretation.
 - leaves: the `truth` column; the `issue` format
 
 ### gbif.flag  [A3 A5]  (section)
-- idea: every test the columns allow; what ran; reference stamp; per-test summary
-- job: Flags without `tests`, shows the reference stamp, lists with `test_plan()` the 21 tests that ran and the missing input of the 9 others (fossil, dataset, habitat, range), then the per-test shares (274 of 2,276 flagged).
-- leaves: `occ_reference` to store with any cleaned table
+- idea: every test the columns allow; what ran; reference label; per-test summary
+- job: Flags without `tests`, says what `FALSE` in a flag column means (not flagged; a test that did not run has no column, a grouped test leaves small species untested), names `flag_reference()` with the full label in a `<details>` block, lists with `test_plan()` the 21 tests that ran and the missing input of the 9 others (fossil, dataset, habitat, range), then the per-test shares (274 of 2,276 flagged; `only` defined as the records flagged by that test alone, the ones the rule would additionally keep without it).
+- leaves: `flag_reference()` to store with any cleaned table
 
 ### gbif.truth  [A1 A4]
 - idea: which test catches which error
-- job: Cross-tabulates truth against tests and explains the catches, the misses (5 whole-degree records on the France and Germany centroids, 1 at an institution, the rest uncaught) and the two flagged clean records.
+- job: Cross-tabulates tests (rows) against the error groups (columns; duplicates and fuzzy taxon left out, one test each) and explains the catches, the misses (5 whole-degree records on the France and Germany centroids, 1 at an institution, the rest uncaught) and the two flagged background records (the Bavarian points).
 - leaves: negated and most whole-degree records are beyond any record test; GBIF warnings catch swaps on land
 
 ### gbif.map  [A3]  (section)
@@ -532,7 +536,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gbif.ladder  [A3]  (section)
 - idea: five rules, loose to strict
-- job: Compares five rules and gives what each step adds, overall and by kingdom.
+- job: Defines the five rules (`coordinatecleaner` includes `invalid`, the same rule as in the rules and on-disk articles; `wild` "also excludes" living and managed records), compares them in a table with rules in rows (tests, removed, kept, added), gives what each step adds, then the share per kingdom as rules by kingdoms and as a figure. Year and uncertainty tables use short display headers from a hidden kable chunk.
 - leaves: the rule ladder; sole-reason bars
 
 ### gbif.age-precision  [A3]  (section)
@@ -557,14 +561,14 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - job: Names the reference layers and lists the article's topics. Links Get started for installation.
 - leaves: points vs polygons
 
-### ref.layers  [A5]  (section)
-- idea: sources, versions, licences
-- job: Lists each layer in a narrow table (Layer, Source, Version / snapshot, Retrieved; short factbook hash, Wikipedia revisions and the IRMNG citation in a note, `aohi` named after `cc_aohi()` while the inventory is AHOI), which test reads it, and the licences.
-- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner
+### ref.layers  [A5]  (section, with subsections since 2026-10-13)
+- idea: sources, versions, licences, each layer under its own heading
+- job: Lists each layer in a narrow table (Layer, Source, Version / snapshot, Retrieved; short factbook hash, Wikipedia revisions and the IRMNG citation in a note, `aohi` named after `cc_aohi()` while the inventory is AHOI) and which test reads it, then the provenance in subsections: Capitals; Country and province centroids (the three sources as a list); Land, countries and urban areas (Natural Earth terms); Institutions (GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry, the placement of CoordinateCleaner's remaining list); Genus habitats; Artificial hotspots.
+- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner; the README links `#institutions`
 
-### ref.vs-cc  [A1 A5]  (section)
+### ref.vs-cc  [A1 A5]  (section, "How the reference data differ from CoordinateCleaner's")
 - idea: same places, different tables
-- job: Compares the package gazetteers with CoordinateCleaner's, layer by layer (institutions: every institution of CoordinateCleaner's list held, by name or placed from Wikidata, OpenStreetMap or GeoNames, counted by how; its own geocoded points against the source points, with measured coverage), and shows the capital difference in flags.
+- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-10-13, the retrieval date of the last two institution registries; institutions: all but one of CoordinateCleaner's list held, by name or placed from Wikidata, OpenStreetMap or GeoNames, counted by how; its own geocoded points against the source points, with measured coverage), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.extension  [A1 A5]  (section)
@@ -584,7 +588,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.stamp  [A5]  (section)
 - idea: reference recorded with the flags
-- job: Shows the reference and layout stamps on a flagged table and on disk.
+- job: Prints the flagged table (short reference form in the header) and the layout version, with the full `flag_reference()` label in a `<details>` block; says the same label is written on disk.
 - leaves: one directory never mixes references
 
 ### ref.choose  [A1 A5]  (section)
@@ -600,18 +604,18 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: the grouped tests; the fossil ones are in the fossil article
 
 ### out.data  [A6]  (section)
-- idea: alpine plants plus far records and two faulty atlases
-- job: Builds 961 records of four species in three datasets and adds far records, a converted atlas and a gridded atlas.
+- idea: alpine plants plus far records and two faulty atlases; code folded
+- job: Describes the 961 records of four species in three datasets, the far records and the two faulty atlases in prose, puts the two simulation chunks in a `<details>` block, then shows three rows and the dataset-by-truth table.
 - leaves: the `truth` column; `datasetKey`
 
 ### out.outlier  [A1 A6]  (section)
 - idea: quantile threshold; min_occs
-- job: Flags geographic outliers with the default threshold and explains the one miss and the untested small species.
+- job: Flags geographic outliers with the default threshold, defines Q75, IQR and MAD in words where they first appear, and explains the one miss and the untested small species.
 - leaves: Q75 + 5 x IQR of mean distances; `min_occs`
 
 ### out.sampling  [A1 A6]
 - idea: sampling correction from supplied counts
-- job: Explains CoordinateCleaner's sampling correction and runs it with a per-country count table.
+- job: Explains CoordinateCleaner's sampling correction as three numbered steps (the count table, the density threshold at `sampling_thresh`, which flags are lifted) and runs it with a per-country count table.
 - leaves: `settings = list(outlier = list(sampling_thresh = ...))` with `gazetteers = list(sampling = <counts>)`; outliers stay flagged only in well-sampled countries
 
 ### out.methods  [A6]
@@ -661,13 +665,13 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: `flag_occurrences()`, `keep_unflagged()`, `tally_flags()`, the outlier tests, `export_pyrate()`
 
 ### fossil.data  [A3]  (section)
-- idea: nine synthetic records in PBDB columns, one case each
-- job: Names the PBDB columns; says `min_ma` and `max_ma` give the youngest and oldest possible ages in millions of years before the present; builds nine records and says what each one tests: 1 and 9 pass every test (ordered ages, Wyoming coordinates matching `US`), 2 equal ages, 3 reversed ages, 4 a 43-million-year span, 5 a missing minimum, 6 zero coordinates; places records 7 and 8 on and 3 km from the Germany polygon centroid of `reference_points("centroid")`.
+- idea: nine synthetic records in PBDB columns, one case each; cases explained beside their flags
+- job: Names the PBDB columns; says `min_ma` and `max_ma` give the youngest and oldest possible ages in millions of years before the present; builds nine records, naming only the controls (1 and 9: ordered ages, Wyoming coordinates matching `US`) and records 7 and 8 (code `DE`, coordinates set in the next chunk on and 3 km from the Germany polygon centroid of `reference_points("centroid")`, ordered ages with a 1.2 Ma span); the other cases are described in fossil.flag next to the result.
 - leaves: `fos`; the centroid records' distances are known
 
 ### fossil.flag  [A1]  (section)
-- idea: clean_fossils' record tests; what age_equal flags
-- job: Maps the PBDB columns, runs the record tests; says `age_equal` flags min >= max (records 2, 3), that the flag records the comparison and the records need review, and that missing ages are not flagged; record 6 fails zero, equal, country_mismatch; record 7 fails centroid.
+- idea: clean_fossils' record tests; what age_equal flags; each case beside its result
+- job: Maps the PBDB columns, runs the record tests; says `age_equal` flags min >= max and introduces records 2 (equal ages) and 3 (reversed) there, that the flag records the comparison and the records need review, that record 5 (missing minimum) cannot be compared and stays unflagged, that record 4 (43 Ma span) is flagged by no record test and returns in the age-range section; record 6 (zero coordinates) fails zero, equal, country_mismatch; record 7 fails centroid, record 8 at 3 km passes.
 - leaves: `age_equal` is a comparison, not a verdict on the age
 
 ### fossil.keep  [A3]  (section)
@@ -677,7 +681,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### fossil.buffers  [A1]  (section)
 - idea: a wider centroid buffer, chosen for the demonstration
-- job: States the defaults (1 km centroids, 100 m institutions, you can change these with `buffers`); shows a 5 km buffer flagging record 8 as well; comparison note: these differ from CoordinateCleaner 3.0.1, whose `clean_fossils()` passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer` of `cc_cen()`/`cc_inst()`, read in metres.
+- job: States the defaults (1 km centroids, 100 m institutions, you can change these with `buffers`); says a coarsely georeferenced collection "may have been assigned the country-centroid coordinates"; shows a 5 km buffer flagging record 8 as well; comparison note: these differ from CoordinateCleaner 3.0.1, whose `clean_fossils()` passes `centroids_rad = 0.05` and `inst_rad = 0.001` to the `buffer` of `cc_cen()`/`cc_inst()`, read in metres.
 - leaves: `buffers = list(centroid = 5000)`
 
 ### fossil.range  [A3]  (section)
@@ -708,26 +712,21 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### fossil.refs  (section)
 - leaves: Silvestro et al. 2014
 
-## Using custom gazetteers (how-to, A5)
+## Custom reference points and polygons (how-to, A5; file gazetteers.Rmd, retitled 2026-10-13, listed under Workflows)
 
 ### gaz.opener  [A5 A7]
-- idea: three kinds of reference data; replace one layer
-- job: Lists the three kinds of reference data (points, polygons, the genus habitat table). Says the package ships them except species ranges, that `reference = "CoordinateCleaner"` swaps in that package's tables, and that `gazetteers` replaces the layer of a single test, as CoordinateCleaner's `ref` arguments do. Names what the article covers, links Get started for installation and names sf as the extra package for the polygon examples.
+- idea: gazetteer defined; three kinds of reference data; replace one layer
+- job: Defines a gazetteer as a table of reference locations, the points or polygons a test compares each record with, then lists the three kinds of reference data (points, polygons, the genus habitat table). One short paragraph per fact, each option opened by its goal: the package includes them except species ranges; to change the data for all tests, `reference = "CoordinateCleaner"` (reads the tables of the reader's CoordinateCleaner installation); to change it for one test, the `gazetteers` argument, which does the job of CoordinateCleaner's `ref` arguments (comparison last, no `cc_*()` template name). States the article's scope in one sentence without listing the sections, links Get started for installation and names sf as the extra package for the polygon examples.
 - leaves: what the article covers
 
-### gaz.points  [A5]  (section)
-- idea: reference_points returns a test's points
-- job: Shows the shipped capital and institution points with their attributes.
-- leaves: `reference_points()`; institution `source` (GRSciColl, Wikidata, Wikipedia, BGCI, GeoNames, Index Herbariorum, GBIF registry or CoordinateCleaner list), `type` and `master_source`
+### gaz.filtered  [A5]  (section, "A filtered point layer"; absorbed gaz.points 2026-10-13)
+- idea: a subset of a shipped layer is the simplest custom layer; herbaria only, wider buffer
+- job: Defines a point layer, shows `reference_points("institution")` with `name`, `type`, `source`, filters the table to herbaria and shows the flags change; points to Reference data for the `extension` column and the institution sources (`source`, `master_source`) instead of repeating the inventory.
+- leaves: any data frame with longitude and latitude columns is a point layer; `reference_points()`
 
-### gaz.filtered  [A5]  (section)
-- idea: herbaria only, wider buffer
-- job: Filters the institution table to herbaria and shows the flags change.
-- leaves: any data frame with longitude and latitude columns is a point layer
-
-### gaz.extended  [A1 A5]  (section)
+### gaz.extended  [A1 A5]  (section, "An extended point layer")
 - idea: union of both capital tables
-- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, and the shipped institutions with CoordinateCleaner's (its own geocoding of gardens and museums).
+- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, and the shipped institutions (all but one of CoordinateCleaner's list, the Antarctic expert group) with CoordinateCleaner's (its own geocoding of gardens and museums).
 - leaves: other point sets fit the same way; CoordinateCleaner's geocoded institutions added at run time
 
 ### gaz.polygons  [A5]  (section)
@@ -737,7 +736,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gaz.ranges  [A1 A5]  (section)
 - idea: species range polygons for `range`
-- job: Builds range polygons for two species and shows records inside, outside and with a buffer.
+- job: Builds range polygons for two species and shows records inside, outside and with a buffer; the lizard at 52.5 N (about 55 km north of its range) is flagged without the buffer and kept with 100 km, so the buffer column differs from the plain one; the lizard at 55 N stays flagged under both.
 - leaves: the species column, per-species indices, species without a polygon untested
 
 ### gaz.habitat  [A5 A7]  (section)

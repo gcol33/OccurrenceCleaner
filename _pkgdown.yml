@@ -100,14 +100,14 @@ articles:
   navbar: Workflows
   contents:
   - gbif-workflow
-  - fossils
   - rules
   - on-disk
+  - fossils
+  - gazetteers
 - title: Background
   navbar: Background
   contents:
   - tests
-  - reference-data
-  - gazetteers
   - outliers
+  - reference-data
   - coordinatecleaner

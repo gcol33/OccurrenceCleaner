@@ -1,5 +1,7 @@
 ---
 title: "Get started"
+description: >
+  Flag seven records, filter them with a cleaning rule and compare two rules.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Get started}
@@ -62,7 +64,7 @@ f
 
 The result is `x` with the same rows in the same order and its columns unchanged, plus the flag columns described below. The printed display also shows a `flagged_by` column naming the tests that flag each record; the object itself has no such column. Record 2 has zero coordinates, record 4 repeats record 3, and record 5 has a longitude of 200 degrees.
 
-A record without a flag has passed only the tests that were run. Record 3 lies in Vienna but carries no flag, because no test against capitals has run yet.
+A record without a flag has passed only the tests that were run. Record 3 lies in Vienna but carries no flag, because no test against capitals has run yet. A record can also stay unflagged when a test ran but could not judge it: a fossil without an age, or a species with too few records for the outlier test. So `FALSE` in a flag column means that the test did not flag the record. It does not mean that the record was examined and found correct.
 
 Each test also has a logical column, `flag_<test>`, which is `TRUE` where the test flagged the record. The `flags` column combines the results of all tests for a record into one integer; [The tests in detail](tests.html) explains the encoding.
 
@@ -144,33 +146,20 @@ write.csv(data.frame(taxon = x$species, lon = x$decimalLongitude,
 y <- read.csv(csv)
 ```
 
-Columns are found by their Darwin Core names regardless of capitalisation. Other names are set with `occ_columns()`, and for another file only the `read.csv()` path and these names change:
+Columns are found by their Darwin Core names regardless of capitalisation. The file has none of them, so the call stops:
+
+```{r, error = TRUE}
+flag_occurrences(y)
+```
+
+The message names the coordinate columns it looked for and points to `occ_columns()`, which maps other names onto the fields the tests read. For another file only the `read.csv()` path and these names change:
 
 ```{r}
 cols <- occ_columns(lon = "lon", lat = "lat", species = "taxon")
 flag_occurrences(y, columns = cols)
 ```
 
-With the three columns mapped, the same 12 tests run as on `x`.
-
-## Fixing common errors
-
-Data often use other column names than the Darwin Core ones. In this example, `y` stores the coordinates as `lon` and `lat` and the species as `taxon`. The `columns` argument tells OccurrenceCleaner which columns to read.
-
-Running the tests without that mapping produces this error:
-
-```{r, error = TRUE}
-flag_occurrences(y)
-```
-
-The message names the coordinate columns it looked for and points to `occ_columns()`. Passing the mapping `cols` from [Flagging other data](#flagging-other-data) fixes the call:
-
-```{r}
-fy <- flag_occurrences(y, columns = cols)
-print(fy, n = 3)
-```
-
-A mapping that leaves out a column gives no error: the tests that need that column do not run. Here the species column is left out:
+With the three columns mapped, the same 12 tests run as on `x`. A mapping that leaves out a column gives no error: the tests that need that column do not run. Here the species column is left out:
 
 ```{r}
 cols_xy <- occ_columns(lon = "lon", lat = "lat")
@@ -179,7 +168,9 @@ print(flag_occurrences(y, columns = cols_xy), n = 3)
 
 The header counts 10 tests instead of 12 and lists `species` among the missing inputs: the `duplicate` and `outlier` tests did not run. Adding `species = "taxon"`, as in `cols`, runs them again.
 
-An unknown test name stops the call before any test runs:
+## Fixing common errors
+
+Two more errors stop a call before anything runs. An unknown test name is one:
 
 ```{r, error = TRUE}
 flag_occurrences(x, tests = "capitals")
@@ -238,16 +229,10 @@ The call is the same as for a data frame, with the path and an output directory.
 out <- flag_occurrences(src, out = tempfile("flags"),
                         columns = occ_columns(id = "id"),
                         keep = "species", verbose = FALSE)
+out
 ```
 
-For a path, the result describes the output directory instead of holding the records. The directory's files hold the identifier, the `keep` columns and the flags of every record. `tally_flags()` reads the directory like a data frame:
-
-```{r}
-t <- tally_flags(out, by = "species", rules = list(strict = strict))
-t
-```
-
-The counts match the strict rule on the data frame above. On disk the `duplicate` test compares each record with all records before it across the files, so it finds record 4 as in the data frame. A rerun into the same directory skips the files already flagged. [Large tables on disk](on-disk.html) covers resuming, duplicates across files and reading the flags back.
+For a path, the result describes the output directory instead of containing the records. The files in it store the identifier, the `keep` columns and the flags of every record, and `tally_flags()` reads them like a data frame. [Large tables on disk](on-disk.html) continues from here: tallying from disk, duplicates across files, joining flags back to records and resuming an interrupted run.
 
 ## Where next
 

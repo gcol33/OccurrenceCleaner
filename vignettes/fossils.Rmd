@@ -1,5 +1,7 @@
 ---
 title: "Cleaning fossil records"
+description: >
+  The age tests and PyRate export for Paleobiology Database records.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Cleaning fossil records}
@@ -29,7 +31,7 @@ Fossil occurrences, such as those downloaded from the Paleobiology Database (PBD
 
 PBDB uses `accepted_name` for taxon names, `lng` and `lat` for coordinates, and `cc` for two-letter country codes. The columns `min_ma` and `max_ma` give the youngest and oldest possible ages in millions of years before the present.
 
-The example below contains nine synthetic records. Record 2 has equal minimum and maximum ages; record 3 has the ages reversed; record 4 spans 43 million years; record 5 is missing its minimum age; and record 6 has both coordinates set to zero. Records 1 and 9 have a minimum age below the maximum age, a span under 4 million years, and coordinates in Wyoming that match their country code `US`; they pass every test. Records 7 and 8 have a minimum age below the maximum age, a span of 1.2 million years, and the country code `DE`; their coordinates are missing in the table and set in the next chunk:
+The example below contains nine synthetic records, each built for one case; the cases are explained beside the flags they produce. Records 1 and 9 are the controls: a minimum age below the maximum age, a span under 4 million years, and coordinates in Wyoming that match their country code `US`. Records 7 and 8 have the country code `DE`; their coordinates are missing in the table and set in the next chunk:
 
 ```{r data}
 library(OccurrenceCleaner)
@@ -45,7 +47,7 @@ fos <- data.frame(
   max_ma = c(56.0, 55.8, 52.5, 66.0, 54.0, 50.2, 49.0, 49.0, 48.6))
 ```
 
-Records 7 and 8 are placed relative to the centroid of Germany in the package's reference points, so their distance to it is known: record 7 sits on the point, record 8 lies 0.027 degrees of latitude (about 3 km) north of it.
+Records 7 and 8 are placed relative to the centroid of Germany in the package's reference points, so their distance to it is known: record 7 sits on the point, record 8 lies 0.027 degrees of latitude (about 3 km) north of it. Their ages are ordered, with a span of 1.2 million years.
 
 ```{r centroid}
 cen <- reference_points("centroid")
@@ -68,9 +70,9 @@ f <- flag_occurrences(fos, tests = tests, columns = cols)
 f[, c("occurrence_no", "accepted_name", "min_ma", "max_ma", "flags")]
 ```
 
-`age_equal` flags a record whose minimum age is equal to or greater than its maximum age: here records 2 and 3. A zero-width range can come from one age copied into both fields, and an inverted one from swapped fields, but the flag only records the comparison; such records need a look at their source before they are corrected or dropped. A record with a missing age, such as record 5, is not flagged by this test.
+`age_equal` flags a record whose minimum age is equal to or greater than its maximum age. Record 2 has equal minimum and maximum ages and record 3 has them reversed, so both are flagged. A zero-width range can come from one age copied into both fields, and an inverted one from swapped fields, but the flag only records the comparison; such records need a look at their source before they are corrected or dropped. Record 5 is missing its minimum age, so this test cannot compare its ages and leaves it unflagged. Record 4 spans 43 million years; no test flags a wide range on its own, and the section on filtering by age range comes back to it.
 
-Record 6 fails `zero`, `equal` and `country_mismatch`, since (0, 0) lies in the Gulf of Guinea. Record 7 fails `centroid`: it lies within the default 1 km of the centroid of Germany.
+Record 6 has both coordinates set to zero and fails `zero`, `equal` and `country_mismatch`, since (0, 0) lies in the Gulf of Guinea. Record 7 fails `centroid`: it lies within the default 1 km of the centroid of Germany. Record 8, 3 km from it, passes.
 
 ## Filtering records
 
@@ -88,7 +90,7 @@ Record 5 stays because `age_equal` cannot compare a missing age, so the record c
 
 OccurrenceCleaner uses default buffers of 1 km around centroids and 100 m around institutions. You can change these with `buffers`.
 
-Fossil localities can be georeferenced coarsely, so a collection placed a few kilometres from a country centroid may still have been put there by the centroid. A wider buffer catches such records, at the cost of flagging any correct locality within the same distance. With a 5 km buffer, chosen here to reach record 8, both records near the centroid of Germany are flagged:
+Fossil localities can be georeferenced coarsely, so a collection placed a few kilometres from a country centroid may have been assigned the country-centroid coordinates. A wider buffer catches such records, at the cost of flagging any correct locality within the same distance. With a 5 km buffer, chosen here to reach record 8, both records near the centroid of Germany are flagged:
 
 ```{r buffers}
 f5 <- flag_occurrences(fos, tests = tests, columns = cols,

@@ -21,43 +21,41 @@ OccurrenceCleaner checks species occurrence records for potential
 problems, such as coordinates at country centroids or museums, in the
 sea, or far from other records of the same species.
 
-The package extends
+The package is an extension of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(Zizka et al. 2019), the R package that defines these tests and runs
-them on a data frame in memory. OccurrenceCleaner runs the same tests as
-nearest-neighbour queries in C++ and streams tables from disk, so they
-can be applied to a full snapshot of the Global Biodiversity Information
-Facility (GBIF). It also adds tests of its own and expands the reference
-data.
+(Zizka et al. 2019) tailored to large-scale occurrence data.
+CoordinateCleaner, by Alexander Zizka and co-authors, defines these
+tests, their default buffers and the options of the outlier and dataset
+tests, and runs them on a data frame in memory. OccurrenceCleaner runs
+the same tests as nearest-neighbour queries in C++ and streams tables
+from disk, so they can be applied to a full snapshot of the Global
+Biodiversity Information Facility (GBIF). It also adds tests of its own
+and expands the reference data.
 
 Each test stores its result as a flag alongside the record. All records
 remain available, so you can inspect their flags, compare how different
 combinations of tests affect the dataset, and choose which records to
 exclude. OccurrenceCleaner supports:
 
-- **Large tables.** Ten million records go through the capital proximity
-  test in 1.4 seconds on a desktop machine
+- **Large tables.** Checking ten million records for proximity to
+  capital cities takes 1.4 seconds
   ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)).
-  A full GBIF snapshot containing billions of records in 288 GB of
-  Parquet files can be processed on a desktop computer using a single R
-  process. Files are processed in chunks, keeping memory use bounded
-  regardless of dataset size, without requiring a cluster. Progress is
-  saved, allowing interrupted runs to resume.
-- **Comparing cleaning rules.** Compute the flags once, then choose
-  which tests determine whether to exclude a record.
+  Chunked processing keeps memory use bounded, allowing billions of
+  species records occupying hundreds of gigabytes to be cleaned on a
+  desktop computer in a single R session. Interrupted runs can resume
+  from saved progress.
+- **Comparing cleaning rules.** Compute flags once, then choose which
+  tests exclude records.
   [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html)
-  reports how many records each rule removes per taxon, period or
-  precision class, providing counts for a methods section or data paper.
-- **An extended list of institutions.** Records are checked against
-  23,895 museum, herbarium and botanic garden locations to identify
-  coordinates that may refer to the institution holding the specimen.
-  The list combines the GBIF Registry of Scientific Collections
-  (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in
-  seven languages, GeoNames, Botanic Gardens Conservation International
-  (BGCI), Index Herbariorum and the GBIF registry, and holds every
-  institution of CoordinateCleaner’s list. It includes 7,665 locations
-  from sources beyond those used by CoordinateCleaner. These additional
-  locations are included by default; you can restrict the test to
+  counts exclusions by rule and by taxon, period or precision class for
+  reporting in a methods section or data paper.
+- **More institution locations.** Records are checked against 23,895
+  museum, herbarium and botanic garden locations to flag coordinates
+  that may identify where a specimen is held. The list includes all but
+  one of the institutions in CoordinateCleaner’s list plus 7,665
+  locations from [additional collection registries and geographic
+  sources](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
+  All locations are used by default; the test can also be restricted to
   CoordinateCleaner’s sources ([Extension
   points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
@@ -268,8 +266,8 @@ keep <- c("kingdom", "year", "coordinateuncertaintyinmeters")
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
                       out = "flags", keep = keep)
 
-coordinatecleaner <- c("zero", "equal", "capital", "centroid", "institution",
-                       "gbif_headquarters", "sea")
+coordinatecleaner <- c("invalid", "zero", "equal", "capital", "centroid",
+                       "institution", "gbif_headquarters", "sea")
 tally_flags(f, by = "kingdom", bins = list(year = c(1950, 1970, 1990, 2000)),
             rules = list(coordinatecleaner = coordinatecleaner))
 ```
@@ -306,8 +304,8 @@ one path from a data frame to the records that pass a cleaning rule.
   data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html):
   where each layer of reference data comes from and how it differs from
   CoordinateCleaner’s.
-- [Using custom
-  gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html):
+- [Custom reference points and
+  polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html):
   the user’s own points, polygons and species ranges in place of the
   shipped reference data.
 - [Compatibility with
@@ -355,11 +353,14 @@ on.
 
 ## License
 
-MIT. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-(GPL-3) is a suggested package used by the equivalence tests and by
-`reference = "CoordinateCleaner"`; none of its code or data is bundled.
-The country centroid points from the World Borders Dataset (Bjorn
-Sandvik, thematicmapping.org) are under CC BY-SA.
+OccurrenceCleaner is licensed under MIT. Two external resources have
+separate licences:
+
+- [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+  (GPL-3) is an optional dependency for equivalence tests and
+  `reference = "CoordinateCleaner"`. Its code and data are not bundled.
+- Country centroids from the World Borders Dataset (Bjorn Sandvik,
+  thematicmapping.org) are licensed under CC BY-SA.
 
 ## Citation
 
@@ -380,3 +381,8 @@ Sandvik, thematicmapping.org) are under CC BY-SA.
         note = {R package version 0.2.0},
         url = {https://gillescolling.com/OccurrenceCleaner/},
       }
+
+Download the citation as
+[BibTeX](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib)
+or
+[RIS](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.ris).

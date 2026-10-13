@@ -41,7 +41,8 @@
 - stated-at: @p:fossil.pyrate; ?export_pyrate
 
 ### sampling-counts
-- detail: `cc_outl(sampling_thresh)` counts GBIF records per country online at run time; here the counts are a table passed as `gazetteers = list(sampling = ...)` with `settings = list(outlier = list(sampling_thresh = ...))`, and are recorded in the reference label
+- detail: `cc_outl()` counts GBIF records per country online at run time, only when `sampling_thresh` is above 0 (default 0, no correction; CoordinateCleaner source read 2026-10-13); here the counts are a table passed as `gazetteers = list(sampling = ...)` with `settings = list(outlier = list(sampling_thresh = ...))`. The reference label records the number of countries and the table's md5 checksum (R/reference.R), not the counts themselves
+- avoid: "each time it runs" or "every time" for the GBIF query; "records the counts in the reference label"
 - home: @p:cc.around-tests
 - stated-at: @p:out.sampling; ?test_outlier (Settings); ?flag_occurrences (`gazetteers`)
 
@@ -196,7 +197,7 @@
 ### snapshot-size
 - metric: size of the GBIF snapshot of 2026-10-01 on disk: 9,927 Parquet files, 287,983,533,156 bytes (288 GB); record count not stated as a number (no source in the repo)
 - source: `E:/research/raw/occurrences/gbif_snapshot/2026-10-01/DONE` (download doi:10.15468/dl.tup2g6, 1 October 2026); the full run in one R process on worky (AMD Ryzen 7 5700G, 64 GB) started 2026-10-12, peak memory to be read from `bench/results/snapshot/peak_mb.txt` when it finishes
-- stated-at: @p:readme.usecases (288 GB, a single R process on a desktop computer, chunked so memory stays bounded, no cluster)
+- stated-at: @p:readme.usecases (as "hundreds of gigabytes", a single R session on a desktop computer, chunked so memory stays bounded)
 
 ### speed-ratio
 - metric: seconds per test, OccurrenceCleaner vs CoordinateCleaner
@@ -229,7 +230,8 @@
 - metric: CoordinateCleaner's 9,773 institutions with coordinates: 6,313 held under their name, 329 by a point within 25 km sharing >= 60 % of their name words, 3,130 placed by name (Wikidata 1,052, OpenStreetMap 646, GeoNames town of the listed city 684, town named in the name 252, town nearest CoordinateCleaner's point 496), 1 not placed (SCAR expert group, Antarctica)
 - metric: a shipped point within 100 m / 1 km / 5 km of CoordinateCleaner's point for 32 / 73 / 91 % of its 9,773 institutions (28 / 70 / 90 % for the points with `extension` FALSE); CoordinateCleaner geocoded nearly every row itself (641 of its 712 BGCI gardens, 398 Wikipedia museums by hand)
 - source: data-raw/institutions.R, queried 2026-10-10 and 2026-10-13; dev_notes/reference_data.md
-- stated-at: @p:readme.usecases (23,895 points, 7,665 extension, seven Wikipedia languages, every CoordinateCleaner institution); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union)
+- stated-at: @p:readme.usecases (23,895 points, 7,665 extension, seven Wikipedia languages, all but one CoordinateCleaner institution); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union; all but one)
+- avoid: "every institution of CoordinateCleaner's list" (one, the SCAR expert group in Antarctica, is not placed; README, gazetteers article fixed 2026-10-13)
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine
@@ -276,6 +278,17 @@
 - stated-at: @p:readme.reference; @p:qs.reference; @p:cc.gazetteers
 
 ## Rules
+
+### coordinatecleaner-rule
+- condition: an article or the README names a rule `coordinatecleaner`
+- action: it is always the same eight tests: `invalid`, `zero`, `equal`, `capital`, `centroid`, `institution`, `gbif_headquarters`, `sea` (the `clean_coordinates()` defaults that need only coordinates and a species, without its outlier test)
+- stated-at: vignettes/rules.Rmd (Comparing rules); vignettes/on-disk.Rmd (Tallying from disk); vignettes/gbif-workflow.Rmd (Comparing cleaning rules, since 2026-10-13); README.Rmd (snapshot example, since 2026-10-13)
+- note: `invalid` flags nothing in the GBIF simulation, so the ladder counts (125, 274) did not change
+
+### not-flagged
+- condition: prose reads a `FALSE` flag or an unflagged record
+- action: say "not flagged by this test" or "passed the tests that were run"; never "checked and found correct"; name the untested cases where they arise (test not run: no column; test ran but could not judge: missing age, species below `min_occs`, no range polygon, genus without a habitat class)
+- stated-at: @p:gs.flag-result (first output); @p:gbif.flag; @p:fossil.flag (record 5); @p:out.outlier (`min_occs`); @p:gaz.ranges; @p:tests.habitat
 
 ### country-codes
 - condition: a GBIF table checked with `country_mismatch`

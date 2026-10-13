@@ -23,7 +23,7 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - answer: The twenty tests ported from CoordinateCleaner use its definitions and defaults; the test suite requires identical flags except for the documented differences, each tested.
 - payoff: A user can cite CoordinateCleaner's tests in a methods section and run them here, and knows exactly where and by how much results can differ.
 - evidence: tests/testthat/test-equivalence.R; tests/testthat/test-group.R; ?flag_occurrences (Tests section); vignettes/coordinatecleaner.Rmd (side by side, where the flags differ)
-- limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's; `outlier` flags on the raster path where 3.0.1 flags nothing; the fossil age draws are seeded per taxon, so they agree in distribution, not draw by draw
+- limits: buffer-edge band (99.7 to 99.9 % of each buffer); the zero buffer follows the documentation, not 3.0.1's behaviour; own gazetteers differ in coordinates from CoordinateCleaner's; `outlier` flags on the raster path where 3.0.1 flags nothing; the fossil age draws are seeded per taxon, so a single run can differ record by record from CoordinateCleaner (identical flags only when every age range has zero width, the tested case)
 - home: vignettes/coordinatecleaner.Rmd
 - also: DESCRIPTION, README, ?OccurrenceCleaner, Get started
 
@@ -98,11 +98,12 @@ Ecologists and biogeographers who clean GBIF or similar occurrence data in R. Mo
 - on-disk: how-to stream a snapshot (A2 home)
 - gbif-workflow: how-to, a GBIF download end to end
 - reference-data: explanation of the gazetteers (A5 home)
-- gazetteers: how-to use custom points, polygons and species ranges (A5)
+- gazetteers ("Custom reference points and polygons", under Workflows): how-to use custom points, polygons and species ranges (A5)
 - fossils: how-to flag a fossil table and export it to PyRate (A1, A3, A6)
 - outliers: how-to run the outlier, dataset and hotspot tests (A6 home)
 - coordinatecleaner: compatibility and validation guide (A1 home, relation home), framed by sidecars/context.md
 - help pages: reference
+- all articles: every vignette carries a one-sentence `description` in its YAML header, shown on the articles index; long simulation code sits in a `<details>` block after a prose description of the data and before a short preview, so the first package call comes early; full progress logs and the full reference label are folded the same way (2026-10-13)
 - all articles: no chunk that holds only `library()` calls; `library(OccurrenceCleaner)`, and any other package the article attaches, opens the first chunk that uses it and runs under the same `eval` condition (in coordinatecleaner the first `has_cc` chunk)
 
 ## Open

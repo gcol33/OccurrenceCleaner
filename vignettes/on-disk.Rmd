@@ -1,5 +1,7 @@
 ---
 title: "Large tables on disk"
+description: >
+  Flag a directory of files too large for memory, tally from disk, join flags back to records and resume an interrupted run.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Large tables on disk}
@@ -25,7 +27,10 @@ A snapshot of GBIF (the Global Biodiversity Information Facility) holds billions
 
 ### Example input
 
-Three files stand in for the parts of a snapshot. They are `.vtr` files, the on-disk table format of vectra; a directory of Parquet files, a single Parquet, `.csv` or `.tsv` file, and a vectra query are read the same way. Each file has 3,000 records with GBIF's lower-case column names, at random points in a box over western and central Europe:
+Three files stand in for the parts of a snapshot. They are `.vtr` files, the on-disk table format of vectra; a directory of Parquet files, a single Parquet, `.csv` or `.tsv` file, and a vectra query are read the same way. Each file has 3,000 records with GBIF's lower-case column names, at random points in a box over western and central Europe. The last record of part 3 is a copy of the first record of part 1 with its own identifier, so the same species and coordinates appear in two files.
+
+<details>
+<summary>Code that writes the three files</summary>
 
 ```{r input}
 library(OccurrenceCleaner)
@@ -43,11 +48,6 @@ make_part <- function(n, offset) {
 p1 <- make_part(3000, 0)
 p2 <- make_part(3000, 3000)
 p3 <- make_part(3000, 6000)
-```
-
-The last record of part 3 is replaced by a copy of the first record of part 1, with its own identifier, so the same species and coordinates appear in two files:
-
-```{r input-write}
 p3[3000, -1] <- p1[1, -1]
 src <- file.path(tempdir(), "snapshot")
 dir.create(src, showWarnings = FALSE)
@@ -56,17 +56,31 @@ for (i in 1:3) {
   path <- file.path(src, sprintf("occurrence-%d.vtr", i))
   vectra::write_vtr(parts[[i]], path)
 }
+```
+
+</details>
+
+```{r input-files}
 list.files(src)
+head(p1, 3)
 ```
 
 ### Flagging into an output directory
 
-For on-disk input, `out` names the output directory and `keep` the columns copied next to the flags for grouping later. The record identifier (`gbifid` here, set through `occ_columns(id = ...)`) is kept whenever it is present, so the flags can be joined back to the full records:
+For on-disk input, `out` names the output directory and `keep` the columns copied next to the flags for grouping later. The record identifier (`gbifid` here, set through `occ_columns(id = ...)`) is kept whenever it is present, so the flags can be joined back to the full records. The run reports its progress as it goes; the messages are folded away here.
+
+<details>
+<summary>The call and its progress messages</summary>
 
 ```{r flag}
 out <- file.path(tempdir(), "flags")
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
+```
+
+</details>
+
+```{r flag-print}
 f
 ```
 
@@ -77,7 +91,7 @@ p <- test_plan(f)
 p[!p$run, c("test", "reason")]
 ```
 
-`duplicate` and `outlier` are grouped tests: they compare a record with other records of its key or species anywhere in the input. They run in a group stage that reads the input before the record pass, which the messages above report.
+`duplicate` and `outlier` are grouped tests: they compare a record with other records of its key or species anywhere in the input. They run in a group stage that reads the input before the record pass, which the progress messages report.
 
 ### Tallying from disk
 
@@ -167,20 +181,30 @@ Naming a grouped test for a query is an error; flag the file or directory path i
 
 ### Resuming an interrupted run
 
-Each input file is one unit of work, and a finished unit leaves a `.done` marker in `out`. Repeating the call skips every finished unit, so a run that was stopped is continued by running the same call again:
+Each input file is one unit of work, and a finished unit leaves a `.done` marker in `out`. Repeating the call skips every finished unit, so a run that was stopped is continued by running the same call again. The messages of the rerun report every unit as skipped:
+
+<details>
+<summary>Messages of the rerun</summary>
 
 ```{r resume}
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
 ```
 
+</details>
+
 An interruption during a unit leaves that unit without its marker. Removing a marker by hand has the same effect, and only that unit is flagged again:
+
+<details>
+<summary>Messages after removing one marker</summary>
 
 ```{r resume-one}
 file.remove(file.path(out, "occurrence-2.done"))
 f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
                       columns = occ_columns(id = "gbifid"))
 ```
+
+</details>
 
 A unit that is redone has its old part files deleted first. The group stage keeps its state in `out/.group` until the run finishes. It saves a checkpoint after a file or a bucket of records once five minutes have passed, and at the end of each of its passes, so an interruption there repeats at most the work since the last checkpoint, and an interruption in the record pass reuses its result. Here the run had finished and its group files were deleted, so the redone unit first repeats the group stage. `resume = FALSE` deletes the earlier output and starts over.
 

@@ -21,13 +21,13 @@ options(width = 80)
 
 OccurrenceCleaner checks species occurrence records for potential problems, such as coordinates at country centroids or museums, in the sea, or far from other records of the same species.
 
-The package extends [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019), the R package that defines these tests and runs them on a data frame in memory. OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk, so they can be applied to a full snapshot of the Global Biodiversity Information Facility (GBIF). It also adds tests of its own and expands the reference data.
+The package is an extension of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (Zizka et al. 2019) tailored to large-scale occurrence data. CoordinateCleaner, by Alexander Zizka and co-authors, defines these tests, their default buffers and the options of the outlier and dataset tests, and runs them on a data frame in memory. OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk, so they can be applied to a full snapshot of the Global Biodiversity Information Facility (GBIF). It also adds tests of its own and expands the reference data.
 
 Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. OccurrenceCleaner supports:
 
-- **Large tables.** Ten million records go through the capital proximity test in 1.4 seconds on a desktop machine ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)). A full GBIF snapshot containing billions of records in 288 GB of Parquet files can be processed on a desktop computer using a single R process. Files are processed in chunks, keeping memory use bounded regardless of dataset size, without requiring a cluster. Progress is saved, allowing interrupted runs to resume.
-- **Comparing cleaning rules.** Compute the flags once, then choose which tests determine whether to exclude a record. [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html) reports how many records each rule removes per taxon, period or precision class, providing counts for a methods section or data paper.
-- **An extended list of institutions.** Records are checked against 23,895 museum, herbarium and botanic garden locations to identify coordinates that may refer to the institution holding the specimen. The list combines the GBIF Registry of Scientific Collections (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in seven languages, GeoNames, Botanic Gardens Conservation International (BGCI), Index Herbariorum and the GBIF registry, and holds every institution of CoordinateCleaner’s list. It includes 7,665 locations from sources beyond those used by CoordinateCleaner. These additional locations are included by default; you can restrict the test to CoordinateCleaner’s sources ([Extension points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
+- **Large tables.** Checking ten million records for proximity to capital cities takes 1.4 seconds ([timings](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings)). Chunked processing keeps memory use bounded, allowing billions of species records occupying hundreds of gigabytes to be cleaned on a desktop computer in a single R session. Interrupted runs can resume from saved progress.
+- **Comparing cleaning rules.** Compute flags once, then choose which tests exclude records. [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html) counts exclusions by rule and by taxon, period or precision class for reporting in a methods section or data paper.
+- **More institution locations.** Records are checked against 23,895 museum, herbarium and botanic garden locations to flag coordinates that may identify where a specimen is held. The list includes all but one of the institutions in CoordinateCleaner’s list plus 7,665 locations from [additional collection registries and geographic sources](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions). All locations are used by default; the test can also be restricted to CoordinateCleaner’s sources ([Extension points](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues, the type of record, and whether the organism is recorded as native or introduced. Habitat information for the recorded genus helps distinguish marine from terrestrial taxa.
 
 The tests follow CoordinateCleaner’s definitions and default buffers, with documented differences in [Compatibility with CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html). Automated checks run both packages on sampled records and require matching flags for the shared behaviour. A methods section can cite CoordinateCleaner for the original tests and describe the tests and settings used in OccurrenceCleaner.
@@ -136,8 +136,8 @@ keep <- c("kingdom", "year", "coordinateuncertaintyinmeters")
 f <- flag_occurrences("gbif_snapshot/occurrence.parquet",
                       out = "flags", keep = keep)
 
-coordinatecleaner <- c("zero", "equal", "capital", "centroid", "institution",
-                       "gbif_headquarters", "sea")
+coordinatecleaner <- c("invalid", "zero", "equal", "capital", "centroid",
+                       "institution", "gbif_headquarters", "sea")
 tally_flags(f, by = "kingdom", bins = list(year = c(1950, 1970, 1990, 2000)),
             rules = list(coordinatecleaner = coordinatecleaner))
 ```
@@ -155,7 +155,7 @@ Start with [Get started](https://gillescolling.com/OccurrenceCleaner/articles/Oc
 - [The tests in detail](https://gillescolling.com/OccurrenceCleaner/articles/tests.html): what each test checks, its default and source.
 - [Outliers and dataset tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.html): the tests that judge a record against its group.
 - [Reference data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html): where each layer of reference data comes from and how it differs from CoordinateCleaner's.
-- [Using custom gazetteers](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html): the user's own points, polygons and species ranges in place of the shipped reference data.
+- [Custom reference points and polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html): the user's own points, polygons and species ranges in place of the shipped reference data.
 - [Compatibility with CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html): function and argument mapping, every documented difference, timings.
 - [Full reference](https://gillescolling.com/OccurrenceCleaner/reference/): every function, grouped by job.
 
@@ -183,10 +183,15 @@ The tests, their default buffers and the options of the outlier and dataset test
 
 ## License
 
-MIT. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (GPL-3) is a suggested package used by the equivalence tests and by `reference = "CoordinateCleaner"`; none of its code or data is bundled. The country centroid points from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.
+OccurrenceCleaner is licensed under MIT. Two external resources have separate licences:
+
+- [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) (GPL-3) is an optional dependency for equivalence tests and `reference = "CoordinateCleaner"`. Its code and data are not bundled.
+- Country centroids from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are licensed under CC BY-SA.
 
 ## Citation
 
 ```{r citation, echo = FALSE, comment = ""}
 print(citation("OccurrenceCleaner"), bibtex = TRUE)
 ```
+
+Download the citation as [BibTeX](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib) or [RIS](https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.ris).

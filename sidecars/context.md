@@ -13,7 +13,7 @@
 - released: first commit 2026-10-09; version 0.2.0; not on CRAN
 - review: none; JSS manuscript in preparation
 - use: the ali-filters collaboration (GBIF snapshot of 2026-10-01)
-- validation: tests/testthat/test-equivalence.R and tests/testthat/test-group.R run CoordinateCleaner on sampled records and require identical flags except the documented differences; test-spatialvalid.R compares `as_spatialvalid()` column by column with `clean_coordinates()`; `.github/workflows/cc-devel.yaml` runs the suite against CoordinateCleaner's GitHub version. The algorithm ran earlier over 2,460,201,588 GBIF records as a Python implementation in mountain-area-garcia; that was different code, not this package, and was not checked record by record against CoordinateCleaner.
+- validation: tests/testthat/test-equivalence.R and tests/testthat/test-group.R run CoordinateCleaner on sampled records and require identical flags except the documented differences; test-spatialvalid.R compares `as_spatialvalid()` column by column with `clean_coordinates()` for the validity, equal and duplicate tests (and `summary()` on both; `plot()` is not tested); `.github/workflows/cc-devel.yaml` runs the suite against CoordinateCleaner's GitHub version. The algorithm ran earlier over 2,460,201,588 GBIF records as a Python implementation in mountain-area-garcia; that was different code, not this package, and was not checked record by record against CoordinateCleaner.
 
 ### burden
 - OccurrenceCleaner has to show where it agrees with CoordinateCleaner, under which settings and reference data, and where results change and why. CoordinateCleaner's methods are the published reference and are not re-argued.
@@ -78,7 +78,7 @@
 
 ### age-draws
 - kind: design
-- behaviour: `cf_age()` and `cf_outl()` draw from the session's random stream in input order; `age_outlier` and `spatiotemporal_outlier` draw from a stream seeded per taxon in a content-defined order. Same distribution, not the same draws.
+- behaviour: `cf_age()` and `cf_outl()` draw from the session's random stream in input order; `age_outlier` and `spatiotemporal_outlier` draw from a stream seeded per taxon in a content-defined order. Same procedure, not the same draws: a single run can differ record by record, and the flags are identical when every age range has zero width (the only case tested, test-group.R). No test or note supports "agree in distribution"; do not write it.
 - doc: vignettes/coordinatecleaner.Rmd, Random age draws
 
 ### small-datasets
@@ -100,7 +100,7 @@
 
 ### sampling-counts
 - kind: design
-- behaviour: `cc_outl(sampling_thresh)` queries GBIF record counts at run time; here the counts are a table passed in `gazetteers = list(sampling = ...)`
+- behaviour: `cc_outl()` queries GBIF record counts at run time when `sampling_thresh` is above 0 (default 0, no query); here the counts are a table passed in `gazetteers = list(sampling = ...)`
 - doc: vignettes/coordinatecleaner.Rmd, Functions around the tests
 
 ## Evidence scope
@@ -127,5 +127,4 @@ Resolved in vignettes/coordinatecleaner.Rmd, 2026-10-12: title and opening (`mig
 
 Checked 2026-10-13: no "Coming from CoordinateCleaner" label left in README.Rmd or the vignettes; every link uses the title "Compatibility with CoordinateCleaner". Stale anchors `#speed` (README, gbif-workflow) and `#where-the-flags-differ` (Get started) now point at `#timings` and `#where-the-results-differ`. ?OccurrenceCleaner and DESCRIPTION state "same definitions and default buffers" with the documented differences; the ?OccurrenceCleaner credit sentence lists the Debt items.
 
-Still open:
-- README.Rmd states the relation as "The package extends CoordinateCleaner" (the user's wording, kept on purpose, 2026-10-13: it extends the package, not only its tests), glossing CoordinateCleaner as the package that defines the tests and runs them in memory, then what this package runs them as (nearest-neighbour queries, streamed tables, so a snapshot), not the story phrase "an extension of CoordinateCleaner tailored to large-scale occurrence data"; the README credit with substance is in Acknowledgements, at the bottom, the top has the citation and "follow CoordinateCleaner's definitions and default buffers"
+Resolved 2026-10-13 (the user's choice): README.Rmd's second paragraph uses the story phrase "an extension of CoordinateCleaner tailored to large-scale occurrence data" with the citation, followed by a credit sentence naming Zizka and co-authors for the tests, default buffers and grouped-test options; the full credit stays in Acknowledgements.
