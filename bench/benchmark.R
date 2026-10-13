@@ -3,7 +3,10 @@
 # fastest repetition is kept. Writes <out>/bench-cc.csv, <out>/bench-auto.csv and
 # <out>/ENVIRONMENT.txt.
 #
-#   Rscript bench/benchmark.R [out dir] [max n] [reps]
+#   Rscript bench/benchmark.R [out dir] [max n] [reps] [n_threads]
+#
+# n_threads is passed to every flag_occurrences() call; CoordinateCleaner
+# runs on one thread.
 #
 # CoordinateCleaner is run only while a single test takes under `cc_budget`
 # seconds at the previous size; larger sizes are reported as not run (NA).
@@ -13,6 +16,7 @@ args <- commandArgs(trailingOnly = TRUE)
 out <- if (length(args) >= 1) args[1] else "bench/results"
 max_n <- if (length(args) >= 2) as.numeric(args[2]) else 1e7
 reps <- if (length(args) >= 3) as.integer(args[3]) else 3L
+n_threads <- if (length(args) >= 4) as.integer(args[4]) else 1L
 cc_budget <- 600
 # The tests clean_coordinates() runs by default that need only coordinates and
 # a species name, timed together as one call with OccurrenceCleaner's own
@@ -46,7 +50,7 @@ tests <- c(capital = "cc_cap", centroid = "cc_cen", institution = "cc_inst",
            gbif_headquarters = "cc_gbif", sea = "cc_sea",
            zero = "cc_zero", equal = "cc_equ", invalid = "cc_val", duplicate = "cc_dupl")
 # Build the land index and fetch CoordinateCleaner's land layer once, outside the timings.
-invisible(flag_occurrences(make_records(1000), tests = "sea", reference = "CoordinateCleaner"))
+invisible(flag_occurrences(make_records(1000), tests = "sea", reference = "CoordinateCleaner", n_threads = n_threads))
 invisible(suppressWarnings(suppressMessages(cc_sea(make_records(1000), value = "flagged", verbose = FALSE))))
 
 rows <- list(); auto <- list()
@@ -54,8 +58,8 @@ cc_ok <- setNames(rep(TRUE, length(tests)), names(tests))
 for (n in sizes) {
   x <- make_records(n)
   for (t in names(tests)) {
-    f <- flag_occurrences(x, tests = t, reference = "CoordinateCleaner")
-    t_occ <- best_of(flag_occurrences(x, tests = t, reference = "CoordinateCleaner"), reps)
+    f <- flag_occurrences(x, tests = t, reference = "CoordinateCleaner", n_threads = n_threads)
+    t_occ <- best_of(flag_occurrences(x, tests = t, reference = "CoordinateCleaner", n_threads = n_threads), reps)
     t_cc <- NA_real_; agree <- NA_real_
     if (cc_ok[[t]]) {
       fn <- get(tests[[t]], asNamespace("CoordinateCleaner"))
@@ -65,19 +69,19 @@ for (n in sizes) {
       agree <- mean(theirs == f[[paste0("flag_", t)]], na.rm = TRUE)
       if (t_cc > cc_budget) cc_ok[[t]] <- FALSE
     }
-    rows[[length(rows) + 1]] <- data.frame(n = n, test = t, occurrencecleaner_s = t_occ,
+    rows[[length(rows) + 1]] <- data.frame(n = n, test = t, n_threads = n_threads, occurrencecleaner_s = t_occ,
                                            coordinatecleaner_s = t_cc, agreement = agree)
     cat(sprintf("n=%.0e %-18s occ %8.3f s   cc %8.1f s   agree %s\n", n, t, t_occ, t_cc, format(agree)))
   }
-  t_all <- best_of(flag_occurrences(x, tests = coordinatecleaner_nine), reps)
-  rows[[length(rows) + 1]] <- data.frame(n = n, test = "coordinatecleaner_nine_tests",
+  t_all <- best_of(flag_occurrences(x, tests = coordinatecleaner_nine, n_threads = n_threads), reps)
+  rows[[length(rows) + 1]] <- data.frame(n = n, test = "coordinatecleaner_nine_tests", n_threads = n_threads,
                                          occurrencecleaner_s = t_all,
                                          coordinatecleaner_s = NA_real_, agreement = NA_real_)
   cat(sprintf("n=%.0e coordinatecleaner_nine_tests %.2f s\n", n, t_all))
   # Automatic selection: no `tests`, so every test the columns allow runs.
-  t_auto <- best_of(f_auto <- flag_occurrences(x), reps)
+  t_auto <- best_of(f_auto <- flag_occurrences(x, n_threads = n_threads), reps)
   plan <- test_plan(f_auto)
-  auto[[length(auto) + 1]] <- data.frame(n = n, seconds = t_auto, n_tests = sum(plan$run),
+  auto[[length(auto) + 1]] <- data.frame(n = n, n_threads = n_threads, seconds = t_auto, n_tests = sum(plan$run),
                                          tests = paste(plan$test[plan$run], collapse = ";"))
   cat(sprintf("n=%.0e automatic selection, %d tests %.2f s\n", n, sum(plan$run), t_auto))
 }
@@ -99,6 +103,7 @@ writeLines(c(paste("date:", Sys.time()), paste("cpu:", cpu),
              paste("OccurrenceCleaner:", packageVersion("OccurrenceCleaner")),
              paste("CoordinateCleaner:", packageVersion("CoordinateCleaner")),
              paste("terra:", packageVersion("terra")), paste("vectra:", packageVersion("vectra")),
+             paste("OccurrenceCleaner threads:", n_threads),
              paste("repetitions:", reps, "(fastest kept; CoordinateCleaner once when one run exceeds",
                    cc_budget / reps, "s)")),
            file.path(out, "ENVIRONMENT.txt"))
