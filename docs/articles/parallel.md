@@ -76,17 +76,20 @@ identical(f4$flags, f1$flags)
 
 The timings below come from `data-raw/threads.R`, which times
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-on simulated records with 1, 2, 4 and 8 threads and keeps the median of
-three runs. It ran on an Intel(R) Core(TM) i9-14900K under R 4.6.1, with
-the other tests switched off.
+on simulated records with 1, 2, 4, 8, 16, 24 threads and keeps the
+median of three runs. It ran on an Intel(R) Core(TM) i9-14900K under R
+4.6.1, with the other tests switched off.
 
-| Tests | Records | 1 thread(s), s | 2 thread(s), s | 4 thread(s), s | 8 thread(s), s |
-|:---|---:|---:|---:|---:|---:|
-| Proximity and polygon tests | 5,000,000 | 3.73 | 2.0 | 1.14 | 0.78 |
-| Outlier test | 1,000,000 | 84.93 | 70.3 | 36.41 | 19.80 |
+| Tests | Records | 1 thread(s), s | 2 thread(s), s | 4 thread(s), s | 8 thread(s), s | 16 thread(s), s | 24 thread(s), s |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| Proximity and polygon tests | 5,000,000 | 3.64 | 1.94 | 1.10 | 0.69 | 0.52 | 0.45 |
+| Outlier test | 1,000,000 | 54.41 | 43.09 | 26.39 | 13.75 | 8.95 | 13.33 |
 
-Proximity and polygon tests run 4.8 times faster with 8 threads than
-with one. The outlier test runs 4.3 times faster.
+Proximity and polygon tests run 8.1 times faster with 24 threads than
+with one. The outlier test is fastest with 16 threads, 6.1 times faster
+than with one, and takes 13.33 s with 24 threads against 8.95 s with 16.
+The machine has 8 performance cores and 16 efficiency cores, 32 logical
+processors in all, so the gain per added thread falls beyond 8 threads.
 
 ![Speedup against one thread for two sets of tests, plotted against the
 number of threads, with the line of ideal

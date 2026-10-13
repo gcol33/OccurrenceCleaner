@@ -1034,7 +1034,12 @@ meta <- rbind(
              url = "https://nominatim.openstreetmap.org/search",
              sha256 = paste(vapply(c(cc_search_file, nominatim_file), sha256, character(1)), collapse = ", "),
              retrieved = gbif_org_retrieved,
-             licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+             licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_openstreetmap", source = "OpenStreetMap, Overpass API (named institution features)",
+             file = paste(basename(osm_files), collapse = ", "), version = osm_retrieved,
+             url = "https://overpass-api.de/api/interpreter",
+             sha256 = paste(vapply(osm_files, sha256, character(1)), collapse = ", "), retrieved = osm_retrieved,
+             licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
@@ -1064,3 +1069,9 @@ cat("CoordinateCleaner institutions with coordinates:", nrow(cc), "- held under 
 print(table(pick("how")))
 cat("not placed:", nrow(cc_unplaced), "\n")
 print(cc_unplaced[, c("source", "iso2", "city", "name")], row.names = FALSE)
+cat("OpenStreetMap features:", nrow(osm), "- CoordinateCleaner institutions with a matching feature within 25 km:",
+    sum(!is.na(cc_check$feature)), "- feature nearer than every point of this table (added):", nrow(cc_fix),
+    "- kept after dropping duplicates and zero coordinates:", nrow(osm_added), "
+")
+print(table(osm_added$type, useNA = "ifany"))
+print(summary(cc_check$d_own[is.finite(cc_check$d_own)]))

@@ -67,7 +67,7 @@ identical(f4$flags, f1$flags)
 ```
 ## Speedup
 
-The timings below come from `data-raw/threads.R`, which times `flag_occurrences()` on simulated records with 1, 2, 4 and 8 threads and keeps the median of three runs. It ran on an `r timings$cpu[1]` under R `r timings$r_version[1]`, with the other tests switched off.
+The timings below come from `data-raw/threads.R`, which times `flag_occurrences()` on simulated records with `r knitr::combine_words(sort(unique(timings$threads)))` threads and keeps the median of three runs. It ran on an `r timings$cpu[1]` under R `r timings$r_version[1]`, with the other tests switched off.
 
 ```{r timings-table, echo = FALSE}
 wide <- reshape(timings[, c("workload", "n", "threads", "seconds")],
@@ -77,10 +77,15 @@ names(wide) <- sub("seconds.", "", names(wide))
 wide$n <- format(wide$n, big.mark = ",", scientific = FALSE, trim = TRUE)
 knitr::kable(wide, row.names = FALSE, col.names = c("Tests", "Records",
              paste(sort(unique(timings$threads)), "thread(s), s")),
-             align = "lrrrrr")
+             align = paste0("lr", strrep("r", length(unique(timings$threads)))))
 ```
 
-`r names(speedup)[1]` run `r speedup[1]` times faster with `r max(timings$threads)` threads than with one. The outlier test runs `r speedup[2]` times faster.
+```{r best, include = FALSE}
+best <- do.call(rbind, lapply(split(timings, timings$workload), function(d) d[which.min(d$seconds), ]))
+at <- function(w, k) timings$seconds[timings$workload == w & timings$threads == k]
+```
+
+`r names(speedup)[1]` run `r speedup[1]` times faster with `r max(timings$threads)` threads than with one. The outlier test is fastest with `r best$threads[best$workload == "Outlier test"]` threads, `r round(at("Outlier test", 1) / min(at("Outlier test", sort(unique(timings$threads)))), 1)` times faster than with one, and takes `r at("Outlier test", 24)` s with 24 threads against `r at("Outlier test", 16)` s with 16. The machine has 8 performance cores and 16 efficiency cores, 32 logical processors in all, so the gain per added thread falls beyond 8 threads.
 
 ```{r timings-plot, eval = has_ggplot, echo = FALSE, fig.height = 4, fig.alt = "Speedup against one thread for two sets of tests, plotted against the number of threads, with the line of ideal speedup."}
 library(ggplot2)

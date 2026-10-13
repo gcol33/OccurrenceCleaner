@@ -183,17 +183,20 @@ between them.</p>
 <h2 id="speedup">Speedup<a class="anchor" aria-label="anchor" href="#speedup"></a>
 </h2>
 <p>The timings below come from <code>data-raw/threads.R</code>, which
-times <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> on simulated records with 1, 2, 4
-and 8 threads and keeps the median of three runs. It ran on an Intel(R)
-Core(TM) i9-14900K under R 4.6.1, with the other tests switched off.</p>
-<table style="width:100%;" class="table">
+times <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> on simulated records with 1, 2, 4,
+8, 16, and 24 threads and keeps the median of three runs. It ran on an
+Intel(R) Core(TM) i9-14900K under R 4.6.1, with the other tests switched
+off.</p>
+<table class="table">
 <colgroup>
-<col width="28%">
-<col width="10%">
-<col width="15%">
-<col width="15%">
-<col width="15%">
-<col width="15%">
+<col width="21%">
+<col width="7%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="12%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Tests</th>
@@ -202,121 +205,39 @@ Core(TM) i9-14900K under R 4.6.1, with the other tests switched off.</p>
 <th align="right">2 thread(s), s</th>
 <th align="right">4 thread(s), s</th>
 <th align="right">8 thread(s), s</th>
+<th align="right">16 thread(s), s</th>
+<th align="right">24 thread(s), s</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Proximity and polygon tests</td>
 <td align="right">5,000,000</td>
-<td align="right">3.73</td>
-<td align="right">2.0</td>
-<td align="right">1.14</td>
-<td align="right">0.78</td>
+<td align="right">3.64</td>
+<td align="right">1.94</td>
+<td align="right">1.10</td>
+<td align="right">0.69</td>
+<td align="right">0.52</td>
+<td align="right">0.45</td>
 </tr>
 <tr class="even">
 <td align="left">Outlier test</td>
 <td align="right">1,000,000</td>
-<td align="right">84.93</td>
-<td align="right">70.3</td>
-<td align="right">36.41</td>
-<td align="right">19.80</td>
+<td align="right">54.41</td>
+<td align="right">43.09</td>
+<td align="right">26.39</td>
+<td align="right">13.75</td>
+<td align="right">8.95</td>
+<td align="right">13.33</td>
 </tr>
 </tbody>
 </table>
-<p>Proximity and polygon tests run 4.8 times faster with 8 threads than
-with one. The outlier test runs 4.3 times faster.</p>
-<p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='288.00pt' viewBox='0 0 468.00 288.00' class="r-plt inline-svg" style="width:100%;height:auto;">
-<g class='svglite'>
-<defs>
-  <style type='text/css'><![CDATA[
-    /* theme-aware-processed */
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite circle {
-      fill: none;
-      stroke: #3E3F3A;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite > g > rect {
-      fill: none;
-      stroke: #3E3F3A;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-      fill: #3E3F3A;
-    }
-    .svglite g.glyphgroup path {
-      fill: inherit;
-      stroke: none;
-    }
-  ]]></style>
-</defs>
-<rect class='svg-bg' width='100%' height='100%' style='stroke: none; fill: #F5F6F8;'/>
-<defs>
-  <clipPath id='cpMC4wMHw0NjguMDB8MC4wMHwyODguMDA='>
-    <rect x='0.00' y='0.00' width='468.00' height='288.00' />
-  </clipPath>
-</defs>
-<g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyODguMDA=)'>
-<rect x='0.00' y='0.00' width='468.00' height='288.00' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-</g>
-<defs>
-  <clipPath id='cpNDMuNjR8NDU5LjUzfDguNDd8MTg1LjMw'>
-    <rect x='43.64' y='8.47' width='415.89' height='176.83' />
-  </clipPath>
-</defs>
-<g clip-path='url(#cpNDMuNjR8NDU5LjUzfDguNDd8MTg1LjMw)'>
-<rect x='43.64' y='8.47' width='415.89' height='176.83' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
-<polyline points='43.64,156.01 459.53,156.01 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,113.50 459.53,113.50 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,71.00 459.53,71.00 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,28.49 459.53,28.49 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='89.55,185.30 89.55,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='170.57,185.30 170.57,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='332.60,185.30 332.60,8.47 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,177.26 459.53,177.26 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,134.75 459.53,134.75 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,92.25 459.53,92.25 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='43.64,49.75 459.53,49.75 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='62.54,185.30 62.54,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='116.56,185.30 116.56,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='224.58,185.30 224.58,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<polyline points='440.63,185.30 440.63,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
-<line x1='-172.37' y1='362.13' x2='501.74' y2='-168.36' style='stroke-width: 1.65; stroke: #5C6166; stroke-dasharray: 8.79,8.79; stroke-linecap: butt;' />
-<polyline points='62.54,177.26 116.56,168.41 224.58,120.62 440.63,37.45 ' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<polyline points='62.54,177.26 116.56,140.49 224.58,80.69 440.63,16.51 ' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
-<circle cx='62.54' cy='177.26' r='3.22' style='stroke-width: 1.10; stroke: #B5342B; fill: #B5342B;' />
-<circle cx='116.56' cy='140.49' r='3.22' style='stroke-width: 1.10; stroke: #B5342B; fill: #B5342B;' />
-<circle cx='224.58' cy='80.69' r='3.22' style='stroke-width: 1.10; stroke: #B5342B; fill: #B5342B;' />
-<circle cx='440.63' cy='16.51' r='3.22' style='stroke-width: 1.10; stroke: #B5342B; fill: #B5342B;' />
-<circle cx='62.54' cy='177.26' r='3.22' style='stroke-width: 1.10; stroke: #2E6F9E; fill: #2E6F9E;' />
-<circle cx='116.56' cy='168.41' r='3.22' style='stroke-width: 1.10; stroke: #2E6F9E; fill: #2E6F9E;' />
-<circle cx='224.58' cy='120.62' r='3.22' style='stroke-width: 1.10; stroke: #2E6F9E; fill: #2E6F9E;' />
-<circle cx='440.63' cy='37.45' r='3.22' style='stroke-width: 1.10; stroke: #2E6F9E; fill: #2E6F9E;' />
-</g>
-<g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyODguMDA=)'>
-<text x='36.02' y='182.13' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1</text>
-<text x='36.02' y='139.62' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
-<text x='36.02' y='97.12' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
-<text x='36.02' y='54.61' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4</text>
-<text x='62.54' y='202.65' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1</text>
-<text x='116.56' y='202.65' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
-<text x='224.58' y='202.65' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4</text>
-<text x='440.63' y='202.65' text-anchor='middle' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8</text>
-<text x='251.59' y='221.92' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>threads</text>
-<text transform='translate(20.64,96.88) rotate(-90)' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>speedup</text>
-<line x1='104.73' y1='260.98' x2='120.86' y2='260.98' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<circle cx='112.80' cy='260.98' r='3.22' style='stroke-width: 1.10; stroke: #2E6F9E; fill: #2E6F9E;' />
-<line x1='207.58' y1='260.98' x2='223.71' y2='260.98' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
-<circle cx='215.64' cy='260.98' r='3.22' style='stroke-width: 1.10; stroke: #B5342B; fill: #B5342B;' />
-<text x='131.34' y='265.85' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Outlier test</text>
-<text x='234.19' y='265.85' style='font-size: 1.36em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Proximity and polygon tests</text>
-</g>
-</g>
-</svg></div></p>
+<p>Proximity and polygon tests run 8.1 times faster with 24 threads than
+with one. The outlier test is fastest with 16 threads, 6.1 times faster
+than with one, and takes 13.33 s with 24 threads against 8.95 s with 16.
+The machine has 8 performance cores and 16 efficiency cores, 32 logical
+processors in all, so the gain per added thread falls beyond 8
+threads.</p>
+<p><img src="parallel_files/figure-html/timings-plot-1.svg" class="r-plt" alt="Speedup against one thread for two sets of tests, plotted against the number of threads, with the line of ideal speedup." width="624"></p>
 <p>The dashed line is a speedup equal to the number of threads. The
 measurement covers one machine and one record mix. A table with few
 species, or one species holding most records, gives the outlier test
@@ -360,83 +281,5 @@ otherwise.</p>
 
 
 
-  <script>
-/* SVG Copy Button Functionality */
-(function() {
-  "use strict";
-
-  // Initialize SVG copy buttons after DOM is ready
-  document.addEventListener("DOMContentLoaded", function() {
-    if (typeof ClipboardJS === "undefined") {
-      console.warn("ClipboardJS not loaded - SVG copy buttons disabled");
-      return;
-    }
-
-    // Initialize clipboard for SVG copy buttons
-    var svgClipboard = new ClipboardJS(".btn-copy-svg", {
-      text: function(trigger) {
-        var container = trigger.closest(".svg-container");
-        if (!container) return "";
-
-        var svg = container.querySelector("svg");
-        if (!svg) return "";
-
-        // Clone SVG to avoid modifying the original
-        var clone = svg.cloneNode(true);
-
-        // Remove inline-svg class (not needed in copied version)
-        clone.classList.remove("inline-svg");
-
-        // Add XML declaration and serialize
-        var serializer = new XMLSerializer();
-        var svgString = serializer.serializeToString(clone);
-
-        // Add XML declaration if not present
-        if (!svgString.startsWith("<?xml")) {
-          svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgString;
-        }
-
-        return svgString;
-      }
-    });
-
-    // Handle success
-    svgClipboard.on("success", function(e) {
-      var btn = e.trigger;
-      var originalTitle = btn.getAttribute("data-bs-original-title") || btn.getAttribute("title");
-
-      // Update tooltip to show "Copied!"
-      btn.setAttribute("data-bs-original-title", "Copied!");
-      var tooltip = bootstrap.Tooltip.getInstance(btn);
-      if (tooltip) {
-        tooltip.show();
-      }
-
-      // Reset after delay
-      setTimeout(function() {
-        btn.setAttribute("data-bs-original-title", originalTitle);
-      }, 1500);
-
-      e.clearSelection();
-    });
-
-    // Handle error
-    svgClipboard.on("error", function(e) {
-      var btn = e.trigger;
-      btn.setAttribute("data-bs-original-title", "Press Ctrl+C to copy");
-      var tooltip = bootstrap.Tooltip.getInstance(btn);
-      if (tooltip) {
-        tooltip.show();
-      }
-    });
-
-    // Initialize tooltips for SVG copy buttons
-    var svgCopyButtons = document.querySelectorAll(".btn-copy-svg");
-    svgCopyButtons.forEach(function(btn) {
-      new bootstrap.Tooltip(btn, { container: "body" });
-    });
-  });
-})();
-</script>
-</body>
+  </body>
 </html>
