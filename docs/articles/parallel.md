@@ -76,7 +76,7 @@ identical(f4$flags, f1$flags)
 
 The timings below come from `data-raw/threads.R`, which times
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-on simulated records with 1, 2, 4, 8, 16, 24 threads and keeps the
+on simulated records with 1, 2, 4, 8, 16, and 24 threads and keeps the
 median of three runs. It ran on an Intel(R) Core(TM) i9-14900K under R
 4.6.1, with the other tests switched off.
 

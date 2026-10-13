@@ -66,25 +66,76 @@ settings used in OccurrenceCleaner.
 
 ## Installation
 
+The package compiles C++ code. Install the build tools for your
+operating system first:
+
+| Operating system | Build tools                                              |
+|------------------|----------------------------------------------------------|
+| Windows          | [Rtools](https://cran.r-project.org/bin/windows/Rtools/) |
+| macOS            | Run `xcode-select --install` in Terminal                 |
+| Debian / Ubuntu  | Install `r-base-dev`                                     |
+
+Check that R can find the compiler:
+
+``` r
+
+pkgbuild::has_build_tools(debug = TRUE)
+```
+
+Then install OccurrenceCleaner:
+
 ``` r
 
 # install.packages("pak")
 pak::pak("gcol33/OccurrenceCleaner")
 ```
 
-The package compiles C++ code:
-[Rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows,
-`xcode-select --install` on macOS, `r-base-dev` on Debian and Ubuntu.
-`pkgbuild::has_build_tools(debug = TRUE)` checks that R finds the
-compiler.
+### Optional: multithreading
 
-Multithreading (`n_threads` in
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md))
-needs OpenMP, which Rtools and the default Linux compiler include. On
-macOS it needs one extra installation step, described in [Running on
-several
-threads](https://gillescolling.com/OccurrenceCleaner/articles/parallel.html#enabling-openmp).
-Without OpenMP the package installs and runs every test on one thread.
+OpenMP lets the package use several CPU threads through the `n_threads`
+argument of
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.html).
+
+Rtools on Windows and the default compiler on Linux include OpenMP.
+Without it, the package installs and runs every test on one thread.
+
+#### macOS setup
+
+Apple’s compiler needs an additional OpenMP runtime. Install it in
+Terminal:
+
+``` sh
+brew install libomp
+```
+
+Before installing OccurrenceCleaner, add the settings for your Mac to
+`~/.R/Makevars`, R’s personal compiler-settings file. Create the
+directory and file if needed.
+
+**Apple Silicon:**
+
+``` makefile
+CPPFLAGS += -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp
+LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
+```
+
+**Intel:**
+
+``` makefile
+CPPFLAGS += -I/usr/local/opt/libomp/include -Xclang -fopenmp
+LDFLAGS += -L/usr/local/opt/libomp/lib -lomp
+```
+
+#### Check available threads
+
+After installation, run:
+
+``` r
+
+OccurrenceCleaner:::cpp_max_threads()
+```
+
+This returns the number of threads available to the package.
 
 ## Usage
 
