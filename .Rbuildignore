@@ -26,3 +26,5 @@
 ^\.bench\.log$
 ^bench$
 ^\.[a-z]+\.log$
+^README\.html$
+^\.build_site\.log$
