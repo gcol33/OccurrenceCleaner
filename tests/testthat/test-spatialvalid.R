@@ -59,6 +59,7 @@ test_that("as_spatialvalid matches clean_coordinates(value = 'spatialvalid')", {
   expect_identical(CoordinateCleaner:::summary.spatialvalid(ours)[names(theirs)[grepl("^\\.", names(theirs))]],
                    CoordinateCleaner:::summary.spatialvalid(theirs))
   skip_if_not_installed("ggplot2")
+  skip_if_not_installed("maps")
   for (details in c(FALSE, TRUE)) {
     p_ours <- suppressWarnings(CoordinateCleaner:::plot.spatialvalid(ours, details = details))
     p_theirs <- suppressWarnings(CoordinateCleaner:::plot.spatialvalid(theirs, details = details))
@@ -69,6 +70,7 @@ test_that("as_spatialvalid matches clean_coordinates(value = 'spatialvalid')", {
 test_that("CoordinateCleaner's plot method draws a converted result with additions", {
   skip_if_not_installed("CoordinateCleaner")
   skip_if_not_installed("ggplot2")
+  skip_if_not_installed("maps")
   x <- recs()
   x$issue <- c("ZERO_COORDINATE", "", "", "")
   sv <- as_spatialvalid(flag_occurrences(x, tests = c("zero", "capital", "issue_coordinate")),

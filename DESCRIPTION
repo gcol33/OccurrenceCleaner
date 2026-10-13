@@ -39,6 +39,7 @@ Suggests:
     geosphere,
     ggplot2,
     knitr,
+    maps,
     rmarkdown,
     rnaturalearth,
     rnaturalearthdata,
