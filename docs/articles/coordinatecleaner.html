@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Compatibility with CoordinateCleaner">
+<meta name="description" content="Where the two packages agree, how that is tested, where the results differ and why, with timings.
+">
+<meta property="og:description" content="Where the two packages agree, how that is tested, where the results differ and why, with timings.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -130,16 +135,23 @@ started</a>.</p>
 <div class="section level2">
 <h2 id="running-both-packages-on-the-same-records">Running both packages on the same records<a class="anchor" aria-label="anchor" href="#running-both-packages-on-the-same-records"></a>
 </h2>
-<p>CoordinateCleaner’s <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> runs several
-tests in one call and, asked for the <code>spatialvalid</code> layout,
-keeps every record and returns one logical column per test.
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> returns the same layout, one column per
-test, with the opposite sign: CoordinateCleaner’s columns are
-<code>TRUE</code> for records that pass, the flag columns are
-<code>TRUE</code> for records that fail.</p>
-<p>Generate 4,000 records within 30 km of five capitals, then set 20 of
-them to (0, 0), 20 to equal longitude and latitude, and 10 to within 0.3
-degrees of (0, 0):</p>
+<p>Both packages can run several tests in one call and return every
+record, with one logical column per test. The columns mean opposite
+things. In CoordinateCleaner, <code>TRUE</code> marks a record that
+passed the test. In OccurrenceCleaner, <code>TRUE</code> marks a record
+that failed it. Comparing the two outputs therefore means inverting one
+of them.</p>
+<p>The example data are 4,000 records placed within 30 km of five
+capitals, so that some of them lie inside the 10 km buffer of the
+capital test. Fifty of them are then overwritten with errors:</p>
+<ul>
+<li><p>20 are placed at (0, 0), which the zero and equal tests flag in
+both packages.</p></li>
+<li><p>20 are given a latitude equal to their longitude, for the equal
+test.</p></li>
+<li><p>10 are given coordinates within 0.3 degrees of zero, where the
+zero tests of the two packages differ.</p></li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
@@ -355,10 +367,10 @@ for capitals, <code><a href="https://ropensci.github.io/CoordinateCleaner/refere
 functions that run several tests at once: <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link"><code>clean_coordinates()</code></a>
 and <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html" class="external-link"><code>clean_fossils()</code></a>,
 which return one column per test, and <a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html" class="external-link"><code>clean_dataset()</code></a>,
-which returns a table per dataset. OccurrenceCleaner has one function
-for every test, <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code>. A test is chosen by
-name, its buffer is set in <code>buffers</code> and its other options in
-<code>settings</code>.</p>
+which returns a table per dataset. In OccurrenceCleaner,
+<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> runs any selected combination of tests.
+A test is chosen by name, its buffer is set in <code>buffers</code> and
+its other options in <code>settings</code>.</p>
 <p>The first table gives each test’s name in the three places it
 appears: CoordinateCleaner’s test function, the <code>tests</code>
 argument of CoordinateCleaner’s combined functions, and the
@@ -649,22 +661,26 @@ record counts queried online</td>
 </tr>
 </tbody>
 </table>
-<p>CoordinateCleaner’s <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link"><code>cc_outl()</code></a>
-retrieves country-level record counts from GBIF each time it runs, so
-its results can change as GBIF grows. OccurrenceCleaner instead takes
-these counts as arguments and records them in the reference label.</p>
-<p>The PyRate export function is named <code><a href="../reference/export_pyrate.html">export_pyrate()</a></code>
-rather than <a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link"><code>write_pyrate()</code></a>,
-so both functions remain available when the packages are attached.</p>
-<p>Code written for CoordinateCleaner’s <code>spatialvalid</code>
-objects works on a converted result, <code>as_spatialvalid(f)</code>.
-The conversion keeps the record columns and adds one column per test
-under CoordinateCleaner’s names, <code>TRUE</code> where the record
-passed, together with the <code>.summary</code> column and the class, so
-CoordinateCleaner’s <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
-methods and filters on <code>.summary</code> run unchanged. The package
-tests compare every column of the conversion with the output of
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code>.</p>
+<p>CoordinateCleaner’s <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html" class="external-link">outlier
+test</a> has an optional sampling correction, which keeps outliers
+flagged only in well-sampled countries. With the correction on, it
+downloads the record count of each country from GBIF at run time, so the
+same call can return different results as GBIF grows. OccurrenceCleaner
+takes the counts as a table and writes the table’s checksum to the
+reference label.</p>
+<p>The PyRate export is called <code><a href="../reference/export_pyrate.html">export_pyrate()</a></code>.
+CoordinateCleaner’s is <a href="https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html" class="external-link"><code>write_pyrate()</code></a>,
+and with different names both stay usable when the two packages are
+attached.</p>
+<p>Code written for CoordinateCleaner’s output runs on a converted
+result, made with <code><a href="../reference/as_spatialvalid.html">as_spatialvalid()</a></code>. The converted result
+has the record columns, one column per test, the summary column and
+CoordinateCleaner’s class. The test columns carry CoordinateCleaner’s
+names and its sign, <code>TRUE</code> for a pass. CoordinateCleaner’s
+summary and plot methods run on the result unchanged, and so do filters
+on the summary column. For the validity, equal and duplicate tests, the
+package tests compare each column of a converted result with
+CoordinateCleaner’s own output.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_spatialvalid.html">as_spatialvalid</a></span><span class="op">(</span><span class="va">oc</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sv</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".zer"</span>, <span class="st">".equ"</span>, <span class="st">".cap"</span>, <span class="st">".dpl"</span>, <span class="st">".summary"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>

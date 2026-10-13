@@ -29,10 +29,20 @@ dataset, then applies a chosen rule:
 
 ### Example records
 
-The example records are terrestrial: random points on land in Europe,
-drawn by rejecting points the `sea` test flags. Each of 60 species
-belongs to one kingdom, and each record has a year and the GBIF fields a
-download carries. Coordinates are rounded to four decimals.
+The example records are terrestrial: 3,000 random points on land in
+Europe, drawn by rejecting points the `sea` test flags. Each of 60
+species belongs to one kingdom, and each record has a year and the GBIF
+fields a download carries. Coordinates are rounded to four decimals.
+
+The simulation gives records from before 1970 a larger coordinate
+uncertainty and assigns GBIF’s `COORDINATE_ROUNDED` issue to 30% of
+them, against 3% of later records. The age and uncertainty patterns
+later in the article follow from these two choices. It then moves 150
+records to within 3 km of five capitals, 40 to (0, 0) and 60 into the
+Atlantic, rounded to four decimals like the rest, and appends 120 exact
+copies of earlier records.
+
+Simulation code
 
 ``` r
 
@@ -53,11 +63,6 @@ x <- data.frame(decimalLongitude = round(lon[!sea][1:n], 4),
                 year = sample(1850:2024, n, TRUE, prob = exp(seq(-3, 0, length.out = 175))))
 ```
 
-The simulation gives records from before 1970 a larger coordinate
-uncertainty and assigns GBIF’s `COORDINATE_ROUNDED` issue to 30% of
-them, against 3% of later records. The age and uncertainty patterns
-later in the article follow from these two choices.
-
 ``` r
 
 old <- x$year < 1970
@@ -68,10 +73,6 @@ x$basisOfRecord[sample(n, 15)] <- "FOSSIL_SPECIMEN"
 x$issue <- ifelse(runif(n) < ifelse(old, 0.3, 0.03), "COORDINATE_ROUNDED", "")
 x$issue[sample(n, 40)] <- "TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"
 ```
-
-Move 150 records to within 3 km of five capitals, 40 to (0, 0) and 60
-into the Atlantic, rounded to four decimals like the rest, along with
-exact copies of earlier records.
 
 ``` r
 
@@ -86,8 +87,22 @@ x[orig, c("decimalLongitude", "decimalLatitude")] <- 0
 x$decimalLongitude[atl] <- round(runif(60, -25, -15), 4)
 x$decimalLatitude[atl] <- round(runif(60, 40, 55), 4)
 x <- rbind(x, x[sample(n, 120), ])
+```
+
+``` r
+
 nrow(x)
 #> [1] 3120
+head(x[, c("species", "kingdom", "decimalLongitude", "decimalLatitude", "year",
+           "coordinateUncertaintyInMeters", "issue")], 3)
+#>      species  kingdom decimalLongitude decimalLatitude year
+#> 1 species 10 Animalia          26.5922         46.0742 2003
+#> 2  species 1 Animalia          27.4830         55.8274 1935
+#> 3 species 59  Plantae          23.2179         40.8941 2000
+#>   coordinateUncertaintyInMeters issue
+#> 1                            28      
+#> 2                           592      
+#> 3                            52
 ```
 
 ### Flag once
@@ -167,7 +182,7 @@ The same numbers as a plot: the full bar is `pct`, the dark part
 plot(f)
 ```
 
-![](rules_files/figure-html/unnamed-chunk-7-1.svg)
+![](rules_files/figure-html/unnamed-chunk-8-1.svg)
 
 ### Comparing rules
 
@@ -212,10 +227,11 @@ at a time. This plot and the kingdom comparison below use
 plot(s, rule = "coordinatecleaner")
 ```
 
-![](rules_files/figure-html/unnamed-chunk-9-1.svg)
+![](rules_files/figure-html/unnamed-chunk-10-1.svg)
 
-The records at (0, 0) again count under no `only`. The capital test is
-the sole reason for most of its records.
+The records at (0, 0) carry several flags, so they contribute zero to
+every `only` count. The capital test is the sole reason for most of its
+records.
 
 ### By group
 
@@ -251,7 +267,7 @@ each group, with the rule itself in the bottom row.
 plot(f, rules = rules["coordinatecleaner"], by = "kingdom")
 ```
 
-![](rules_files/figure-html/unnamed-chunk-11-1.svg)
+![](rules_files/figure-html/unnamed-chunk-12-1.svg)
 
 ### Record age and coordinate precision
 
@@ -301,7 +317,7 @@ tally is the one to keep when the counts will be summed or merged later.
 plot(t, rule = "strict")
 ```
 
-![](rules_files/figure-html/unnamed-chunk-13-1.svg)
+![](rules_files/figure-html/unnamed-chunk-14-1.svg)
 
 The same works for coordinate uncertainty,
 `coordinateUncertaintyInMeters`, a distance in metres describing how
@@ -342,7 +358,7 @@ below.
 plot(f, type = "map", rules = rules["coordinatecleaner"])
 ```
 
-![](rules_files/figure-html/unnamed-chunk-15-1.svg)
+![](rules_files/figure-html/unnamed-chunk-16-1.svg)
 
 ### Applying the rule
 

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Using custom gazetteers • OccurrenceCleaner</title>
+<title>Custom reference points and polygons • OccurrenceCleaner</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,12 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Using custom gazetteers">
+<meta property="og:title" content="Custom reference points and polygons">
+<meta name="description" content="Replace the reference points or polygons of one test with your own, including species range maps.
+">
+<meta property="og:description" content="Replace the reference points or polygons of one test with your own, including species range maps.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -96,7 +101,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Using custom gazetteers</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Custom reference points and polygons</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/vignettes/gazetteers.Rmd" class="external-link"><code>vignettes/gazetteers.Rmd</code></a></small>
@@ -105,7 +110,8 @@
 
     
     
-<p>The tests use three kinds of reference data:</p>
+<p>A gazetteer is a table of reference locations: the points or polygons
+a test compares each record with. The tests use three kinds:</p>
 <ul>
 <li><p>Points marking capitals, centroids, institutions, the GBIF
 headquarters and artificial hotspots.</p></li>
@@ -114,50 +120,45 @@ ranges.</p></li>
 <li><p>A table of genus habitats, used together with land polygons by
 the two habitat tests.</p></li>
 </ul>
-<p>OccurrenceCleaner ships fixed versions of these reference layers,
-except for species ranges, which users supply. Set
-<code>reference = "CoordinateCleaner"</code> to use the corresponding
-reference tables from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>.
-To supply your own layer for an individual test, use the
+<p>The package includes all of these except species ranges, which you
+supply.</p>
+<p>To change the reference data for all tests at once, set
+<code>reference = "CoordinateCleaner"</code>. The tests then read the
+corresponding tables from your <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+installation.</p>
+<p>To change it for a single test, pass your own layer in the
 <code>gazetteers</code> argument of <a href="https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.html"><code>flag_occurrences()</code></a>.
-This serves the same purpose as the <code>ref</code> arguments of
-CoordinateCleaner’s <code>cc_*()</code> functions.</p>
-<p>This article shows how to filter and extend the shipped point tables,
-build polygon layers with <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a>, supply a genus habitat
-table, and inspect how custom reference layers are recorded with the
-flags. Installation is covered in <a href="OccurrenceCleaner.html">Get
-started</a>; the polygon examples also require sf.</p>
+This argument does the job of the <code>ref</code> arguments in
+CoordinateCleaner’s test functions.</p>
+<p>This article shows how to filter, extend or replace the layer of a
+test and how a custom layer is recorded with the flags. Installation is
+covered in <a href="OccurrenceCleaner.html">Get started</a>. The polygon
+examples also need <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a>.</p>
 <div class="section level2">
-<h2 id="included-reference-points">Included reference points<a class="anchor" aria-label="anchor" href="#included-reference-points"></a>
+<h2 id="a-filtered-point-layer">A filtered point layer<a class="anchor" aria-label="anchor" href="#a-filtered-point-layer"></a>
 </h2>
-<p><code><a href="../reference/reference_points.html">reference_points()</a></code> returns the points of a proximity
-test with their attributes:</p>
+<p>A point layer is any data frame with longitude and latitude columns
+(<code>lon</code>/<code>lat</code>,
+<code>longitude</code>/<code>latitude</code> or
+<code>decimalLongitude</code>/<code>decimalLatitude</code>, in any
+case). The simplest custom layer is a subset of a shipped one.
+<code><a href="../reference/reference_points.html">reference_points()</a></code> returns the points of a proximity test
+with their attributes; for the institutions, <code>type</code> gives the
+kind of institution and <code>source</code> the registry each point
+comes from:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">caps</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         name     country adm0_a3 iso_a2                  class       lon</span></span>
-<span><span class="co">#&gt; 1 Oranjestad       Aruba     ABW     AW       Factbook capital -70.03333</span></span>
-<span><span class="co">#&gt; 2 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.02899</span></span>
-<span><span class="co">#&gt; 3      Kabul Afghanistan     AFG     AF       Factbook capital  69.18333</span></span>
-<span><span class="co">#&gt; 4      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.18131</span></span>
-<span><span class="co">#&gt; 5     Luanda      Angola     AGO     AO       Factbook capital  13.21667</span></span>
-<span><span class="co">#&gt; 6     Luanda      Angola     AGO     AO        Admin-0 capital  13.23248</span></span>
-<span><span class="co">#&gt;         lat             source               key extension</span></span>
-<span><span class="co">#&gt; 1 12.516667 CIA World Factbook       factbook:AA     FALSE</span></span>
-<span><span class="co">#&gt; 2 12.530384      Natural Earth ne:ABW:Oranjestad      TRUE</span></span>
-<span><span class="co">#&gt; 3 34.516667 CIA World Factbook       factbook:AF     FALSE</span></span>
-<span><span class="co">#&gt; 4 34.518636      Natural Earth      ne:AFG:Kabul      TRUE</span></span>
-<span><span class="co">#&gt; 5 -8.833333 CIA World Factbook       factbook:AO     FALSE</span></span>
-<span><span class="co">#&gt; 6 -8.836340      Natural Earth     ne:AGO:Luanda      TRUE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">caps</span><span class="op">$</span><span class="va">class</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;        Admin-0 capital    Admin-0 capital alt Admin-0 region capital </span></span>
-<span><span class="co">#&gt;                    202                     13                     28 </span></span>
-<span><span class="co">#&gt;       Factbook capital </span></span>
-<span><span class="co">#&gt;                    232</span></span>
 <span><span class="va">inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">inst</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"type"</span>, <span class="st">"source"</span>, <span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                                  name      type                 source     lon</span></span>
+<span><span class="co">#&gt; 1         Andorra Recerca + Innovació      &lt;NA&gt;          GBIF registry 1.49218</span></span>
+<span><span class="co">#&gt; 2       Andorra Research + Innovation Herbarium              GRSciColl 1.49210</span></span>
+<span><span class="co">#&gt; 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner list 1.73361</span></span>
+<span><span class="co">#&gt;        lat</span></span>
+<span><span class="co">#&gt; 1 42.46876</span></span>
+<span><span class="co">#&gt; 2 42.46650</span></span>
+<span><span class="co">#&gt; 3 42.54277</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                           BotanicalGarden </span></span>
@@ -172,36 +173,7 @@ test with their attributes:</p>
 <span><span class="co">#&gt;                                       707 </span></span>
 <span><span class="co">#&gt; OtherTypeResearchInstitutionBiorepository </span></span>
 <span><span class="co">#&gt;                                       182</span></span></code></pre></div>
-<p>The institution table joins the GBIF registry of scientific
-collections (GRSciColl), the botanical gardens, natural history museums,
-zoos, aquaria and herbaria of Wikidata, the museums of Wikipedia’s lists
-of natural history museums (the English list and six other language
-editions), the gardens of Botanic Gardens Conservation International
-(BGCI), three GeoNames places, the herbaria of Index Herbariorum that
-GRSciColl does not place, the publishing organisations of the GBIF
-registry, and every further institution of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
-list, placed by its name from Wikidata, OpenStreetMap or GeoNames.
-<code>source</code> says which registry each point comes from,
-<code>type</code> what kind of institution it is, and
-<code>master_source</code>, for GRSciColl entries, where GBIF took the
-entry from (Index Herbariorum, GRSciColl itself, or the GBIF registry);
-for the Wikipedia museums that the list places only by town and for the
-rows of CoordinateCleaner’s list, it says where the coordinates come
-from. <code>extension</code> is <code>TRUE</code> for the points from
-sources <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
-own table does not draw on (Wikidata beyond the museums of the English
-list, and the other language editions); the rows with
-<code>extension</code> <code>FALSE</code>, passed as the institution
-gazetteer, restrict the test to CoordinateCleaner’s sources.</p>
-</div>
-<div class="section level2">
-<h2 id="a-filtered-point-gazetteer">A filtered point gazetteer<a class="anchor" aria-label="anchor" href="#a-filtered-point-gazetteer"></a>
-</h2>
-<p>A point layer is any data frame with longitude and latitude columns
-(<code>lon</code>/<code>lat</code>,
-<code>longitude</code>/<code>latitude</code> or
-<code>decimalLongitude</code>/<code>decimalLatitude</code>, in any
-case). A plant study, for example, may want to flag records at herbaria
+<p>A plant study, for example, may want to flag records at herbaria
 only, since a specimen georeferenced to a zoological museum is unlikely
 in a plant table, and use a wider buffer for them:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -227,9 +199,16 @@ in a plant table, and use a wider buffer for them:</p>
 an institution: three herbaria, then three museums. The full table flags
 all six at a 1 km buffer; the herbarium table flags only 3, the records
 next to the herbaria.</p>
+<p>The same works with the <code>extension</code> column. It is
+<code>TRUE</code> for points from sources CoordinateCleaner does not
+use; the rows with <code>extension</code> <code>FALSE</code> restrict a
+test to CoordinateCleaner’s sources, as <a href="reference-data.html#extension-points">Reference data</a> shows for
+the capitals. That article also lists the sources of every layer (<a href="reference-data.html#institutions">Institutions</a> for the
+<code>source</code> and <code>master_source</code> columns of the
+institution table).</p>
 </div>
 <div class="section level2">
-<h2 id="an-extended-point-gazetteer">An extended point gazetteer<a class="anchor" aria-label="anchor" href="#an-extended-point-gazetteer"></a>
+<h2 id="an-extended-point-layer">An extended point layer<a class="anchor" aria-label="anchor" href="#an-extended-point-layer"></a>
 </h2>
 <p>The two capital tables differ: the shipped table has the Factbook
 capitals unrounded and adds Natural Earth’s alternative and official
@@ -237,7 +216,8 @@ capitals, while <a href="https://ropensci.github.io/CoordinateCleaner/" class="e
 has one point per country, rounded to 0.01 degrees. Their union flags
 records near either:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
+<span><span class="va">both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">both</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 700</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cape Town"</span>, <span class="st">"Naypyidaw"</span>, <span class="st">"Vienna"</span><span class="op">)</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18.42</span>, <span class="fl">96.13</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
@@ -253,12 +233,13 @@ records near either:</p>
 which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.</p>
-<p>The institution table is one of them. The shipped table holds every
-institution of CoordinateCleaner’s list, at the coordinates of its
-sources. CoordinateCleaner placed nearly every institution by its own
-geocoding, so its point can mark a different spot of the same
-institution. With CoordinateCleaner installed, the union adds its points
-to the shipped ones at run time:</p>
+<p>The institution table is one of them. The shipped table has all but
+one of the institutions of CoordinateCleaner’s list (the exception is an
+expert group listed in Antarctica), at the coordinates of its sources.
+CoordinateCleaner placed nearly every institution by its own geocoding,
+so its point can mark a different spot of the same institution. With
+CoordinateCleaner installed, the union adds its points to the shipped
+ones at run time:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inst_both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">inst</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">inst_both</span><span class="op">)</span></span>
@@ -308,15 +289,16 @@ custom layer a test for “outside the study area”:</p>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">11.40</span>, <span class="fl">8.54</span>, <span class="fl">19.04</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">47.26</span>, <span class="fl">47.37</span>, <span class="fl">47.50</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">z</span>, tests <span class="op">=</span> <span class="st">"sea"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sea <span class="op">=</span> <span class="va">area</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_sea</span></span>
 <span><span class="co">#&gt; [1] FALSE FALSE  TRUE  TRUE</span></span></code></pre></div>
-<p>The first two points (Vienna, Innsbruck) lie inside the box, the last
-two (Zurich, Budapest) outside it. The same applies to
-<code>urban</code>, whose polygons are the areas to flag, for example a
-city’s built-up area at a finer scale than Natural Earth’s.</p>
-<p>For <code>country_mismatch</code> the polygons carry codes. Any of
-the columns <code>iso_a2</code>, <code>iso_a3</code>,
-<code>adm0_a3</code> or <code>code</code> (in any case) is read, and the
-record’s code is matched against all of them. Two territories with their
-own codes:</p>
+<p>The first two points (Vienna and Innsbruck) lie inside the box; the
+last two (Zurich and Budapest) lie outside. For <code>urban</code>,
+polygons likewise define the areas to flag, such as a city’s built-up
+area mapped in finer detail than Natural Earth provides.</p>
+<p>For <code>country_mismatch</code>, polygons also carry country or
+territory codes in columns named <code>iso_a2</code>,
+<code>iso_a3</code>, <code>adm0_a3</code> or <code>code</code>
+(case-insensitive). Each record’s code is checked against all available
+code columns. The following example uses two territories with their own
+codes:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">terr</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span></span>
 <span>  code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"XA"</span>, <span class="st">"XB"</span><span class="op">)</span>,</span>
@@ -347,34 +329,39 @@ tested:</p>
 <span>                        <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">60</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                        <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">52</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">52</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                        crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Lacerta viridis"</span>, <span class="st">"Lacerta viridis"</span>, <span class="st">"Rana arvalis"</span><span class="op">)</span>,</span>
-<span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">45</span>, <span class="op">-</span><span class="fl">20</span>, <span class="fl">15</span>, <span class="fl">15</span>, <span class="fl">100</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">45</span>, <span class="fl">55</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Bufo bufo"</span>, <span class="st">"Lacerta viridis"</span>, <span class="st">"Lacerta viridis"</span>,</span>
+<span>                            <span class="st">"Lacerta viridis"</span>, <span class="st">"Rana arvalis"</span><span class="op">)</span>,</span>
+<span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">45</span>, <span class="op">-</span><span class="fl">20</span>, <span class="fl">15</span>, <span class="fl">15</span>, <span class="fl">15</span>, <span class="fl">100</span><span class="op">)</span>,</span>
+<span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">45</span>, <span class="fl">52.5</span>, <span class="fl">55</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">r</span>, outside <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">r</span>, tests <span class="op">=</span> <span class="st">"range"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="va">ranges</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_range</span>,</span>
 <span>           outside_100km <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">r</span>, tests <span class="op">=</span> <span class="st">"range"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="va">ranges</span><span class="op">)</span>,</span>
 <span>                                            buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_range</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           species decimalLongitude decimalLatitude outside outside_100km</span></span>
-<span><span class="co">#&gt; 1       Bufo bufo               10              50   FALSE         FALSE</span></span>
-<span><span class="co">#&gt; 2       Bufo bufo               45              50   FALSE         FALSE</span></span>
-<span><span class="co">#&gt; 3       Bufo bufo              -20              50    TRUE          TRUE</span></span>
-<span><span class="co">#&gt; 4 Lacerta viridis               15              45   FALSE         FALSE</span></span>
-<span><span class="co">#&gt; 5 Lacerta viridis               15              55    TRUE          TRUE</span></span>
-<span><span class="co">#&gt; 6    Rana arvalis              100              10   FALSE         FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1       Bufo bufo               10            50.0   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 2       Bufo bufo               45            50.0   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 3       Bufo bufo              -20            50.0    TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 4 Lacerta viridis               15            45.0   FALSE         FALSE</span></span>
+<span><span class="co">#&gt; 5 Lacerta viridis               15            52.5    TRUE         FALSE</span></span>
+<span><span class="co">#&gt; 6 Lacerta viridis               15            55.0    TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 7    Rana arvalis              100            10.0   FALSE         FALSE</span></span></code></pre></div>
 <p>The toad at 45 E lies in the second of its two polygons and is kept;
-the one at 20 W lies in the Atlantic, outside both. The lizard at 55 N
-is 3 degrees north of its range and stays flagged with a 100 km buffer.
-<em>Rana arvalis</em> has no polygon and is not tested.</p>
+the one at 20 W lies in the Atlantic, outside both. The lizard at 52.5 N
+lies half a degree, about 55 km, north of its range: it is flagged
+without a buffer and kept with the 100 km buffer. The lizard at 55 N is
+3 degrees north and stays flagged under both. <em>Rana arvalis</em> has
+no polygon and is not tested.</p>
 </div>
 <div class="section level2">
 <h2 id="a-genus-habitat-table">A genus habitat table<a class="anchor" aria-label="anchor" href="#a-genus-habitat-table"></a>
 </h2>
 <p>The habitat tests <code>sea_nonmarine</code> and
-<code>land_marine</code> look up the record’s genus in
-<code><a href="../reference/reference_habitat.html">reference_habitat()</a></code>, built from the Interim Register of
-Marine and Nonmarine Genera. A table with a <code>genus</code> column, a
-logical <code>marine</code> column (<code>TRUE</code> only marine,
-<code>FALSE</code> not marine) and optionally a <code>kingdom</code>
-column replaces it, for example to class a genus the register leaves
-open:</p>
+<code>land_marine</code> use <code><a href="../reference/reference_habitat.html">reference_habitat()</a></code> to look up
+each record’s genus in the Interim Register of Marine and Nonmarine
+Genera. You can supply your own table with columns <code>genus</code>,
+<code>marine</code> (<code>TRUE</code> for exclusively marine genera,
+<code>FALSE</code> for nonmarine genera) and optionally
+<code>kingdom</code>. For example, you can classify a genus whose
+habitat the register leaves unspecified:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_habitat.html">reference_habitat</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">h</span><span class="op">[</span><span class="va">h</span><span class="op">$</span><span class="va">genus</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Larus"</span>, <span class="st">"Zostera"</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -405,7 +392,7 @@ output:</p>
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a
 different custom layer stops with an error instead of mixing flags from
-two gazetteers.</p>
+two layers.</p>
 </div>
 <div class="section level2">
 <h2 id="comparison-with-coordinatecleaner">Comparison with CoordinateCleaner<a class="anchor" aria-label="anchor" href="#comparison-with-coordinatecleaner"></a>
@@ -459,15 +446,14 @@ reference_points(“aohi”))</td>
 </tr>
 </tbody>
 </table>
-<p><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
-point references need its own column names (<code>capital.lon</code>,
-<code>centroid.lon</code>, <code>decimalLongitude</code>); here the
-longitude and latitude columns are found by name in any of the common
-spellings. Its <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link">cc_coun()</a></code> reads one code column chosen with
-<code>ref_col</code>; here every code column present is matched. With
-the same reference points and polygons the two packages give the same
-flags, up to the buffer-polygon band described in <a href="coordinatecleaner.html">Compatibility with CoordinateCleaner</a>;
-the package tests check this for <code>institution</code>,
+<p>OccurrenceCleaner recognises common longitude and latitude column
+names and matches records against every country-code column present. <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
+requires specific coordinate names, such as <code>capital.lon</code>,
+<code>centroid.lon</code> or <code>decimalLongitude</code>, and its <a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html" class="external-link"><code>cc_coun()</code></a>
+uses one code column selected with <code>ref_col</code>.</p>
+<p>With the same reference points and polygons, both packages produce
+the same flags except near buffer boundaries, as described in <a href="coordinatecleaner.html">Compatibility with CoordinateCleaner</a>.
+Package tests check this agreement for <code>institution</code>,
 <code>sea</code> and <code>range</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

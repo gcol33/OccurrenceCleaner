@@ -33,7 +33,11 @@ Three files stand in for the parts of a snapshot. They are `.vtr` files,
 the on-disk table format of vectra; a directory of Parquet files, a
 single Parquet, `.csv` or `.tsv` file, and a vectra query are read the
 same way. Each file has 3,000 records with GBIF’s lower-case column
-names, at random points in a box over western and central Europe:
+names, at random points in a box over western and central Europe. The
+last record of part 3 is a copy of the first record of part 1 with its
+own identifier, so the same species and coordinates appear in two files.
+
+Code that writes the three files
 
 ``` r
 
@@ -52,14 +56,6 @@ make_part <- function(n, offset) {
 p1 <- make_part(3000, 0)
 p2 <- make_part(3000, 3000)
 p3 <- make_part(3000, 6000)
-```
-
-The last record of part 3 is replaced by a copy of the first record of
-part 1, with its own identifier, so the same species and coordinates
-appear in two files:
-
-``` r
-
 p3[3000, -1] <- p1[1, -1]
 src <- file.path(tempdir(), "snapshot")
 dir.create(src, showWarnings = FALSE)
@@ -68,8 +64,17 @@ for (i in 1:3) {
   path <- file.path(src, sprintf("occurrence-%d.vtr", i))
   vectra::write_vtr(parts[[i]], path)
 }
+```
+
+``` r
+
 list.files(src)
 #> [1] "occurrence-1.vtr" "occurrence-2.vtr" "occurrence-3.vtr"
+head(p1, 3)
+#>   gbifid kingdom species year decimallongitude decimallatitude
+#> 1      1 Plantae    sp10 2009           -1.485          40.392
+#> 2      2   Fungi    sp18 1928           -1.194          45.822
+#> 3      3   Fungi    sp11 1949            3.827          47.919
 ```
 
 ### Flagging into an output directory
@@ -78,7 +83,10 @@ For on-disk input, `out` names the output directory and `keep` the
 columns copied next to the flags for grouping later. The record
 identifier (`gbifid` here, set through `occ_columns(id = ...)`) is kept
 whenever it is present, so the flags can be joined back to the full
-records:
+records. The run reports its progress as it goes; the messages are
+folded away here.
+
+The call and its progress messages
 
 ``` r
 
@@ -112,9 +120,13 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
 #> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
 #> progress: record pass done [0 s]
+```
+
+``` r
+
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpOAXQGH\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpslSAhU\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -155,7 +167,7 @@ p[!p$run, c("test", "reason")]
 `duplicate` and `outlier` are grouped tests: they compare a record with
 other records of its key or species anywhere in the input. They run in a
 group stage that reads the input before the record pass, which the
-messages above report.
+progress messages report.
 
 ### Tallying from disk
 
@@ -316,7 +328,10 @@ directory path instead, and select the records afterwards.
 
 Each input file is one unit of work, and a finished unit leaves a
 `.done` marker in `out`. Repeating the call skips every finished unit,
-so a run that was stopped is continued by running the same call again:
+so a run that was stopped is continued by running the same call again.
+The messages of the rerun report every unit as skipped:
+
+Messages of the rerun
 
 ``` r
 
@@ -335,6 +350,8 @@ An interruption during a unit leaves that unit without its marker.
 Removing a marker by hand has the same effect, and only that unit is
 flagged again:
 
+Messages after removing one marker
+
 ``` r
 
 file.remove(file.path(out, "occurrence-2.done"))
@@ -345,17 +362,17 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> group tests: reading 3 file(s) (pass 1 of 2)
 #> progress: group pass (counts), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~1 s | elapsed 0 s
 #> group tests: reading 3 file(s) (pass 2 of 2)
-#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~4 s | elapsed 0 s
+#> progress: group pass (counts), 9,000 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
 #> progress: group pass (counts) done [0 s]
-#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~4 s | elapsed 0 s
+#> progress: group pass (buckets), 0 of 9,000 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
 #> group tests: duplicate: 64 bucket(s)
-#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~7 s | elapsed 0 s
+#> progress: group pass (buckets), 9,000 of 9,000 rows | step ETA 0 s | run 1%, ETA ~9 s | elapsed 0 s
 #> progress: group pass (buckets) done [0 s]
-#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~7 s | elapsed 0 s
+#> progress: duplicate buckets, 0 of 9,000 rows | step ETA 0 s | run 1%, ETA ~9 s | elapsed 0 s
 #> group tests: outlier: 26 bucket(s)
-#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~7 s | elapsed 0 s
+#> progress: duplicate buckets, 9,000 of 9,000 rows | step ETA 0 s | run 2%, ETA ~8 s | elapsed 0 s
 #> progress: duplicate buckets done [0 s]
-#> progress: outlier buckets, 0 of 9,000 rows | step ETA 6 s | run 2%, ETA ~7 s | elapsed 0 s
+#> progress: outlier buckets, 0 of 9,000 rows | step ETA 7 s | run 2%, ETA ~8 s | elapsed 0 s
 #> progress: outlier buckets, 9,000 of 9,000 rows | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
 #> progress: outlier buckets done [0 s]
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 89%, ETA ~0 s | elapsed 0 s
@@ -439,7 +456,7 @@ minute.
 ``` r
 
 readLines(file.path(out, "progress.txt"))
-#> [1] "record 9000 9000 0.3 0.0 0.0 1.0000"
+#> [1] "record 9000 9000 0.4 0.0 0.0 1.0000"
 ```
 
 `n_threads` spreads the exact outlier test over species and the

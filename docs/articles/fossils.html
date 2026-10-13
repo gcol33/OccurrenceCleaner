@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Cleaning fossil records">
+<meta name="description" content="The age tests and PyRate export for Paleobiology Database records.
+">
+<meta property="og:description" content="The age tests and PyRate export for Paleobiology Database records.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -134,15 +139,13 @@ space.</p></li>
 <code>cc</code> for two-letter country codes. The columns
 <code>min_ma</code> and <code>max_ma</code> give the youngest and oldest
 possible ages in millions of years before the present.</p>
-<p>The example below contains nine synthetic records. Record 2 has equal
-minimum and maximum ages; record 3 has the ages reversed; record 4 spans
-43 million years; record 5 is missing its minimum age; and record 6 has
-both coordinates set to zero. Records 1 and 9 have a minimum age below
-the maximum age, a span under 4 million years, and coordinates in
-Wyoming that match their country code <code>US</code>; they pass every
-test. Records 7 and 8 have a minimum age below the maximum age, a span
-of 1.2 million years, and the country code <code>DE</code>; their
-coordinates are missing in the table and set in the next chunk:</p>
+<p>The example below contains nine synthetic records, each built for one
+case; the cases are explained beside the flags they produce. Records 1
+and 9 are the controls: a minimum age below the maximum age, a span
+under 4 million years, and coordinates in Wyoming that match their
+country code <code>US</code>. Records 7 and 8 have the country code
+<code>DE</code>; their coordinates are missing in the table and set in
+the next chunk:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
@@ -158,7 +161,8 @@ coordinates are missing in the table and set in the next chunk:</p>
 <p>Records 7 and 8 are placed relative to the centroid of Germany in the
 package’s reference points, so their distance to it is known: record 7
 sits on the point, record 8 lies 0.027 degrees of latitude (about 3 km)
-north of it.</p>
+north of it. Their ages are ordered, with a span of 1.2 million
+years.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"centroid"</span><span class="op">)</span></span>
 <span><span class="va">de</span> <span class="op">&lt;-</span> <span class="va">cen</span><span class="op">[</span><span class="va">cen</span><span class="op">$</span><span class="va">key</span> <span class="op">==</span> <span class="st">"ne:DEU"</span> <span class="op">&amp;</span> <span class="va">cen</span><span class="op">$</span><span class="va">method</span> <span class="op">==</span> <span class="st">"polygon centroid"</span>, <span class="op">]</span></span>
@@ -195,16 +199,20 @@ table has country codes:</p>
 <span><span class="co">#&gt; 8             8       Mesonyx   47.8   49.0      0                            </span></span>
 <span><span class="co">#&gt; 9             9  Uintatherium   46.2   48.6      0</span></span></code></pre></div>
 <p><code>age_equal</code> flags a record whose minimum age is equal to
-or greater than its maximum age: here records 2 and 3. A zero-width
+or greater than its maximum age. Record 2 has equal minimum and maximum
+ages and record 3 has them reversed, so both are flagged. A zero-width
 range can come from one age copied into both fields, and an inverted one
 from swapped fields, but the flag only records the comparison; such
 records need a look at their source before they are corrected or
-dropped. A record with a missing age, such as record 5, is not flagged
-by this test.</p>
-<p>Record 6 fails <code>zero</code>, <code>equal</code> and
-<code>country_mismatch</code>, since (0, 0) lies in the Gulf of Guinea.
-Record 7 fails <code>centroid</code>: it lies within the default 1 km of
-the centroid of Germany.</p>
+dropped. Record 5 is missing its minimum age, so this test cannot
+compare its ages and leaves it unflagged. Record 4 spans 43 million
+years; no test flags a wide range on its own, and the section on
+filtering by age range comes back to it.</p>
+<p>Record 6 has both coordinates set to zero and fails
+<code>zero</code>, <code>equal</code> and <code>country_mismatch</code>,
+since (0, 0) lies in the Gulf of Guinea. Record 7 fails
+<code>centroid</code>: it lies within the default 1 km of the centroid
+of Germany. Record 8, 3 km from it, passes.</p>
 </div>
 <div class="section level2">
 <h2 id="filtering-records">Filtering records<a class="anchor" aria-label="anchor" href="#filtering-records"></a>
@@ -235,11 +243,11 @@ selection.</p>
 100 m around institutions. You can change these with
 <code>buffers</code>.</p>
 <p>Fossil localities can be georeferenced coarsely, so a collection
-placed a few kilometres from a country centroid may still have been put
-there by the centroid. A wider buffer catches such records, at the cost
-of flagging any correct locality within the same distance. With a 5 km
-buffer, chosen here to reach record 8, both records near the centroid of
-Germany are flagged:</p>
+placed a few kilometres from a country centroid may have been assigned
+the country-centroid coordinates. A wider buffer catches such records,
+at the cost of flagging any correct locality within the same distance.
+With a 5 km buffer, chosen here to reach record 8, both records near the
+centroid of Germany are flagged:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">fos</span>, tests <span class="op">=</span> <span class="va">tests</span>, columns <span class="op">=</span> <span class="va">cols</span>,</span>
 <span>                       buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>centroid <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span><span class="op">)</span></span>

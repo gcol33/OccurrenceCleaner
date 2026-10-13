@@ -10,13 +10,24 @@ started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.
 
 ## Example data
 
-GBIF’s simple-format downloads and the Parquet snapshot hold the Darwin
-Core terms in lower case (`decimallongitude`, `countrycode`,
-`basisofrecord`, …). The column matching in
+The table has 2,276 records in GBIF’s lower-case Darwin Core column
+names (`decimallongitude`, `countrycode`, `basisofrecord`, …), which
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md)
-is case-insensitive, so these names are found without renaming. The
-simulated table has 2,000 clean records spread over the interiors of
-five European countries, each with the right country code:
+matches without renaming. Of these, 2,000 are background records drawn
+at random inside a box over each of five European countries, with that
+country’s code. The boxes follow the borders only roughly: two of the
+Austrian points fall across the border in Bavaria, and the country test
+will say so.
+
+The other 276 records carry planted errors, labelled in a column `truth`
+so the flags can be checked against it afterwards: herbarium sheets
+georeferenced to the capital where they are kept, coordinates typed as
+zeros, the GBIF headquarters in Copenhagen as a default location,
+swapped and negated coordinates, coordinates entered at whole degrees,
+botanic-garden specimens and cultivated plants, and 40 exact copies of
+background records.
+
+Simulation code
 
 ``` r
 
@@ -45,14 +56,6 @@ occ$kingdom <- ifelse(grepl("Quercus|Fagus", occ$species), "Plantae",
                       ifelse(occ$species == "Amanita muscaria", "Fungi", "Animalia"))
 ```
 
-Add 236 records with the errors that the tests target, each group
-labelled in a column `truth` so the flags can be checked against it
-afterwards. Herbarium sheets georeferenced to the capital where they are
-kept, coordinates typed as zeros, the GBIF headquarters in Copenhagen as
-a default location, swapped and negated coordinates, coordinates entered
-at whole degrees, botanic-garden specimens and cultivated plants, plus
-40 exact copies of clean records:
-
 ``` r
 
 err <- function(k, truth, lon, lat, code, ...) {
@@ -64,7 +67,7 @@ err <- function(k, truth, lon, lat, code, ...) {
   d$truth <- truth
   d
 }
-occ$truth <- "clean"
+occ$truth <- "background"
 capitals <- data.frame(lon = c(16.37, 2.35, -3.70, 13.40, 21.01), lat = c(48.21, 48.86, 40.42, 52.52, 52.23),
                        code = c("AT", "FR", "ES", "DE", "PL"))
 k <- sample(5, 60, TRUE)
@@ -87,10 +90,26 @@ bad <- rbind(
       occ$countrycode[72:91], issue = "TAXON_MATCH_FUZZY;COORDINATE_ROUNDED"))
 dups <- occ[sample(n, 40), ]; dups$gbifid <- paste0("dup-", 1:40); dups$truth <- "duplicate"
 occ <- rbind(occ, bad, dups)
+```
+
+One record of each kind, and the size of each group:
+
+``` r
+
+cols <- c("gbifid", "species", "decimallongitude", "decimallatitude", "countrycode", "issue", "truth")
+occ[match(c("background", "capital", "swapped"), occ$truth), cols]
+#>          gbifid          species decimallongitude decimallatitude countrycode
+#> 1             1 Amanita muscaria         14.94154        47.07497          AT
+#> 10661 capital-1   Lucanus cervus         13.40015        52.50722          DE
+#> 5161  swapped-1    Quercus robur         47.07497        14.94154          AT
+#>                             issue      truth
+#> 1                                 background
+#> 10661                                capital
+#> 5161  PRESUMED_SWAPPED_COORDINATE    swapped
 table(occ$truth)
 #> 
-#>     capital       clean  cultivated   duplicate fuzzy_taxon     gbif_hq 
-#>          60        2000          21          40          20          15 
+#>  background     capital  cultivated   duplicate fuzzy_taxon     gbif_hq 
+#>        2000          60          21          40          20          15 
 #>      living     negated     rounded     swapped        zero 
 #>          20          25          30          25          20
 ```
@@ -115,8 +134,6 @@ case-insensitively:
 f <- flag_occurrences(occ, columns = occ_columns(id = "gbifid"))
 dim(f)
 #> [1] 2276   34
-attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 [`test_plan()`](https://gillescolling.com/OccurrenceCleaner/reference/test_plan.md)
@@ -125,8 +142,12 @@ table has coordinates, a species, a country code and the three GBIF
 fields, so the coordinate, GBIF and species outlier tests run. The
 fossil tests, the dataset tests, the habitat tests and the range test
 need columns or range polygons the table does not have; the articles on
-fossils, on outliers and dataset tests, and on custom gazetteers cover
-them:
+[fossils](https://gillescolling.com/OccurrenceCleaner/articles/fossils.md),
+on [outliers and dataset
+tests](https://gillescolling.com/OccurrenceCleaner/articles/outliers.md)
+and on [custom reference points and
+polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md)
+cover them:
 
 ``` r
 
@@ -158,19 +179,32 @@ p[!p$run, c("test", "missing")]
 ```
 
 The result is the input with an integer `flags` column and one logical
-column per test. The `occ_reference` attribute records which gazetteer
-versions produced the flags; it is worth storing next to any cleaned
+column per test. A `FALSE` in a flag column means that the test did not
+flag the record. It does not mean that every test examined the record: a
+test that did not run has no column, and a grouped test leaves a species
+with too few records untested.
+[`flag_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_reference.md)
+returns the label of the reference data that produced the flags, with
+the version of every layer. It is worth storing next to any cleaned
 table that goes into an analysis.
 
+The full reference label
+
+``` r
+
+flag_reference(f)
+#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"
+```
+
 [`summary()`](https://rdrr.io/r/base/summary.html) turns the flags into
-shares per test. With one rule holding every test, it gives for each
-test the records it flags, their percentage, and the records for which
-it is the only flag:
+shares per test. With one rule of every test, it gives for each test the
+records it flags, their percentage, and the records for which it is the
+only flag:
 
 ``` r
 
 s <- as.data.frame(summary(f, rules = list(all = all_tests)))
-knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, row.names = FALSE)
+shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 ```
 
 | test                  | flagged |   pct | only |
@@ -195,35 +229,40 @@ knitr::kable(s[s$flagged > 0, c("test", "flagged", "pct", "only")], digits = 2, 
 | (any)                 |     274 | 12.04 |      |
 
 The `(any)` row is the rule as a whole: 274 of the 2,276 records carry
-at least one flag. The `only` column is the number of records a rule
-would keep if that one test were dropped from it.
+at least one flag. The `only` column counts the records flagged by that
+test alone. These are the records the rule would additionally keep if
+that test were dropped from it.
 
-Because the errors are labelled, a cross table of the truth against a
-few tests shows which test catches which kind of error, and whether any
-clean record is flagged:
+Because the errors are labelled, a cross table of tests against the
+truth shows which test catches which kind of error, and whether any
+background record is flagged. Tests are in rows and the error groups in
+columns; the duplicates and the fuzzy taxon matches are left out, since
+one test each catches them:
 
 ``` r
 
-show <- c("zero", "capital", "gbif_headquarters", "sea", "country_mismatch", "duplicate",
-          "issue_coordinate", "issue_rounded", "basis_living", "establishment_managed")
-tab <- aggregate(f[paste0("flag_", show)], by = list(truth = f$truth), FUN = sum)
-names(tab) <- c("truth", show)
-knitr::kable(tab)
+show <- c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea",
+          "country_mismatch", "duplicate", "issue_coordinate", "basis_living", "establishment_managed")
+groups <- c("background", "capital", "zero", "gbif_hq", "swapped", "negated", "rounded",
+            "living", "cultivated")
+tab <- sapply(show, function(t) tapply(f[[paste0("flag_", t)]], f$truth, sum))
+tab <- t(tab[groups, ])
 ```
 
-| truth | zero | capital | gbif_headquarters | sea | country_mismatch | duplicate | issue_coordinate | issue_rounded | basis_living | establishment_managed |
-|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| capital | 0 | 60 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| clean | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
-| cultivated | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 21 |
-| duplicate | 0 | 0 | 0 | 0 | 0 | 40 | 0 | 0 | 0 | 0 |
-| fuzzy_taxon | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 20 | 0 | 0 |
-| gbif_hq | 0 | 15 | 15 | 0 | 15 | 10 | 0 | 0 | 0 | 0 |
-| living | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 20 | 0 |
-| negated | 0 | 0 | 0 | 15 | 17 | 0 | 0 | 0 | 0 | 0 |
-| rounded | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |
-| swapped | 0 | 0 | 0 | 9 | 25 | 0 | 25 | 0 | 0 | 0 |
-| zero | 20 | 0 | 0 | 20 | 20 | 15 | 0 | 0 | 0 | 0 |
+|  | background | capital | zero | gbif_hq | swapped | negated | rounded | living | cultivated |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| zero | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 |
+| equal | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 |
+| capital | 0 | 60 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |
+| centroid | 0 | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 |
+| institution | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| gbif_headquarters | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |
+| sea | 0 | 0 | 20 | 0 | 9 | 15 | 0 | 0 | 0 |
+| country_mismatch | 2 | 0 | 20 | 15 | 25 | 17 | 0 | 0 | 0 |
+| duplicate | 0 | 0 | 15 | 10 | 0 | 0 | 3 | 7 | 7 |
+| issue_coordinate | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
+| basis_living | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 20 | 0 |
+| establishment_managed | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 21 |
 
 Most error types trip more than one test. All 25 swapped records fail
 `country_mismatch` and carry GBIF’s own `PRESUMED_SWAPPED_COORDINATE`
@@ -248,12 +287,12 @@ coordinate to five decimals. Low precision of this kind is read from
 `coordinateuncertaintyinmeters` when the source states it; these 30
 records state none.
 
-Of the 2,000 clean records, 1,998 carry no flag in these columns. The
-other two lie at 13.0 E, 47.6 to 47.7 N, inside the Austrian box but
-across the border in Bavaria, so `country_mismatch` is right about them.
-The duplicates among the injected groups (7 cultivated, 7 living, 10 at
-the GBIF headquarters) arise because those records copy the coordinates
-of existing records and sometimes draw the same species.
+Of the 2,000 background records, 1,998 carry no flag in these columns.
+The other two are the points in Bavaria, at 13.0 E, 47.6 to 47.7 N, and
+`country_mismatch` is right about them. The duplicates among the
+injected groups (7 cultivated, 7 living, 10 at the GBIF headquarters)
+arise because those records copy the coordinates of existing records and
+sometimes draw the same species.
 
 ## Where the flagged records are
 
@@ -325,8 +364,10 @@ show the range of choices on the same flags:
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
   defaults of
   [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-  without the outlier test (zero, equal, capital, centroid, institution,
-  GBIF headquarters, sea);
+  without the outlier test (invalid, zero, equal, capital, centroid,
+  institution, GBIF headquarters, sea), the same rule as in [Choosing a
+  cleaning
+  rule](https://gillescolling.com/OccurrenceCleaner/articles/rules.md);
 
 - `coordinatecleaner_country`: `coordinatecleaner` plus the country
   check;
@@ -334,15 +375,15 @@ show the range of choices on the same flags:
 - `coordinatecleaner_gbif`: `coordinatecleaner_country` plus GBIF’s
   coordinate and taxon warnings;
 
-- `wild`: `coordinatecleaner_gbif` plus living specimens and cultivated
-  or managed individuals;
+- `wild`: `coordinatecleaner_gbif`, and also excludes living specimens
+  and cultivated or managed individuals;
 
 - `strict`: every test, including duplicates and GBIF’s rounding note.
 
 ``` r
 
 rules <- list(
-  coordinatecleaner = c("zero", "equal", "capital", "centroid", "institution",
+  coordinatecleaner = c("invalid", "zero", "equal", "capital", "centroid", "institution",
                         "gbif_headquarters", "sea"))
 rules$coordinatecleaner_country <- c(rules$coordinatecleaner,
                                      "country_mismatch")
@@ -351,13 +392,20 @@ rules$coordinatecleaner_gbif <- c(rules$coordinatecleaner_country,
 rules$wild <- c(rules$coordinatecleaner_gbif,
                 "basis_living", "establishment_managed")
 rules$strict <- all_tests
-t_all <- tally_flags(f, rules = rules)
-knitr::kable(t_all[, c("n", paste0("removed_", names(rules)))])
+t_all <- as.data.frame(tally_flags(f, rules = rules))
+ladder <- data.frame(rule = names(rules), tests = lengths(rules),
+                     removed = unlist(t_all[1, paste0("removed_", names(rules))], use.names = FALSE),
+                     kept = unlist(t_all[1, paste0("kept_", names(rules))], use.names = FALSE))
+ladder$added <- c(ladder$removed[1], diff(ladder$removed))
 ```
 
-| n | removed_coordinatecleaner | removed_coordinatecleaner_country | removed_coordinatecleaner_gbif | removed_wild | removed_strict |
-|---:|---:|---:|---:|---:|---:|
-| 2276 | 125 | 146 | 166 | 207 | 274 |
+| rule                      | tests | removed | kept | added |
+|:--------------------------|------:|--------:|-----:|------:|
+| coordinatecleaner         |     8 |     125 | 2151 |   125 |
+| coordinatecleaner_country |     9 |     146 | 2130 |    21 |
+| coordinatecleaner_gbif    |    11 |     166 | 2110 |    20 |
+| wild                      |    13 |     207 | 2069 |    41 |
+| strict                    |    21 |     274 | 2002 |    67 |
 
 The ladder removes 125 records under `coordinatecleaner` and 274 under
 `strict`. The country check adds 21, the GBIF warnings 20 and the living
@@ -382,27 +430,30 @@ plot(summary(f, rules = rules["coordinatecleaner_gbif"]))
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
 returns `removed_<rule>` and `kept_<rule>` for every rule, plus
 `flagged_<test>` for every test, per group. Grouped by kingdom it shows
-whether a rule hits one group harder than another:
+whether a rule hits one group harder than another. The share of each
+kingdom’s records that each rule removes, rules in rows:
 
 ``` r
 
-t_k <- tally_flags(f, by = "kingdom", rules = rules)
-t_k[paste0("share_", names(rules))] <- round(t_k[paste0("removed_", names(rules))] / t_k$n, 3)
-knitr::kable(t_k[, c("kingdom", "n", paste0("share_", names(rules)))])
+t_k <- as.data.frame(tally_flags(f, by = "kingdom", rules = rules))
+share <- sapply(names(rules), function(r) round(t_k[[paste0("removed_", r)]] / t_k$n, 3))
+dimnames(share) <- list(t_k$kingdom, names(rules))
 ```
 
-| kingdom | n | share_coordinatecleaner | share_coordinatecleaner_country | share_coordinatecleaner_gbif | share_wild | share_strict |
-|:---|---:|---:|---:|---:|---:|---:|
-| Animalia | 897 | 0.062 | 0.072 | 0.085 | 0.109 | 0.132 |
-| Fungi | 461 | 0.028 | 0.035 | 0.043 | 0.063 | 0.102 |
-| Plantae | 918 | 0.061 | 0.071 | 0.076 | 0.087 | 0.119 |
+|                           | Animalia | Fungi | Plantae |
+|:--------------------------|---------:|------:|--------:|
+| coordinatecleaner         |    0.062 | 0.028 |   0.061 |
+| coordinatecleaner_country |    0.072 | 0.035 |   0.071 |
+| coordinatecleaner_gbif    |    0.085 | 0.043 |   0.076 |
+| wild                      |    0.109 | 0.063 |   0.087 |
+| strict                    |    0.132 | 0.102 |   0.119 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
 
 ``` r
 
 long <- do.call(rbind, lapply(names(rules), function(r)
-  data.frame(kingdom = t_k$kingdom, rule = r, share = t_k[[paste0("share_", r)]])))
+  data.frame(kingdom = rownames(share), rule = r, share = share[, r])))
 long$rule <- factor(long$rule, levels = names(rules))
 kingdom_cols <- c(Animalia = "#B5342B", Fungi = "#2E6F9E", Plantae = "#3F7A3D")
 ggplot(long, aes(rule, share, colour = kingdom, shape = kingdom, group = kingdom)) +
@@ -431,16 +482,15 @@ removes most:
 t_y <- tally_flags(f, bins = list(year = c(1900, 1950, 2000)),
                    rules = rules["coordinatecleaner_country"])
 t_y$share <- round(t_y$removed_coordinatecleaner_country / t_y$n, 3)
-knitr::kable(t_y[, c("year_bin", "n", "flagged_capital",
-                     "removed_coordinatecleaner_country", "share")])
+shown <- t_y[, c("year_bin", "n", "flagged_capital", "removed_coordinatecleaner_country", "share")]
 ```
 
-| year_bin  |   n | flagged_capital | removed_coordinatecleaner_country | share |
-|:----------|----:|----------------:|----------------------------------:|------:|
-| \<1900    | 267 |              31 |                                37 | 0.139 |
-| 1900-1950 | 605 |              34 |                                53 | 0.088 |
-| 1950-2000 | 846 |               7 |                                38 | 0.045 |
-| \>=2000   | 558 |               3 |                                18 | 0.032 |
+| year      |   n | flagged by capital | removed | share |
+|:----------|----:|-------------------:|--------:|------:|
+| \<1900    | 267 |                 31 |      37 | 0.139 |
+| 1900-1950 | 605 |                 34 |      53 | 0.088 |
+| 1950-2000 | 846 |                  7 |      38 | 0.045 |
+| \>=2000   | 558 |                  3 |      18 | 0.032 |
 
 The rule removes 13.9 % of the records before 1900 and 3.2 % of those
 from 2000 on, because the capital-georeferenced herbarium sheets were
@@ -451,17 +501,16 @@ records without a stated uncertainty form the group `"missing"`:
 
 t_u <- tally_flags(f, bins = list(coordinateuncertaintyinmeters = c(100, 1000)),
                    rules = rules["coordinatecleaner_country"])
-knitr::kable(t_u[, c("coordinateuncertaintyinmeters_bin", "n",
-                     "removed_coordinatecleaner_country",
-                     "kept_coordinatecleaner_country")])
+shown <- t_u[, c("coordinateuncertaintyinmeters_bin", "n",
+                 "removed_coordinatecleaner_country", "kept_coordinatecleaner_country")]
 ```
 
-| coordinateuncertaintyinmeters_bin | n | removed_coordinatecleaner_country | kept_coordinatecleaner_country |
-|:---|---:|---:|---:|
-| \<100 | 775 | 59 | 716 |
-| 100-1000 | 370 | 23 | 347 |
-| \>=1000 | 736 | 36 | 700 |
-| missing | 395 | 28 | 367 |
+| uncertainty (m) |   n | removed | kept |
+|:----------------|----:|--------:|-----:|
+| \<100           | 775 |      59 |  716 |
+| 100-1000        | 370 |      23 |  347 |
+| \>=1000         | 736 |      36 |  700 |
+| missing         | 395 |      28 |  367 |
 
 A threshold on uncertainty is then a filter on the raw column next to
 the rule, for example keeping records with a stated uncertainty of at
@@ -491,15 +540,15 @@ nrow(clean)
 #> [1] 2069
 table(clean$truth)
 #> 
-#>     clean duplicate   negated   rounded 
-#>      1998        40         7        24
+#> background  duplicate    negated    rounded 
+#>       1998         40          7         24
 ```
 
-The `wild` rule keeps 1,998 of the 2,000 clean records and removes every
-injected error except the 40 duplicates, which it does not target, and
-24 of the 30 whole-degree records and the 7 negated records, which no
-record test can see. The 20 records with a fuzzy taxon match are removed
-through `issue_taxon`, although their coordinates are fine.
+The `wild` rule keeps 1,998 of the 2,000 background records and removes
+every injected error except the 40 duplicates, which it does not target,
+and 24 of the 30 whole-degree records and the 7 negated records, which
+no record test can see. The 20 records with a fuzzy taxon match are
+removed through `issue_taxon`, although their coordinates are fine.
 
 ## Practical guidance
 

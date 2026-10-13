@@ -35,15 +35,15 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,28 +71,28 @@
       <div class="section-desc"></div>
 
       <dl><dt><a href="gbif-workflow.html">Cleaning GBIF data</a></dt>
-        <dd>
-        </dd><dt><a href="fossils.html">Cleaning fossil records</a></dt>
-        <dd>
+        <dd><p>A table shaped like a GBIF download, from flagging every test to the retained records, with the catches checked against known errors.</p>
         </dd><dt><a href="rules.html">Choosing a cleaning rule</a></dt>
-        <dd>
+        <dd><p>What each test and each rule removes, by taxon, record age and coordinate precision, and how to apply the rule you choose.</p>
         </dd><dt><a href="on-disk.html">Large tables on disk</a></dt>
-        <dd>
+        <dd><p>Flag a directory of files too large for memory, tally from disk, join flags back to records and resume an interrupted run.</p>
+        </dd><dt><a href="fossils.html">Cleaning fossil records</a></dt>
+        <dd><p>The age tests and PyRate export for Paleobiology Database records.</p>
+        </dd><dt><a href="gazetteers.html">Custom reference points and polygons</a></dt>
+        <dd><p>Replace the reference points or polygons of one test with your own, including species range maps.</p>
       </dd></dl></div>
     <div class="section ">
       <h3>Background</h3>
       <div class="section-desc"></div>
 
       <dl><dt><a href="tests.html">The tests in detail</a></dt>
-        <dd>
-        </dd><dt><a href="reference-data.html">Reference data</a></dt>
-        <dd>
-        </dd><dt><a href="gazetteers.html">Using custom gazetteers</a></dt>
-        <dd>
+        <dd><p>What each test checks, the fields it reads and the arguments that change it.</p>
         </dd><dt><a href="outliers.html">Outliers and dataset tests</a></dt>
-        <dd>
+        <dd><p>The tests that judge a record against the rest of its species or dataset: geographic outliers, converted and gridded datasets, artificial hotspots.</p>
+        </dd><dt><a href="reference-data.html">Reference data</a></dt>
+        <dd><p>Where each reference layer comes from, its version and licence, how the land scale changes the sea test and how the reference is recorded with the flags.</p>
         </dd><dt><a href="coordinatecleaner.html">Compatibility with CoordinateCleaner</a></dt>
-        <dd>
+        <dd><p>Where the two packages agree, how that is tested, where the results differ and why, with timings.</p>
       </dd></dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

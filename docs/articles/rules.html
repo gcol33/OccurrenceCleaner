@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Choosing a cleaning rule">
+<meta name="description" content="What each test and each rule removes, by taxon, record age and coordinate precision, and how to apply the rule you choose.
+">
+<meta property="og:description" content="What each test and each rule removes, by taxon, record age and coordinate precision, and how to apply the rule you choose.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -128,11 +133,21 @@ precision using <code><a href="../reference/tally_flags.html">tally_flags()</a><
 <div class="section level3">
 <h3 id="example-records">Example records<a class="anchor" aria-label="anchor" href="#example-records"></a>
 </h3>
-<p>The example records are terrestrial: random points on land in Europe,
-drawn by rejecting points the <code>sea</code> test flags. Each of 60
-species belongs to one kingdom, and each record has a year and the GBIF
-fields a download carries. Coordinates are rounded to four decimals.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>The example records are terrestrial: 3,000 random points on land in
+Europe, drawn by rejecting points the <code>sea</code> test flags. Each
+of 60 species belongs to one kingdom, and each record has a year and the
+GBIF fields a download carries. Coordinates are rounded to four
+decimals.</p>
+<p>The simulation gives records from before 1970 a larger coordinate
+uncertainty and assigns GBIF’s <code>COORDINATE_ROUNDED</code> issue to
+30% of them, against 3% of later records. The age and uncertainty
+patterns later in the article follow from these two choices. It then
+moves 150 records to within 3 km of five capitals, 40 to (0, 0) and 60
+into the Atlantic, rounded to four decimals like the rest, and appends
+120 exact copies of earlier records.</p>
+<details><summary>
+Simulation code
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -148,10 +163,6 @@ fields a download carries. Coordinates are rounded to four decimals.</p>
 <span>                kingdom <span class="op">=</span> <span class="va">kingdoms</span><span class="op">[</span><span class="va">sp</span><span class="op">]</span>,</span>
 <span>                species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="va">sp</span><span class="op">)</span>,</span>
 <span>                year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1850</span><span class="op">:</span><span class="fl">2024</span>, <span class="va">n</span>, <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, length.out <span class="op">=</span> <span class="fl">175</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The simulation gives records from before 1970 a larger coordinate
-uncertainty and assigns GBIF’s <code>COORDINATE_ROUNDED</code> issue to
-30% of them, against 3% of later records. The age and uncertainty
-patterns later in the article follow from these two choices.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;</span> <span class="fl">1970</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">coordinateUncertaintyInMeters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">old</span>, <span class="fl">8</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -160,9 +171,6 @@ patterns later in the article follow from these two choices.</p>
 <span><span class="va">x</span><span class="op">$</span><span class="va">basisOfRecord</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">15</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"FOSSIL_SPECIMEN"</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">issue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">old</span>, <span class="fl">0.3</span>, <span class="fl">0.03</span><span class="op">)</span>, <span class="st">"COORDINATE_ROUNDED"</span>, <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">issue</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">40</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TAXON_MATCH_FUZZY;GEODETIC_DATUM_ASSUMED_WGS84"</span></span></code></pre></div>
-<p>Move 150 records to within 3 km of five capitals, 40 to (0, 0) and 60
-into the Atlantic, rounded to four decimals like the rest, along with
-exact copies of earlier records.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">capitals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">2.35</span>, <span class="fl">13.40</span>, <span class="op">-</span><span class="fl">3.70</span>, <span class="fl">12.50</span><span class="op">)</span>,</span>
 <span>                       lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.86</span>, <span class="fl">52.52</span>, <span class="fl">40.42</span>, <span class="fl">41.90</span><span class="op">)</span><span class="op">)</span></span>
@@ -174,9 +182,20 @@ exact copies of earlier records.</p>
 <span><span class="va">x</span><span class="op">[</span><span class="va">orig</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"decimalLongitude"</span>, <span class="st">"decimalLatitude"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">decimalLongitude</span><span class="op">[</span><span class="va">atl</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">60</span>, <span class="op">-</span><span class="fl">25</span>, <span class="op">-</span><span class="fl">15</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">decimalLatitude</span><span class="op">[</span><span class="va">atl</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">40</span>, <span class="fl">55</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">120</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 3120</span></span></code></pre></div>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">120</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
+</details><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3120</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"kingdom"</span>, <span class="st">"decimalLongitude"</span>, <span class="st">"decimalLatitude"</span>, <span class="st">"year"</span>,</span>
+<span>           <span class="st">"coordinateUncertaintyInMeters"</span>, <span class="st">"issue"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      species  kingdom decimalLongitude decimalLatitude year</span></span>
+<span><span class="co">#&gt; 1 species 10 Animalia          26.5922         46.0742 2003</span></span>
+<span><span class="co">#&gt; 2  species 1 Animalia          27.4830         55.8274 1935</span></span>
+<span><span class="co">#&gt; 3 species 59  Plantae          23.2179         40.8941 2000</span></span>
+<span><span class="co">#&gt;   coordinateUncertaintyInMeters issue</span></span>
+<span><span class="co">#&gt; 1                            28      </span></span>
+<span><span class="co">#&gt; 2                           592      </span></span>
+<span><span class="co">#&gt; 3                            52</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="flag-once">Flag once<a class="anchor" aria-label="anchor" href="#flag-once"></a>
@@ -186,7 +205,7 @@ and a species, the GBIF issue flags on coordinates and rounding, and the
 fossil test on the basis of record. Without <code>tests</code>,
 <code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> would run every test the columns allow;
 naming them here keeps the comparison to these twelve.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cc_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
 <span>              <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span>, <span class="st">"duplicate"</span><span class="op">)</span></span>
 <span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cc_tests</span>, <span class="st">"issue_coordinate"</span>, <span class="st">"issue_rounded"</span>, <span class="st">"basis_fossil"</span><span class="op">)</span></span>
@@ -206,7 +225,7 @@ logical <code>flag_&lt;test&gt;</code> column per test.</p>
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares of records.
 Without a <code>rules</code> argument it uses one rule,
 <code>all</code>, holding every test that was run.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 3,120 records</span></span>
 <span><span class="co">#&gt;   rule all: removes 745 (23.88 %)</span></span>
@@ -242,7 +261,7 @@ the share of records flagged by more than one of its tests.
 without that test.</p>
 <p>The same numbers as a plot: the full bar is <code>pct</code>, the
 dark part <code>pct_only</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='432.00pt' viewBox='0 0 468.00 432.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -384,7 +403,7 @@ zero axis or near (0, 0), and in the sea. For terrestrial records such
 as these, the three screen for misplaced coordinates; for marine
 species, <code>sea</code> would remove valid records.</p></li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>strict <span class="op">=</span> <span class="va">tests</span>,</span>
 <span>              coordinatecleaner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">cc_tests</span>, <span class="st">"duplicate"</span><span class="op">)</span>,</span>
 <span>              minimal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
@@ -398,7 +417,7 @@ species, <code>sea</code> would remove valid records.</p></li>
 one rule at a time. This plot and the kingdom comparison below use
 <code>coordinatecleaner</code>, the rule applied at the end of this
 article:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">s</span>, rule <span class="op">=</span> <span class="st">"coordinatecleaner"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='324.00pt' viewBox='0 0 468.00 324.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -500,8 +519,9 @@ article:</p>
 </g>
 </g>
 </svg></div></p>
-<p>The records at (0, 0) again count under no <code>only</code>. The
-capital test is the sole reason for most of its records.</p>
+<p>The records at (0, 0) carry several flags, so they contribute zero to
+every <code>only</code> count. The capital test is the sole reason for
+most of its records.</p>
 </div>
 <div class="section level3">
 <h3 id="by-group">By group<a class="anchor" aria-label="anchor" href="#by-group"></a>
@@ -510,7 +530,7 @@ capital test is the sole reason for most of its records.</p>
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, so <code>by</code> splits the shares by any
 column of the records. Each percentage is out of the records in its own
 group.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span>
 <span><span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">test</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span>, <span class="st">"(any)"</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 3,120 records, grouped by kingdom</span></span>
@@ -527,7 +547,7 @@ group.</p>
 <p>With grouping, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> shows a grid of tests by groups,
 shaded by the share each test flags in each group, with the rule itself
 in the bottom row.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span>, by <span class="op">=</span> <span class="st">"kingdom"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='396.00pt' viewBox='0 0 468.00 396.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -667,7 +687,7 @@ class.</p>
 of the three rules that includes <code>issue_rounded</code>, so the
 share of records with GBIF’s rounding issue can be followed across age
 and uncertainty classes.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span>,</span>
 <span>                 bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1900</span>, <span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
@@ -690,7 +710,7 @@ the rate the simulation assigned to older records.</p>
 on its result gives the percentages, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> the grid.
 The tally is the one to keep when the counts will be summed or merged
 later.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">t</span>, rule <span class="op">=</span> <span class="st">"strict"</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='540.00pt' viewBox='0 0 468.00 540.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -898,7 +918,7 @@ later.</p>
 <p>The same works for coordinate uncertainty,
 <code>coordinateUncertaintyInMeters</code>, a distance in metres
 describing how uncertain the stated location is:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"strict"</span><span class="op">]</span>,</span>
 <span>                 bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coordinateUncertaintyInMeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
@@ -926,7 +946,7 @@ up.</p>
 records over the Natural Earth land, coloured by whether the first rule
 of <code>rules</code> removes them. The map returns to
 <code>coordinatecleaner</code>, the rule applied below.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -4163,7 +4183,7 @@ coordinate uncertainty instead.</p>
 from the rule. <code><a href="../reference/flag_mask.html">has_flag()</a></code> gives the logical vector behind
 it, <code>TRUE</code> for every record carrying at least one test of the
 rule.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2846</span></span></code></pre></div>
@@ -4171,7 +4191,7 @@ rule.</p>
 columns, with an explicit choice for missing values. This one keeps
 records from 1950 on, and records whose coordinate uncertainty is at
 most 10 km or not stated:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">u</span> <span class="op">&lt;-</span> <span class="va">clean</span><span class="op">$</span><span class="va">coordinateUncertaintyInMeters</span></span>
 <span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">year</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">clean</span><span class="op">$</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">1950</span> <span class="op">&amp;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span> <span class="op">|</span> <span class="va">u</span> <span class="op">&lt;=</span> <span class="fl">10000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep</span><span class="op">)</span></span>

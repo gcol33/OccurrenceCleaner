@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Cleaning GBIF data">
+<meta name="description" content="A table shaped like a GBIF download, from flagging every test to the retained records, with the catches checked against known errors.
+">
+<meta property="og:description" content="A table shaped like a GBIF download, from flagging every test to the retained records, with the catches checked against known errors.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -114,14 +119,24 @@ catches what it should and nothing else. Installation is covered in <a href="Occ
 <div class="section level2">
 <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
-<p>GBIF’s simple-format downloads and the Parquet snapshot hold the
-Darwin Core terms in lower case (<code>decimallongitude</code>,
-<code>countrycode</code>, <code>basisofrecord</code>, …). The column
-matching in <code><a href="../reference/occ_columns.html">occ_columns()</a></code> is case-insensitive, so these
-names are found without renaming. The simulated table has 2,000 clean
-records spread over the interiors of five European countries, each with
-the right country code:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>The table has 2,276 records in GBIF’s lower-case Darwin Core column
+names (<code>decimallongitude</code>, <code>countrycode</code>,
+<code>basisofrecord</code>, …), which <code><a href="../reference/occ_columns.html">occ_columns()</a></code> matches
+without renaming. Of these, 2,000 are background records drawn at random
+inside a box over each of five European countries, with that country’s
+code. The boxes follow the borders only roughly: two of the Austrian
+points fall across the border in Bavaria, and the country test will say
+so.</p>
+<p>The other 276 records carry planted errors, labelled in a column
+<code>truth</code> so the flags can be checked against it afterwards:
+herbarium sheets georeferenced to the capital where they are kept,
+coordinates typed as zeros, the GBIF headquarters in Copenhagen as a
+default location, swapped and negated coordinates, coordinates entered
+at whole degrees, botanic-garden specimens and cultivated plants, and 40
+exact copies of background records.</p>
+<details><summary>
+Simulation code
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
@@ -145,13 +160,6 @@ the right country code:</p>
 <span>  issue <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">occ</span><span class="op">$</span><span class="va">kingdom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Quercus|Fagus"</span>, <span class="va">occ</span><span class="op">$</span><span class="va">species</span><span class="op">)</span>, <span class="st">"Plantae"</span>,</span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">occ</span><span class="op">$</span><span class="va">species</span> <span class="op">==</span> <span class="st">"Amanita muscaria"</span>, <span class="st">"Fungi"</span>, <span class="st">"Animalia"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Add 236 records with the errors that the tests target, each group
-labelled in a column <code>truth</code> so the flags can be checked
-against it afterwards. Herbarium sheets georeferenced to the capital
-where they are kept, coordinates typed as zeros, the GBIF headquarters
-in Copenhagen as a default location, swapped and negated coordinates,
-coordinates entered at whole degrees, botanic-garden specimens and
-cultivated plants, plus 40 exact copies of clean records:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">err</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">k</span>, <span class="va">truth</span>, <span class="va">lon</span>, <span class="va">lat</span>, <span class="va">code</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">occ</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">k</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -162,7 +170,7 @@ cultivated plants, plus 40 exact copies of clean records:</p>
 <span>  <span class="va">d</span><span class="op">$</span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="va">truth</span></span>
 <span>  <span class="va">d</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">occ</span><span class="op">$</span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="st">"clean"</span></span>
+<span><span class="va">occ</span><span class="op">$</span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="st">"background"</span></span>
 <span><span class="va">capitals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">2.35</span>, <span class="op">-</span><span class="fl">3.70</span>, <span class="fl">13.40</span>, <span class="fl">21.01</span><span class="op">)</span>, lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.86</span>, <span class="fl">40.42</span>, <span class="fl">52.52</span>, <span class="fl">52.23</span><span class="op">)</span>,</span>
 <span>                       code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AT"</span>, <span class="st">"FR"</span>, <span class="st">"ES"</span>, <span class="st">"DE"</span>, <span class="st">"PL"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">60</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -184,11 +192,23 @@ cultivated plants, plus 40 exact copies of clean records:</p>
 <span>  <span class="fu">err</span><span class="op">(</span><span class="fl">20</span>, <span class="st">"fuzzy_taxon"</span>, <span class="va">occ</span><span class="op">$</span><span class="va">decimallongitude</span><span class="op">[</span><span class="fl">72</span><span class="op">:</span><span class="fl">91</span><span class="op">]</span>, <span class="va">occ</span><span class="op">$</span><span class="va">decimallatitude</span><span class="op">[</span><span class="fl">72</span><span class="op">:</span><span class="fl">91</span><span class="op">]</span>,</span>
 <span>      <span class="va">occ</span><span class="op">$</span><span class="va">countrycode</span><span class="op">[</span><span class="fl">72</span><span class="op">:</span><span class="fl">91</span><span class="op">]</span>, issue <span class="op">=</span> <span class="st">"TAXON_MATCH_FUZZY;COORDINATE_ROUNDED"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dups</span> <span class="op">&lt;-</span> <span class="va">occ</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">40</span><span class="op">)</span>, <span class="op">]</span>; <span class="va">dups</span><span class="op">$</span><span class="va">gbifid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"dup-"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span>; <span class="va">dups</span><span class="op">$</span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="st">"duplicate"</span></span>
-<span><span class="va">occ</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">occ</span>, <span class="va">bad</span>, <span class="va">dups</span><span class="op">)</span></span>
+<span><span class="va">occ</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">occ</span>, <span class="va">bad</span>, <span class="va">dups</span><span class="op">)</span></span></code></pre></div>
+</details><p>One record of each kind, and the size of each group:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbifid"</span>, <span class="st">"species"</span>, <span class="st">"decimallongitude"</span>, <span class="st">"decimallatitude"</span>, <span class="st">"countrycode"</span>, <span class="st">"issue"</span>, <span class="st">"truth"</span><span class="op">)</span></span>
+<span><span class="va">occ</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"background"</span>, <span class="st">"capital"</span>, <span class="st">"swapped"</span><span class="op">)</span>, <span class="va">occ</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span>, <span class="va">cols</span><span class="op">]</span></span>
+<span><span class="co">#&gt;          gbifid          species decimallongitude decimallatitude countrycode</span></span>
+<span><span class="co">#&gt; 1             1 Amanita muscaria         14.94154        47.07497          AT</span></span>
+<span><span class="co">#&gt; 10661 capital-1   Lucanus cervus         13.40015        52.50722          DE</span></span>
+<span><span class="co">#&gt; 5161  swapped-1    Quercus robur         47.07497        14.94154          AT</span></span>
+<span><span class="co">#&gt;                             issue      truth</span></span>
+<span><span class="co">#&gt; 1                                 background</span></span>
+<span><span class="co">#&gt; 10661                                capital</span></span>
+<span><span class="co">#&gt; 5161  PRESUMED_SWAPPED_COORDINATE    swapped</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">occ</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     capital       clean  cultivated   duplicate fuzzy_taxon     gbif_hq </span></span>
-<span><span class="co">#&gt;          60        2000          21          40          20          15 </span></span>
+<span><span class="co">#&gt;  background     capital  cultivated   duplicate fuzzy_taxon     gbif_hq </span></span>
+<span><span class="co">#&gt;        2000          60          21          40          20          15 </span></span>
 <span><span class="co">#&gt;      living     negated     rounded     swapped        zero </span></span>
 <span><span class="co">#&gt;          20          25          30          25          20</span></span></code></pre></div>
 <p>The <code>issue</code> column lists GBIF’s issue names separated by
@@ -204,20 +224,18 @@ every test whose columns are in the table. Running a test only adds its
 flags; which records to exclude is chosen later, as a cleaning rule.
 <code><a href="../reference/occ_columns.html">occ_columns()</a></code> only needs to be told the identifier, since
 the other defaults match case-insensitively:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">occ</span>, columns <span class="op">=</span> <span class="fu"><a href="../reference/occ_columns.html">occ_columns</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2276   34</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2276   34</span></span></code></pre></div>
 <p><code><a href="../reference/test_plan.html">test_plan()</a></code> lists the tests that ran and the reason each
 other test did not. The table has coordinates, a species, a country code
 and the three GBIF fields, so the coordinate, GBIF and species outlier
 tests run. The fossil tests, the dataset tests, the habitat tests and
 the range test need columns or range polygons the table does not have;
-the articles on fossils, on outliers and dataset tests, and on custom
-gazetteers cover them:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+the articles on <a href="fossils.html">fossils</a>, on <a href="outliers.html">outliers and dataset tests</a> and on <a href="gazetteers.html">custom reference points and polygons</a> cover
+them:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_plan.html">test_plan</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">all_tests</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">$</span><span class="va">test</span><span class="op">[</span><span class="va">p</span><span class="op">$</span><span class="va">run</span><span class="op">]</span></span>
 <span><span class="va">all_tests</span></span>
@@ -244,15 +262,24 @@ gazetteers cover them:</p>
 <span><span class="co">#&gt; 29          sea_nonmarine          genus</span></span>
 <span><span class="co">#&gt; 30            land_marine          genus</span></span></code></pre></div>
 <p>The result is the input with an integer <code>flags</code> column and
-one logical column per test. The <code>occ_reference</code> attribute
-records which gazetteer versions produced the flags; it is worth storing
-next to any cleaned table that goes into an analysis.</p>
-<p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares per test. With one
-rule holding every test, it gives for each test the records it flags,
-their percentage, and the records for which it is the only flag:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+one logical column per test. A <code>FALSE</code> in a flag column means
+that the test did not flag the record. It does not mean that every test
+examined the record: a test that did not run has no column, and a
+grouped test leaves a species with too few records untested.
+<code><a href="../reference/flag_reference.html">flag_reference()</a></code> returns the label of the reference data
+that produced the flags, with the version of every layer. It is worth
+storing next to any cleaned table that goes into an analysis.</p>
+<details><summary>
+The full reference label
+</summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_reference.html">flag_reference</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+</details><p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares per test. With one
+rule of every test, it gives for each test the records it flags, their
+percentage, and the records for which it is the only flag:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>all <span class="op">=</span> <span class="va">all_tests</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">flagged</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"flagged"</span>, <span class="st">"pct"</span>, <span class="st">"only"</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">2</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">shown</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">flagged</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"flagged"</span>, <span class="st">"pct"</span>, <span class="st">"only"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">test</th>
@@ -372,53 +399,77 @@ their percentage, and the records for which it is the only flag:</p>
 </tbody>
 </table>
 <p>The <code>(any)</code> row is the rule as a whole: 274 of the 2,276
-records carry at least one flag. The <code>only</code> column is the
-number of records a rule would keep if that one test were dropped from
-it.</p>
-<p>Because the errors are labelled, a cross table of the truth against a
-few tests shows which test catches which kind of error, and whether any
-clean record is flagged:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">show</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"capital"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span>, <span class="st">"country_mismatch"</span>, <span class="st">"duplicate"</span>,</span>
-<span>          <span class="st">"issue_coordinate"</span>, <span class="st">"issue_rounded"</span>, <span class="st">"basis_living"</span>, <span class="st">"establishment_managed"</span><span class="op">)</span></span>
-<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">f</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"flag_"</span>, <span class="va">show</span><span class="op">)</span><span class="op">]</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>truth <span class="op">=</span> <span class="va">f</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tab</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"truth"</span>, <span class="va">show</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tab</span><span class="op">)</span></span></code></pre></div>
+records carry at least one flag. The <code>only</code> column counts the
+records flagged by that test alone. These are the records the rule would
+additionally keep if that test were dropped from it.</p>
+<p>Because the errors are labelled, a cross table of tests against the
+truth shows which test catches which kind of error, and whether any
+background record is flagged. Tests are in rows and the error groups in
+columns; the duplicates and the fuzzy taxon matches are left out, since
+one test each catches them:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">show</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span>,</span>
+<span>          <span class="st">"country_mismatch"</span>, <span class="st">"duplicate"</span>, <span class="st">"issue_coordinate"</span>, <span class="st">"basis_living"</span>, <span class="st">"establishment_managed"</span><span class="op">)</span></span>
+<span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"background"</span>, <span class="st">"capital"</span>, <span class="st">"zero"</span>, <span class="st">"gbif_hq"</span>, <span class="st">"swapped"</span>, <span class="st">"negated"</span>, <span class="st">"rounded"</span>,</span>
+<span>            <span class="st">"living"</span>, <span class="st">"cultivated"</span><span class="op">)</span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">show</span>, <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/tapply.html" class="external-link">tapply</a></span><span class="op">(</span><span class="va">f</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"flag_"</span>, <span class="va">t</span><span class="op">)</span><span class="op">]</span><span class="op">]</span>, <span class="va">f</span><span class="op">$</span><span class="va">truth</span>, <span class="va">sum</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">tab</span><span class="op">[</span><span class="va">groups</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
+<col width="22%">
+<col width="11%">
 <col width="8%">
-<col width="3%">
 <col width="5%">
-<col width="12%">
-<col width="2%">
-<col width="12%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
 <col width="7%">
-<col width="12%">
-<col width="10%">
-<col width="9%">
-<col width="15%">
+<col width="11%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">truth</th>
-<th align="right">zero</th>
+<th align="left"></th>
+<th align="right">background</th>
 <th align="right">capital</th>
-<th align="right">gbif_headquarters</th>
-<th align="right">sea</th>
-<th align="right">country_mismatch</th>
-<th align="right">duplicate</th>
-<th align="right">issue_coordinate</th>
-<th align="right">issue_rounded</th>
-<th align="right">basis_living</th>
-<th align="right">establishment_managed</th>
+<th align="right">zero</th>
+<th align="right">gbif_hq</th>
+<th align="right">swapped</th>
+<th align="right">negated</th>
+<th align="right">rounded</th>
+<th align="right">living</th>
+<th align="right">cultivated</th>
 </tr></thead>
 <tbody>
+<tr class="odd">
+<td align="left">zero</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">equal</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
 <tr class="odd">
 <td align="left">capital</td>
 <td align="right">0</td>
 <td align="right">60</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">15</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
@@ -426,134 +477,112 @@ clean record is flagged:</p>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="left">clean</td>
+<td align="left">centroid</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">2</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">cultivated</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">7</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">21</td>
-</tr>
-<tr class="even">
-<td align="left">duplicate</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">40</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">fuzzy_taxon</td>
-<td align="right">0</td>
+<td align="right">9</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">5</td>
 <td align="right">0</td>
-<td align="right">20</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">institution</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="left">gbif_hq</td>
+<td align="left">gbif_headquarters</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">15</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">sea</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">9</td>
 <td align="right">15</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">country_mismatch</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">15</td>
+<td align="right">25</td>
+<td align="right">17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">duplicate</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">15</td>
 <td align="right">10</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">living</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">7</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">20</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">negated</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">15</td>
-<td align="right">17</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">rounded</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
 <td align="right">3</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">7</td>
 </tr>
 <tr class="even">
-<td align="left">swapped</td>
+<td align="left">issue_coordinate</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">9</td>
-<td align="right">25</td>
 <td align="right">0</td>
 <td align="right">25</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">zero</td>
+<td align="left">basis_living</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">20</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">15</td>
-<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">establishment_managed</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">21</td>
 </tr>
 </tbody>
 </table>
@@ -581,13 +610,12 @@ records that GBIF itself rounded a coordinate to five decimals. Low
 precision of this kind is read from
 <code>coordinateuncertaintyinmeters</code> when the source states it;
 these 30 records state none.</p>
-<p>Of the 2,000 clean records, 1,998 carry no flag in these columns. The
-other two lie at 13.0 E, 47.6 to 47.7 N, inside the Austrian box but
-across the border in Bavaria, so <code>country_mismatch</code> is right
-about them. The duplicates among the injected groups (7 cultivated, 7
-living, 10 at the GBIF headquarters) arise because those records copy
-the coordinates of existing records and sometimes draw the same
-species.</p>
+<p>Of the 2,000 background records, 1,998 carry no flag in these
+columns. The other two are the points in Bavaria, at 13.0 E, 47.6 to
+47.7 N, and <code>country_mismatch</code> is right about them. The
+duplicates among the injected groups (7 cultivated, 7 living, 10 at the
+GBIF headquarters) arise because those records copy the coordinates of
+existing records and sometimes draw the same species.</p>
 </div>
 <div class="section level2">
 <h2 id="where-the-flagged-records-are">Where the flagged records are<a class="anchor" aria-label="anchor" href="#where-the-flagged-records-are"></a>
@@ -597,7 +625,7 @@ over the Natural Earth land, coloured by whether a rule removes them.
 With the CoordinateCleaner-equivalent spatial tests as the rule, the
 capital clusters, the point at (0, 0), the swapped records in Arabia and
 East Africa and the negated ones in the Atlantic stand out:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>,</span>
 <span>             <span class="st">"sea"</span>, <span class="st">"country_mismatch"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>spatial <span class="op">=</span> <span class="va">spatial</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2963,7 +2991,7 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 so the overlap between tests decides how much each extra test adds. The
 flag word makes the combinations easy to count: each distinct value of
 <code>flags</code> is one combination of tests.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="va">f</span><span class="op">[</span><span class="va">f</span><span class="op">$</span><span class="va">flags</span> <span class="op">!=</span> <span class="fl">0L</span>, <span class="op">]</span></span>
 <span><span class="va">combo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">$</span><span class="va">flags</span>, <span class="kw">function</span><span class="op">(</span><span class="va">w</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">all_tests</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">all_tests</span>, <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">w</span>, <span class="va">t</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">" + "</span><span class="op">)</span>,</span>
@@ -3056,21 +3084,23 @@ show the range of choices on the same flags:</p>
 <ul>
 <li><p><code>coordinatecleaner</code>: the <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 defaults of <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> without the outlier test
-(zero, equal, capital, centroid, institution, GBIF headquarters,
-sea);</p></li>
+(invalid, zero, equal, capital, centroid, institution, GBIF
+headquarters, sea), the same rule as in <a href="rules.html">Choosing a
+cleaning rule</a>;</p></li>
 <li><p><code>coordinatecleaner_country</code>:
 <code>coordinatecleaner</code> plus the country check;</p></li>
 <li><p><code>coordinatecleaner_gbif</code>:
 <code>coordinatecleaner_country</code> plus GBIF’s coordinate and taxon
 warnings;</p></li>
-<li><p><code>wild</code>: <code>coordinatecleaner_gbif</code> plus
-living specimens and cultivated or managed individuals;</p></li>
+<li><p><code>wild</code>: <code>coordinatecleaner_gbif</code>, and also
+excludes living specimens and cultivated or managed
+individuals;</p></li>
 <li><p><code>strict</code>: every test, including duplicates and GBIF’s
 rounding note.</p></li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  coordinatecleaner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
+<span>  coordinatecleaner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
 <span>                        <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner</span>,</span>
 <span>                                     <span class="st">"country_mismatch"</span><span class="op">)</span></span>
@@ -3079,33 +3109,56 @@ rounding note.</p></li>
 <span><span class="va">rules</span><span class="op">$</span><span class="va">wild</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner_gbif</span>,</span>
 <span>                <span class="st">"basis_living"</span>, <span class="st">"establishment_managed"</span><span class="op">)</span></span>
 <span><span class="va">rules</span><span class="op">$</span><span class="va">strict</span> <span class="op">&lt;-</span> <span class="va">all_tests</span></span>
-<span><span class="va">t_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t_all</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"removed_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">t_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ladder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>rule <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span>,</span>
+<span>                     removed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">t_all</span><span class="op">[</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"removed_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>                     kept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">t_all</span><span class="op">[</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"kept_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ladder</span><span class="op">$</span><span class="va">added</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ladder</span><span class="op">$</span><span class="va">removed</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">ladder</span><span class="op">$</span><span class="va">removed</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="4%">
-<col width="20%">
-<col width="27%">
-<col width="25%">
-<col width="10%">
-<col width="12%">
-</colgroup>
 <thead><tr class="header">
-<th align="right">n</th>
-<th align="right">removed_coordinatecleaner</th>
-<th align="right">removed_coordinatecleaner_country</th>
-<th align="right">removed_coordinatecleaner_gbif</th>
-<th align="right">removed_wild</th>
-<th align="right">removed_strict</th>
+<th align="left">rule</th>
+<th align="right">tests</th>
+<th align="right">removed</th>
+<th align="right">kept</th>
+<th align="right">added</th>
 </tr></thead>
-<tbody><tr class="odd">
-<td align="right">2276</td>
+<tbody>
+<tr class="odd">
+<td align="left">coordinatecleaner</td>
+<td align="right">8</td>
 <td align="right">125</td>
+<td align="right">2151</td>
+<td align="right">125</td>
+</tr>
+<tr class="even">
+<td align="left">coordinatecleaner_country</td>
+<td align="right">9</td>
 <td align="right">146</td>
+<td align="right">2130</td>
+<td align="right">21</td>
+</tr>
+<tr class="odd">
+<td align="left">coordinatecleaner_gbif</td>
+<td align="right">11</td>
 <td align="right">166</td>
+<td align="right">2110</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">wild</td>
+<td align="right">13</td>
 <td align="right">207</td>
+<td align="right">2069</td>
+<td align="right">41</td>
+</tr>
+<tr class="odd">
+<td align="left">strict</td>
+<td align="right">21</td>
 <td align="right">274</td>
-</tr></tbody>
+<td align="right">2002</td>
+<td align="right">67</td>
+</tr>
+</tbody>
 </table>
 <p>The ladder removes 125 records under <code>coordinatecleaner</code>
 and 274 under <code>strict</code>. The country check adds 21, the GBIF
@@ -3120,7 +3173,7 @@ test: the full bar is the share the test flags, the dark part the share
 for which it is the only reason the rule removes the record. A test with
 a long light bar and a short dark one mostly flags records that other
 tests in the rule remove anyway:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner_gbif"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='288.00pt' viewBox='0 0 468.00 288.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -3159,16 +3212,17 @@ tests in the rule remove anyway:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyODguMDA=)'>
-<rect x='173.88' y='193.69' width='6.11' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='178.43' width='42.74' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='163.18' width='45.79' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='147.93' width='61.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='132.67' width='61.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='117.42' width='61.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='102.16' width='76.31' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='86.91' width='134.31' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='71.65' width='228.94' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='56.40' width='241.15' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='194.86' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='181.02' width='6.11' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='167.17' width='42.74' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='153.32' width='45.79' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='139.48' width='61.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='125.63' width='61.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='111.78' width='61.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='97.94' width='76.31' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='84.09' width='134.31' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='70.25' width='228.94' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='56.40' width='241.15' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <text x='312.54' y='276.24' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>% of records</text>
 <line x1='173.88' y1='212.40' x2='382.30' y2='212.40' style='stroke-width: 0.75;' />
 <line x1='173.88' y1='212.40' x2='173.88' y2='220.80' style='stroke-width: 0.75;' />
@@ -3179,36 +3233,39 @@ tests in the rule remove anyway:</p>
 <text x='243.35' y='242.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1</text>
 <text x='312.83' y='242.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
 <text x='382.30' y='242.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
-<rect x='173.88' y='193.69' width='3.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='178.43' width='15.26' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='163.18' width='0.00' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='147.93' width='0.00' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='132.67' width='0.00' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='117.42' width='61.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='102.16' width='0.00' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='86.91' width='3.05' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='71.65' width='152.63' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='56.40' width='15.26' height='12.71' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<text x='167.16' y='205.06' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
-<text x='167.16' y='189.80' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
-<text x='167.16' y='174.55' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
-<text x='167.16' y='159.29' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
-<text x='167.16' y='144.04' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
-<text x='167.16' y='128.78' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_taxon</text>
-<text x='167.16' y='113.53' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_coordinate</text>
-<text x='167.16' y='98.28' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>sea</text>
-<text x='167.16' y='83.02' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
-<text x='167.16' y='67.77' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>country_mismatch</text>
-<text x='188.39' y='203.38' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.09</text>
-<text x='225.02' y='188.13' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.62</text>
-<text x='228.07' y='172.88' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.66</text>
-<text x='243.33' y='157.62' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
-<text x='243.33' y='142.37' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
-<text x='243.33' y='127.11' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
-<text x='258.59' y='111.86' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.10</text>
-<text x='316.59' y='96.60' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
-<text x='411.22' y='81.35' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.30</text>
-<text x='423.43' y='66.10' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.47</text>
+<rect x='173.88' y='194.86' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='181.02' width='3.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='167.17' width='15.26' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='153.32' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='139.48' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='125.63' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='111.78' width='61.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='97.94' width='0.00' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='84.09' width='3.05' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='70.25' width='152.63' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='56.40' width='15.26' height='11.54' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<text x='167.16' y='205.64' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
+<text x='167.16' y='191.80' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
+<text x='167.16' y='177.95' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>centroid</text>
+<text x='167.16' y='164.10' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
+<text x='167.16' y='150.26' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>zero</text>
+<text x='167.16' y='136.41' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>equal</text>
+<text x='167.16' y='122.57' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_taxon</text>
+<text x='167.16' y='108.72' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>issue_coordinate</text>
+<text x='167.16' y='94.87' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>sea</text>
+<text x='167.16' y='81.03' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
+<text x='167.16' y='67.18' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>country_mismatch</text>
+<text x='182.28' y='203.97' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.00</text>
+<text x='188.39' y='190.13' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.09</text>
+<text x='225.02' y='176.28' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.62</text>
+<text x='228.07' y='162.43' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.66</text>
+<text x='243.33' y='148.59' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
+<text x='243.33' y='134.74' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
+<text x='243.33' y='120.89' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.88</text>
+<text x='258.59' y='107.05' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.10</text>
+<text x='316.59' y='93.20' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
+<text x='411.22' y='79.36' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.30</text>
+<text x='423.43' y='65.51' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.47</text>
 <text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner_gbif removes 7.3 % of 2,276 records</text>
 </g>
 <defs>
@@ -3227,65 +3284,58 @@ tests in the rule remove anyway:</p>
 <p><code><a href="../reference/tally_flags.html">tally_flags()</a></code> returns <code>removed_&lt;rule&gt;</code>
 and <code>kept_&lt;rule&gt;</code> for every rule, plus
 <code>flagged_&lt;test&gt;</code> for every test, per group. Grouped by
-kingdom it shows whether a rule hits one group harder than another:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">t_k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span></span>
-<span><span class="va">t_k</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"share_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">t_k</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"removed_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="op">/</span> <span class="va">t_k</span><span class="op">$</span><span class="va">n</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t_k</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kingdom"</span>, <span class="st">"n"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"share_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+kingdom it shows whether a rule hits one group harder than another. The
+share of each kingdom’s records that each rule removes, rules in
+rows:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">t_k</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">t_k</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"removed_"</span>, <span class="va">r</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">t_k</span><span class="op">$</span><span class="va">n</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">share</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">t_k</span><span class="op">$</span><span class="va">kingdom</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="7%">
-<col width="3%">
-<col width="19%">
-<col width="26%">
-<col width="23%">
-<col width="9%">
-<col width="10%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">kingdom</th>
-<th align="right">n</th>
-<th align="right">share_coordinatecleaner</th>
-<th align="right">share_coordinatecleaner_country</th>
-<th align="right">share_coordinatecleaner_gbif</th>
-<th align="right">share_wild</th>
-<th align="right">share_strict</th>
+<th align="left"></th>
+<th align="right">Animalia</th>
+<th align="right">Fungi</th>
+<th align="right">Plantae</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Animalia</td>
-<td align="right">897</td>
+<td align="left">coordinatecleaner</td>
 <td align="right">0.062</td>
-<td align="right">0.072</td>
-<td align="right">0.085</td>
-<td align="right">0.109</td>
-<td align="right">0.132</td>
+<td align="right">0.028</td>
+<td align="right">0.061</td>
 </tr>
 <tr class="even">
-<td align="left">Fungi</td>
-<td align="right">461</td>
-<td align="right">0.028</td>
+<td align="left">coordinatecleaner_country</td>
+<td align="right">0.072</td>
 <td align="right">0.035</td>
-<td align="right">0.043</td>
-<td align="right">0.063</td>
-<td align="right">0.102</td>
+<td align="right">0.071</td>
 </tr>
 <tr class="odd">
-<td align="left">Plantae</td>
-<td align="right">918</td>
-<td align="right">0.061</td>
-<td align="right">0.071</td>
+<td align="left">coordinatecleaner_gbif</td>
+<td align="right">0.085</td>
+<td align="right">0.043</td>
 <td align="right">0.076</td>
+</tr>
+<tr class="even">
+<td align="left">wild</td>
+<td align="right">0.109</td>
+<td align="right">0.063</td>
 <td align="right">0.087</td>
+</tr>
+<tr class="odd">
+<td align="left">strict</td>
+<td align="right">0.132</td>
+<td align="right">0.102</td>
 <td align="right">0.119</td>
 </tr>
 </tbody>
 </table>
 <p>The same table as a figure, one line per kingdom across the rule
 ladder:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="va">t_k</span><span class="op">$</span><span class="va">kingdom</span>, rule <span class="op">=</span> <span class="va">r</span>, share <span class="op">=</span> <span class="va">t_k</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"share_"</span>, <span class="va">r</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>kingdom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">share</span><span class="op">)</span>, rule <span class="op">=</span> <span class="va">r</span>, share <span class="op">=</span> <span class="va">share</span><span class="op">[</span>, <span class="va">r</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">long</span><span class="op">$</span><span class="va">rule</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">long</span><span class="op">$</span><span class="va">rule</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">kingdom_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Animalia <span class="op">=</span> <span class="st">"#B5342B"</span>, Fungi <span class="op">=</span> <span class="st">"#2E6F9E"</span>, Plantae <span class="op">=</span> <span class="st">"#3F7A3D"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">rule</span>, <span class="va">share</span>, colour <span class="op">=</span> <span class="va">kingdom</span>, shape <span class="op">=</span> <span class="va">kingdom</span>, group <span class="op">=</span> <span class="va">kingdom</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -3411,25 +3461,17 @@ ladder:</p>
 columns and are cut into bins at tally time, so the same flags support
 any age or precision threshold. Grouping by year bin shows where a rule
 removes most:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1900</span>, <span class="fl">1950</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                   rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner_country"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">t_y</span><span class="op">$</span><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">t_y</span><span class="op">$</span><span class="va">removed_coordinatecleaner_country</span> <span class="op">/</span> <span class="va">t_y</span><span class="op">$</span><span class="va">n</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t_y</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year_bin"</span>, <span class="st">"n"</span>, <span class="st">"flagged_capital"</span>,</span>
-<span>                     <span class="st">"removed_coordinatecleaner_country"</span>, <span class="st">"share"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">shown</span> <span class="op">&lt;-</span> <span class="va">t_y</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year_bin"</span>, <span class="st">"n"</span>, <span class="st">"flagged_capital"</span>, <span class="st">"removed_coordinatecleaner_country"</span>, <span class="st">"share"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="14%">
-<col width="5%">
-<col width="22%">
-<col width="48%">
-<col width="8%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">year_bin</th>
+<th align="left">year</th>
 <th align="right">n</th>
-<th align="right">flagged_capital</th>
-<th align="right">removed_coordinatecleaner_country</th>
+<th align="right">flagged by capital</th>
+<th align="right">removed</th>
 <th align="right">share</th>
 </tr></thead>
 <tbody>
@@ -3468,24 +3510,17 @@ from 2000 on, because the capital-georeferenced herbarium sheets were
 simulated with years before 1950. Uncertainty bins work the same way;
 records without a stated uncertainty form the group
 <code>"missing"</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_u</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coordinateuncertaintyinmeters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                   rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner_country"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">t_u</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coordinateuncertaintyinmeters_bin"</span>, <span class="st">"n"</span>,</span>
-<span>                     <span class="st">"removed_coordinatecleaner_country"</span>,</span>
-<span>                     <span class="st">"kept_coordinatecleaner_country"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">shown</span> <span class="op">&lt;-</span> <span class="va">t_u</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coordinateuncertaintyinmeters_bin"</span>, <span class="st">"n"</span>,</span>
+<span>                 <span class="st">"removed_coordinatecleaner_country"</span>, <span class="st">"kept_coordinatecleaner_country"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="33%">
-<col width="3%">
-<col width="33%">
-<col width="30%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">coordinateuncertaintyinmeters_bin</th>
+<th align="left">uncertainty (m)</th>
 <th align="right">n</th>
-<th align="right">removed_coordinatecleaner_country</th>
-<th align="right">kept_coordinatecleaner_country</th>
+<th align="right">removed</th>
+<th align="right">kept</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -3517,7 +3552,7 @@ records without a stated uncertainty form the group
 <p>A threshold on uncertainty is then a filter on the raw column next to
 the rule, for example keeping records with a stated uncertainty of at
 most 1 km:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner_country</span><span class="op">)</span></span>
 <span><span class="va">kept</span> <span class="op">&lt;-</span> <span class="va">kept</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">kept</span><span class="op">$</span><span class="va">coordinateuncertaintyinmeters</span> <span class="op">&lt;=</span> <span class="fl">1000</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>records <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, kept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kept</span><span class="op">)</span><span class="op">)</span></span>
@@ -3531,20 +3566,20 @@ most 1 km:</p>
 flags stay attached, so a later analysis can still tell which tests the
 kept records passed and can tighten the rule without rerunning
 anything:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rules</span><span class="op">$</span><span class="va">wild</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2069</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     clean duplicate   negated   rounded </span></span>
-<span><span class="co">#&gt;      1998        40         7        24</span></span></code></pre></div>
-<p>The <code>wild</code> rule keeps 1,998 of the 2,000 clean records and
-removes every injected error except the 40 duplicates, which it does not
-target, and 24 of the 30 whole-degree records and the 7 negated records,
-which no record test can see. The 20 records with a fuzzy taxon match
-are removed through <code>issue_taxon</code>, although their coordinates
-are fine.</p>
+<span><span class="co">#&gt; background  duplicate    negated    rounded </span></span>
+<span><span class="co">#&gt;       1998         40          7         24</span></span></code></pre></div>
+<p>The <code>wild</code> rule keeps 1,998 of the 2,000 background
+records and removes every injected error except the 40 duplicates, which
+it does not target, and 24 of the 30 whole-degree records and the 7
+negated records, which no record test can see. The 20 records with a
+fuzzy taxon match are removed through <code>issue_taxon</code>, although
+their coordinates are fine.</p>
 </div>
 <div class="section level2">
 <h2 id="practical-guidance">Practical guidance<a class="anchor" aria-label="anchor" href="#practical-guidance"></a>

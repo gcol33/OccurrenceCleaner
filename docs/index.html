@@ -60,15 +60,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -105,15 +105,15 @@
 <p align="center">
 <img src="reference/figures/OccurrenceCleaner-hero.png" alt="World map of 145 million GBIF records from the snapshot of 2026-10-01 in grey, with the records flagged near museums, herbaria and gardens (0.33 %), at country centroids or capitals (2.1 %) and with zero or equal coordinates (0.09 %) drawn as coloured dots; the zero and equal records form lines along the equator, the prime meridian and the diagonals where latitude equals longitude" width="100%"></p>
 <p>OccurrenceCleaner checks species occurrence records for potential problems, such as coordinates at country centroids or museums, in the sea, or far from other records of the same species.</p>
-<p>The package extends <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019), the R package that defines these tests and runs them on a data frame in memory. OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk, so they can be applied to a full snapshot of the Global Biodiversity Information Facility (GBIF). It also adds tests of its own and expands the reference data.</p>
+<p>The package is an extension of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (Zizka et al. 2019) tailored to large-scale occurrence data. CoordinateCleaner, by Alexander Zizka and co-authors, defines these tests, their default buffers and the options of the outlier and dataset tests, and runs them on a data frame in memory. OccurrenceCleaner runs the same tests as nearest-neighbour queries in C++ and streams tables from disk, so they can be applied to a full snapshot of the Global Biodiversity Information Facility (GBIF). It also adds tests of its own and expands the reference data.</p>
 <p>Each test stores its result as a flag alongside the record. All records remain available, so you can inspect their flags, compare how different combinations of tests affect the dataset, and choose which records to exclude. OccurrenceCleaner supports:</p>
 <ul>
 <li>
-<strong>Large tables.</strong> Ten million records go through the capital proximity test in 1.4 seconds on a desktop machine (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings">timings</a>). A full GBIF snapshot containing billions of records in 288 GB of Parquet files can be processed on a desktop computer using a single R process. Files are processed in chunks, keeping memory use bounded regardless of dataset size, without requiring a cluster. Progress is saved, allowing interrupted runs to resume.</li>
+<strong>Large tables.</strong> Checking ten million records for proximity to capital cities takes 1.4 seconds (<a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html#timings">timings</a>). Chunked processing keeps memory use bounded, allowing billions of species records occupying hundreds of gigabytes to be cleaned on a desktop computer in a single R session. Interrupted runs can resume from saved progress.</li>
 <li>
-<strong>Comparing cleaning rules.</strong> Compute the flags once, then choose which tests determine whether to exclude a record. <a href="https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html"><code>tally_flags()</code></a> reports how many records each rule removes per taxon, period or precision class, providing counts for a methods section or data paper.</li>
+<strong>Comparing cleaning rules.</strong> Compute flags once, then choose which tests exclude records. <a href="https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.html"><code>tally_flags()</code></a> counts exclusions by rule and by taxon, period or precision class for reporting in a methods section or data paper.</li>
 <li>
-<strong>An extended list of institutions.</strong> Records are checked against 23,895 museum, herbarium and botanic garden locations to identify coordinates that may refer to the institution holding the specimen. The list combines the GBIF Registry of Scientific Collections (GRSciColl), Wikidata, Wikipedia’s natural history museum lists in seven languages, GeoNames, Botanic Gardens Conservation International (BGCI), Index Herbariorum and the GBIF registry, and holds every institution of CoordinateCleaner’s list. It includes 7,665 locations from sources beyond those used by CoordinateCleaner. These additional locations are included by default; you can restrict the test to CoordinateCleaner’s sources (<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points">Extension points</a>).</li>
+<strong>More institution locations.</strong> Records are checked against 23,895 museum, herbarium and botanic garden locations to flag coordinates that may identify where a specimen is held. The list includes all but one of the institutions in CoordinateCleaner’s list plus 7,665 locations from <a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions">additional collection registries and geographic sources</a>. All locations are used by default; the test can also be restricted to CoordinateCleaner’s sources (<a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points">Extension points</a>).</li>
 <li>
 <strong>Checks based on GBIF metadata.</strong> Tests check GBIF’s reported issues, the type of record, and whether the organism is recorded as native or introduced. Habitat information for the recorded genus helps distinguish marine from terrestrial taxa.</li>
 </ul>
@@ -225,8 +225,8 @@
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="st">"gbif_snapshot/occurrence.parquet"</span>,</span>
 <span>                      out <span class="op">=</span> <span class="st">"flags"</span>, keep <span class="op">=</span> <span class="va">keep</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">coordinatecleaner</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>, <span class="st">"institution"</span>,</span>
-<span>                       <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
+<span><span class="va">coordinatecleaner</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"zero"</span>, <span class="st">"equal"</span>, <span class="st">"capital"</span>, <span class="st">"centroid"</span>,</span>
+<span>                       <span class="st">"institution"</span>, <span class="st">"gbif_headquarters"</span>, <span class="st">"sea"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">f</span>, by <span class="op">=</span> <span class="st">"kingdom"</span>, bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">1970</span>, <span class="fl">1990</span>, <span class="fl">2000</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>coordinatecleaner <span class="op">=</span> <span class="va">coordinatecleaner</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>See <a href="https://gillescolling.com/OccurrenceCleaner/articles/on-disk.html">Large tables on disk</a> for details on output files, memory use and resuming interrupted runs.</p>
@@ -251,7 +251,7 @@
 <li>
 <a href="https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html">Reference data</a>: where each layer of reference data comes from and how it differs from CoordinateCleaner’s.</li>
 <li>
-<a href="https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html">Using custom gazetteers</a>: the user’s own points, polygons and species ranges in place of the shipped reference data.</li>
+<a href="https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html">Custom reference points and polygons</a>: the user’s own points, polygons and species ranges in place of the shipped reference data.</li>
 <li>
 <a href="https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a>: function and argument mapping, every documented difference, timings.</li>
 <li>
@@ -286,7 +286,12 @@
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT. <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (GPL-3) is a suggested package used by the equivalence tests and by <code>reference = "CoordinateCleaner"</code>; none of its code or data is bundled. The country centroid points from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are under CC BY-SA.</p>
+<p>OccurrenceCleaner is licensed under MIT. Two external resources have separate licences:</p>
+<ul>
+<li>
+<a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> (GPL-3) is an optional dependency for equivalence tests and <code>reference = "CoordinateCleaner"</code>. Its code and data are not bundled.</li>
+<li>Country centroids from the World Borders Dataset (Bjorn Sandvik, thematicmapping.org) are licensed under CC BY-SA.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
@@ -308,6 +313,7 @@
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">2.0</span>},</span>
 <span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>gillescolling.com<span class="sc">/</span>OccurrenceCleaner<span class="sc">/</span>},</span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  }</span></code></pre></div>
+<p>Download the citation as <a href="https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.bib">BibTeX</a> or <a href="https://gillescolling.com/OccurrenceCleaner/OccurrenceCleaner.ris">RIS</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

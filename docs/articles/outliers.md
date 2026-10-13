@@ -28,6 +28,21 @@ started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.
 
 ## Example data
 
+The table contains 961 records of four alpine plant species from the
+Eastern Alps, distributed across three datasets. *Salix retusa* is
+represented by only six records. Four herbarium records far outside
+their species’ ranges (New York, Sydney, Paris and Moscow) are added,
+plus one *Pinus mugo* record within its range as a control. A column
+`truth` labels each record.
+
+Two datasets of 300 records each are also added, to test for systematic
+coordinate errors. In the first, coordinates were incorrectly converted
+from degrees and minutes to decimal degrees, leaving no fractional part
+above .59. In the second, coordinates fall on the centres of a
+quarter-degree grid.
+
+Simulation code
+
 ``` r
 
 library(OccurrenceCleaner)
@@ -43,18 +58,6 @@ x$datasetKey <- sample(c("survey-a", "survey-b", "herbarium"), nrow(x), TRUE)
 x$truth <- "clean"
 ```
 
-The table contains 961 records of four alpine plant species from the
-Eastern Alps, distributed across three datasets. *Salix retusa* is
-represented by only six records. We add four herbarium records far
-outside their species’ ranges (New York, Sydney, Paris and Moscow), plus
-one *Pinus mugo* record within its range as a control.
-
-We also add two datasets of 300 records each to test for systematic
-coordinate errors. In the first, coordinates were incorrectly converted
-from degrees and minutes to decimal degrees, leaving no fractional part
-above .59. In the second, coordinates fall on the centres of a
-quarter-degree grid.
-
 ``` r
 
 far <- data.frame(species = c("Erica carnea", "Erica carnea", "Gentiana verna", "Pinus mugo", "Pinus mugo"),
@@ -69,6 +72,15 @@ grid <- data.frame(species = sample(sp$species[1:3], 300, TRUE),
                    decimalLatitude = round(runif(300, 45, 48) * 4) / 4 + 0.125,
                    datasetKey = "atlas-grid", truth = "grid")
 x <- rbind(x, far, ddmm, grid)
+```
+
+``` r
+
+head(x, 3)
+#>        species decimalLongitude decimalLatitude datasetKey truth
+#> 1 Erica carnea         11.11345        48.00728   survey-b clean
+#> 2 Erica carnea         12.03989        46.22010   survey-a clean
+#> 3 Erica carnea          9.72517        47.88716   survey-a clean
 table(x$datasetKey, x$truth)
 #>             
 #>              clean ddmm far grid
@@ -95,8 +107,11 @@ table(truth = f$truth, outlier = f$flag_outlier)
 
 Three of the four distant records are flagged, while no clean records
 are flagged. For each species, the test calculates every record’s mean
-distance to all other records of that species. Records exceeding Q75 + 5
-× IQR of these mean distances are flagged, following
+distance to all other records of that species. The threshold is the 75th
+percentile of these mean distances (Q75) plus five times their
+interquartile range (IQR, the spread between the 25th and 75th
+percentiles); a record whose mean distance exceeds it is flagged,
+following
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
 default.
 
@@ -107,10 +122,11 @@ to exceed the threshold. *Salix retusa* is not tested because its six
 distinct locations fall below the default `min_occs = 7`.
 
 The threshold and distance statistic can be changed through `settings`.
-With `method = "mad"`, the threshold is the median + 5 × MAD. With
-`method = "distance"`, a record is flagged if its nearest other record
-of the same species is more than `tdi` kilometres away (1000 km by
-default):
+With `method = "mad"`, the threshold is the median of the mean distances
+plus five times their median absolute deviation (MAD, the median of the
+distances from that median). With `method = "distance"`, a record is
+flagged if its nearest other record of the same species is more than
+`tdi` kilometres away (1000 km by default):
 
 ``` r
 
@@ -144,10 +160,18 @@ plot(f, type = "map", rules = list(outlier = "outlier"))
 
 CoordinateCleaner’s sampling correction leaves outliers unflagged in
 countries with few records, where an isolated record is more likely a
-real but poorly documented population than an error. It needs the number
-of records per country; with that table, `sampling_thresh` keeps an
-outlier flagged only in countries whose record density lies above that
-quantile of all countries’ densities:
+real but poorly documented population than an error. It works in three
+steps:
+
+1.  A table of record counts per country is passed as
+    `gazetteers = list(sampling = ...)`.
+
+2.  Each country’s record density is compared with the densities of all
+    countries in the table. The quantile `sampling_thresh` of these
+    densities is the threshold.
+
+3.  An outlier keeps its flag only when its country’s density lies above
+    the threshold; in the other countries the flag is lifted.
 
 ``` r
 
@@ -166,7 +190,7 @@ Russia, Australia and the United States have the three lowest densities
 in this table, at or below its 25 % quantile, so the outlier flags on
 the records in Moscow, Sydney and New York are lifted. The counts here
 are illustrative. Real ones come from `rgbif::occ_count(country = ...)`
-for each country, or from a tally of the input itself; the table is
+for each country, or from a tally of the input itself. The table is
 recorded in the reference label by size and checksum.
 
 ## Species with many records
@@ -257,7 +281,7 @@ of taking many different values, the coordinates occur at fixed
 intervals. The test identifies this spacing through the autocorrelation
 of latitude and longitude histograms.
 
-In our example, the degree-minute atlas has the conversion error but no
+In this example, the degree-minute atlas has the conversion error but no
 regular grid. The gridded atlas has decimal parts of 0.125, 0.375, 0.625
 and 0.875 on both axes, but no conversion error. Each atlas is therefore
 flagged by only one test.
@@ -282,8 +306,9 @@ Occurrence Inventory (Park et al. 2023): the coordinates that recur most
 often in GBIF plant, bird, insect and mammal records, such as (0, 0), a
 nature reserve or the centre of a mapping-grid square. The inventory’s
 `notes` and `determination` columns say why a point recurs and whether
-it is a real observation site, so it can be filtered before use (see the
-article on custom gazetteers).
+it is a real observation site, so it can be filtered before use ([Custom
+reference points and
+polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md)).
 
 ## One rule over all of them
 
@@ -333,7 +358,7 @@ entire input into memory.
 Records of the same species or dataset are tested together, even when
 spread across files. The results are saved in `group_result.rds` in the
 output directory, so a resumed run can skip the group pass. Splitting
-our example table into three files produces the same tally as processing
+the example table into three files produces the same tally as processing
 it as a data frame:
 
 ``` r

@@ -4,9 +4,10 @@ Eight of the tests compare a record with reference data from a shipped
 layer: points (capitals, country and province centroids, biodiversity
 institutions, artificial hotspots) and polygons (land, urban areas,
 countries). The ninth, `range`, needs species range polygons, which the
-user supplies (see the article on custom gazetteers). This article lists
-where each layer comes from, how the package’s own gazetteers compare
-with
+user supplies ([Custom reference points and
+polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.md)).
+This article lists where each layer comes from, how the package’s own
+reference data compare with
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s,
 how much the choice of land scale changes the `sea` test, and how the
 reference version is recorded with the flags. Installation is covered in
@@ -46,22 +47,28 @@ ri <- reference_info()
 | aohi | AHOI (Park et al. 2023) | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG (Rees 2026) | 2026-10-06 | 2026-10-10 |
 
-The factbook version is the commit of the factbook.json mirror,
-shortened here;
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
-gives the full hash. The Wikipedia lists are pinned by page revision: en
-1376233148; de 267938927; fr 240149609; nl 69876533; pt 71307420; ar
-76691072; eo 9165115. IRMNG is cited as Rees, T. (compiler) (2026), The
-Interim Register of Marine and Nonmarine Genera, available from
-<https://www.irmng.org> at VLIZ. The layer `aohi` takes its name from
-CoordinateCleaner’s
-[`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html);
-the inventory’s own abbreviation is AHOI.
+lists each source’s version, file name, download URL, SHA-256 checksum
+and licence.
 
-Each row of
-[`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
-also gives the file name, the download URL, the SHA-256 checksum of the
-source file and the licence. The tests read these layers:
+- The factbook version is the shortened commit hash of the factbook.json
+  mirror.
+  [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md)
+  gives the full hash.
+
+- Wikipedia lists use fixed page revisions: en 1376233148; de 267938927;
+  fr 240149609; nl 69876533; pt 71307420; ar 76691072; eo 9165115.
+
+- The Interim Register of Marine and Nonmarine Genera (IRMNG) is cited
+  as: Rees, T. (compiler) (2026), *The Interim Register of Marine and
+  Nonmarine Genera*, available from [irmng.org](https://www.irmng.org)
+  at VLIZ.
+
+- The layer name `aohi` follows CoordinateCleaner’s
+  [`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html).
+  The inventory itself uses the abbreviation AHOI.
+
+The tests use the following layers:
 
 | test | reference data |
 |:---|:---|
@@ -75,6 +82,11 @@ source file and the licence. The tests read these layers:
 | country_mismatch | Natural Earth admin-0 countries 1:50 million |
 | sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
 
+The sections below give the provenance of each layer: its sources, their
+licences and retrieval dates, and how the points were matched or placed.
+
+### Capitals
+
 The capitals are the capital “geographic coordinates” of the CIA World
 Factbook, the source of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
@@ -83,25 +95,39 @@ profile, 232 in all. The Natural Earth admin-0 capitals, alternative
 capitals and capitals of dependent territories (243) are added with
 `extension` `TRUE`.
 
-The country centroids come from the three sources CoordinateCleaner’s
-table is compiled from, each taken from the source itself: the
-“Geographic coordinates” of the CIA World Factbook (public domain), read
-from the factbook.json mirror of the Factbook country profiles on
-2026-10-11 (275 points); the label points of the World Borders Dataset
-0.3 by Bjorn Sandvik, thematicmapping.org (246 points), under CC BY-SA,
-from the GeoJSON conversion of the dataset at
-github.com/jeffaudi/world-borders-geojson; and every point the GEOLocate
-georeferencing service (geo-locate.org) returns when a country name is
-entered as country and locality, queried on 2026-10-11 for each country
-name of the three tables (548 points). GEOLocate also returns places
-that carry a country’s name; one such place, Niger State in Nigeria for
-“Niger”, lies inside another country more than 100 km from the queried
-one and is left out. The Natural Earth admin-0 polygon centroids,
-computed on the sphere, and label points (516) are added with
-`extension` `TRUE`.
+### Country and province centroids
 
-All Natural Earth layers are in the public domain; the Natural Earth
-terms of use say that “No permission is needed to use Natural Earth.”
+The country centroids come from the three sources CoordinateCleaner’s
+table is compiled from, each taken from the source itself:
+
+- The “Geographic coordinates” of the CIA World Factbook (public
+  domain), read from the factbook.json mirror of the Factbook country
+  profiles on 2026-10-11: 275 points.
+
+- The label points of the World Borders Dataset 0.3 by Bjorn Sandvik,
+  thematicmapping.org, under CC BY-SA, from the GeoJSON conversion of
+  the dataset at github.com/jeffaudi/world-borders-geojson: 246 points.
+
+- Every point the GEOLocate georeferencing service (geo-locate.org)
+  returns when a country name is entered as country and locality,
+  queried on 2026-10-11 for each country name of the three tables: 548
+  points. GEOLocate also returns places that carry a country’s name. One
+  such place, Niger State in Nigeria for “Niger”, lies inside another
+  country more than 100 km from the queried one and is left out.
+
+The Natural Earth admin-0 polygon centroids, computed on the sphere, and
+label points (516) are added with `extension` `TRUE`. The province
+centroids are the Natural Earth admin-1 label points.
+
+### Land, countries and urban areas
+
+The land, country and urban-area polygons are Natural Earth layers at
+the scales the table above gives. All Natural Earth layers are in the
+public domain; the Natural Earth terms of use say that “No permission is
+needed to use Natural Earth.”
+
+### Institutions
+
 The institutions come from the bulk export of GBIF’s Global Registry of
 Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002
 institutions, of which 6,085 have coordinates. The five of these that
@@ -113,98 +139,126 @@ absorbed the Global Registry of Biodiversity Repositories (GRBio) in
 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes
 the registry through its open API and states no separate licence for it.
 
-The institutions are completed from Wikidata, released under CC0,
-queried on 2026-10-10: every item that is a botanical garden, natural
-history museum, zoo, public aquarium or herbarium, or of a subclass of
-one, and has a coordinate location, every museum whose main subject or
-field of work is a natural-history field (geology, paleontology,
-zoology, botany and the like), and the museums of Wikipedia’s “List of
-natural history museums”, the list CoordinateCleaner’s Wikipedia rows
-come from, and of its Arabic, Dutch, Esperanto, French, German and
-Portuguese counterparts (2,331 entries, texts under CC BY-SA 4.0,
-retrieved 2026-10-11) that have Wikidata coordinates of their own: by
-the article the entry links, or, for an entry without one, by the one
-museum item of the entry’s country whose name it is, when the town the
-entry names lies within 25 km. After duplicate items are dropped these
-are 7,810 points (3,263 botanical gardens, 1,835 museums, 2,609 zoos and
-aquaria, 103 herbaria), none at zero coordinates. The other museums of
-the lists are placed where the list says they are: at the Wikidata
-coordinates of the place the entry links, such as the town or the
-university, if it lies in the entry’s country, or at the GeoNames
-populated place (CC BY 4.0) of the town it names. That gives 700 more
-points (385 from the English list); entries that name no town are left
-out. The three places CoordinateCleaner’s table takes from GeoNames are
-taken from the GeoNames country files (CC BY 4.0). The botanic gardens
-of Botanic Gardens Conservation International (BGCI) come from its
-GardenSearch map (<https://tools.bgci.org/map.php>, all countries),
-retrieved on 2026-10-10: 3,765 gardens, of which 3,653 have coordinates
-and one lies at zero coordinates, leaving 3,652; they are used under the
-BGCI terms (<https://www.bgci.org/terms-and-conditions/>). The `source`
-column of `reference_points("institution")` says which registry each
-point comes from.
+The institution table includes locations from Wikidata, Wikipedia,
+GeoNames and Botanic Gardens Conservation International (BGCI). The
+`source` column of `reference_points("institution")` identifies the
+source of each point.
 
-Two more registries are read whole, both on 2026-10-13. Index
-Herbariorum, the herbarium registry of the New York Botanical Garden,
-gives a location for 4,805 herbaria; the 1,062 that GRSciColl does not
-place under the same herbarium code are added. The GBIF registry gives
-coordinates for 2,468 of its 3,639 publishing organisations, and all of
-them are added.
+Wikidata (CC0, queried 2026-10-10) supplies coordinates for:
 
-Every further institution of CoordinateCleaner’s table with coordinates
-is then placed from its name, city and country. These are the
-institutions that no row above holds under their name, under the full
-Index Herbariorum name of a herbarium, or under an alternative or
-collection name GRSciColl gives. They are looked up in turn:
+- Botanical gardens, natural history museums, zoos, public aquaria and
+  herbaria, including items in subclasses of these categories.
 
-1.  in Wikidata, by the full name or the part before the first comma;
+- Museums whose main subject or field of work is a natural-history
+  discipline, such as geology, paleontology, zoology or botany.
 
-2.  in OpenStreetMap through Nominatim, taking a result whose name holds
-    at least half the institution’s words, or one within 25 km of
-    CoordinateCleaner’s point;
+- Museums in Wikipedia’s English “List of natural history museums”,
+  which supplies CoordinateCleaner’s Wikipedia entries, and its Arabic,
+  Dutch, Esperanto, French, German and Portuguese counterparts.
 
-3.  at the GeoNames populated place of the city CoordinateCleaner or
-    GRSciColl lists for it.
+The Wikipedia lists contain 2,331 entries (CC BY-SA 4.0, retrieved
+2026-10-11). Entries are matched to Wikidata through their linked
+articles. Entries without an article are matched when a single museum
+item in the same country has the corresponding name and lies within 25
+km of the named town.
 
-When a source returns several candidates, the one nearest
-CoordinateCleaner’s point is taken, but the coordinates are always the
-source’s. An institution none of these places is held when a shipped
-point within 25 km carries at least 60 % of its name’s words. Otherwise
-it gets the populated place named in its name, or, as a last resort, the
-populated place of its country nearest CoordinateCleaner’s point. These
-rows carry `source` “CoordinateCleaner list”, and `master_source` says
-how each was placed.
+After removing duplicate Wikidata items, these sources provide 7,810
+points: 3,263 botanical gardens, 1,835 museums, 2,609 zoos and aquaria,
+and 103 herbaria. None has zero coordinates.
 
-The genus habitats of `sea_nonmarine` and `land_marine` come from the
-Interim Register of Marine and Nonmarine Genera (IRMNG), Darwin Core
-archive of 2026-10-06, under CC BY 4.0; cite it as Rees, T. (compiler)
-(2026). The Interim Register of Marine and Nonmarine Genera. Available
-from <https://www.irmng.org> at VLIZ. IRMNG sets marine, brackish,
-freshwater and terrestrial flags per name; the package classes 296,474
-genera as not marine and 21,891 as only marine, keyed by kingdom, by the
-rule in
-[`?reference_habitat`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md).
+Museums without their own Wikidata coordinates are located using the
+place named in the Wikipedia entry. This is either the Wikidata location
+of a linked town or university, checked against the entry’s country, or
+a GeoNames populated place matching the named town (CC BY 4.0). This
+adds 700 points, including 385 from the English list. Entries without a
+town are omitted.
 
-The Artificial Hotspot Occurrence Inventory (AHOI) of Park, Xie,
-Thammavong, Tulaiha and Feng ([2023](https://doi.org/10.1111/jbi.14543))
-lists the coordinates that recur most often in GBIF records of plants,
-birds, insects and mammals, with the reason each recurs: 154 plant, 51
-bird, 51 insect and 52 mammal points. It is built from the authors’
-deposit on Dryad
-([doi:10.5061/dryad.v41ns1s0p](https://doi.org/10.5061/dryad.v41ns1s0p)),
-released under CC0, and keeps 308 points with coordinates.
-CoordinateCleaner’s bundled `aohi` table has 309; the two share 303
-points, and the others differ in a few bird points and one plant
-coordinate (42.26 N there, 42.20 N in the deposit).
+The three GeoNames locations in CoordinateCleaner’s table come from the
+GeoNames country files (CC BY 4.0).
 
-The layers are rebuilt from the sources CoordinateCleaner itself draws
-on, by the scripts in `data-raw/` of the source repository.
+BGCI’s [GardenSearch map](https://tools.bgci.org/map.php), retrieved for
+all countries on 2026-10-10, lists 3,765 gardens. Of these, 3,653 have
+coordinates; removing one at zero coordinates leaves 3,652 points. These
+are used under the [BGCI
+terms](https://www.bgci.org/terms-and-conditions/).
 
-## How the gazetteers differ from CoordinateCleaner’s
+Two further registries were downloaded in full on 2026-10-13:
 
-The package gazetteers describe the same places as
+- Index Herbariorum, the New York Botanical Garden’s herbarium registry,
+  provides locations for 4,805 herbaria. The table adds the 1,062 for
+  which GRSciColl lacks coordinates under the same herbarium code.
+
+- The GBIF registry provides coordinates for 2,468 of its 3,639
+  publishing organisations. All 2,468 are added.
+
+The remaining institutions with coordinates in CoordinateCleaner’s table
+are located using their name, city and country. An institution is
+already represented if an entry matches its name, its full Index
+Herbariorum name, or an alternative or collection name recorded by
+GRSciColl.
+
+Each remaining institution is looked up in this order:
+
+1.  Wikidata, using its full name or the part before the first comma.
+
+2.  OpenStreetMap through Nominatim, accepting a result that matches at
+    least half the institution’s name words or lies within 25 km of
+    CoordinateCleaner’s point.
+
+3.  GeoNames, using the city listed by CoordinateCleaner or GRSciColl.
+
+When several candidates are returned, the candidate nearest
+CoordinateCleaner’s point is selected. Coordinates come from the
+selected source.
+
+If these searches find no location, the institution is considered
+represented when an existing point lies within 25 km and matches at
+least 60% of its name words. Otherwise, it is assigned to the populated
+place mentioned in its name or, as a last resort, the populated place in
+its country nearest CoordinateCleaner’s point. These entries have
+`source = "CoordinateCleaner list"`; `master_source` records how they
+were located.
+
+### Genus habitats
+
+The habitat tests `sea_nonmarine` and `land_marine` use genus
+classifications from the Interim Register of Marine and Nonmarine Genera
+(IRMNG), supplied as a Darwin Core archive dated 2026-10-06 under CC BY
+4.0. IRMNG records marine, brackish, freshwater and terrestrial flags
+for each name. Following the rule in
+[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md),
+the package classifies 296,474 genera as nonmarine and 21,891 as
+exclusively marine, with kingdom used to distinguish names.
+
+The citation is: Rees, T. (compiler) (2026). *The Interim Register of
+Marine and Nonmarine Genera*. Available from
+[irmng.org](https://www.irmng.org) at VLIZ.
+
+### Artificial hotspots
+
+The Artificial Hotspot Occurrence Inventory (AHOI; [Park, Xie,
+Thammavong, Tulaiha and Feng, 2023](https://doi.org/10.1111/jbi.14543))
+identifies coordinates that recur most often in GBIF records and records
+why they recur. The authors’ [Dryad
+deposit](https://doi.org/10.5061/dryad.v41ns1s0p), released under CC0,
+supplies 308 points with coordinates: 154 for plants, 51 for birds, 51
+for insects and 52 for mammals.
+
+CoordinateCleaner’s bundled `aohi` table contains 309 points. The two
+datasets share 303 points; differences involve a few bird locations and
+one plant latitude, recorded as 42.26° N in CoordinateCleaner and 42.20°
+N in the deposit.
+
+Scripts in the source repository’s `data-raw/` directory rebuild the
+layers from their source datasets.
+
+## How the reference data differ from CoordinateCleaner’s
+
+The package’s reference points describe the same places as
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 3.0.1’s `countryref` and `institutions` tables, but they are not the
-same tables. Measured on 2026-10-09:
+same tables. Counts as of 2026-10-13, the retrieval date of the last two
+institution registries:
 
 | gazetteer | CoordinateCleaner | OccurrenceCleaner |
 |:---|:---|:---|
@@ -213,67 +267,72 @@ same tables. Measured on 2026-10-09:
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
 | institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 23,895 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames, 1,062 Index Herbariorum, 2,468 GBIF registry, 2,120 for the rest of CoordinateCleaner’s list), of which 16,230 from CoordinateCleaner’s sources |
 
-- **Capitals.** 221 of CoordinateCleaner’s 225 capital points are
-  Factbook points of the package’s table rounded to 0.01 degrees, which
-  moves them by up to 523 m. The other four hold values the Factbook has
-  since revised: Bujumbura for Burundi, whose capital it now gives as
-  Gitega; Buenos Aires at 58 40 W, 27 km west of the city, now 58 22 W;
-  Melekeok for Palau, now Ngerulmud; and Rangoon, 1.8 km from its
-  present coordinates. The Natural Earth points add alternative and
-  official capitals that CoordinateCleaner does not hold: Cape Town and
-  Bloemfontein besides Pretoria, Sucre besides La Paz, Naypyidaw besides
-  Yangon, Dodoma besides Dar es Salaam, among others; the test leaves
-  them out when passed the points with `extension` `FALSE`.
+- **Capitals.** Of CoordinateCleaner’s 225 capital points, 221 match
+  this package’s Factbook points when rounded to 0.01 degrees. Rounding
+  shifts their positions by up to 523 m. The remaining four reflect
+  Factbook entries that have since changed: Bujumbura to Gitega for
+  Burundi; Buenos Aires from 58°40′ W to 58°22′ W, correcting a location
+  27 km west of the city; Melekeok to Ngerulmud for Palau; and a 1.8 km
+  coordinate adjustment for Rangoon.
 
-- **Country centroids.** 645 of CoordinateCleaner’s 660 country
-  centroids are points of the package’s table at distance 0. India,
-  Italy and the United Kingdom hold World Borders values that version
-  0.3 of the dataset changed; three GEOLocate points for Macedonia and
-  one for Guinea, at sea at 10 W 5 N, are not returned by GEOLocate
-  today; eight others lie 5 m to 68 km from a shipped point. The Natural
-  Earth points, which CoordinateCleaner does not hold, lie a median of
-  30 km from its centroids and catch records georeferenced to the centre
-  of a country’s polygon; the test leaves them out when passed the
-  points with `extension` `FALSE`.
+  Natural Earth adds alternative and official capitals, including Cape
+  Town and Bloemfontein alongside Pretoria, Sucre alongside La Paz,
+  Naypyidaw alongside Yangon, and Dodoma alongside Dar es Salaam.
+  Selecting `extension = FALSE` excludes these additions.
 
-- **Province centroids.** CoordinateCleaner’s province centroids are
-  Natural Earth admin-1 label points of older releases: 4,566 of its
-  4,645 rows match a unit of release 3.3.0, 4.0.0 or 4.1.0 by code and
-  coordinates. The package takes the same layer from release 5.1.1, so
-  every province point comes from CoordinateCleaner’s source and carries
-  `extension` `FALSE`. 4,591 of CoordinateCleaner’s rows are shipped
-  points at distance 0. Of the other 54, 50 lie more than 10 km from any
-  shipped point: 15 hold coordinates of older releases that Natural
-  Earth has since changed, and 39 match no tagged release.
+- **Country centroids.** Of CoordinateCleaner’s 660 points, 645 match
+  this package’s points exactly. India, Italy and the United Kingdom use
+  World Borders coordinates that changed in version 0.3. GEOLocate no
+  longer returns three points for Macedonia or a point for Guinea
+  located at sea at 10° W, 5° N. The remaining eight points lie between
+  5 m and 68 km from the nearest point in this package.
 
-- **Institutions.** Every institution of CoordinateCleaner’s table with
-  coordinates has a point in the package’s table, except one expert
-  group listed in Antarctica. Of its 9,773 institutions, 6,313 are held
-  under their name and 329 by a nearby point that shares their name’s
-  words. The other 3,130 are placed from their names: 1,052 from
-  Wikidata, 646 from OpenStreetMap, 684 at the town CoordinateCleaner or
-  GRSciColl lists, and 252 at a town their name holds. For 496, no
-  source places the institution itself, and the point is the town
-  nearest CoordinateCleaner’s point.
+  Natural Earth adds polygon centres, which lie a median of 30 km from
+  CoordinateCleaner’s centroids and flag records georeferenced to those
+  centres. Selecting `extension = FALSE` excludes these additions.
 
-  The points still differ, because CoordinateCleaner placed nearly every
-  institution by its own geocoding. It geocoded 641 of its 712 BGCI
-  gardens from their names and addresses, where the package takes BGCI’s
-  own coordinates, and it placed 398 of its Wikipedia museums by hand,
-  to 1 km. Some of its points sit far from the institution: every
-  Iranian university museum, for example, sits at one point in Isfahan
-  there, and the Museo Marino of Boca del Río, Veracruz, in Venezuela.
-  For 32 % of its points a shipped point lies within the 100 m buffer,
-  for 73 % within 1 km and for 91 % within 5 km. The points from sources
-  CoordinateCleaner’s table does not draw on (Wikidata beyond the
-  English list’s museums, and the other language editions of the list)
-  carry `extension` `TRUE` in `reference_points("institution")`, so the
-  test can be run on CoordinateCleaner’s sources alone. With
-  CoordinateCleaner installed, its table can be added at run time (see
-  the article on custom gazetteers).
+- **Province centroids.** CoordinateCleaner uses Natural Earth
+  administrative label points: 4,566 of its 4,645 rows match codes and
+  coordinates in releases 3.3.0, 4.0.0 or 4.1.0. This package uses
+  release 5.1.1. All province points therefore carry
+  `extension = FALSE`, since they come from the same source.
 
-The capital difference shows directly in the flags. Records at a few
-alternative or official capitals, under both references:
+  Of CoordinateCleaner’s rows, 4,591 match this package’s points
+  exactly. Of the remaining 54, 50 lie more than 10 km from any included
+  point: 15 use coordinates Natural Earth has since changed, and 39
+  match no tagged release.
+
+- **Institutions.** This package represents 9,772 of CoordinateCleaner’s
+  9,773 institutions, covering every entry with coordinates except one
+  expert group listed in Antarctica. It matches 6,313 by name and
+  another 329 to nearby points with overlapping name words. The
+  remaining 3,130 are located through Wikidata (1,052), OpenStreetMap
+  (646), the town listed by CoordinateCleaner or GRSciColl (684), or a
+  town mentioned in the institution’s name (252). For 496 institutions,
+  searches found no institution location, so the nearest town to
+  CoordinateCleaner’s point is used.
+
+  Coordinates differ because CoordinateCleaner geocoded nearly all its
+  institutions independently. For example, it located 641 of its 712
+  BGCI gardens from names and addresses; this package uses BGCI’s
+  coordinates. CoordinateCleaner also located 398 Wikipedia museums
+  manually, to 1 km precision.
+
+  Some locations differ substantially. CoordinateCleaner places all
+  Iranian university museums at one point in Isfahan and the Museo
+  Marino of Boca del Río, Veracruz, in Venezuela. Across its institution
+  points, 32% have a point in this package within 100 m, 73% within 1 km
+  and 91% within 5 km.
+
+  Additional Wikidata institutions and museums from Wikipedia’s other
+  language editions carry `extension = TRUE`. Selecting
+  `extension = FALSE` restricts the test to CoordinateCleaner’s sources.
+  With CoordinateCleaner installed, its table can also be added at run
+  time ([Custom reference points and
+  polygons](https://gillescolling.com/OccurrenceCleaner/articles/gazetteers.html#an-extended-point-layer)).
+
+The following example shows how the capital references affect flags for
+records at alternative or official capitals:
 
 ``` r
 
@@ -301,7 +360,7 @@ and only the extension points catch it.
 
 ## Extension points
 
-The capital, country centroid and institution tables also hold points
+The capital, country centroid and institution tables also contain points
 from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
 
 - capitals: 243 Natural Earth capitals, alternative capitals and
@@ -433,15 +492,29 @@ The 0.5-degree zero buffer is in degrees, the others in metres.
 ## Recording the reference
 
 Every flagged data frame carries the reference that produced it, with
-the version of each layer:
+the version of each layer. The printed object shows the short form;
+[`flag_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_reference.md)
+returns the full label, which names every layer with its version,
+snapshot date or page revision:
 
 ``` r
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
-attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"
+f
+#> <occ_flags> 2 records, 2 tests, reference OccurrenceCleaner 0.2.0, land 50
+#>   species decimalLongitude decimalLatitude flags flagged_by
+#> 1       a            16.37           48.21     8    capital
+#> 2       a            16.45           48.21     8    capital
 attr(f, "occ_layout_version")
 #> [1] 4
+```
+
+The full reference label
+
+``` r
+
+flag_reference(f)
+#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed

@@ -90,7 +90,11 @@ record 4 repeats record 3, and record 5 has a longitude of 200 degrees.
 
 A record without a flag has passed only the tests that were run. Record
 3 lies in Vienna but carries no flag, because no test against capitals
-has run yet.
+has run yet. A record can also stay unflagged when a test ran but could
+not judge it: a fossil without an age, or a species with too few records
+for the outlier test. So `FALSE` in a flag column means that the test
+did not flag the record. It does not mean that the record was examined
+and found correct.
 
 Each test also has a logical column, `flag_<test>`, which is `TRUE`
 where the test flagged the record. The `flags` column combines the
@@ -292,11 +296,20 @@ y <- read.csv(csv)
 ```
 
 Columns are found by their Darwin Core names regardless of
-capitalisation. Other names are set with
+capitalisation. The file has none of them, so the call stops:
+
+``` r
+
+flag_occurrences(y)
+#> Error in `apply_plan()`:
+#> ! no test can run on this input: no column `decimalLongitude` and `decimalLatitude` for the coordinates, nor another column a test reads; name the columns with occ_columns(), and see test_plan() for what each test needs
+```
+
+The message names the coordinate columns it looked for and points to
 [`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md),
-and for another file only the
-[`read.csv()`](https://rdrr.io/r/utils/read.table.html) path and these
-names change:
+which maps other names onto the fields the tests read. For another file
+only the [`read.csv()`](https://rdrr.io/r/utils/read.table.html) path
+and these names change:
 
 ``` r
 
@@ -314,43 +327,8 @@ flag_occurrences(y, columns = cols)
 #> 7     Picea abies  13.06 47.08         0
 ```
 
-With the three columns mapped, the same 12 tests run as on `x`.
-
-## Fixing common errors
-
-Data often use other column names than the Darwin Core ones. In this
-example, `y` stores the coordinates as `lon` and `lat` and the species
-as `taxon`. The `columns` argument tells OccurrenceCleaner which columns
-to read.
-
-Running the tests without that mapping produces this error:
-
-``` r
-
-flag_occurrences(y)
-#> Error in `apply_plan()`:
-#> ! no test can run on this input: no column `decimalLongitude` and `decimalLatitude` for the coordinates, nor another column a test reads; name the columns with occ_columns(), and see test_plan() for what each test needs
-```
-
-The message names the coordinate columns it looked for and points to
-[`occ_columns()`](https://gillescolling.com/OccurrenceCleaner/reference/occ_columns.md).
-Passing the mapping `cols` from [Flagging other
-data](#flagging-other-data) fixes the call:
-
-``` r
-
-fy <- flag_occurrences(y, columns = cols)
-print(fy, n = 3)
-#> <occ_flags> 7 records, 12 tests, reference OccurrenceCleaner 0.2.0, land 110
-#> # not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
-#>             taxon   lon   lat     flags          flagged_by
-#> 1   Quercus robur 14.05 47.85         0                    
-#> 2   Quercus robur  0.00  0.00 134217862 zero,equal,sea,aohi
-#> 3 Fagus sylvatica 16.37 48.21       264       capital,urban
-#> # ... 4 more records; summary() for the share each test flags
-```
-
-A mapping that leaves out a column gives no error: the tests that need
+With the three columns mapped, the same 12 tests run as on `x`. A
+mapping that leaves out a column gives no error: the tests that need
 that column do not run. Here the species column is left out:
 
 ``` r
@@ -370,7 +348,10 @@ The header counts 10 tests instead of 12 and lists `species` among the
 missing inputs: the `duplicate` and `outlier` tests did not run. Adding
 `species = "taxon"`, as in `cols`, runs them again.
 
-An unknown test name stops the call before any test runs:
+## Fixing common errors
+
+Two more errors stop a call before anything runs. An unknown test name
+is one:
 
 ``` r
 
@@ -461,33 +442,24 @@ default, so `columns` maps it to `id`:
 out <- flag_occurrences(src, out = tempfile("flags"),
                         columns = occ_columns(id = "id"),
                         keep = "species", verbose = FALSE)
+out
+#> <occ_flagged> 7 records in 2 part(s)
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp0wyG25\flags9868394d273b
+#>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
+#>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
+#>   layout:    v4
+#>   reference: OccurrenceCleaner 0.2.0, land 110
+#>   keep:      species
 ```
 
-For a path, the result describes the output directory instead of holding
-the records. The directory’s files hold the identifier, the `keep`
-columns and the flags of every record.
+For a path, the result describes the output directory instead of
+containing the records. The files in it store the identifier, the `keep`
+columns and the flags of every record, and
 [`tally_flags()`](https://gillescolling.com/OccurrenceCleaner/reference/tally_flags.md)
-reads the directory like a data frame:
-
-``` r
-
-t <- tally_flags(out, by = "species", rules = list(strict = strict))
-t
-#> <occ_tally> 7 records in 4 groups of species, rules: strict
-#>          species n removed_strict kept_strict
-#>  Fagus sylvatica 2              2           0
-#>      Picea abies 1              0           1
-#>      Pinus nigra 2              2           0
-#>    Quercus robur 2              1           1
-#> # summary() for the share each test flags
-```
-
-The counts match the strict rule on the data frame above. On disk the
-`duplicate` test compares each record with all records before it across
-the files, so it finds record 4 as in the data frame. A rerun into the
-same directory skips the files already flagged. [Large tables on
+reads them like a data frame. [Large tables on
 disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.md)
-covers resuming, duplicates across files and reading the flags back.
+continues from here: tallying from disk, duplicates across files,
+joining flags back to records and resuming an interrupted run.
 
 ## Where next
 

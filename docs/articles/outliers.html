@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Outliers and dataset tests">
+<meta name="description" content="The tests that judge a record against the rest of its species or dataset: geographic outliers, converted and gridded datasets, artificial hotspots.
+">
+<meta property="og:description" content="The tests that judge a record against the rest of its species or dataset: geographic outliers, converted and gridded datasets, artificial hotspots.
+">
+<meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg">
 <script>
 (function () {
   var D = String.fromCharCode(36);
@@ -57,15 +62,15 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Workflows</h6></li>
     <li><a class="dropdown-item" href="../articles/gbif-workflow.html">Cleaning GBIF data</a></li>
-    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
     <li><a class="dropdown-item" href="../articles/rules.html">Choosing a cleaning rule</a></li>
     <li><a class="dropdown-item" href="../articles/on-disk.html">Large tables on disk</a></li>
+    <li><a class="dropdown-item" href="../articles/fossils.html">Cleaning fossil records</a></li>
+    <li><a class="dropdown-item" href="../articles/gazetteers.html">Custom reference points and polygons</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Background</h6></li>
     <li><a class="dropdown-item" href="../articles/tests.html">The tests in detail</a></li>
-    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
-    <li><a class="dropdown-item" href="../articles/gazetteers.html">Using custom gazetteers</a></li>
     <li><a class="dropdown-item" href="../articles/outliers.html">Outliers and dataset tests</a></li>
+    <li><a class="dropdown-item" href="../articles/reference-data.html">Reference data</a></li>
     <li><a class="dropdown-item" href="../articles/coordinatecleaner.html">Compatibility with CoordinateCleaner</a></li>
   </ul>
 </li>
@@ -126,7 +131,20 @@ started</a>.</p>
 <div class="section level2">
 <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>The table contains 961 records of four alpine plant species from the
+Eastern Alps, distributed across three datasets. <em>Salix retusa</em>
+is represented by only six records. Four herbarium records far outside
+their species’ ranges (New York, Sydney, Paris and Moscow) are added,
+plus one <em>Pinus mugo</em> record within its range as a control. A
+column <code>truth</code> labels each record.</p>
+<p>Two datasets of 300 records each are also added, to test for
+systematic coordinate errors. In the first, coordinates were incorrectly
+converted from degrees and minutes to decimal degrees, leaving no
+fractional part above .59. In the second, coordinates fall on the
+centres of a quarter-degree grid.</p>
+<details><summary>
+Simulation code
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/OccurrenceCleaner/">OccurrenceCleaner</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
@@ -138,16 +156,6 @@ started</a>.</p>
 <span>             decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">sp</span><span class="op">$</span><span class="va">n</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">sp</span><span class="op">$</span><span class="va">lat</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">sp</span><span class="op">$</span><span class="va">sd</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">datasetKey</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"survey-a"</span>, <span class="st">"survey-b"</span>, <span class="st">"herbarium"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="st">"clean"</span></span></code></pre></div>
-<p>The table contains 961 records of four alpine plant species from the
-Eastern Alps, distributed across three datasets. <em>Salix retusa</em>
-is represented by only six records. We add four herbarium records far
-outside their species’ ranges (New York, Sydney, Paris and Moscow), plus
-one <em>Pinus mugo</em> record within its range as a control.</p>
-<p>We also add two datasets of 300 records each to test for systematic
-coordinate errors. In the first, coordinates were incorrectly converted
-from degrees and minutes to decimal degrees, leaving no fractional part
-above .59. In the second, coordinates fall on the centres of a
-quarter-degree grid.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">far</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Erica carnea"</span>, <span class="st">"Erica carnea"</span>, <span class="st">"Gentiana verna"</span>, <span class="st">"Pinus mugo"</span>, <span class="st">"Pinus mugo"</span><span class="op">)</span>,</span>
 <span>                  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">74.0</span>, <span class="fl">151.2</span>, <span class="fl">2.35</span>, <span class="fl">12.1</span>, <span class="fl">37.6</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40.7</span>, <span class="op">-</span><span class="fl">33.9</span>, <span class="fl">48.86</span>, <span class="fl">47.3</span>, <span class="fl">55.8</span><span class="op">)</span>,</span>
@@ -160,7 +168,13 @@ quarter-degree grid.</p>
 <span>                   decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span> <span class="op">*</span> <span class="fl">4</span><span class="op">)</span> <span class="op">/</span> <span class="fl">4</span> <span class="op">+</span> <span class="fl">0.125</span>,</span>
 <span>                   decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">45</span>, <span class="fl">48</span><span class="op">)</span> <span class="op">*</span> <span class="fl">4</span><span class="op">)</span> <span class="op">/</span> <span class="fl">4</span> <span class="op">+</span> <span class="fl">0.125</span>,</span>
 <span>                   datasetKey <span class="op">=</span> <span class="st">"atlas-grid"</span>, truth <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">far</span>, <span class="va">ddmm</span>, <span class="va">grid</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">far</span>, <span class="va">ddmm</span>, <span class="va">grid</span><span class="op">)</span></span></code></pre></div>
+</details><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        species decimalLongitude decimalLatitude datasetKey truth</span></span>
+<span><span class="co">#&gt; 1 Erica carnea         11.11345        48.00728   survey-b clean</span></span>
+<span><span class="co">#&gt; 2 Erica carnea         12.03989        46.22010   survey-a clean</span></span>
+<span><span class="co">#&gt; 3 Erica carnea          9.72517        47.88716   survey-a clean</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">datasetKey</span>, <span class="va">x</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             </span></span>
 <span><span class="co">#&gt;              clean ddmm far grid</span></span>
@@ -173,7 +187,7 @@ quarter-degree grid.</p>
 <div class="section level2">
 <h2 id="geographic-outliers">Geographic outliers<a class="anchor" aria-label="anchor" href="#geographic-outliers"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>truth <span class="op">=</span> <span class="va">f</span><span class="op">$</span><span class="va">truth</span>, outlier <span class="op">=</span> <span class="va">f</span><span class="op">$</span><span class="va">flag_outlier</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        outlier</span></span>
@@ -184,8 +198,11 @@ quarter-degree grid.</p>
 <span><span class="co">#&gt;   grid    300    0</span></span></code></pre></div>
 <p>Three of the four distant records are flagged, while no clean records
 are flagged. For each species, the test calculates every record’s mean
-distance to all other records of that species. Records exceeding Q75 + 5
-× IQR of these mean distances are flagged, following <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
+distance to all other records of that species. The threshold is the 75th
+percentile of these mean distances (Q75) plus five times their
+interquartile range (IQR, the spread between the 25th and 75th
+percentiles); a record whose mean distance exceeds it is flagged,
+following <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>’s
 default.</p>
 <p>The <em>Gentiana verna</em> record in Paris is not flagged. The
 simulated <em>Gentiana</em> records span about 2 degrees of longitude
@@ -195,10 +212,12 @@ tested because its six distinct locations fall below the default
 <code>min_occs = 7</code>.</p>
 <p>The threshold and distance statistic can be changed through
 <code>settings</code>. With <code>method = "mad"</code>, the threshold
-is the median + 5 × MAD. With <code>method = "distance"</code>, a record
-is flagged if its nearest other record of the same species is more than
-<code>tdi</code> kilometres away (1000 km by default):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+is the median of the mean distances plus five times their median
+absolute deviation (MAD, the median of the distances from that median).
+With <code>method = "distance"</code>, a record is flagged if its
+nearest other record of the same species is more than <code>tdi</code>
+kilometres away (1000 km by default):</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"quantile"</span>, <span class="st">"mad"</span>, <span class="st">"distance"</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">meth</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/tapply.html" class="external-link">tapply</a></span><span class="op">(</span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"outlier"</span>, settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="va">meth</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">flag_outlier</span>,</span>
 <span>         <span class="va">x</span><span class="op">$</span><span class="va">truth</span>, <span class="va">sum</span><span class="op">)</span><span class="op">)</span></span>
@@ -244,7 +263,7 @@ south-west of each degree square. The distance method flags the same
 three far records as the quantile threshold; the Paris record is within
 1000 km of <em>Gentiana</em> records in the Alps. The map shows the
 default result:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;">
@@ -1897,11 +1916,18 @@ default result:</p>
 </svg></div></p>
 <p>CoordinateCleaner’s sampling correction leaves outliers unflagged in
 countries with few records, where an isolated record is more likely a
-real but poorly documented population than an error. It needs the number
-of records per country; with that table, <code>sampling_thresh</code>
-keeps an outlier flagged only in countries whose record density lies
-above that quantile of all countries’ densities:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+real but poorly documented population than an error. It works in three
+steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>A table of record counts per country is passed as
+<code>gazetteers = list(sampling = ...)</code>.</p></li>
+<li><p>Each country’s record density is compared with the densities of
+all countries in the table. The quantile <code>sampling_thresh</code> of
+these densities is the threshold.</p></li>
+<li><p>An outlier keeps its flag only when its country’s density lies
+above the threshold; in the other countries the flag is lifted.</p></li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>country <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"US"</span>, <span class="st">"AU"</span>, <span class="st">"FR"</span>, <span class="st">"RU"</span>, <span class="st">"AT"</span>, <span class="st">"DE"</span>, <span class="st">"IT"</span>, <span class="st">"CH"</span>, <span class="st">"SI"</span><span class="op">)</span>,</span>
 <span>                     records <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4e8</span>, <span class="fl">1.2e8</span>, <span class="fl">1e8</span>, <span class="fl">6e6</span>, <span class="fl">2.5e7</span>, <span class="fl">1.8e8</span>, <span class="fl">5e7</span>, <span class="fl">4e7</span>, <span class="fl">6e6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span><span class="op">)</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sampling <span class="op">=</span> <span class="va">counts</span><span class="op">)</span>,</span>
@@ -1916,7 +1942,7 @@ densities in this table, at or below its 25 % quantile, so the outlier
 flags on the records in Moscow, Sydney and New York are lifted. The
 counts here are illustrative. Real ones come from
 <code>rgbif::occ_count(country = ...)</code> for each country, or from a
-tally of the input itself; the table is recorded in the reference label
+tally of the input itself. The table is recorded in the reference label
 by size and checksum.</p>
 </div>
 <div class="section level2">
@@ -1930,7 +1956,7 @@ cell counts, and the records of the outlier cells are flagged.
 <code>settings = list(outlier = list(thinning = TRUE))</code> uses the
 grid for every species, and <code>thinning_res</code> sets the cell
 size. A species of 15,001 records with one record in Madrid:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">big</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Rhododendron ferrugineum"</span>,</span>
 <span>                  decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">15000</span>, <span class="fl">11</span>, <span class="fl">1.5</span><span class="op">)</span>, <span class="op">-</span><span class="fl">3.7</span><span class="op">)</span>,</span>
 <span>                  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">15000</span>, <span class="fl">46.8</span>, <span class="fl">0.6</span><span class="op">)</span>, <span class="fl">40.4</span><span class="op">)</span><span class="op">)</span></span>
@@ -1946,7 +1972,7 @@ shows the comparison.</p>
 <div class="section level2">
 <h2 id="dataset-tests">Dataset tests<a class="anchor" aria-label="anchor" href="#dataset-tests"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"flag_dataset_ddmm"</span>, <span class="st">"flag_dataset_rounded"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>                       by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">datasetKey</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">all</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -1991,7 +2017,7 @@ three datasets of clean records pass both. The dataset key is
 and can be set with <code>occ_columns(dataset = ...)</code>. Records
 without a key are not tested. The two tests read different signs, which
 the decimal parts of the coordinates show:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">dec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">datasetKey</span>,</span>
 <span>                  lon <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">decimalLongitude</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">1</span>, lat <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">decimalLatitude</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">1</span><span class="op">)</span></span>
@@ -3098,7 +3124,7 @@ test on a 1000 × 1000 grid.</p>
 grid. Instead of taking many different values, the coordinates occur at
 fixed intervals. The test identifies this spacing through the
 autocorrelation of latitude and longitude histograms.</p>
-<p>In our example, the degree-minute atlas has the conversion error but
+<p>In this example, the degree-minute atlas has the conversion error but
 no regular grid. The gridded atlas has decimal parts of 0.125, 0.375,
 0.625 and 0.875 on both axes, but no conversion error. Each atlas is
 therefore flagged by only one test.</p>
@@ -3106,7 +3132,7 @@ therefore flagged by only one test.</p>
 <div class="section level2">
 <h2 id="artificial-hotspots">Artificial hotspots<a class="anchor" aria-label="anchor" href="#artificial-hotspots"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ah</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"aohi"</span><span class="op">)</span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Erica carnea"</span>, decimalLongitude <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">lon</span><span class="op">[</span><span class="va">ah</span><span class="op">$</span><span class="va">taxon</span> <span class="op">==</span> <span class="st">"Plantae"</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.03</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="va">ah</span><span class="op">$</span><span class="va">lat</span><span class="op">[</span><span class="va">ah</span><span class="op">$</span><span class="va">taxon</span> <span class="op">==</span> <span class="st">"Plantae"</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
@@ -3122,13 +3148,12 @@ coordinates that recur most often in GBIF plant, bird, insect and mammal
 records, such as (0, 0), a nature reserve or the centre of a
 mapping-grid square. The inventory’s <code>notes</code> and
 <code>determination</code> columns say why a point recurs and whether it
-is a real observation site, so it can be filtered before use (see the
-article on custom gazetteers).</p>
+is a real observation site, so it can be filtered before use (<a href="gazetteers.html">Custom reference points and polygons</a>).</p>
 </div>
 <div class="section level2">
 <h2 id="one-rule-over-all-of-them">One rule over all of them<a class="anchor" aria-label="anchor" href="#one-rule-over-all-of-them"></a>
 </h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"invalid"</span>, <span class="st">"outlier"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span>, <span class="st">"aohi"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tally_flags.html">tally_flags</a></span><span class="op">(</span><span class="va">all_f</span>, by <span class="op">=</span> <span class="st">"datasetKey"</span>,</span>
 <span>                 rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>grouped <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outlier"</span>, <span class="st">"dataset_ddmm"</span>, <span class="st">"dataset_rounded"</span>, <span class="st">"aohi"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -3234,9 +3259,9 @@ entire input into memory.</p>
 <p>Records of the same species or dataset are tested together, even when
 spread across files. The results are saved in
 <code>group_result.rds</code> in the output directory, so a resumed run
-can skip the group pass. Splitting our example table into three files
+can skip the group pass. Splitting the example table into three files
 produces the same tally as processing it as a data frame:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"parts"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">src</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/write_vtr.html" class="external-link">write_vtr</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">i</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">src</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"part-%d.vtr"</span>, <span class="va">i</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"flags-grouped"</span><span class="op">)</span></span>

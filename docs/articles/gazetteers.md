@@ -1,6 +1,7 @@
-# Using custom gazetteers
+# Custom reference points and polygons
 
-The tests use three kinds of reference data:
+A gazetteer is a table of reference locations: the points or polygons a
+test compares each record with. The tests use three kinds:
 
 - Points marking capitals, centroids, institutions, the GBIF
   headquarters and artificial hotspots.
@@ -10,56 +11,52 @@ The tests use three kinds of reference data:
 - A table of genus habitats, used together with land polygons by the two
   habitat tests.
 
-OccurrenceCleaner ships fixed versions of these reference layers, except
-for species ranges, which users supply. Set
-`reference = "CoordinateCleaner"` to use the corresponding reference
-tables from
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/). To
-supply your own layer for an individual test, use the `gazetteers`
+The package includes all of these except species ranges, which you
+supply.
+
+To change the reference data for all tests at once, set
+`reference = "CoordinateCleaner"`. The tests then read the corresponding
+tables from your
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+installation.
+
+To change it for a single test, pass your own layer in the `gazetteers`
 argument of
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.html).
-This serves the same purpose as the `ref` arguments of
-CoordinateCleaner’s `cc_*()` functions.
+This argument does the job of the `ref` arguments in CoordinateCleaner’s
+test functions.
 
-This article shows how to filter and extend the shipped point tables,
-build polygon layers with [sf](https://r-spatial.github.io/sf/), supply
-a genus habitat table, and inspect how custom reference layers are
-recorded with the flags. Installation is covered in [Get
-started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md);
-the polygon examples also require sf.
+This article shows how to filter, extend or replace the layer of a test
+and how a custom layer is recorded with the flags. Installation is
+covered in [Get
+started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.md).
+The polygon examples also need [sf](https://r-spatial.github.io/sf/).
 
-## Included reference points
+## A filtered point layer
 
+A point layer is any data frame with longitude and latitude columns
+(`lon`/`lat`, `longitude`/`latitude` or
+`decimalLongitude`/`decimalLatitude`, in any case). The simplest custom
+layer is a subset of a shipped one.
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
-returns the points of a proximity test with their attributes:
+returns the points of a proximity test with their attributes; for the
+institutions, `type` gives the kind of institution and `source` the
+registry each point comes from:
 
 ``` r
 
 library(OccurrenceCleaner)
 
-caps <- reference_points("capital")
-head(caps)
-#>         name     country adm0_a3 iso_a2                  class       lon
-#> 1 Oranjestad       Aruba     ABW     AW       Factbook capital -70.03333
-#> 2 Oranjestad       Aruba     ABW     AW Admin-0 region capital -70.02899
-#> 3      Kabul Afghanistan     AFG     AF       Factbook capital  69.18333
-#> 4      Kabul Afghanistan     AFG     AF        Admin-0 capital  69.18131
-#> 5     Luanda      Angola     AGO     AO       Factbook capital  13.21667
-#> 6     Luanda      Angola     AGO     AO        Admin-0 capital  13.23248
-#>         lat             source               key extension
-#> 1 12.516667 CIA World Factbook       factbook:AA     FALSE
-#> 2 12.530384      Natural Earth ne:ABW:Oranjestad      TRUE
-#> 3 34.516667 CIA World Factbook       factbook:AF     FALSE
-#> 4 34.518636      Natural Earth      ne:AFG:Kabul      TRUE
-#> 5 -8.833333 CIA World Factbook       factbook:AO     FALSE
-#> 6 -8.836340      Natural Earth     ne:AGO:Luanda      TRUE
-table(caps$class)
-#> 
-#>        Admin-0 capital    Admin-0 capital alt Admin-0 region capital 
-#>                    202                     13                     28 
-#>       Factbook capital 
-#>                    232
 inst <- reference_points("institution")
+head(inst[, c("name", "type", "source", "lon", "lat")], 3)
+#>                                  name      type                 source     lon
+#> 1         Andorra Recerca + Innovació      <NA>          GBIF registry 1.49218
+#> 2       Andorra Research + Innovation Herbarium              GRSciColl 1.49210
+#> 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner list 1.73361
+#>        lat
+#> 1 42.46876
+#> 2 42.46650
+#> 3 42.54277
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
 #>                           BotanicalGarden 
@@ -76,36 +73,9 @@ head(sort(table(inst$type), decreasing = TRUE))
 #>                                       182
 ```
 
-The institution table joins the GBIF registry of scientific collections
-(GRSciColl), the botanical gardens, natural history museums, zoos,
-aquaria and herbaria of Wikidata, the museums of Wikipedia’s lists of
-natural history museums (the English list and six other language
-editions), the gardens of Botanic Gardens Conservation International
-(BGCI), three GeoNames places, the herbaria of Index Herbariorum that
-GRSciColl does not place, the publishing organisations of the GBIF
-registry, and every further institution of
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-list, placed by its name from Wikidata, OpenStreetMap or GeoNames.
-`source` says which registry each point comes from, `type` what kind of
-institution it is, and `master_source`, for GRSciColl entries, where
-GBIF took the entry from (Index Herbariorum, GRSciColl itself, or the
-GBIF registry); for the Wikipedia museums that the list places only by
-town and for the rows of CoordinateCleaner’s list, it says where the
-coordinates come from. `extension` is `TRUE` for the points from sources
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s own
-table does not draw on (Wikidata beyond the museums of the English list,
-and the other language editions); the rows with `extension` `FALSE`,
-passed as the institution gazetteer, restrict the test to
-CoordinateCleaner’s sources.
-
-## A filtered point gazetteer
-
-A point layer is any data frame with longitude and latitude columns
-(`lon`/`lat`, `longitude`/`latitude` or
-`decimalLongitude`/`decimalLatitude`, in any case). A plant study, for
-example, may want to flag records at herbaria only, since a specimen
-georeferenced to a zoological museum is unlikely in a plant table, and
-use a wider buffer for them:
+A plant study, for example, may want to flag records at herbaria only,
+since a specimen georeferenced to a zoological museum is unlikely in a
+plant table, and use a wider buffer for them:
 
 ``` r
 
@@ -134,7 +104,16 @@ institution: three herbaria, then three museums. The full table flags
 all six at a 1 km buffer; the herbarium table flags only 3, the records
 next to the herbaria.
 
-## An extended point gazetteer
+The same works with the `extension` column. It is `TRUE` for points from
+sources CoordinateCleaner does not use; the rows with `extension`
+`FALSE` restrict a test to CoordinateCleaner’s sources, as [Reference
+data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#extension-points)
+shows for the capitals. That article also lists the sources of every
+layer
+([Institutions](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions)
+for the `source` and `master_source` columns of the institution table).
+
+## An extended point layer
 
 The two capital tables differ: the shipped table has the Factbook
 capitals unrounded and adds Natural Earth’s alternative and official
@@ -145,6 +124,7 @@ records near either:
 
 ``` r
 
+caps <- reference_points("capital")
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
 nrow(both)
 #> [1] 700
@@ -164,12 +144,13 @@ which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.
 
-The institution table is one of them. The shipped table holds every
-institution of CoordinateCleaner’s list, at the coordinates of its
-sources. CoordinateCleaner placed nearly every institution by its own
-geocoding, so its point can mark a different spot of the same
-institution. With CoordinateCleaner installed, the union adds its points
-to the shipped ones at run time:
+The institution table is one of them. The shipped table has all but one
+of the institutions of CoordinateCleaner’s list (the exception is an
+expert group listed in Antarctica), at the coordinates of its sources.
+CoordinateCleaner placed nearly every institution by its own geocoding,
+so its point can mark a different spot of the same institution. With
+CoordinateCleaner installed, the union adds its points to the shipped
+ones at run time:
 
 ``` r
 
@@ -230,15 +211,16 @@ flag_occurrences(z, tests = "sea", gazetteers = list(sea = area))$flag_sea
 #> [1] FALSE FALSE  TRUE  TRUE
 ```
 
-The first two points (Vienna, Innsbruck) lie inside the box, the last
-two (Zurich, Budapest) outside it. The same applies to `urban`, whose
-polygons are the areas to flag, for example a city’s built-up area at a
-finer scale than Natural Earth’s.
+The first two points (Vienna and Innsbruck) lie inside the box; the last
+two (Zurich and Budapest) lie outside. For `urban`, polygons likewise
+define the areas to flag, such as a city’s built-up area mapped in finer
+detail than Natural Earth provides.
 
-For `country_mismatch` the polygons carry codes. Any of the columns
-`iso_a2`, `iso_a3`, `adm0_a3` or `code` (in any case) is read, and the
-record’s code is matched against all of them. Two territories with their
-own codes:
+For `country_mismatch`, polygons also carry country or territory codes
+in columns named `iso_a2`, `iso_a3`, `adm0_a3` or `code`
+(case-insensitive). Each record’s code is checked against all available
+code columns. The following example uses two territories with their own
+codes:
 
 ``` r
 
@@ -273,34 +255,39 @@ ranges <- sf::st_sf(
                         sf::st_polygon(list(rbind(c(30, 40), c(60, 40), c(60, 60), c(30, 60), c(30, 40)))),
                         sf::st_polygon(list(rbind(c(5, 40), c(30, 40), c(30, 52), c(5, 52), c(5, 40)))),
                         crs = 4326))
-r <- data.frame(species = c("Bufo bufo", "Bufo bufo", "Bufo bufo", "Lacerta viridis", "Lacerta viridis", "Rana arvalis"),
-                decimalLongitude = c(10, 45, -20, 15, 15, 100), decimalLatitude = c(50, 50, 50, 45, 55, 10))
+r <- data.frame(species = c("Bufo bufo", "Bufo bufo", "Bufo bufo", "Lacerta viridis", "Lacerta viridis",
+                            "Lacerta viridis", "Rana arvalis"),
+                decimalLongitude = c(10, 45, -20, 15, 15, 15, 100),
+                decimalLatitude = c(50, 50, 50, 45, 52.5, 55, 10))
 data.frame(r, outside = flag_occurrences(r, tests = "range", gazetteers = list(range = ranges))$flag_range,
            outside_100km = flag_occurrences(r, tests = "range", gazetteers = list(range = ranges),
                                             buffers = list(range = 100000))$flag_range)
 #>           species decimalLongitude decimalLatitude outside outside_100km
-#> 1       Bufo bufo               10              50   FALSE         FALSE
-#> 2       Bufo bufo               45              50   FALSE         FALSE
-#> 3       Bufo bufo              -20              50    TRUE          TRUE
-#> 4 Lacerta viridis               15              45   FALSE         FALSE
-#> 5 Lacerta viridis               15              55    TRUE          TRUE
-#> 6    Rana arvalis              100              10   FALSE         FALSE
+#> 1       Bufo bufo               10            50.0   FALSE         FALSE
+#> 2       Bufo bufo               45            50.0   FALSE         FALSE
+#> 3       Bufo bufo              -20            50.0    TRUE          TRUE
+#> 4 Lacerta viridis               15            45.0   FALSE         FALSE
+#> 5 Lacerta viridis               15            52.5    TRUE         FALSE
+#> 6 Lacerta viridis               15            55.0    TRUE          TRUE
+#> 7    Rana arvalis              100            10.0   FALSE         FALSE
 ```
 
 The toad at 45 E lies in the second of its two polygons and is kept; the
-one at 20 W lies in the Atlantic, outside both. The lizard at 55 N is 3
-degrees north of its range and stays flagged with a 100 km buffer. *Rana
-arvalis* has no polygon and is not tested.
+one at 20 W lies in the Atlantic, outside both. The lizard at 52.5 N
+lies half a degree, about 55 km, north of its range: it is flagged
+without a buffer and kept with the 100 km buffer. The lizard at 55 N is
+3 degrees north and stays flagged under both. *Rana arvalis* has no
+polygon and is not tested.
 
 ## A genus habitat table
 
-The habitat tests `sea_nonmarine` and `land_marine` look up the record’s
-genus in
-[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md),
-built from the Interim Register of Marine and Nonmarine Genera. A table
-with a `genus` column, a logical `marine` column (`TRUE` only marine,
-`FALSE` not marine) and optionally a `kingdom` column replaces it, for
-example to class a genus the register leaves open:
+The habitat tests `sea_nonmarine` and `land_marine` use
+[`reference_habitat()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_habitat.md)
+to look up each record’s genus in the Interim Register of Marine and
+Nonmarine Genera. You can supply your own table with columns `genus`,
+`marine` (`TRUE` for exclusively marine genera, `FALSE` for nonmarine
+genera) and optionally `kingdom`. For example, you can classify a genus
+whose habitat the register leaves unspecified:
 
 ``` r
 
@@ -338,7 +325,7 @@ The checksum identifies the exact table, so two analyses that report the
 same label used the same points. For streamed input the label is stored
 in the output directory, and a rerun into that directory with a
 different custom layer stops with an error instead of mixing flags from
-two gazetteers.
+two layers.
 
 ## Comparison with CoordinateCleaner
 
@@ -354,14 +341,16 @@ two gazetteers.
 | cc_aohi(taxa = …) | gazetteers = list(aohi = subset of reference_points(“aohi”)) |
 | (none) | gazetteers = list(habitat = genera) |
 
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
-point references need its own column names (`capital.lon`,
-`centroid.lon`, `decimalLongitude`); here the longitude and latitude
-columns are found by name in any of the common spellings. Its
+OccurrenceCleaner recognises common longitude and latitude column names
+and matches records against every country-code column present.
+[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
+requires specific coordinate names, such as `capital.lon`,
+`centroid.lon` or `decimalLongitude`, and its
 [`cc_coun()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_coun.html)
-reads one code column chosen with `ref_col`; here every code column
-present is matched. With the same reference points and polygons the two
-packages give the same flags, up to the buffer-polygon band described in
-[Compatibility with
-CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md);
-the package tests check this for `institution`, `sea` and `range`.
+uses one code column selected with `ref_col`.
+
+With the same reference points and polygons, both packages produce the
+same flags except near buffer boundaries, as described in [Compatibility
+with
+CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md).
+Package tests check this agreement for `institution`, `sea` and `range`.

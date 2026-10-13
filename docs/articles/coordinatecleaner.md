@@ -27,18 +27,23 @@ started](https://gillescolling.com/OccurrenceCleaner/articles/OccurrenceCleaner.
 
 ## Running both packages on the same records
 
-CoordinateCleaner’s
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-runs several tests in one call and, asked for the `spatialvalid` layout,
-keeps every record and returns one logical column per test.
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-returns the same layout, one column per test, with the opposite sign:
-CoordinateCleaner’s columns are `TRUE` for records that pass, the flag
-columns are `TRUE` for records that fail.
+Both packages can run several tests in one call and return every record,
+with one logical column per test. The columns mean opposite things. In
+CoordinateCleaner, `TRUE` marks a record that passed the test. In
+OccurrenceCleaner, `TRUE` marks a record that failed it. Comparing the
+two outputs therefore means inverting one of them.
 
-Generate 4,000 records within 30 km of five capitals, then set 20 of
-them to (0, 0), 20 to equal longitude and latitude, and 10 to within 0.3
-degrees of (0, 0):
+The example data are 4,000 records placed within 30 km of five capitals,
+so that some of them lie inside the 10 km buffer of the capital test.
+Fifty of them are then overwritten with errors:
+
+- 20 are placed at (0, 0), which the zero and equal tests flag in both
+  packages.
+
+- 20 are given a latitude equal to their longitude, for the equal test.
+
+- 10 are given coordinates within 0.3 degrees of zero, where the zero
+  tests of the two packages differ.
 
 ``` r
 
@@ -236,11 +241,10 @@ and
 [`clean_fossils()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_fossils.html),
 which return one column per test, and
 [`clean_dataset()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_dataset.html),
-which returns a table per dataset. OccurrenceCleaner has one function
-for every test,
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md).
-A test is chosen by name, its buffer is set in `buffers` and its other
-options in `settings`.
+which returns a table per dataset. In OccurrenceCleaner,
+[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
+runs any selected combination of tests. A test is chosen by name, its
+buffer is set in `buffers` and its other options in `settings`.
 
 The first table gives each test’s name in the three places it appears:
 CoordinateCleaner’s test function, the `tests` argument of
@@ -317,28 +321,32 @@ these:
 | summary() | counts flagged records per test | summary(f) |
 | is.spatialvalid() | checks the class of a clean_coordinates() result | the occ_flags class |
 
-CoordinateCleaner’s
-[`cc_outl()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
-retrieves country-level record counts from GBIF each time it runs, so
-its results can change as GBIF grows. OccurrenceCleaner instead takes
-these counts as arguments and records them in the reference label.
+CoordinateCleaner’s [outlier
+test](https://ropensci.github.io/CoordinateCleaner/reference/cc_outl.html)
+has an optional sampling correction, which keeps outliers flagged only
+in well-sampled countries. With the correction on, it downloads the
+record count of each country from GBIF at run time, so the same call can
+return different results as GBIF grows. OccurrenceCleaner takes the
+counts as a table and writes the table’s checksum to the reference
+label.
 
-The PyRate export function is named
-[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md)
-rather than
+The PyRate export is called
+[`export_pyrate()`](https://gillescolling.com/OccurrenceCleaner/reference/export_pyrate.md).
+CoordinateCleaner’s is
 [`write_pyrate()`](https://ropensci.github.io/CoordinateCleaner/reference/write_pyrate.html),
-so both functions remain available when the packages are attached.
+and with different names both stay usable when the two packages are
+attached.
 
-Code written for CoordinateCleaner’s `spatialvalid` objects works on a
-converted result, `as_spatialvalid(f)`. The conversion keeps the record
-columns and adds one column per test under CoordinateCleaner’s names,
-`TRUE` where the record passed, together with the `.summary` column and
-the class, so CoordinateCleaner’s
-[`summary()`](https://rdrr.io/r/base/summary.html) and
-[`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods and
-filters on `.summary` run unchanged. The package tests compare every
-column of the conversion with the output of
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
+Code written for CoordinateCleaner’s output runs on a converted result,
+made with
+[`as_spatialvalid()`](https://gillescolling.com/OccurrenceCleaner/reference/as_spatialvalid.md).
+The converted result has the record columns, one column per test, the
+summary column and CoordinateCleaner’s class. The test columns carry
+CoordinateCleaner’s names and its sign, `TRUE` for a pass.
+CoordinateCleaner’s summary and plot methods run on the result
+unchanged, and so do filters on the summary column. For the validity,
+equal and duplicate tests, the package tests compare each column of a
+converted result with CoordinateCleaner’s own output.
 
 ``` r
 
