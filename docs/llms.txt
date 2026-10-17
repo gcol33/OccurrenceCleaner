@@ -43,7 +43,7 @@ exclude. OccurrenceCleaner supports:
   counts exclusions by rule and by taxon, period or precision class for
   reporting in a methods section or data paper.
 - **More institution locations.** OccurrenceCleaner checks records
-  against 23,895 locations of museums, herbaria, botanic gardens and
+  against 25,029 locations of museums, herbaria, botanic gardens and
   other institutions to flag coordinates that may refer to the
   collection’s address. The reference table includes 7,665 additional
   locations from [Wikidata and Wikipedia’s natural history museum

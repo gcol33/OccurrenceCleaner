@@ -3,7 +3,7 @@
 Flags records within 100 m of a biodiversity institution (WGS84 geodesic
 distance, closed ball): herbaria, museums, botanic gardens, zoos and
 universities holding collections, where specimens are often
-georeferenced to the institution. The default gazetteer contains 23,895
+georeferenced to the institution. The default gazetteer contains 25,029
 points: the 6,080 institutions with coordinates in GBIF's Global
 Registry of Scientific Collections (GRSciColl), less five whose
 coordinates the `zero` test flags (they lie near (0, 0) or have a
@@ -22,12 +22,16 @@ table; 3,652 gardens of Botanic Gardens Conservation International
 (BGCI) GardenSearch, retrieved 2026-10-10, used under the BGCI terms
 (https://www.bgci.org/terms-and-conditions/); 1,062 herbaria of Index
 Herbariorum that GRSciColl does not place, and 2,468 publishing
-organisations of the GBIF registry, both retrieved 2026-10-13; and 2,120
-points for the institutions of CoordinateCleaner's table that none of
-these holds under their name (`source` "CoordinateCleaner list"), placed
-from Wikidata, OpenStreetMap (through Nominatim) or the GeoNames
+organisations of the GBIF registry, both retrieved 2026-10-13; and 3,254
+points of CoordinateCleaner's table (`source` "CoordinateCleaner list"):
+2,120 for the institutions that none of these holds under their name,
+placed from Wikidata, OpenStreetMap (through Nominatim) or the GeoNames
 populated place of the institution's city, by its name, city and
-country; `master_source` says which. The `source` column of
+country, and 1,134 points of the OpenStreetMap feature of an institution
+(retrieved 2026-10-13 through the Overpass API, (c) OpenStreetMap
+contributors, Open Database Licence) where CoordinateCleaner's point
+lies closer to the feature than every point of this table for that
+institution; `master_source` says which. The `source` column of
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
 tells them apart.
 
@@ -101,10 +105,10 @@ sources (see the examples).
 Equivalent to `cc_inst()`. Its 40-gon buffer edge lies within 0.31 m of
 the 100 m circle. Its `institutions` table (9,773 points with
 coordinates) places nearly every institution by its own geocoding, so
-its points can lie apart from the source coordinates used here: for 32
+its points can lie apart from the source coordinates used here: for 36
 percent of its points a point of the default gazetteer lies within 100
-m, for 73 percent within 1 km and for 91 percent within 5 km (28, 70 and
-90 percent for the points with `extension` FALSE).
+m, for 78 percent within 1 km and for 92 percent within 5 km (33, 76 and
+91 percent for the points with `extension` FALSE).
 `reference = "CoordinateCleaner"` uses that table, and
 [`rbind()`](https://rdrr.io/r/base/cbind.html) of
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)

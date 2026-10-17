@@ -44,6 +44,7 @@ ri <- reference_info()
 | institutions_index_herbariorum | Index Herbariorum (New York Botanical Garden) | 2026-10-13 | 2026-10-13 |
 | institutions_gbif_registry | GBIF registry, publishing organisations | 2026-10-13 | 2026-10-13 |
 | institutions_coordinatecleaner_list | CoordinateCleaner 3.0.1 institution list, placed by Wikidata, OpenStreetMap (Nominatim) and GeoNames | 3.0.1 | 2026-10-13 |
+| institutions_openstreetmap | OpenStreetMap, Overpass API (named institution features) | 2026-10-13 | 2026-10-13 |
 | aohi | AHOI (Park et al. 2023) | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG (Rees 2026) | 2026-10-06 | 2026-10-10 |
 
@@ -219,6 +220,22 @@ its country nearest CoordinateCleaner’s point. These entries have
 `source = "CoordinateCleaner list"`; `master_source` records how they
 were located.
 
+A last step checks the location of every institution of
+CoordinateCleaner’s table against OpenStreetMap. The named OpenStreetMap
+features of institution kinds (universities, colleges, research
+institutes and offices, museums, zoos, aquaria and botanical gardens)
+were retrieved on 2026-10-13 from the Overpass API: 258,691 features. A
+feature is the institution when every distinctive word of one of its
+names occurs in the institution’s name, those words cover at least half
+of the institution’s own distinctive words, and the feature lies within
+25 km of CoordinateCleaner’s point. This finds a feature for 4,818
+institutions. Where CoordinateCleaner’s point lies closer to the feature
+than every point of this table that stands for the institution, the
+feature’s point is added with
+`master_source = "OpenStreetMap feature of that name"`. This adds 1,134
+points. OpenStreetMap data are © OpenStreetMap contributors, available
+under the Open Database Licence.
+
 ### Genus habitats
 
 The habitat tests `sea_nonmarine` and `land_marine` use genus
@@ -265,7 +282,7 @@ institution registries:
 | capitals | 225 (one per ISO3 code) | 475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate | 1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 23,895 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames, 1,062 Index Herbariorum, 2,468 GBIF registry, 2,120 for the rest of CoordinateCleaner’s list), of which 16,230 from CoordinateCleaner’s sources |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 25,029 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames, 1,062 Index Herbariorum, 2,468 GBIF registry, 3,254 for the rest of CoordinateCleaner’s list), of which 17,364 from CoordinateCleaner’s sources |
 
 - **Capitals.** Of CoordinateCleaner’s 225 capital points, 221 match
   this package’s Factbook points when rounded to 0.01 degrees. Rounding
@@ -321,8 +338,8 @@ institution registries:
   Some locations differ substantially. CoordinateCleaner places all
   Iranian university museums at one point in Isfahan and the Museo
   Marino of Boca del Río, Veracruz, in Venezuela. Across its institution
-  points, 32% have a point in this package within 100 m, 73% within 1 km
-  and 91% within 5 km.
+  points, 36% have a point in this package within 100 m, 78% within 1 km
+  and 92% within 5 km.
 
   Additional Wikidata institutions and museums from Wikipedia’s other
   language editions carry `extension = TRUE`. Selecting
@@ -512,7 +529,7 @@ attr(f, "occ_layout_version")
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed

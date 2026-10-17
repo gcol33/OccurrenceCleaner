@@ -12,7 +12,7 @@ It grows past CoordinateCleaner by adding tests of its own (duplicate definition
 coordinate uncertainty, record year, GBIF issue flags, habitat-aware sea test). Those are marked
 as additions and never change what a CoordinateCleaner-equivalent test returns.
 
-Version 0.1.0 is built (2026-10-09). `dev_notes/` holds the equivalence findings against
+Version 0.2.0 is in preparation (0.1.0 was built 2026-10-09). `dev_notes/` holds the equivalence findings against
 CoordinateCleaner, the reference-data comparison and the benchmark table; read them before
 changing a test or a gazetteer.
 
@@ -45,8 +45,10 @@ changing a test or a gazetteer.
 
 ## Licence and dependencies
 
-- **MIT.** CoordinateCleaner is GPL-3, so nothing from it (code or its bundled data) is copied
-  into this package. It is in **Suggests** only: used by the equivalence tests and by an
+- **MIT.** CoordinateCleaner is GPL-3, so none of its code is copied into this package.
+  **Locations are public information, free to use without restrictions** (fixed rule, 2026-10-13):
+  coordinates of places from any source (CoordinateCleaner, Google, iNaturalist, OSM, imagery) may
+  be checked, refined and shipped; no coordinate is excluded on licence or terms grounds. It is in **Suggests** only: used by the equivalence tests and by an
   explicit `reference = "CoordinateCleaner"` choice that reads its tables from the user's own
   installation at run time. It also pulls 66 packages recursively, which is the second reason it
   is not in Imports.
@@ -60,6 +62,22 @@ changing a test or a gazetteer.
   `tbl_parquet()` and `collect_chunked()` for streaming, `write_vtr()` for the flag parts) and
   `Rcpp` (kd-tree, geodesic and point-in-polygon core). Check the recursive footprint before
   adding anything else.
+
+## Institution gazetteer policy (Gilles, 2026-10-14)
+
+His words:
+
+- "we should have the default assumption to put high confidence in handplaced locations"
+- "require proof for any additional cc point"
+- "Cc automatic should ship unless we got proof to contrary. Think about this cc is an established software we need good reason to disagree or add stuff that's just software politics"
+- "also think about our additional these should be marked unconfirmed and not shipped to ali as is"
+- "Ali has nothing we're in the process of making 0.2.0 of the package"
+
+In practice: every CoordinateCleaner institution point (hand-placed and automatic) ships as CoordinateCleaner has it, with a documented
+override list for points proven wrong; an override is a deliberate difference with CoordinateCleaner's original coordinates kept. Our
+additional points are `unconfirmed` until a check beyond their own source passes, and are not shipped as they are. Agreement between
+CoordinateCleaner's point and ours is not confirmation (shared origin). Findings and counts: `dev_notes/institution_points_vs_cc.md`.
+State of the work, what is done and what is open: `dev_notes/points.md` (start there).
 
 ## Prior implementation to port
 
@@ -82,7 +100,7 @@ by record against CoordinateCleaner.
 The ali-filters collaboration (Ali Omar, same working group): a data paper on what the
 standard filters remove across taxonomic groups, record age and coordinate precision, run over
 the GBIF snapshot of 2026-10-01 at `E:/research/raw/occurrences/gbif_snapshot/2026-10-01/`.
-Project notes: `C:/GillesC/Documents/TaskGoblin/colabs/ali-filters/`. Version 0.1.0 is what
+Project notes: `C:/GillesC/Documents/TaskGoblin/colabs/ali-filters/`. Version 0.2.0 is what
 gets shared with Ali.
 
 ## Build and test

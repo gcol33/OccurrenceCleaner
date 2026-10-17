@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 23,895 institution locations holding every institution of CoordinateCleaner's list plus 7,665 extension points from additional collection registries and geographic sources (sources named in the reference-data article; used by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 25,029 institution locations holding every institution of CoordinateCleaner's list plus 7,665 extension points from additional collection registries and geographic sources (sources named in the reference-data article; used by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]

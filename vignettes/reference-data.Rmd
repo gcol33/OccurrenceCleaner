@@ -134,6 +134,8 @@ When several candidates are returned, the candidate nearest CoordinateCleaner's 
 
 If these searches find no location, the institution is considered represented when an existing point lies within 25 km and matches at least 60% of its name words. Otherwise, it is assigned to the populated place mentioned in its name or, as a last resort, the populated place in its country nearest CoordinateCleaner's point. These entries have `source = "CoordinateCleaner list"`; `master_source` records how they were located.
 
+A last step checks the location of every institution of CoordinateCleaner's table against OpenStreetMap. The named OpenStreetMap features of institution kinds (universities, colleges, research institutes and offices, museums, zoos, aquaria and botanical gardens) were retrieved on 2026-10-13 from the Overpass API: 258,691 features. A feature is the institution when every distinctive word of one of its names occurs in the institution's name, those words cover at least half of the institution's own distinctive words, and the feature lies within 25 km of CoordinateCleaner's point. This finds a feature for 4,818 institutions. Where CoordinateCleaner's point lies closer to the feature than every point of this table that stands for the institution, the feature's point is added with `master_source = "OpenStreetMap feature of that name"`. This adds 1,134 points. OpenStreetMap data are © OpenStreetMap contributors, available under the Open Database Licence.
+
 ### Genus habitats
 
 The habitat tests `sea_nonmarine` and `land_marine` use genus classifications from the Interim Register of Marine and Nonmarine Genera (IRMNG), supplied as a Darwin Core archive dated 2026-10-06 under CC BY 4.0. IRMNG records marine, brackish, freshwater and terrestrial flags for each name. Following the rule in `reference_habitat()`, the package classifies 296,474 genera as nonmarine and 21,891 as exclusively marine, with kingdom used to distinguish names.
@@ -161,7 +163,7 @@ knitr::kable(data.frame(
   OccurrenceCleaner = c("475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension",
                         "1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension",
                         "4,594 (Natural Earth 5.1.1 admin-1 label points)",
-                        "23,895 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames, 1,062 Index Herbariorum, 2,468 GBIF registry, 2,120 for the rest of CoordinateCleaner's list), of which 16,230 from CoordinateCleaner's sources")))
+                        "25,029 (6,080 GRSciColl, without the five at zero coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames, 1,062 Index Herbariorum, 2,468 GBIF registry, 3,254 for the rest of CoordinateCleaner's list), of which 17,364 from CoordinateCleaner's sources")))
 ```
 
 - **Capitals.** Of CoordinateCleaner's 225 capital points, 221 match this package's Factbook points when rounded to 0.01 degrees. Rounding shifts their positions by up to 523 m. The remaining four reflect Factbook entries that have since changed: Bujumbura to Gitega for Burundi; Buenos Aires from 58°40′ W to 58°22′ W, correcting a location 27 km west of the city; Melekeok to Ngerulmud for Palau; and a 1.8 km coordinate adjustment for Rangoon.
@@ -180,7 +182,7 @@ knitr::kable(data.frame(
 
   Coordinates differ because CoordinateCleaner geocoded nearly all its institutions independently. For example, it located 641 of its 712 BGCI gardens from names and addresses; this package uses BGCI's coordinates. CoordinateCleaner also located 398 Wikipedia museums manually, to 1 km precision.
 
-  Some locations differ substantially. CoordinateCleaner places all Iranian university museums at one point in Isfahan and the Museo Marino of Boca del Río, Veracruz, in Venezuela. Across its institution points, 32% have a point in this package within 100 m, 73% within 1 km and 91% within 5 km.
+  Some locations differ substantially. CoordinateCleaner places all Iranian university museums at one point in Isfahan and the Museo Marino of Boca del Río, Veracruz, in Venezuela. Across its institution points, 36% have a point in this package within 100 m, 78% within 1 km and 92% within 5 km.
 
   Additional Wikidata institutions and museums from Wikipedia's other language editions carry `extension = TRUE`. Selecting `extension = FALSE` restricts the test to CoordinateCleaner's sources. With CoordinateCleaner installed, its table can also be added at run time ([Custom reference points and polygons](gazetteers.html#an-extended-point-layer)).
 

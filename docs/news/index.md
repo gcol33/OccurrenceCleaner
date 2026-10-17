@@ -67,15 +67,18 @@
   `ylim`.
 - The institution gazetteer holds every institution of
   CoordinateCleaner’s table with coordinates but one, an expert group
-  listed in Antarctica (23,895 points, from 18,245). It adds the 1,062
+  listed in Antarctica (25,029 points, from 18,245). It adds the 1,062
   herbaria of Index Herbariorum that GRSciColl does not place and the
   2,468 publishing organisations of the GBIF registry with coordinates.
-  The 2,120 further points place the institutions of CoordinateCleaner’s
-  list that no source holds under their name, from Wikidata,
-  OpenStreetMap (Nominatim) or GeoNames, choosing among candidates by
-  CoordinateCleaner’s point (`source` “CoordinateCleaner list”). For 496
-  institutions no source places the institution itself, and the point is
-  the town of the country nearest CoordinateCleaner’s point.
+  The 3,254 further points (`source` “CoordinateCleaner list”) are 2,120
+  that place the institutions of CoordinateCleaner’s list that no source
+  holds under their name, from Wikidata, OpenStreetMap (Nominatim) or
+  GeoNames, choosing among candidates by CoordinateCleaner’s point, and
+  1,134 points of OpenStreetMap features (Overpass API, retrieved
+  2026-10-13) of institutions that CoordinateCleaner’s point lies closer
+  to than any other point of the table. For 496 institutions no source
+  places the institution itself, and the point is the town of the
+  country nearest CoordinateCleaner’s point.
 
 ### Streamed input
 
