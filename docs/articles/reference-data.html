@@ -265,12 +265,19 @@ features)</td>
 <td align="left"><span style="white-space: nowrap">2026-10-13</span></td>
 </tr>
 <tr class="odd">
+<td align="left">institutions_status</td>
+<td align="left">CoordinateCleaner 3.0.1 institutions; overrides and
+checks by Google Maps and OpenStreetMap</td>
+<td align="left">2026-10-17</td>
+<td align="left"><span style="white-space: nowrap">2026-10-17</span></td>
+</tr>
+<tr class="even">
 <td align="left">aohi</td>
 <td align="left">AHOI (Park et al. 2023)</td>
 <td align="left">2022-10-10</td>
 <td align="left"><span style="white-space: nowrap">2026-10-10</span></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">habitat</td>
 <td align="left">IRMNG (Rees 2026)</td>
 <td align="left">2026-10-06</td>
@@ -296,8 +303,8 @@ The inventory itself uses the abbreviation AHOI.</p></li>
 <p>The tests use the following layers:</p>
 <table class="table">
 <colgroup>
-<col width="6%">
-<col width="93%">
+<col width="10%">
+<col width="89%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">test</th>
@@ -318,12 +325,10 @@ and label points, admin-1 label points</td>
 </tr>
 <tr class="odd">
 <td align="left">institution</td>
-<td align="left">GBIF GRSciColl institutions, Wikidata botanical
-gardens, natural history museums, zoos, aquaria and herbaria, museums of
-Wikipedia’s lists of natural history museums, BGCI gardens, Index
-Herbariorum herbaria and GBIF publishing organisations, with
-coordinates, and every further institution of CoordinateCleaner’s table
-placed from Wikidata, OpenStreetMap or GeoNames</td>
+<td align="left">CoordinateCleaner’s institutions, 568 moved to their
+Google Maps place, and the confirmed points of GBIF GRSciColl, Wikidata,
+Wikipedia’s lists of natural history museums, BGCI, Index Herbariorum,
+the GBIF registry and OpenStreetMap</td>
 </tr>
 <tr class="even">
 <td align="left">gbif_headquarters</td>
@@ -403,17 +408,68 @@ needed to use Natural Earth.”</p>
 <div class="section level3">
 <h3 id="institutions">Institutions<a class="anchor" aria-label="anchor" href="#institutions"></a>
 </h3>
-<p>The institutions come from the bulk export of GBIF’s Global Registry
-of Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002
-institutions, of which 6,085 have coordinates. The five of these that
-the <code>zero</code> test would flag are left out: four are registered
-within 0.14 degrees of (0, 0), although they are in Portugal, Nigeria,
-Turkey and Taiwan, and one has a longitude of exactly 0. Kept, they
-would mark every record at (0, 0) as lying at an institution as well.
-GRSciColl absorbed the Global Registry of Biodiversity Repositories
-(GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF
-publishes the registry through its open API and states no separate
-licence for it.</p>
+<p>The institution test uses the 9,773 institutions with coordinates in
+CoordinateCleaner 3.0.1’s table, and the points of other sources that a
+check beyond their own source confirms. The <code>status</code> column
+of <code>reference_points("institution")</code> says which a point is:
+<code>"cc"</code>, <code>"override"</code>, <code>"confirmed"</code> or
+<code>"unconfirmed"</code>. The test leaves the unconfirmed points
+out.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">source</span>, <span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                         </span></span>
+<span><span class="co">#&gt;                            cc confirmed override unconfirmed</span></span>
+<span><span class="co">#&gt;   BGCI                      0       285        0        3362</span></span>
+<span><span class="co">#&gt;   CoordinateCleaner      9205         0        0           0</span></span>
+<span><span class="co">#&gt;   CoordinateCleaner list    0       931        0        2316</span></span>
+<span><span class="co">#&gt;   GBIF registry             0       341        0        2124</span></span>
+<span><span class="co">#&gt;   GeoNames                  0         0        0           3</span></span>
+<span><span class="co">#&gt;   Google Maps               0         0      568           0</span></span>
+<span><span class="co">#&gt;   GRSciColl                 0       826        0        5177</span></span>
+<span><span class="co">#&gt;   Index Herbariorum         0       161        0         900</span></span>
+<span><span class="co">#&gt;   Wikidata                  0       195        0        7598</span></span>
+<span><span class="co">#&gt;   Wikipedia                 0        26        0         674</span></span></code></pre></div>
+<p>Of CoordinateCleaner’s points, 9,205 are used as that package has
+them. The other 568 are moved to the place Google Maps gives for the
+institution. For each of them, a Google Maps place with the
+institution’s name lies within 25 km of the city in CoordinateCleaner’s
+record, while CoordinateCleaner’s point lies more than 25 km from both
+that place and the city. The median distance between the two points is
+428 km. CoordinateCleaner places Duke University, listed in Durham,
+North Carolina, in southern California, for example. The
+<code>cc_lon</code> and <code>cc_lat</code> columns keep
+CoordinateCleaner’s coordinates, and <code>evidence</code> names the
+Google Maps place.</p>
+<p>Every one of CoordinateCleaner’s points was searched in Google Maps
+by name, city and country between 2026-10-13 and 2026-10-17, and 628 met
+the conditions above. A review of each match kept 60 of them at
+CoordinateCleaner’s coordinates:</p>
+<ul>
+<li><p>41 where the Google Maps place is a different
+institution;</p></li>
+<li><p>9 where the name is generic or the place is the town
+itself;</p></li>
+<li><p>10 organisations with several sites where the record does not
+name the site.</p></li>
+</ul>
+<p>A point from another source is confirmed when a Google Maps place
+with the institution’s name lies within 300 m of it, or when it lies
+within 200 m of the OpenStreetMap feature with that name. Points taken
+from OpenStreetMap need the Google Maps check. These checks covered the
+point nearest each of CoordinateCleaner’s institutions and confirm 2,765
+points.</p>
+<p>The other points come from the sources below. The first set is the
+bulk export of GBIF’s Global Registry of Scientific Collections
+(GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which
+6,085 have coordinates. The five of these that the <code>zero</code>
+test would flag are left out: four are registered within 0.14 degrees of
+(0, 0), although they are in Portugal, Nigeria, Turkey and Taiwan, and
+one has a longitude of exactly 0. Kept, they would mark every record at
+(0, 0) as lying at an institution as well. GRSciColl absorbed the Global
+Registry of Biodiversity Repositories (GRBio) in 2018 and is
+synchronised weekly with Index Herbariorum. GBIF publishes the registry
+through its open API and states no separate licence for it.</p>
 <p>The institution table includes locations from Wikidata, Wikipedia,
 GeoNames and Botanic Gardens Conservation International (BGCI). The
 <code>source</code> column of
@@ -535,13 +591,13 @@ rebuild the layers from their source datasets.</p>
 </h2>
 <p>The package’s reference points describe the same places as <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 3.0.1’s <code>countryref</code> and <code>institutions</code> tables,
-but they are not the same tables. Counts as of 2026-10-13, the retrieval
-date of the last two institution registries:</p>
+but they are not the same tables. Counts as of 2026-10-17, the date of
+the last institution check:</p>
 <table class="table">
 <colgroup>
-<col width="5%">
-<col width="22%">
-<col width="71%">
+<col width="6%">
+<col width="30%">
+<col width="62%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">gazetteer</th>
@@ -573,11 +629,9 @@ centroids and label points marked as extension</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">25,029 (6,080 GRSciColl, without the five at zero
-coordinates, 7,810 Wikidata, 700 Wikipedia, 3,652 BGCI, 3 GeoNames,
-1,062 Index Herbariorum, 2,468 GBIF registry, 3,254 for the rest of
-CoordinateCleaner’s list), of which 17,364 from CoordinateCleaner’s
-sources</td>
+<td align="left">12,538 used by the test: CoordinateCleaner’s 9,773 (568
+moved to their Google Maps place) and 2,765 confirmed points of other
+sources; 22,154 unconfirmed points left out</td>
 </tr>
 </tbody>
 </table>
@@ -621,36 +675,25 @@ point: 15 use coordinates Natural Earth has since changed, and 39 match
 no tagged release.</p>
 </li>
 <li>
-<p><strong>Institutions.</strong> This package represents 9,772 of
-CoordinateCleaner’s 9,773 institutions, covering every entry with
-coordinates except one expert group listed in Antarctica. It matches
-6,313 by name and another 329 to nearby points with overlapping name
-words. The remaining 3,130 are located through Wikidata (1,052),
-OpenStreetMap (646), the town listed by CoordinateCleaner or GRSciColl
-(684), or a town mentioned in the institution’s name (252). For 496
-institutions, searches found no institution location, so the nearest
-town to CoordinateCleaner’s point is used.</p>
-<p>Coordinates differ because CoordinateCleaner geocoded nearly all its
-institutions independently. For example, it located 641 of its 712 BGCI
-gardens from names and addresses; this package uses BGCI’s coordinates.
-CoordinateCleaner also located 398 Wikipedia museums manually, to 1 km
-precision.</p>
-<p>Some locations differ substantially. CoordinateCleaner places all
-Iranian university museums at one point in Isfahan and the Museo Marino
-of Boca del Río, Veracruz, in Venezuela. Across its institution points,
-36% have a point in this package within 100 m, 78% within 1 km and 92%
-within 5 km.</p>
-<p>Additional Wikidata institutions and museums from Wikipedia’s other
-language editions carry <code>extension = TRUE</code>. Selecting
-<code>extension = FALSE</code> restricts the test to CoordinateCleaner’s
-sources. With CoordinateCleaner installed, its table can also be added
-at run time (<a href="gazetteers.html#an-extended-point-layer">Custom
-reference points and polygons</a>).</p>
+<p><strong>Institutions.</strong> The institution test uses
+CoordinateCleaner’s 9,773 institution points, 9,205 of them at
+CoordinateCleaner’s coordinates and 568 moved to the Google Maps place
+of the institution (<a href="#institutions">Institutions</a> gives the
+conditions). It also uses 2,765 points of other sources that a check has
+confirmed. A record near a moved or confirmed point is flagged here and
+not by CoordinateCleaner.</p>
+<p>CoordinateCleaner geocoded nearly all its institutions itself. For
+example, it located 641 of its 712 BGCI gardens from names and
+addresses, while this package’s BGCI points have BGCI’s coordinates. A
+confirmed point can therefore mark another building of an institution
+than CoordinateCleaner’s point.
+<code>reference = "CoordinateCleaner"</code> uses CoordinateCleaner’s
+table as it is.</p>
 </li>
 </ul>
 <p>The following example shows how the capital references affect flags
 for records at alternative or official capitals:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pretoria"</span>, <span class="st">"Cape Town"</span>, <span class="st">"La Paz"</span>, <span class="st">"Sucre"</span>, <span class="st">"Yangon"</span>, <span class="st">"Naypyidaw"</span><span class="op">)</span>,</span>
 <span>                species <span class="op">=</span> <span class="st">"a"</span>,</span>
 <span>                decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28.19</span>, <span class="fl">18.42</span>, <span class="op">-</span><span class="fl">68.15</span>, <span class="op">-</span><span class="fl">65.26</span>, <span class="fl">96.16</span>, <span class="fl">96.13</span><span class="op">)</span>,</span>
@@ -682,17 +725,18 @@ points from sources CoordinateCleaner does not use, marked
 capitals of dependent territories;</p></li>
 <li><p>country centroids: 516 Natural Earth polygon centroids and label
 points;</p></li>
-<li><p>institutions: 7,665 points, the botanical gardens, natural
+<li><p>institutions: 7,660 points, the botanical gardens, natural
 history museums, zoos, aquaria and herbaria of Wikidata beyond the
 museums of the English Wikipedia list, and the museums of the Arabic,
-Dutch, Esperanto, French, German and Portuguese lists.</p></li>
+Dutch, Esperanto, French, German and Portuguese lists. No check has
+confirmed any of them, so the institution test leaves them out.</p></li>
 </ul>
-<p>The tests use them by default. Passing the rows with
-<code>extension</code> <code>FALSE</code> through
+<p>The capital and centroid tests use them by default. Passing the rows
+with <code>extension</code> <code>FALSE</code> through
 <code>gazetteers</code> restricts a test to CoordinateCleaner’s sources;
 for the capitals above, that leaves Cape Town, Sucre and Naypyidaw
 unflagged:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">city</span>,</span>
 <span>           all <span class="op">=</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span>,</span>
@@ -720,7 +764,7 @@ on first use and cached.</p>
 islands; the 1:50 million layer follows the coast more closely. A grid
 of points over Denmark and the western Baltic shows where the two
 disagree:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">7.5</span>, <span class="fl">15.5</span>, by <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>,</span>
 <span>                 decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">54</span>, <span class="fl">58</span>, by <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">g</span><span class="op">$</span><span class="va">species</span> <span class="op">&lt;-</span> <span class="st">"a"</span></span>
@@ -734,7 +778,7 @@ disagree:</p>
 <span><span class="co">#&gt;                      5765                       519                       783 </span></span>
 <span><span class="co">#&gt;               sea at both </span></span>
 <span><span class="co">#&gt;                      5974</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">g</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">decimalLongitude</span>, <span class="va">decimalLatitude</span>, fill <span class="op">=</span> <span class="va">verdict</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -13892,7 +13936,7 @@ are flagged only at 1:50 million (dark). For coastal and island taxa the
 scale therefore changes a share of the <code>sea</code> flags large
 enough to see in a tally. The 1:10 million layer is the most detailed of
 the three:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_reference.html">download_reference</a></span><span class="op">(</span><span class="st">"land_10"</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"sea"</span>, land_scale <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The download is checked against the SHA-256 in
@@ -13909,7 +13953,7 @@ to <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link"
 (10 km for capitals, 1 km for centroids and the GBIF headquarters, 100 m
 for institutions, 0.5 degrees around (0, 0)) and are changed per
 test:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"a"</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16.37</span>, <span class="fl">16.45</span><span class="op">)</span>, decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">48.21</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"capital"</span><span class="op">)</span><span class="op">$</span><span class="va">flag_capital</span></span>
 <span><span class="co">#&gt; [1] TRUE TRUE</span></span>
@@ -13927,7 +13971,7 @@ metres.</p>
 the version of each layer. The printed object shows the short form;
 <code><a href="../reference/flag_reference.html">flag_reference()</a></code> returns the full label, which names every
 layer with its version, snapshot date or page revision:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"capital"</span>, <span class="st">"sea"</span><span class="op">)</span>, land_scale <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flags&gt; 2 records, 2 tests, reference OccurrenceCleaner 0.2.0, land 50</span></span>
@@ -13936,9 +13980,9 @@ layer with its version, snapshot date or page revision:</p>
 <span><span class="co">#&gt; 2       a            16.45           48.21     8    capital</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_layout_version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_reference.html">flag_reference</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 version instead. For streamed input the same label is written to the
 output directory, and a rerun into that directory with a different

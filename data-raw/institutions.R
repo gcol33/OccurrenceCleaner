@@ -969,6 +969,60 @@ institutions <- rbind(institutions, osm_added)
 institutions <- institutions[order(institutions$extension), ]
 ext_dup <- institutions$extension & duplicated(institutions[, c("lon", "lat")])
 institutions <- institutions[!ext_dup, ]
+
+# Status of each point. A point of the sources above is "confirmed" when a
+# check beyond its own source places it on the institution, and "unconfirmed"
+# otherwise. data-raw/institution_checks.csv lists the checks: for every
+# institution of CoordinateCleaner's table, the point of this table nearest
+# CoordinateCleaner's point, with a Google Maps place of the institution's name
+# within 300 m, or within 200 m of the extent of the OpenStreetMap feature of
+# that name (not counted for points taken from OpenStreetMap).
+checks <- read.csv("data-raw/institution_checks.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
+from_osm <- startsWith(institutions$key, "osm:") | grepl("OpenStreetMap", institutions$master_source)
+at <- paste(institutions$lon, institutions$lat)
+ok_google <- at %in% with(checks[checks$check == "Google Maps place of that name", ], paste(lon, lat))
+ok_osm <- at %in% with(checks[checks$check == "OpenStreetMap feature of that name", ], paste(lon, lat)) & !from_osm
+stopifnot(all(paste(checks$lon, checks$lat) %in% at))
+institutions$status <- ifelse(ok_google | ok_osm, "confirmed", "unconfirmed")
+institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenStreetMap feature of that name",
+                         ifelse(ok_google, "Google Maps place of that name",
+                         ifelse(ok_osm, "OpenStreetMap feature of that name", NA_character_)))
+institutions$cc_lon <- NA_real_
+institutions$cc_lat <- NA_real_
+
+# CoordinateCleaner's own points ship as it has them (status "cc"), except the
+# ones data-raw/institution_overrides.csv proves wrong (decision "override"):
+# a Google Maps place of the institution's name lies within 25 km of the city
+# of CoordinateCleaner's record, and CoordinateCleaner's point and the nearest
+# point of this table lie over 25 km from both. Those are moved to the Google
+# Maps place (status "override"); `cc_lon` and `cc_lat` keep CoordinateCleaner's
+# coordinates. Candidates whose Google place is another institution, a town or
+# one site of an organisation with several stay as CoordinateCleaner has them
+# (decision "kept", with the reason).
+overrides <- read.csv("data-raw/institution_overrides.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
+stopifnot(all(overrides$cc_row %in% cc$row))
+cc_points <- data.frame(key = paste0("cc:", cc$row), code = NA_character_, name = cc$shown, country = cc$iso2,
+                        city = cc$city, type = unname(cc_type[cc$type]), active = NA,
+                        master_source = cc$geocoding.source, lon = cc$decimalLongitude, lat = cc$decimalLatitude,
+                        source = "CoordinateCleaner", extension = FALSE, status = "cc", evidence = NA_character_,
+                        cc_lon = NA_real_, cc_lat = NA_real_, stringsAsFactors = FALSE)
+ov <- overrides[overrides$decision == "override", ]
+j <- match(ov$cc_row, cc$row)
+stopifnot(isTRUE(all.equal(cc_points$lon[j], ov$cc_lon)), isTRUE(all.equal(cc_points$lat[j], ov$cc_lat)))
+cc_points$cc_lon[j] <- cc_points$lon[j]
+cc_points$cc_lat[j] <- cc_points$lat[j]
+cc_points$lon[j] <- ov$lon
+cc_points$lat[j] <- ov$lat
+cc_points$status[j] <- "override"
+cc_points$source[j] <- "Google Maps"
+cc_points$evidence[j] <- paste0("Google Maps place \"", ov$google_name, "\", ", ov$city_to_place_km,
+                                " km from the record's city; CoordinateCleaner's point ", ov$cc_to_place_km, " km away")
+stopifnot(!any(zero_xy(cc_points$lon, cc_points$lat)))
+# A point of the other sources at the coordinates of one of CoordinateCleaner's
+# adds nothing to the test.
+n_at_cc <- sum(paste(institutions$lon, institutions$lat) %in% paste(cc_points$lon, cc_points$lat))
+institutions <- institutions[!paste(institutions$lon, institutions$lat) %in% paste(cc_points$lon, cc_points$lat), ]
+institutions <- rbind(cc_points, institutions)
 institutions <- institutions[order(institutions$country, institutions$name), ]
 rownames(institutions) <- NULL
 
@@ -1018,7 +1072,14 @@ meta <- rbind(
              file = paste(basename(osm_files), collapse = ", "), version = osm_retrieved,
              url = "https://overpass-api.de/api/interpreter",
              sha256 = paste(vapply(osm_files, sha256, character(1)), collapse = ", "), retrieved = osm_retrieved,
-             licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE))
+             licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
+  data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
+                                                           "institutions; overrides and checks by Google Maps and OpenStreetMap"),
+             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-17",
+             url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
+             sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
+                            sep = ", "),
+             retrieved = "2026-10-17", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
@@ -1053,4 +1114,7 @@ cat("OpenStreetMap features:", nrow(osm), "- CoordinateCleaner institutions with
     "- kept after dropping duplicates and zero coordinates:", nrow(osm_added), "
 ")
 print(table(osm_added$type, useNA = "ifany"))
+cat("Points of other sources at CoordinateCleaner's coordinates (dropped):", n_at_cc, "\n")
+print(table(institutions$source, institutions$status))
+print(table(institutions$status))
 print(summary(cc_check$d_own[is.finite(cc_check$d_own)]))

@@ -65,20 +65,26 @@
 - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) keeps a label
   on every bar however many tests a rule holds; the map takes `xlim` and
   `ylim`.
-- The institution gazetteer holds every institution of
-  CoordinateCleaner’s table with coordinates but one, an expert group
-  listed in Antarctica (25,029 points, from 18,245). It adds the 1,062
-  herbaria of Index Herbariorum that GRSciColl does not place and the
-  2,468 publishing organisations of the GBIF registry with coordinates.
-  The 3,254 further points (`source` “CoordinateCleaner list”) are 2,120
-  that place the institutions of CoordinateCleaner’s list that no source
-  holds under their name, from Wikidata, OpenStreetMap (Nominatim) or
-  GeoNames, choosing among candidates by CoordinateCleaner’s point, and
-  1,134 points of OpenStreetMap features (Overpass API, retrieved
-  2026-10-13) of institutions that CoordinateCleaner’s point lies closer
-  to than any other point of the table. For 496 institutions no source
-  places the institution itself, and the point is the town of the
-  country nearest CoordinateCleaner’s point.
+- The institution test uses CoordinateCleaner’s 9,773 institution points
+  and 2,765 points of other sources that a check beyond their own source
+  confirms (12,538 points, from 18,245). Of CoordinateCleaner’s points,
+  568 are moved to the Google Maps place of the institution: the place
+  lies within 25 km of the city of CoordinateCleaner’s record and
+  CoordinateCleaner’s point more than 25 km from both.
+  `reference_points("institution")` gives each point a `status` (“cc”,
+  “override”, “confirmed”, “unconfirmed”) and `evidence`, and keeps
+  CoordinateCleaner’s coordinates of a moved point in `cc_lon` and
+  `cc_lat`. A point of another source is confirmed by a Google Maps
+  place of the institution’s name within 300 m or the OpenStreetMap
+  feature of that name within 200 m.
+- The table also contains 22,154 unconfirmed points, which the test
+  leaves out unless they are passed through `gazetteers`. They come from
+  GRSciColl, Wikidata, Wikipedia’s lists of natural history museums,
+  GeoNames, BGCI, the 1,062 herbaria of Index Herbariorum that GRSciColl
+  does not place, the 2,468 publishing organisations of the GBIF
+  registry with coordinates, OpenStreetMap features (Overpass API,
+  retrieved 2026-10-13) and searches for CoordinateCleaner’s
+  institutions by name (Wikidata, Nominatim, GeoNames).
 
 ### Streamed input
 

@@ -29,8 +29,9 @@ test_that("proximity tests use the default buffers and the own gazetteers", {
   cen <-OccurrenceCleaner:::ref_centroids
   tirol <- cen[!is.na(cen$code) & cen$code == "AUT-2320", ][1, ]  # Vorarlberg label point
   inst <- OccurrenceCleaner:::ref_institutions
-  # an Austrian GRSciColl institution with no other point within 300 m
-  at <- inst[inst$source == "GRSciColl" & inst$country %in% "AT", ]
+  inst <- inst[inst$status != "unconfirmed", ]
+  # an Austrian institution of the test with no other point within 300 m
+  at <- inst[inst$country %in% "AT", ]
   alone <- vapply(seq_len(nrow(at)), function(i)
     sort(geosphere::distGeo(c(at$lon[i], at$lat[i]), cbind(inst$lon, inst$lat)))[2] > 300, logical(1))
   lone <- at[alone, ][1, ]

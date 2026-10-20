@@ -152,36 +152,39 @@ comes from:</p>
 <span></span>
 <span><span class="va">inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">inst</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"type"</span>, <span class="st">"source"</span>, <span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                  name      type                 source     lon</span></span>
-<span><span class="co">#&gt; 1         Andorra Recerca + Innovació      &lt;NA&gt;          GBIF registry 1.49218</span></span>
-<span><span class="co">#&gt; 2       Andorra Research + Innovation Herbarium              GRSciColl 1.49210</span></span>
-<span><span class="co">#&gt; 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner list 1.73361</span></span>
+<span><span class="co">#&gt;                                  name      type            source      lon</span></span>
+<span><span class="co">#&gt; 1         Andorra Recerca + Innovació      &lt;NA&gt;     GBIF registry  1.49218</span></span>
+<span><span class="co">#&gt; 2       Andorra Research + Innovation Herbarium         GRSciColl  1.49210</span></span>
+<span><span class="co">#&gt; 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner 51.39320</span></span>
 <span><span class="co">#&gt;        lat</span></span>
 <span><span class="co">#&gt; 1 42.46876</span></span>
 <span><span class="co">#&gt; 2 42.46650</span></span>
-<span><span class="co">#&gt; 3 42.54277</span></span>
+<span><span class="co">#&gt; 3 35.79940</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                           BotanicalGarden </span></span>
-<span><span class="co">#&gt;                                      7117 </span></span>
 <span><span class="co">#&gt;                                 Herbarium </span></span>
-<span><span class="co">#&gt;                                      5039 </span></span>
+<span><span class="co">#&gt;                                      8272 </span></span>
+<span><span class="co">#&gt;                           BotanicalGarden </span></span>
+<span><span class="co">#&gt;                                      7810 </span></span>
 <span><span class="co">#&gt;                                    Museum </span></span>
-<span><span class="co">#&gt;                                      3691 </span></span>
-<span><span class="co">#&gt;                               ZooAquarium </span></span>
-<span><span class="co">#&gt;                                      2777 </span></span>
+<span><span class="co">#&gt;                                      4879 </span></span>
 <span><span class="co">#&gt;                         UniversityCollege </span></span>
-<span><span class="co">#&gt;                                       944 </span></span>
+<span><span class="co">#&gt;                                      3007 </span></span>
+<span><span class="co">#&gt;                               ZooAquarium </span></span>
+<span><span class="co">#&gt;                                      2861 </span></span>
 <span><span class="co">#&gt; OtherTypeResearchInstitutionBiorepository </span></span>
-<span><span class="co">#&gt;                                       210</span></span></code></pre></div>
-<p>A plant study, for example, may want to flag records at herbaria
+<span><span class="co">#&gt;                                       507</span></span></code></pre></div>
+<p>The institution test uses the points whose <code>status</code> is not
+<code>"unconfirmed"</code>; <a href="reference-data.html#institutions">Reference data</a> explains the
+status. A plant study, for example, may want to flag records at herbaria
 only, since a specimen georeferenced to a zoological museum is unlikely
 in a plant table, and use a wider buffer for them:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">herbaria</span> <span class="op">&lt;-</span> <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Herbarium"</span>, <span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="va">used</span> <span class="op">&lt;-</span> <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span> <span class="op">!=</span> <span class="st">"unconfirmed"</span>, <span class="op">]</span></span>
+<span><span class="va">herbaria</span> <span class="op">&lt;-</span> <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Herbarium"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 5039</span></span>
-<span><span class="va">near</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span>, <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Museum"</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 4206</span></span>
+<span><span class="va">near</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span>, <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Museum"</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Quercus robur"</span>, decimalLongitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lon</span> <span class="op">+</span> <span class="fl">0.005</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
 <span><span class="va">f_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, buffers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
@@ -189,17 +192,26 @@ in a plant table, and use a wider buffer for them:</p>
 <span>                           gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>near <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">name</span>, type <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">type</span>, all <span class="op">=</span> <span class="va">f_all</span><span class="op">$</span><span class="va">flag_institution</span>,</span>
 <span>           herbaria_only <span class="op">=</span> <span class="va">f_herb</span><span class="op">$</span><span class="va">flag_institution</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                  near      type  all herbaria_only</span></span>
-<span><span class="co">#&gt; 1       Andorra Research + Innovation Herbarium TRUE          TRUE</span></span>
-<span><span class="co">#&gt; 2 CENMA, Institut d Estudis Andorrans Herbarium TRUE          TRUE</span></span>
-<span><span class="co">#&gt; 3                      UAE University Herbarium TRUE          TRUE</span></span>
-<span><span class="co">#&gt; 4                                &lt;NA&gt;    Museum TRUE         FALSE</span></span>
-<span><span class="co">#&gt; 5    Natural History Museum Abu Dhabi    Museum TRUE         FALSE</span></span>
-<span><span class="co">#&gt; 6      Sharjah Natural History Museum    Museum TRUE         FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                                                            near</span></span>
+<span><span class="co">#&gt; 1                                                           CENMA, Institut d Estudis Andorrans</span></span>
+<span><span class="co">#&gt; 2 United Arab Emirates University, Islamic Institute, Faculty of Science, Department of Biology</span></span>
+<span><span class="co">#&gt; 3                                      Kabul University, Faculty of Science, Biology Department</span></span>
+<span><span class="co">#&gt; 4                                                             Museum of Natural History, Tirane</span></span>
+<span><span class="co">#&gt; 5                                                                        Natural Science Museum</span></span>
+<span><span class="co">#&gt; 6                                                  Bernardino Rivadavia Natural Sciences Museum</span></span>
+<span><span class="co">#&gt;        type  all herbaria_only</span></span>
+<span><span class="co">#&gt; 1 Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 2 Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 3 Herbarium TRUE          TRUE</span></span>
+<span><span class="co">#&gt; 4    Museum TRUE         FALSE</span></span>
+<span><span class="co">#&gt; 5    Museum TRUE         FALSE</span></span>
+<span><span class="co">#&gt; 6    Museum TRUE          TRUE</span></span></code></pre></div>
 <p>Each record lies about 0.005 degrees (a few hundred metres) east of
 an institution: three herbaria, then three museums. The full table flags
-all six at a 1 km buffer; the herbarium table flags only 3, the records
-next to the herbaria.</p>
+all six at a 1 km buffer. The herbarium table flags 4: the three records
+next to the herbaria, and the record next to the Bernardino Rivadavia
+museum in Buenos Aires, whose herbarium is listed as its own point about
+450 m away.</p>
 <p>The same works with the <code>extension</code> column. It is
 <code>TRUE</code> for points from sources CoordinateCleaner does not
 use; the rows with <code>extension</code> <code>FALSE</code> restrict a
@@ -234,19 +246,18 @@ records near either:</p>
 which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.</p>
-<p>The institution table is one of them. The shipped table has all but
-one of the institutions of CoordinateCleaner’s list (the exception is an
-expert group listed in Antarctica), at the coordinates of its sources.
-CoordinateCleaner placed nearly every institution by its own geocoding,
-so its point can mark a different spot of the same institution. With
-CoordinateCleaner installed, the union adds its points to the shipped
-ones at run time:</p>
+<p>The institution table is one of them. The test uses
+CoordinateCleaner’s institutions, some moved to the place Google Maps
+gives for the institution, and the points of other sources that a check
+has confirmed. The table also contains points that no check has
+confirmed, which the test leaves out:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">inst_both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">inst</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"institution"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">inst_both</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 34802</span></span></code></pre></div>
-<p><code>gazetteers = list(institution = inst_both)</code> then flags
-records near an institution of either table.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;          cc   confirmed    override unconfirmed </span></span>
+<span><span class="co">#&gt;        9205        2765         568       22154</span></span></code></pre></div>
+<p><code>gazetteers = list(institution = inst)</code> flags records near
+any point of the table, the unconfirmed ones included.</p>
 <p>The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
 the <code>aohi</code> test marks each point as a real observation site
 (<code>determination = TRUE</code>, for example a birding reserve) or an
@@ -388,7 +399,7 @@ output:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5039 points md5 24d580bd064957eb6b1843ea46c3db2b"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06); custom: institution 4206 points md5 789446bf66a5e600fd0ddbd0c1cd8165"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a

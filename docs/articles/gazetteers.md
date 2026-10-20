@@ -49,40 +49,44 @@ library(OccurrenceCleaner)
 
 inst <- reference_points("institution")
 head(inst[, c("name", "type", "source", "lon", "lat")], 3)
-#>                                  name      type                 source     lon
-#> 1         Andorra Recerca + Innovació      <NA>          GBIF registry 1.49218
-#> 2       Andorra Research + Innovation Herbarium              GRSciColl 1.49210
-#> 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner list 1.73361
+#>                                  name      type            source      lon
+#> 1         Andorra Recerca + Innovació      <NA>     GBIF registry  1.49218
+#> 2       Andorra Research + Innovation Herbarium         GRSciColl  1.49210
+#> 3 CENMA, Institut d Estudis Andorrans Herbarium CoordinateCleaner 51.39320
 #>        lat
 #> 1 42.46876
 #> 2 42.46650
-#> 3 42.54277
+#> 3 35.79940
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
-#>                           BotanicalGarden 
-#>                                      7117 
 #>                                 Herbarium 
-#>                                      5039 
+#>                                      8272 
+#>                           BotanicalGarden 
+#>                                      7810 
 #>                                    Museum 
-#>                                      3691 
-#>                               ZooAquarium 
-#>                                      2777 
+#>                                      4879 
 #>                         UniversityCollege 
-#>                                       944 
+#>                                      3007 
+#>                               ZooAquarium 
+#>                                      2861 
 #> OtherTypeResearchInstitutionBiorepository 
-#>                                       210
+#>                                       507
 ```
 
-A plant study, for example, may want to flag records at herbaria only,
-since a specimen georeferenced to a zoological museum is unlikely in a
-plant table, and use a wider buffer for them:
+The institution test uses the points whose `status` is not
+`"unconfirmed"`; [Reference
+data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions)
+explains the status. A plant study, for example, may want to flag
+records at herbaria only, since a specimen georeferenced to a zoological
+museum is unlikely in a plant table, and use a wider buffer for them:
 
 ``` r
 
-herbaria <- inst[inst$type %in% "Herbarium", ]
+used <- inst[inst$status != "unconfirmed", ]
+herbaria <- used[used$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 5039
-near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
+#> [1] 4206
+near <- rbind(herbaria[1:3, ], used[used$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
 f_all <- flag_occurrences(x, tests = "institution", buffers = list(institution = 1000))
@@ -90,19 +94,28 @@ f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution 
                            gazetteers = list(institution = herbaria))
 data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
-#>                                  near      type  all herbaria_only
-#> 1       Andorra Research + Innovation Herbarium TRUE          TRUE
-#> 2 CENMA, Institut d Estudis Andorrans Herbarium TRUE          TRUE
-#> 3                      UAE University Herbarium TRUE          TRUE
-#> 4                                <NA>    Museum TRUE         FALSE
-#> 5    Natural History Museum Abu Dhabi    Museum TRUE         FALSE
-#> 6      Sharjah Natural History Museum    Museum TRUE         FALSE
+#>                                                                                            near
+#> 1                                                           CENMA, Institut d Estudis Andorrans
+#> 2 United Arab Emirates University, Islamic Institute, Faculty of Science, Department of Biology
+#> 3                                      Kabul University, Faculty of Science, Biology Department
+#> 4                                                             Museum of Natural History, Tirane
+#> 5                                                                        Natural Science Museum
+#> 6                                                  Bernardino Rivadavia Natural Sciences Museum
+#>        type  all herbaria_only
+#> 1 Herbarium TRUE          TRUE
+#> 2 Herbarium TRUE          TRUE
+#> 3 Herbarium TRUE          TRUE
+#> 4    Museum TRUE         FALSE
+#> 5    Museum TRUE         FALSE
+#> 6    Museum TRUE          TRUE
 ```
 
 Each record lies about 0.005 degrees (a few hundred metres) east of an
 institution: three herbaria, then three museums. The full table flags
-all six at a 1 km buffer; the herbarium table flags only 3, the records
-next to the herbaria.
+all six at a 1 km buffer. The herbarium table flags 4: the three records
+next to the herbaria, and the record next to the Bernardino Rivadavia
+museum in Buenos Aires, whose herbarium is listed as its own point about
+450 m away.
 
 The same works with the `extension` column. It is `TRUE` for points from
 sources CoordinateCleaner does not use; the rows with `extension`
@@ -144,23 +157,22 @@ which collections were georeferenced to provincial seats, the field
 stations of a survey, or the coordinates a particular data provider uses
 as a default.
 
-The institution table is one of them. The shipped table has all but one
-of the institutions of CoordinateCleaner’s list (the exception is an
-expert group listed in Antarctica), at the coordinates of its sources.
-CoordinateCleaner placed nearly every institution by its own geocoding,
-so its point can mark a different spot of the same institution. With
-CoordinateCleaner installed, the union adds its points to the shipped
-ones at run time:
+The institution table is one of them. The test uses CoordinateCleaner’s
+institutions, some moved to the place Google Maps gives for the
+institution, and the points of other sources that a check has confirmed.
+The table also contains points that no check has confirmed, which the
+test leaves out:
 
 ``` r
 
-inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
-nrow(inst_both)
-#> [1] 34802
+table(inst$status)
+#> 
+#>          cc   confirmed    override unconfirmed 
+#>        9205        2765         568       22154
 ```
 
-`gazetteers = list(institution = inst_both)` then flags records near an
-institution of either table.
+`gazetteers = list(institution = inst)` flags records near any point of
+the table, the unconfirmed ones included.
 
 The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
 the `aohi` test marks each point as a real observation site
@@ -318,7 +330,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5039 points md5 24d580bd064957eb6b1843ea46c3db2b"
+#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06); custom: institution 4206 points md5 789446bf66a5e600fd0ddbd0c1cd8165"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

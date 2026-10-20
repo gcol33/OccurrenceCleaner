@@ -24,13 +24,16 @@ the CIA World Factbook and Natural Earth, province centroids, land,
 urban areas and country polygons from Natural Earth (public domain),
 country centroids from the CIA World Factbook, the thematicmapping.org
 World Borders Dataset and the GEOLocate service, and biodiversity
-institutions from GBIF's Global Registry of Scientific Collections
-(GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI GardenSearch, Index
-Herbariorum and the GBIF registry, with every further institution of
+institutions from
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
-table placed from Wikidata, OpenStreetMap or GeoNames. With
-`reference = "CoordinateCleaner"` the point gazetteers are read from the
-user's
+table, with the points Google Maps places elsewhere moved, plus points
+from GBIF's Global Registry of Scientific Collections (GRSciColl),
+Wikidata, Wikipedia, GeoNames, BGCI GardenSearch, Index Herbariorum, the
+GBIF registry and OpenStreetMap that a check beyond their source
+confirms (see
+[test_institution](https://gillescolling.com/OccurrenceCleaner/reference/test_institution.md)).
+With `reference = "CoordinateCleaner"` the point gazetteers are read
+from the user's
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 installation (`countryref`, `institutions`) and the polygon layers are
 downloaded through

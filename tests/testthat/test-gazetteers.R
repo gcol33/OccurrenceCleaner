@@ -85,6 +85,39 @@ test_that("custom gazetteers give CoordinateCleaner's flags with the same ref", 
                    cc(CoordinateCleaner::cc_sea, y, ref = land))
 })
 
+test_that("the institution test uses CoordinateCleaner's points, the overrides and the confirmed points", {
+  inst <- reference_points("institution")
+  expect_setequal(unique(inst$status), c("cc", "override", "confirmed", "unconfirmed"))
+  ov <- inst[inst$status == "override", ]
+  expect_true(all(is.finite(ov$cc_lon) & is.finite(ov$cc_lat) & !is.na(ov$evidence)))
+  expect_true(all(is.na(inst$cc_lon[inst$status != "override"])))
+  expect_true(all(!is.na(inst$evidence[inst$status == "confirmed"])))
+  used <- inst[inst$status != "unconfirmed", ]
+  far <- inst[inst$status == "unconfirmed", ]
+  d <- vapply(seq_len(min(200, nrow(far))), function(i)
+    min(abs(used$lon - far$lon[i]) + abs(used$lat - far$lat[i])), numeric(1))
+  u <- far[which(d > 0.05)[1:2], ]
+  x <- data.frame(decimalLongitude = c(u$lon, used$lon[1:2]), decimalLatitude = c(u$lat, used$lat[1:2]))
+  expect_identical(flag_occurrences(x, tests = "institution")$flag_institution, c(FALSE, FALSE, TRUE, TRUE))
+})
+
+test_that("CoordinateCleaner's institution points ship at its coordinates unless overridden", {
+  skip_if_not_installed("CoordinateCleaner")
+  e <- new.env()
+  utils::data("institutions", package = "CoordinateCleaner", envir = e)
+  cc <- as.data.frame(e$institutions)
+  cc$key <- paste0("cc:", seq_len(nrow(cc)))
+  cc <- cc[is.finite(cc$decimalLongitude) & is.finite(cc$decimalLatitude), ]
+  inst <- reference_points("institution")
+  ours <- inst[inst$status %in% c("cc", "override"), ]
+  expect_setequal(ours$key, cc$key)
+  m <- match(ours$key, cc$key)
+  lon <- ifelse(ours$status == "override", ours$cc_lon, ours$lon)
+  lat <- ifelse(ours$status == "override", ours$cc_lat, ours$lat)
+  expect_equal(lon, cc$decimalLongitude[m])
+  expect_equal(lat, cc$decimalLatitude[m])
+})
+
 test_that("no shipped institution lies at coordinates the zero test flags", {
   inst <- reference_points("institution")
   f <- flag_occurrences(data.frame(decimalLongitude = inst$lon, decimalLatitude = inst$lat), tests = "zero")

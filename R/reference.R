@@ -9,11 +9,12 @@
 #' and country polygons from Natural Earth (public domain), country centroids
 #' from the CIA World Factbook, the thematicmapping.org World Borders Dataset
 #' and the GEOLocate service, and
-#' biodiversity institutions from GBIF's Global Registry of
-#' Scientific Collections (GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI
-#' GardenSearch, Index Herbariorum and the GBIF registry, with every further
-#' institution of [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table placed from Wikidata,
-#' OpenStreetMap or GeoNames. With `reference = "CoordinateCleaner"` the
+#' biodiversity institutions from [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table, with
+#' the points Google Maps places elsewhere moved, plus points from GBIF's
+#' Global Registry of Scientific Collections (GRSciColl), Wikidata, Wikipedia,
+#' GeoNames, BGCI GardenSearch, Index Herbariorum, the GBIF registry and
+#' OpenStreetMap that a check beyond their source confirms (see
+#' [test_institution]). With `reference = "CoordinateCleaner"` the
 #' point gazetteers are read from the user's [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) installation
 #' (`countryref`, `institutions`) and the polygon layers are downloaded through
 #' [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) exactly as that package does, which gives its flags up to the
@@ -108,14 +109,20 @@ sha256_file <- function(path) {
 #'   `type`, `method`, `source`, `key`, `extension` for centroids (`source` is
 #'   CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, `key`
 #'   the Factbook code, ISO3 code or GEOLocate query with its prefix); `key`, `code`, `name`, `country`, `city`,
-#'   `type`, `active`, `master_source`, `source`, `extension` for
-#'   institutions (`source` is GRSciColl, Wikidata, Wikipedia, GeoNames,
-#'   BGCI, Index Herbariorum, GBIF registry or CoordinateCleaner list, `key`
-#'   the GRSciColl key, Wikidata item, the Wikipedia list language, revision
+#'   `type`, `active`, `master_source`, `source`, `extension`, `status`,
+#'   `evidence`, `cc_lon`, `cc_lat` for
+#'   institutions (`source` is CoordinateCleaner, Google Maps, GRSciColl,
+#'   Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry or
+#'   CoordinateCleaner list, `key` the row of CoordinateCleaner's table, the
+#'   GRSciColl key, Wikidata item, the Wikipedia list language, revision
 #'   and line, or the GeoNames, BGCI, Index Herbariorum, GBIF organisation or
 #'   OpenStreetMap id with its prefix; for Wikipedia rows `city` is the place
 #'   they are located by; for Wikipedia and CoordinateCleaner list rows
-#'   `master_source` is where the coordinates come from; `extension` is TRUE for
+#'   `master_source` is where the coordinates come from, for CoordinateCleaner
+#'   rows its geocoding source; `status` is `"cc"`, `"override"`, `"confirmed"`
+#'   or `"unconfirmed"` (see [test_institution]), `evidence` the check behind an
+#'   override or a confirmed point, `cc_lon` and `cc_lat` CoordinateCleaner's
+#'   coordinates of an overridden point; `extension` is TRUE for
 #'   points from sources [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s table does not draw on, for
 #'   capitals, centroids and institutions alike); `id`,
 #'   `taxon` (the group the hotspot was found in: Aves, Insecta, Mammalia,
@@ -158,9 +165,12 @@ reference_points <- function(test = c("capital", "centroid", "institution", "gbi
     })
 }
 
-# Point gazetteer (data frame with lon, lat) for a test under a reference.
+# Point gazetteer (data frame with lon, lat) for a test under a reference. The
+# institution test leaves out the points no check has confirmed.
 point_gazetteer <- function(test, reference) {
-  reference_points(test, reference)[, c("lon", "lat")]
+  g <- reference_points(test, reference)
+  if (!is.null(g$status)) g <- g[g$status != "unconfirmed", ]
+  g[, c("lon", "lat")]
 }
 
 point_index <- function(test, reference) {

@@ -135,7 +135,7 @@ shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 knitr::kable(shown, digits = 2, row.names = FALSE)
 ```
 
-The `(any)` row is the rule as a whole: 274 of the 2,276 records carry at least one flag. The `only` column counts the records flagged by that test alone. These are the records the rule would additionally keep if that test were dropped from it.
+The `(any)` row is the rule as a whole: 273 of the 2,276 records carry at least one flag. The `only` column counts the records flagged by that test alone. These are the records the rule would additionally keep if that test were dropped from it.
 
 Because the errors are labelled, a cross table of tests against the truth shows which test catches which kind of error, and whether any background record is flagged. Tests are in rows and the error groups in columns; the duplicates and the fuzzy taxon matches are left out, since one test each catches them:
 
@@ -158,7 +158,7 @@ Most error types trip more than one test. All 25 swapped records fail `country_m
 neg_caught <- sum(rowSums(as.data.frame(f[f$truth == "negated", paste0("flag_", show)])) > 0)
 ```
 
-The negated longitudes show the limit of the spatial tests. Only `r neg_caught` of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in western France, on land and in the right country, and no record test can tell it from a correct one. Of the 30 records entered at whole degrees, five are caught by `centroid`, because they fall on the whole-degree country centroids of France (2 E, 46 N) and Germany (9 E, 51 N), and one by `institution`. The others are not caught: a whole-degree point in Austria is still in Austria, and GBIF's `COORDINATE_ROUNDED` warning does not mark them, since it records that GBIF itself rounded a coordinate to five decimals. Low precision of this kind is read from `coordinateuncertaintyinmeters` when the source states it; these 30 records state none.
+The negated longitudes show the limit of the spatial tests. Only `r neg_caught` of 25 are caught: a French record at 1.5 E negated to 1.5 W is still in western France, on land and in the right country, and no record test can tell it from a correct one. Of the 30 records entered at whole degrees, five are caught by `centroid`, because they fall on the whole-degree country centroids of France (2 E, 46 N) and Germany (9 E, 51 N). The others are not caught: a whole-degree point in Austria is still in Austria, and GBIF's `COORDINATE_ROUNDED` warning does not mark them, since it records that GBIF itself rounded a coordinate to five decimals. Low precision of this kind is read from `coordinateuncertaintyinmeters` when the source states it; these 30 records state none.
 
 Of the 2,000 background records, 1,998 carry no flag in these columns. The other two are the points in Bavaria, at 13.0 E, 47.6 to 47.7 N, and `country_mismatch` is right about them. The duplicates among the injected groups (7 cultivated, 7 living, 10 at the GBIF headquarters) arise because those records copy the coordinates of existing records and sometimes draw the same species.
 
@@ -222,7 +222,7 @@ ladder$added <- c(ladder$removed[1], diff(ladder$removed))
 knitr::kable(ladder, row.names = FALSE)
 ```
 
-The ladder removes 125 records under `coordinatecleaner` and 274 under `strict`. The country check adds 21, the GBIF warnings 20 and the living and cultivated records 41. `strict` adds the remaining 67 through `duplicate` (42 records, 40 of them the injected copies), `urban` (20) and `aohi` (6), some records carrying more than one; the 20 records with `issue_rounded` are already removed through `issue_taxon`.
+The ladder removes 124 records under `coordinatecleaner` and 273 under `strict`. The country check adds 21, the GBIF warnings 20 and the living and cultivated records 41. `strict` adds the remaining 67 through `duplicate` (42 records, 40 of them the injected copies), `urban` (20) and `aohi` (6), some records carrying more than one; the 20 records with `issue_rounded` are already removed through `issue_taxon`.
 
 For one rule, `plot()` on the summary draws a bar per test: the full bar is the share the test flags, the dark part the share for which it is the only reason the rule removes the record. A test with a long light bar and a short dark one mostly flags records that other tests in the rule remove anyway. `invalid` is 0 here because every example record has valid coordinates:
 
@@ -307,7 +307,7 @@ nrow(clean)
 table(clean$truth)
 ```
 
-The `wild` rule keeps 1,998 of the 2,000 background records and removes every injected error except the 40 duplicates, which it does not target, and 24 of the 30 whole-degree records and the 7 negated records, which no record test can see. The 20 records with a fuzzy taxon match are removed through `issue_taxon`, although their coordinates are fine.
+The `wild` rule keeps 1,998 of the 2,000 background records and removes every injected error except the 40 duplicates, which it does not target, and 25 of the 30 whole-degree records and the 7 negated records, which no record test can see. The 20 records with a fuzzy taxon match are removed through `issue_taxon`, although their coordinates are fine.
 
 ## Practical guidance
 

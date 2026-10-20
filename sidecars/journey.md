@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 25,029 institution locations holding every institution of CoordinateCleaner's list plus 7,665 extension points from additional collection registries and geographic sources (sources named in the reference-data article; used by default, removable), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, 12,538 checked institution locations: CoordinateCleaner's 9,773 with 568 moved to their Google Maps place, and 2,765 points of other registries confirmed by a Google Maps or OpenStreetMap check (linked to the reference-data Institutions section), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -548,7 +548,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gbif.flag  [A3 A5]  (section)
 - idea: every test the columns allow; what ran; reference label; per-test summary
-- job: Flags without `tests`, says what `FALSE` in a flag column means (not flagged; a test that did not run has no column, a grouped test leaves small species untested), names `flag_reference()` with the full label in a `<details>` block, lists with `test_plan()` the 21 tests that ran and the missing input of the 9 others (fossil, dataset, habitat, range), then the per-test shares (274 of 2,276 flagged; `only` defined as the records flagged by that test alone, the ones the rule would additionally keep without it).
+- job: Flags without `tests`, says what `FALSE` in a flag column means (not flagged; a test that did not run has no column, a grouped test leaves small species untested), names `flag_reference()` with the full label in a `<details>` block, lists with `test_plan()` the 21 tests that ran and the missing input of the 9 others (fossil, dataset, habitat, range), then the per-test shares (273 of 2,276 flagged; `only` defined as the records flagged by that test alone, the ones the rule would additionally keep without it).
 - leaves: `flag_reference()` to store with any cleaned table
 
 ### gbif.truth  [A1 A4]
@@ -595,12 +595,12 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.layers  [A5]  (section, with subsections since 2026-10-13)
 - idea: sources, versions, licences, each layer under its own heading
-- job: Lists each layer in a narrow table (Layer, Source, Version / snapshot, Retrieved; short factbook hash, Wikipedia revisions and the IRMNG citation in a note, `aohi` named after `cc_aohi()` while the inventory is AHOI) and which test reads it, then the provenance in subsections: Capitals; Country and province centroids (the three sources as a list); Land, countries and urban areas (Natural Earth terms); Institutions (GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry, the placement of CoordinateCleaner's remaining list); Genus habitats; Artificial hotspots.
-- leaves: Natural Earth public domain; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner; the README links `#institutions`
+- job: Lists each layer in a narrow table (Layer, Source, Version / snapshot, Retrieved; short factbook hash, Wikipedia revisions and the IRMNG citation in a note, `aohi` named after `cc_aohi()` while the inventory is AHOI) and which test reads it, then the provenance in subsections: Capitals; Country and province centroids (the three sources as a list); Land, countries and urban areas (Natural Earth terms); Institutions (opens with what the test uses: CoordinateCleaner's points, the `status` column and `table(inst$source, inst$status)`; the 568 moved points with their conditions and the Duke example; the Google Maps search and the review that kept 60, as a list; the confirmation checks; then the other sources: GRSciColl, Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry, the placement of CoordinateCleaner's list, OpenStreetMap); Genus habitats; Artificial hotspots.
+- leaves: Natural Earth public domain; which institution points the test uses and why; GRSciColl counts and status; the five zero-coordinate institutions left out; Wikidata classes and counts, CC0; IRMNG archive, licence, citation and class counts; nothing copied from CoordinateCleaner; the README links `#institutions`
 
 ### ref.vs-cc  [A1 A5]  (section, "How the reference data differ from CoordinateCleaner's")
 - idea: same places, different tables
-- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-10-13, the retrieval date of the last two institution registries; institutions: all but one of CoordinateCleaner's list held, by name or placed from Wikidata, OpenStreetMap or GeoNames, counted by how; its own geocoded points against the source points, with measured coverage), and shows the capital difference in flags.
+- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-10-17, the date of the last institution check; institutions: CoordinateCleaner's points used, 568 moved, 2,765 confirmed points added; its own geocoding against the source coordinates; `reference = "CoordinateCleaner"` uses its table as it is), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.extension  [A1 A5]  (section)
@@ -753,13 +753,13 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### gaz.filtered  [A5]  (section, "A filtered point layer"; absorbed gaz.points 2026-10-13)
 - idea: a subset of a shipped layer is the simplest custom layer; herbaria only, wider buffer
-- job: Defines a point layer, shows `reference_points("institution")` with `name`, `type`, `source`, filters the table to herbaria and shows the flags change; points to Reference data for the `extension` column and the institution sources (`source`, `master_source`) instead of repeating the inventory.
+- job: Defines a point layer, shows `reference_points("institution")` with `name`, `type`, `source`, says the test uses the points whose `status` is not unconfirmed, filters those to herbaria and shows the flags change; points to Reference data for the `extension` column and the institution sources (`source`, `master_source`) instead of repeating the inventory.
 - leaves: any data frame with longitude and latitude columns is a point layer; `reference_points()`
 
 ### gaz.extended  [A1 A5]  (section, "An extended point layer")
 - idea: union of both capital tables
-- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, and the shipped institutions (all but one of CoordinateCleaner's list, the Antarctic expert group) with CoordinateCleaner's (its own geocoding of gardens and museums).
-- leaves: other point sets fit the same way; CoordinateCleaner's geocoded institutions added at run time
+- job: Combines the Natural Earth and CoordinateCleaner capitals into one layer, then says the institution test uses CoordinateCleaner's points, some moved, plus confirmed points, shows `table(inst$status)` and that passing the whole table adds the unconfirmed points.
+- leaves: other point sets fit the same way; the unconfirmed institution points can be added through `gazetteers`
 
 ### gaz.polygons  [A5]  (section)
 - idea: sf polygons for sea, urban, country_mismatch

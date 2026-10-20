@@ -94,11 +94,12 @@ CIA World Factbook and Natural Earth, province centroids, land, urban areas
 and country polygons from Natural Earth (public domain), country centroids
 from the CIA World Factbook, the thematicmapping.org World Borders Dataset
 and the GEOLocate service, and
-biodiversity institutions from GBIF's Global Registry of
-Scientific Collections (GRSciColl), Wikidata, Wikipedia, GeoNames, BGCI
-GardenSearch, Index Herbariorum and the GBIF registry, with every further
-institution of <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>'s table placed from Wikidata,
-OpenStreetMap or GeoNames. With <code>reference = "CoordinateCleaner"</code> the
+biodiversity institutions from <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>'s table, with
+the points Google Maps places elsewhere moved, plus points from GBIF's
+Global Registry of Scientific Collections (GRSciColl), Wikidata, Wikipedia,
+GeoNames, BGCI GardenSearch, Index Herbariorum, the GBIF registry and
+OpenStreetMap that a check beyond their source confirms (see
+<a href="test_institution.html">test_institution</a>). With <code>reference = "CoordinateCleaner"</code> the
 point gazetteers are read from the user's <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> installation
 (<code>countryref</code>, <code>institutions</code>) and the polygon layers are downloaded through
 <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> exactly as that package does, which gives its flags up to the

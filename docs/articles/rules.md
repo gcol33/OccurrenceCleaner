@@ -146,9 +146,9 @@ summary(f)
 #>   all           invalid 3120       0  0.00    0     0.00
 #>   all              zero 3120      44  1.41    0     0.00
 #>   all             equal 3120      44  1.41    0     0.00
-#>   all           capital 3120     167  5.35  134     4.29
+#>   all           capital 3120     167  5.35  136     4.36
 #>   all          centroid 3120      11  0.35    1     0.03
-#>   all       institution 3120       4  0.13    0     0.00
+#>   all       institution 3120       2  0.06    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
 #>   all               sea 3120     106  3.40   50     1.60
 #>   all         duplicate 3120     131  4.20   95     3.04
@@ -250,10 +250,10 @@ s[s$test %in% c("capital", "sea", "(any)"), ]
 #>  Animalia coordinatecleaner capital 1770      92 5.20   84     4.75
 #>  Animalia coordinatecleaner     sea 1770      64 3.62   36     2.03
 #>  Animalia coordinatecleaner   (any) 1770     156 8.81              
-#>     Fungi coordinatecleaner capital  311      20 6.43   17     5.47
+#>     Fungi coordinatecleaner capital  311      20 6.43   18     5.79
 #>     Fungi coordinatecleaner     sea  311       6 1.93    3     0.96
 #>     Fungi coordinatecleaner   (any)  311      26 8.36              
-#>   Plantae coordinatecleaner capital 1039      55 5.29   52     5.00
+#>   Plantae coordinatecleaner capital 1039      55 5.29   53     5.10
 #>   Plantae coordinatecleaner     sea 1039      36 3.46   23     2.21
 #>   Plantae coordinatecleaner   (any) 1039      92 8.85
 ```

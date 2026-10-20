@@ -191,7 +191,7 @@ table that goes into an analysis.
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 [`summary()`](https://rdrr.io/r/base/summary.html) turns the flags into
@@ -211,7 +211,7 @@ shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 | equal                 |      20 |  0.88 |    0 |
 | capital               |      75 |  3.30 |    0 |
 | centroid              |      14 |  0.62 |    2 |
-| institution           |       2 |  0.09 |    1 |
+| institution           |       2 |  0.09 |    0 |
 | gbif_headquarters     |      15 |  0.66 |    0 |
 | sea                   |      44 |  1.93 |    1 |
 | urban                 |      80 |  3.51 |   19 |
@@ -224,9 +224,9 @@ shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 | establishment_managed |      21 |  0.92 |   14 |
 | outlier               |      45 |  1.98 |    0 |
 | aohi                  |      41 |  1.80 |    6 |
-| (any)                 |     274 | 12.04 |      |
+| (any)                 |     273 | 11.99 |      |
 
-The `(any)` row is the rule as a whole: 274 of the 2,276 records carry
+The `(any)` row is the rule as a whole: 273 of the 2,276 records carry
 at least one flag. The `only` column counts the records flagged by that
 test alone. These are the records the rule would additionally keep if
 that test were dropped from it.
@@ -253,7 +253,7 @@ tab <- t(tab[groups, ])
 | equal | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | 0 |
 | capital | 0 | 60 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |
 | centroid | 0 | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 |
-| institution | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| institution | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | gbif_headquarters | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |
 | sea | 0 | 0 | 20 | 0 | 9 | 15 | 0 | 0 | 0 |
 | country_mismatch | 2 | 0 | 20 | 15 | 25 | 17 | 0 | 0 | 0 |
@@ -277,13 +277,12 @@ The negated longitudes show the limit of the spatial tests. Only 18 of
 western France, on land and in the right country, and no record test can
 tell it from a correct one. Of the 30 records entered at whole degrees,
 five are caught by `centroid`, because they fall on the whole-degree
-country centroids of France (2 E, 46 N) and Germany (9 E, 51 N), and one
-by `institution`. The others are not caught: a whole-degree point in
-Austria is still in Austria, and GBIF’s `COORDINATE_ROUNDED` warning
-does not mark them, since it records that GBIF itself rounded a
-coordinate to five decimals. Low precision of this kind is read from
-`coordinateuncertaintyinmeters` when the source states it; these 30
-records state none.
+country centroids of France (2 E, 46 N) and Germany (9 E, 51 N). The
+others are not caught: a whole-degree point in Austria is still in
+Austria, and GBIF’s `COORDINATE_ROUNDED` warning does not mark them,
+since it records that GBIF itself rounded a coordinate to five decimals.
+Low precision of this kind is read from `coordinateuncertaintyinmeters`
+when the source states it; these 30 records state none.
 
 Of the 2,000 background records, 1,998 carry no flag in these columns.
 The other two are the points in Bavaria, at 13.0 E, 47.6 to 47.7 N, and
@@ -328,7 +327,7 @@ knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tes
 
 | tests | records |
 |:---|---:|
-| capital + urban | 44 |
+| capital + urban | 43 |
 | duplicate | 41 |
 | urban | 19 |
 | country_mismatch + issue_coordinate + outlier | 16 |
@@ -399,13 +398,13 @@ ladder$added <- c(ladder$removed[1], diff(ladder$removed))
 
 | rule                      | tests | removed | kept | added |
 |:--------------------------|------:|--------:|-----:|------:|
-| coordinatecleaner         |     8 |     125 | 2151 |   125 |
-| coordinatecleaner_country |     9 |     146 | 2130 |    21 |
-| coordinatecleaner_gbif    |    11 |     166 | 2110 |    20 |
-| wild                      |    13 |     207 | 2069 |    41 |
-| strict                    |    21 |     274 | 2002 |    67 |
+| coordinatecleaner         |     8 |     124 | 2152 |   124 |
+| coordinatecleaner_country |     9 |     145 | 2131 |    21 |
+| coordinatecleaner_gbif    |    11 |     165 | 2111 |    20 |
+| wild                      |    13 |     206 | 2070 |    41 |
+| strict                    |    21 |     273 | 2003 |    67 |
 
-The ladder removes 125 records under `coordinatecleaner` and 274 under
+The ladder removes 124 records under `coordinatecleaner` and 273 under
 `strict`. The country check adds 21, the GBIF warnings 20 and the living
 and cultivated records 41. `strict` adds the remaining 67 through
 `duplicate` (42 records, 40 of them the injected copies), `urban` (20)
@@ -441,11 +440,11 @@ dimnames(share) <- list(t_k$kingdom, names(rules))
 
 |                           | Animalia | Fungi | Plantae |
 |:--------------------------|---------:|------:|--------:|
-| coordinatecleaner         |    0.062 | 0.028 |   0.061 |
-| coordinatecleaner_country |    0.072 | 0.035 |   0.071 |
-| coordinatecleaner_gbif    |    0.085 | 0.043 |   0.076 |
-| wild                      |    0.109 | 0.063 |   0.087 |
-| strict                    |    0.132 | 0.102 |   0.119 |
+| coordinatecleaner         |    0.062 | 0.028 |   0.060 |
+| coordinatecleaner_country |    0.072 | 0.035 |   0.070 |
+| coordinatecleaner_gbif    |    0.085 | 0.043 |   0.075 |
+| wild                      |    0.109 | 0.063 |   0.086 |
+| strict                    |    0.132 | 0.102 |   0.118 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
 
@@ -488,7 +487,7 @@ shown <- t_y[, c("year_bin", "n", "flagged_capital", "removed_coordinatecleaner_
 |:----------|----:|-------------------:|--------:|------:|
 | \<1900    | 267 |                 31 |      37 | 0.139 |
 | 1900-1950 | 605 |                 34 |      53 | 0.088 |
-| 1950-2000 | 846 |                  7 |      38 | 0.045 |
+| 1950-2000 | 846 |                  7 |      37 | 0.044 |
 | \>=2000   | 558 |                  3 |      18 | 0.032 |
 
 The rule removes 13.9 % of the records before 1900 and 3.2 % of those
@@ -509,7 +508,7 @@ shown <- t_u[, c("coordinateuncertaintyinmeters_bin", "n",
 | \<100           | 775 |      59 |  716 |
 | 100-1000        | 370 |      23 |  347 |
 | \>=1000         | 736 |      36 |  700 |
-| missing         | 395 |      28 |  367 |
+| missing         | 395 |      27 |  368 |
 
 A threshold on uncertainty is then a filter on the raw column next to
 the rule, for example keeping records with a stated uncertainty of at
@@ -536,16 +535,16 @@ anything:
 
 clean <- keep_unflagged(f, rules$wild)
 nrow(clean)
-#> [1] 2069
+#> [1] 2070
 table(clean$truth)
 #> 
 #> background  duplicate    negated    rounded 
-#>       1998         40          7         24
+#>       1998         40          7         25
 ```
 
 The `wild` rule keeps 1,998 of the 2,000 background records and removes
 every injected error except the 40 duplicates, which it does not target,
-and 24 of the 30 whole-degree records and the 7 negated records, which
+and 25 of the 30 whole-degree records and the 7 negated records, which
 no record test can see. The 20 records with a fuzzy taxon match are
 removed through `issue_taxon`, although their coordinates are fine.
 

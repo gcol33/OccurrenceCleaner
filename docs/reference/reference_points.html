@@ -117,14 +117,20 @@ or the Natural Earth country code and name with its prefix); <code>name</code>, 
 <code>type</code>, <code>method</code>, <code>source</code>, <code>key</code>, <code>extension</code> for centroids (<code>source</code> is
 CIA World Factbook, thematicmapping, GEOLocate or Natural Earth, <code>key</code>
 the Factbook code, ISO3 code or GEOLocate query with its prefix); <code>key</code>, <code>code</code>, <code>name</code>, <code>country</code>, <code>city</code>,
-<code>type</code>, <code>active</code>, <code>master_source</code>, <code>source</code>, <code>extension</code> for
-institutions (<code>source</code> is GRSciColl, Wikidata, Wikipedia, GeoNames,
-BGCI, Index Herbariorum, GBIF registry or CoordinateCleaner list, <code>key</code>
-the GRSciColl key, Wikidata item, the Wikipedia list language, revision
+<code>type</code>, <code>active</code>, <code>master_source</code>, <code>source</code>, <code>extension</code>, <code>status</code>,
+<code>evidence</code>, <code>cc_lon</code>, <code>cc_lat</code> for
+institutions (<code>source</code> is CoordinateCleaner, Google Maps, GRSciColl,
+Wikidata, Wikipedia, GeoNames, BGCI, Index Herbariorum, GBIF registry or
+CoordinateCleaner list, <code>key</code> the row of CoordinateCleaner's table, the
+GRSciColl key, Wikidata item, the Wikipedia list language, revision
 and line, or the GeoNames, BGCI, Index Herbariorum, GBIF organisation or
 OpenStreetMap id with its prefix; for Wikipedia rows <code>city</code> is the place
 they are located by; for Wikipedia and CoordinateCleaner list rows
-<code>master_source</code> is where the coordinates come from; <code>extension</code> is TRUE for
+<code>master_source</code> is where the coordinates come from, for CoordinateCleaner
+rows its geocoding source; <code>status</code> is <code>"cc"</code>, <code>"override"</code>, <code>"confirmed"</code>
+or <code>"unconfirmed"</code> (see <a href="test_institution.html">test_institution</a>), <code>evidence</code> the check behind an
+override or a confirmed point, <code>cc_lon</code> and <code>cc_lat</code> CoordinateCleaner's
+coordinates of an overridden point; <code>extension</code> is TRUE for
 points from sources <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>'s table does not draw on, for
 capitals, centroids and institutions alike); <code>id</code>,
 <code>taxon</code> (the group the hotspot was found in: Aves, Insecta, Mammalia,

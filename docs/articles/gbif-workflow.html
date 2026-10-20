@@ -272,7 +272,7 @@ that produced the flags, with the version of every layer. It is worth
 storing next to any cleaned table that goes into an analysis.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_reference.html">flag_reference</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares per test. With one
 rule of every test, it gives for each test the records it flags, their
 percentage, and the records for which it is the only flag:</p>
@@ -315,7 +315,7 @@ percentage, and the records for which it is the only flag:</p>
 <td align="left">institution</td>
 <td align="right">2</td>
 <td align="right">0.09</td>
-<td align="right">1</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">gbif_headquarters</td>
@@ -391,13 +391,13 @@ percentage, and the records for which it is the only flag:</p>
 </tr>
 <tr class="even">
 <td align="left">(any)</td>
-<td align="right">274</td>
-<td align="right">12.04</td>
+<td align="right">273</td>
+<td align="right">11.99</td>
 <td align="right"></td>
 </tr>
 </tbody>
 </table>
-<p>The <code>(any)</code> row is the rule as a whole: 274 of the 2,276
+<p>The <code>(any)</code> row is the rule as a whole: 273 of the 2,276
 records carry at least one flag. The <code>only</code> column counts the
 records flagged by that test alone. These are the records the rule would
 additionally keep if that test were dropped from it.</p>
@@ -490,12 +490,12 @@ one test each catches them:</p>
 <tr class="odd">
 <td align="left">institution</td>
 <td align="right">0</td>
-<td align="right">1</td>
+<td align="right">2</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
-<td align="right">1</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
@@ -602,11 +602,10 @@ western France, on land and in the right country, and no record test can
 tell it from a correct one. Of the 30 records entered at whole degrees,
 five are caught by <code>centroid</code>, because they fall on the
 whole-degree country centroids of France (2 E, 46 N) and Germany (9 E,
-51 N), and one by <code>institution</code>. The others are not caught: a
-whole-degree point in Austria is still in Austria, and GBIF’s
-<code>COORDINATE_ROUNDED</code> warning does not mark them, since it
-records that GBIF itself rounded a coordinate to five decimals. Low
-precision of this kind is read from
+51 N). The others are not caught: a whole-degree point in Austria is
+still in Austria, and GBIF’s <code>COORDINATE_ROUNDED</code> warning
+does not mark them, since it records that GBIF itself rounded a
+coordinate to five decimals. Low precision of this kind is read from
 <code>coordinateuncertaintyinmeters</code> when the source states it;
 these 30 records state none.</p>
 <p>Of the 2,000 background records, 1,998 carry no flag in these
@@ -2683,6 +2682,7 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='225.91' cy='104.89' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='231.80' cy='108.14' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='169.96' cy='134.10' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
+<circle cx='217.08' cy='98.40' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='217.08' cy='95.16' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='228.86' cy='108.14' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='169.96' cy='134.10' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
@@ -2944,7 +2944,6 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <circle cx='176.19' cy='112.87' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='183.39' cy='110.27' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='214.13' cy='95.16' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
-<circle cx='217.08' cy='98.40' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='193.52' cy='111.38' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='193.52' cy='111.38' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='193.52' cy='111.38' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
@@ -2972,7 +2971,7 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <text x='42.00' y='135.87' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text x='42.00' y='70.96' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='58.80,309.60 451.20,309.60 451.20,50.40 58.80,50.40 ' style='stroke-width: 0.75; stroke: #5C6166;' />
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule spatial: 146 of 2,276 records removed</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule spatial: 145 of 2,276 records removed</text>
 </g>
 <g clip-path='url(#cpNTguODB8NDUxLjIwfDUwLjQwfDMwOS42MA==)'>
 <circle cx='71.40' cy='276.00' r='3.15' style='stroke-width: 0.75; stroke: none; fill: #5C6166;' />
@@ -3008,7 +3007,7 @@ flag word makes the combinations easy to count: each distinct value of
 <tbody>
 <tr class="odd">
 <td align="left">capital + urban</td>
-<td align="right">44</td>
+<td align="right">43</td>
 </tr>
 <tr class="even">
 <td align="left">duplicate</td>
@@ -3125,42 +3124,42 @@ rounding note.</p></li>
 <tr class="odd">
 <td align="left">coordinatecleaner</td>
 <td align="right">8</td>
-<td align="right">125</td>
-<td align="right">2151</td>
-<td align="right">125</td>
+<td align="right">124</td>
+<td align="right">2152</td>
+<td align="right">124</td>
 </tr>
 <tr class="even">
 <td align="left">coordinatecleaner_country</td>
 <td align="right">9</td>
-<td align="right">146</td>
-<td align="right">2130</td>
+<td align="right">145</td>
+<td align="right">2131</td>
 <td align="right">21</td>
 </tr>
 <tr class="odd">
 <td align="left">coordinatecleaner_gbif</td>
 <td align="right">11</td>
-<td align="right">166</td>
-<td align="right">2110</td>
+<td align="right">165</td>
+<td align="right">2111</td>
 <td align="right">20</td>
 </tr>
 <tr class="even">
 <td align="left">wild</td>
 <td align="right">13</td>
-<td align="right">207</td>
-<td align="right">2069</td>
+<td align="right">206</td>
+<td align="right">2070</td>
 <td align="right">41</td>
 </tr>
 <tr class="odd">
 <td align="left">strict</td>
 <td align="right">21</td>
-<td align="right">274</td>
-<td align="right">2002</td>
+<td align="right">273</td>
+<td align="right">2003</td>
 <td align="right">67</td>
 </tr>
 </tbody>
 </table>
-<p>The ladder removes 125 records under <code>coordinatecleaner</code>
-and 274 under <code>strict</code>. The country check adds 21, the GBIF
+<p>The ladder removes 124 records under <code>coordinatecleaner</code>
+and 273 under <code>strict</code>. The country check adds 21, the GBIF
 warnings 20 and the living and cultivated records 41.
 <code>strict</code> adds the remaining 67 through <code>duplicate</code>
 (42 records, 40 of them the injected copies), <code>urban</code> (20)
@@ -3234,7 +3233,7 @@ every example record has valid coordinates:</p>
 <text x='312.83' y='386.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
 <text x='382.30' y='386.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
 <rect x='173.88' y='323.27' width='0.00' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='297.12' width='3.05' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='297.12' width='0.00' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='270.96' width='15.26' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='244.81' width='0.00' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='218.66' width='0.00' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
@@ -3242,7 +3241,7 @@ every example record has valid coordinates:</p>
 <rect x='173.88' y='166.35' width='61.05' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='140.19' width='0.00' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='114.04' width='3.05' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='87.89' width='152.63' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='87.89' width='149.57' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='61.73' width='15.26' height='21.79' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <text x='167.16' y='339.18' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
 <text x='167.16' y='313.03' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
@@ -3266,7 +3265,7 @@ every example record has valid coordinates:</p>
 <text x='316.59' y='128.28' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
 <text x='411.22' y='102.13' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.30</text>
 <text x='423.43' y='75.97' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.47</text>
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner_gbif removes 7.3 % of 2,276 records</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner_gbif removes 7.2 % of 2,276 records</text>
 </g>
 <defs>
   <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwzNTYuNDA='>
@@ -3303,31 +3302,31 @@ rows:</p>
 <td align="left">coordinatecleaner</td>
 <td align="right">0.062</td>
 <td align="right">0.028</td>
-<td align="right">0.061</td>
+<td align="right">0.060</td>
 </tr>
 <tr class="even">
 <td align="left">coordinatecleaner_country</td>
 <td align="right">0.072</td>
 <td align="right">0.035</td>
-<td align="right">0.071</td>
+<td align="right">0.070</td>
 </tr>
 <tr class="odd">
 <td align="left">coordinatecleaner_gbif</td>
 <td align="right">0.085</td>
 <td align="right">0.043</td>
-<td align="right">0.076</td>
+<td align="right">0.075</td>
 </tr>
 <tr class="even">
 <td align="left">wild</td>
 <td align="right">0.109</td>
 <td align="right">0.063</td>
-<td align="right">0.087</td>
+<td align="right">0.086</td>
 </tr>
 <tr class="odd">
 <td align="left">strict</td>
 <td align="right">0.132</td>
 <td align="right">0.102</td>
-<td align="right">0.119</td>
+<td align="right">0.118</td>
 </tr>
 </tbody>
 </table>
@@ -3410,22 +3409,22 @@ ladder:</p>
 <polyline points='314.16,155.28 314.16,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='109.17,104.97 160.42,92.14 211.66,75.46 262.91,44.66 314.16,15.14 ' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
 <polyline points='109.17,148.61 160.42,139.62 211.66,129.36 262.91,103.69 314.16,53.64 ' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<polyline points='109.17,106.26 160.42,93.42 211.66,87.01 262.91,72.89 314.16,31.82 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
+<polyline points='109.17,107.54 160.42,94.71 211.66,88.29 262.91,74.17 314.16,33.11 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
 <circle cx='109.17' cy='104.97' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='109.17,143.61 113.50,151.11 104.84,151.11 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='105.95,109.47 112.38,109.47 112.38,103.04 105.95,103.04 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='105.95,110.76 112.38,110.76 112.38,104.32 105.95,104.32 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='160.42' cy='92.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='160.42,134.62 164.75,142.12 156.09,142.12 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='157.20,96.64 163.63,96.64 163.63,90.21 157.20,90.21 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='157.20,97.92 163.63,97.92 163.63,91.49 157.20,91.49 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='211.66' cy='75.46' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='211.66,124.36 215.99,131.86 207.33,131.86 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='208.45,90.22 214.88,90.22 214.88,83.79 208.45,83.79 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='208.45,91.51 214.88,91.51 214.88,85.08 208.45,85.08 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='262.91' cy='44.66' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='262.91,98.69 267.24,106.19 258.58,106.19 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='259.70,76.11 266.13,76.11 266.13,69.68 259.70,69.68 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='259.70,77.39 266.13,77.39 266.13,70.96 259.70,70.96 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='314.16' cy='15.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='314.16,48.64 318.49,56.14 309.83,56.14 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='310.94,35.04 317.37,35.04 317.37,28.61 310.94,28.61 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='310.94,36.32 317.37,36.32 317.37,29.89 310.94,29.89 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNzMuNjA=)'>
 <text x='70.80' y='157.32' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>
@@ -3493,8 +3492,8 @@ removes most:</p>
 <td align="left">1950-2000</td>
 <td align="right">846</td>
 <td align="right">7</td>
-<td align="right">38</td>
-<td align="right">0.045</td>
+<td align="right">37</td>
+<td align="right">0.044</td>
 </tr>
 <tr class="even">
 <td align="left">&gt;=2000</td>
@@ -3544,8 +3543,8 @@ records without a stated uncertainty form the group
 <tr class="even">
 <td align="left">missing</td>
 <td align="right">395</td>
-<td align="right">28</td>
-<td align="right">367</td>
+<td align="right">27</td>
+<td align="right">368</td>
 </tr>
 </tbody>
 </table>
@@ -3569,14 +3568,14 @@ anything:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rules</span><span class="op">$</span><span class="va">wild</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2069</span></span>
+<span><span class="co">#&gt; [1] 2070</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">truth</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; background  duplicate    negated    rounded </span></span>
-<span><span class="co">#&gt;       1998         40          7         24</span></span></code></pre></div>
+<span><span class="co">#&gt;       1998         40          7         25</span></span></code></pre></div>
 <p>The <code>wild</code> rule keeps 1,998 of the 2,000 background
 records and removes every injected error except the 40 duplicates, which
-it does not target, and 24 of the 30 whole-degree records and the 7
+it does not target, and 25 of the 30 whole-degree records and the 7
 negated records, which no record test can see. The 20 records with a
 fuzzy taxon match are removed through <code>issue_taxon</code>, although
 their coordinates are fine.</p>

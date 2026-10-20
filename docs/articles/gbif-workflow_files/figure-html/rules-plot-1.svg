@@ -60,22 +60,22 @@
 <polyline points='314.16,155.28 314.16,8.47 ' style='stroke-width: 1.65; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='109.17,104.97 160.42,92.14 211.66,75.46 262.91,44.66 314.16,15.14 ' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
 <polyline points='109.17,148.61 160.42,139.62 211.66,129.36 262.91,103.69 314.16,53.64 ' style='stroke-width: 2.13; stroke: #2E6F9E; stroke-linecap: butt;' />
-<polyline points='109.17,106.26 160.42,93.42 211.66,87.01 262.91,72.89 314.16,31.82 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
+<polyline points='109.17,107.54 160.42,94.71 211.66,88.29 262.91,74.17 314.16,33.11 ' style='stroke-width: 2.13; stroke: #3F7A3D; stroke-linecap: butt;' />
 <circle cx='109.17' cy='104.97' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='109.17,143.61 113.50,151.11 104.84,151.11 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='105.95,109.47 112.38,109.47 112.38,103.04 105.95,103.04 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='105.95,110.76 112.38,110.76 112.38,104.32 105.95,104.32 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='160.42' cy='92.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='160.42,134.62 164.75,142.12 156.09,142.12 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='157.20,96.64 163.63,96.64 163.63,90.21 157.20,90.21 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='157.20,97.92 163.63,97.92 163.63,91.49 157.20,91.49 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='211.66' cy='75.46' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='211.66,124.36 215.99,131.86 207.33,131.86 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='208.45,90.22 214.88,90.22 214.88,83.79 208.45,83.79 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='208.45,91.51 214.88,91.51 214.88,85.08 208.45,85.08 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='262.91' cy='44.66' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='262.91,98.69 267.24,106.19 258.58,106.19 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='259.70,76.11 266.13,76.11 266.13,69.68 259.70,69.68 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='259.70,77.39 266.13,77.39 266.13,70.96 259.70,70.96 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 <circle cx='314.16' cy='15.14' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />
 <polygon points='314.16,48.64 318.49,56.14 309.83,56.14 ' style='stroke-width: 1.10; stroke: none; fill: #2E6F9E;' />
-<polygon points='310.94,35.04 317.37,35.04 317.37,28.61 310.94,28.61 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
+<polygon points='310.94,36.32 317.37,36.32 317.37,29.89 310.94,29.89 ' style='stroke-width: 1.10; stroke: none; fill: #3F7A3D;' />
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNzMuNjA=)'>
 <text x='70.80' y='157.32' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2.5 %</text>

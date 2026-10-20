@@ -118,9 +118,10 @@
 
 ### extension-points
 - forms: `extension` column; points marked `extension`; extension points
-- as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (243 Natural Earth capitals, 516 Natural Earth country centroids and label points, 7,665 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
+- as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (243 Natural Earth capitals, 516 Natural Earth country centroids and label points, 7,660 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); capitals and centroids used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
 - defined: @p:ref.extension; ?test_capital, ?test_centroid, ?test_institution
-- stated-at: @p:readme.usecases (7,665 institutions marked `extension`); @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md
+- note: the 7,660 institution extension points are all unconfirmed, so the institution test leaves them out (institutions-status)
+- stated-at: @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md
 
 ### reference-points
 - forms: `reference_points()`
@@ -210,10 +211,10 @@
 - stated-at: @p:cc.agreement
 
 ### gbif-simulation
-- metric: counts from the seeded simulation in the GBIF workflow article, flagged with every test the columns allow (21 tests): 274 of 2,276 records flagged; ladder 125, +21, +20, +41, +67 (duplicate 42, urban 20, aohi 6); 1,998 clean kept; 15 of 20 zero records with seven tests; 25 swapped records flagged by `outlier`; of 30 whole-degree records 5 on the France and Germany centroids, 1 at an institution, 24 kept by `wild`
+- metric: counts from the seeded simulation in the GBIF workflow article, flagged with every test the columns allow (21 tests): 273 of 2,276 records flagged; ladder 124, +21, +20, +41, +67 (duplicate 42, urban 20, aohi 6); 1,998 clean kept; 15 of 20 zero records with seven tests; 25 swapped records flagged by `outlier`; of 30 whole-degree records 5 on the France and Germany centroids, 25 kept by `wild`; `institution` flags 2 of the capital records
 - source: the article's own chunks (set.seed(42))
 - stated-at: @p:gbif.flag; @p:gbif.truth; @p:gbif.combos; @p:gbif.ladder; @p:gbif.cleaned
-- note: recomputed 2026-10-12 after the default changed to every applicable test; the build of 8c3de2d already showed `cc` 125 and 24 whole-degree records kept against prose 119 and none, after the reference-data update. The negated-record catch is computed inline as `neg_caught`; the other values are prose constants and go stale if the simulation or the reference data changes
+- note: recomputed 2026-10-12 after the default changed to every applicable test; the build of 8c3de2d already showed `cc` 125 and 24 whole-degree records kept against prose 119 and none, after the reference-data update; recomputed 2026-10-17 for the institution status table (273, 124, 25 kept, none at an institution). The negated-record catch is computed inline as `neg_caught`; the other values are prose constants and go stale if the simulation or the reference data changes
 
 ### rules-simulation
 - metric: the 40 zero records, flagged by `zero`, `equal` and `sea`, so none counted under `only`, in the rules article
@@ -231,8 +232,15 @@
 - metric: OpenStreetMap location check (Overpass API, retrieved 2026-10-13): 258,691 named features of university, college, research institute or office, museum, zoo, aquarium and botanical garden kinds; a feature within 25 km of CoordinateCleaner's point whose distinctive name words all occur in the institution's name and cover at least half of its own is found for 4,818 of 9,773 institutions; 1,662 lie closer to CoordinateCleaner's point than every point of the table for the institution, 1,134 added after dropping duplicates and zero coordinates (all `extension` FALSE, median 2.8 km from the nearest earlier point of the same name)
 - metric: a shipped point within 100 m / 1 km / 5 km of CoordinateCleaner's point for 36 / 78 / 92 % of its 9,773 institutions (33 / 76 / 91 % for the points with `extension` FALSE; 32 / 73 / 91 % and 28 / 70 / 90 % before the OpenStreetMap check); CoordinateCleaner geocoded nearly every row itself (641 of its 712 BGCI gardens, 398 Wikipedia museums by hand)
 - source: data-raw/institutions.R, data-raw/overpass.R, queried 2026-10-10 and 2026-10-13; dev_notes/reference_data.md
-- stated-at: @p:readme.usecases (25,029 points, 7,665 extension, seven Wikipedia languages, all but one CoordinateCleaner institution); NEWS.md; @p:ref.layers; @p:ref.vs-cc; ?test_institution; @p:gaz.extended (CoordinateCleaner's own geocoding, union; all but one)
-- avoid: "every institution of CoordinateCleaner's list" (one, the SCAR expert group in Antarctica, is not placed; README, gazetteers article fixed 2026-10-13)
+- stated-at: @p:ref.layers (sources); dev_notes/reference_data.md. The counts above describe the whole table; since 2026-10-17 the test uses only the points of institutions-status
+
+### institutions-status
+- metric: the institution test uses 12,538 points: CoordinateCleaner 3.0.1's 9,773 institutions with coordinates (`status` cc 9,205, override 568) and 2,765 confirmed points of other sources; 22,154 unconfirmed points (all 7,660 `extension` points among them) are in `reference_points("institution")` and left out by the test; 34,692 rows in all
+- metric: overrides: every CoordinateCleaner point searched in Google Maps by name, city and country (2026-10-13 to 2026-10-17); 628 candidates with a Google place of the name within 25 km of the record's city and CoordinateCleaner's point and the nearest other point over 25 km from both; hand review kept 60 (41 other institution, 9 generic name or town, 10 several sites), 568 moved; median move 428 km, 473 over 100 km, 180 over 1,000 km; 513 of 568 automatic, 55 hand-placed
+- metric: confirmed: Google Maps place of the name within 300 m (3,504 checks) or within 200 m of the OpenStreetMap feature of the name (3,509 checks, not counted for OpenStreetMap points), on the point nearest each CoordinateCleaner institution; 3,122 distinct points, 2,765 kept after dropping points at CoordinateCleaner's coordinates and OpenStreetMap-only confirmations
+- source: data-raw/institution_overrides.csv, data-raw/institution_checks.csv (exported by occurrencecleaner-qa/export_evidence.R), data-raw/institutions.R; dev_notes/points.md
+- stated-at: @p:readme.usecases (12,538, 9,773, 568, 2,765); NEWS.md; @p:ref.layers (Institutions); @p:ref.vs-cc; ?test_institution; ?reference_points; @p:gaz.filtered (status), @p:gaz.extended (table(inst$status))
+- avoid: "all but one" and the 25,029 / 7,665 counts (pre-2026-10-17 table); describing unconfirmed points as used by default
 
 ### habitat-genera
 - metric: 318,365 kingdom/genus pairs classed from IRMNG: 296,474 not marine, 21,891 only marine
@@ -284,7 +292,7 @@
 - condition: an article or the README names a rule `coordinatecleaner`
 - action: it is always the same eight tests: `invalid`, `zero`, `equal`, `capital`, `centroid`, `institution`, `gbif_headquarters`, `sea` (the `clean_coordinates()` defaults that need only coordinates and a species, without its outlier test)
 - stated-at: vignettes/rules.Rmd (Comparing rules); vignettes/on-disk.Rmd (Tallying from disk); vignettes/gbif-workflow.Rmd (Comparing cleaning rules, since 2026-10-13); README.Rmd (snapshot example, since 2026-10-13)
-- note: `invalid` flags nothing in the GBIF simulation, so the ladder counts (125, 274) did not change
+- note: `invalid` flags nothing in the GBIF simulation, so the ladder counts (then 125, 274; 124, 273 since 2026-10-17) did not change
 
 ### not-flagged
 - condition: prose reads a `FALSE` flag or an unflagged record

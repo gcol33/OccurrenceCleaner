@@ -44,12 +44,13 @@ head(inst[, c("name", "type", "source", "lon", "lat")], 3)
 head(sort(table(inst$type), decreasing = TRUE))
 ```
 
-A plant study, for example, may want to flag records at herbaria only, since a specimen georeferenced to a zoological museum is unlikely in a plant table, and use a wider buffer for them:
+The institution test uses the points whose `status` is not `"unconfirmed"`; [Reference data](reference-data.html#institutions) explains the status. A plant study, for example, may want to flag records at herbaria only, since a specimen georeferenced to a zoological museum is unlikely in a plant table, and use a wider buffer for them:
 
 ```{r herbaria}
-herbaria <- inst[inst$type %in% "Herbarium", ]
+used <- inst[inst$status != "unconfirmed", ]
+herbaria <- used[used$type %in% "Herbarium", ]
 nrow(herbaria)
-near <- rbind(herbaria[1:3, ], inst[inst$type %in% "Museum", ][1:3, ])
+near <- rbind(herbaria[1:3, ], used[used$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
 f_all <- flag_occurrences(x, tests = "institution", buffers = list(institution = 1000))
@@ -59,7 +60,7 @@ data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
 ```
 
-Each record lies about 0.005 degrees (a few hundred metres) east of an institution: three herbaria, then three museums. The full table flags all six at a 1 km buffer; the herbarium table flags only `r sum(f_herb$flag_institution)`, the records next to the herbaria.
+Each record lies about 0.005 degrees (a few hundred metres) east of an institution: three herbaria, then three museums. The full table flags all six at a 1 km buffer. The herbarium table flags `r sum(f_herb$flag_institution)`: the three records next to the herbaria, and the record next to the Bernardino Rivadavia museum in Buenos Aires, whose herbarium is listed as its own point about 450 m away.
 
 The same works with the `extension` column. It is `TRUE` for points from sources CoordinateCleaner does not use; the rows with `extension` `FALSE` restrict a test to CoordinateCleaner's sources, as [Reference data](reference-data.html#extension-points) shows for the capitals. That article also lists the sources of every layer ([Institutions](reference-data.html#institutions) for the `source` and `master_source` columns of the institution table).
 
@@ -80,14 +81,13 @@ data.frame(city = y$city,
 
 Other point sets fit the same way: regional capitals for a study in which collections were georeferenced to provincial seats, the field stations of a survey, or the coordinates a particular data provider uses as a default.
 
-The institution table is one of them. The shipped table has all but one of the institutions of CoordinateCleaner's list (the exception is an expert group listed in Antarctica), at the coordinates of its sources. CoordinateCleaner placed nearly every institution by its own geocoding, so its point can mark a different spot of the same institution. With CoordinateCleaner installed, the union adds its points to the shipped ones at run time:
+The institution table is one of them. The test uses CoordinateCleaner's institutions, some moved to the place Google Maps gives for the institution, and the points of other sources that a check has confirmed. The table also contains points that no check has confirmed, which the test leaves out:
 
-```{r inst-union, eval = has_cc}
-inst_both <- rbind(inst[, c("lon", "lat")], reference_points("institution", reference = "CoordinateCleaner"))
-nrow(inst_both)
+```{r inst-status}
+table(inst$status)
 ```
 
-`gazetteers = list(institution = inst_both)` then flags records near an institution of either table.
+`gazetteers = list(institution = inst)` flags records near any point of the table, the unconfirmed ones included.
 
 The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind the `aohi` test marks each point as a real observation site (`determination = TRUE`, for example a birding reserve) or an artificial aggregate of records (`FALSE`, for example a georeferencing default). A study that keeps records from popular sites can flag only the aggregates:
 
