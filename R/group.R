@@ -275,29 +275,38 @@ axis_periodic <- function(f, mids, s) {
   isTRUE(com >= s$reg_dist_min && com <= s$reg_dist_max && n_reg >= s$reg_out_thresh)
 }
 
-# Degree-minute test of one dataset from its set of filled cells on the
-# mat_size x mat_size grid of coordinate decimals.
-ddmm_fails <- function(cells, span_ok, s) {
-  if (!span_ok || !length(cells)) return(FALSE)
+# Degree-minute test of one dataset from the number of distinct cells it
+# fills on the mat_size x mat_size grid of coordinate decimals, n, and the
+# number of those in the corner of decimals below 0.6, n06 (ddmm_corner()).
+ddmm_fails <- function(n, n06, span_ok, s) {
+  if (!span_ok || n == 0) return(FALSE)
   ms <- s$mat_size
   k <- floor(0.599 * ms)
   p_small <- k * k / ms^2
-  row <- (cells - 1) %/% ms + 1
-  col <- (cells - 1) %% ms + 1
-  n06 <- sum(row >= ms - k & col <= k)
-  n <- length(cells)
   p <- stats::pbinom(n06 - 1, n, p_small, lower.tail = FALSE)
   p < s$pvalue && (n06 / n - p_small) / p_small > s$diff
 }
 
-ddmm_cells <- function(lon, lat, ms) {
+# The cell of each record on the grid of coordinate decimals; NA where a
+# decimal part is zero.
+ddmm_cell <- function(lon, lat, ms) {
   cl <- ceiling((abs(lon) - floor(abs(lon))) * ms)
   rl <- ms - ceiling((abs(lat) - floor(abs(lat))) * ms)
   ok <- cl >= 1 & rl >= 1
-  unique((rl[ok] - 1) * ms + cl[ok])
+  ifelse(ok, as.integer((rl - 1) * ms + cl), NA_integer_)
+}
+
+# Whether a cell lies in the corner of decimals below 0.6 on both axes.
+ddmm_corner <- function(cell, ms) {
+  k <- floor(0.599 * ms)
+  (cell - 1) %/% ms + 1 >= ms - k & (cell - 1) %% ms + 1 <= k
 }
 
 # ---- the group pass --------------------------------------------------------------
+
+# Layout of the checkpointed state of the group stage; a state of another
+# layout is not resumed.
+.group_state_format <- 2L
 
 # Iterate over every chunk of the units in `which`; f(chunk, unit index, first
 # row). On-disk units are read with the columns in `cols` only.
@@ -400,9 +409,13 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   if (disk) dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   st <- if (disk && file.exists(state_path)) readRDS(state_path) else
     list(stage = "count", unit = 1L, unit_rows = NULL, ext = c(Inf, -Inf, Inf, -Inf),
-         sp_parts = list(), sp_len = 0, ds = list(), cells = list(), stores = list(), decided = 0L,
+         sp_parts = list(), sp_len = 0, ds = list(), stores = list(), decided = 0L, counts = list(),
          datasets = NULL, raster = list(), grid = NULL, sampling = NULL)
   if (st$stage == "done") return(group_result(st, dir))
+  if (!identical(st$format, .group_state_format) && !is.null(st$format %||% st$cells))
+    stop("the group stage in ", dir, " was checkpointed by an earlier version of the package; ",
+         "use a new output directory or resume = FALSE", call. = FALSE)
+  st$format <- .group_state_format
   if (!length(tests)) {
     st$stage <- "done"
     return(group_result(st, dir))
@@ -426,7 +439,14 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   # Files written after the last checkpoint (or before the first) are cut back.
   for (k in names(stores)) parts_restore(stores[[k]], st$stores[[k]] %||% stats::setNames(numeric(), character()))
   ds <- list2env(st$ds)
-  cells <- list2env(st$cells)
+  # Records per raster cell of each large species (keeping min_occs distinct
+  # points per species) and the ddmm cells each dataset has filled.
+  open_counts <- function(name, cap) {
+    f <- st$counts[[name]]
+    if (disk && !is.null(f)) cpp_counts_load(file.path(dir, f)) else cpp_counts_new(cap)
+  }
+  cells <- open_counts("cells", s$outlier$min_occs)
+  filled <- open_counts("filled", 0L)
   steps <- group_steps(cfg)
   n_rows <- sum(st$unit_rows)
   for (k in intersect(c("pass0", "pass1"), steps)) progress_size(progress, k, n_rows)
@@ -439,8 +459,16 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible())
     st$stores <<- lapply(stores, parts_state)
     st$ds <<- as.list(ds, all.names = TRUE)
-    st$cells <<- as.list(cells, all.names = TRUE)
+    # Each checkpoint writes its tables under new names that the state then
+    # records, so a resume reads the tables of the checkpoint it resumes.
+    st$checkpoint <<- (st$checkpoint %||% 0L) + 1L
+    old <- st$counts
+    st$counts <<- list(cells = sprintf("cells-%d.bin", st$checkpoint),
+                       filled = sprintf("filled-%d.bin", st$checkpoint))
+    cpp_counts_save(cells, file.path(dir, st$counts$cells))
+    cpp_counts_save(filled, file.path(dir, st$counts$filled))
     save_atomic(st, state_path)
+    unlink(file.path(dir, unlist(old)))
     last <<- Sys.time()
   }
   # One pass over the units, from the first unit not yet done.
@@ -538,24 +566,8 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
       d <- data.frame(key = sp[small], unit = rep(u, sum(small)), row = rows[small],
                       lon = lon[small], lat = lat[small], stringsAsFactors = FALSE)
       parts_add(stores$sp, d, cpp_hash_strings(d$key) %% nb)
-      if (any(big)) {
-        cid <- grid_cell(st$grid, lon[big], lat[big])
-        lon_b <- lon[big]; lat_b <- lat[big]
-        by_sp <- split(seq_along(cid), sp[big])
-        for (k in names(by_sp)) {
-          i <- by_sp[[k]]
-          e <- cells[[k]]
-          tb <- table(cid[i])
-          cur <- if (is.null(e)) integer() else e$counts
-          add <- stats::setNames(as.integer(tb), names(tb))
-          all <- union(names(cur), names(add))
-          v <- stats::setNames(integer(length(all)), all)
-          v[names(cur)] <- v[names(cur)] + cur
-          v[names(add)] <- v[names(add)] + add
-          pts <- first_unique(if (!is.null(e)) e$pts, cbind(lon_b[i], lat_b[i]), so$min_occs)
-          cells[[k]] <- list(counts = v, pts = pts)
-        }
-      }
+      if (any(big))
+        cpp_counts_add(cells, sp[big], as.integer(grid_cell(st$grid, lon[big], lat[big])), lon[big], lat[big])
     }
     if (length(want_taxon)) {
       sp <- as.character(chunk[[cols$species]])
@@ -567,7 +579,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
                       id = id[keep], stringsAsFactors = FALSE)
       parts_add(stores$tx, d, cpp_hash_strings(d$key) %% nb)
     }
-    if (length(want_ds)) ds_pass1(ds, as.character(chunk[[cols$dataset]]), lon, lat, ok, s)
+    if (length(want_ds)) ds_pass1(ds, filled, as.character(chunk[[cols$dataset]]), lon, lat, ok, s)
   })
 
   # Duplicates: the rows of a bucket are in input order, so a row whose key
@@ -617,13 +629,17 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
       progress_start(progress, "final")
       # Species with at least min_occs distinct points, in batches of about
       # 2^31 cell pairs, so progress advances within the step.
-      tested <- Filter(function(k) !is.null(cells[[k]]) && nrow(cells[[k]]$pts) >= so$min_occs, st$raster_sp)
+      grp <- cpp_counts_groups(cells)
+      tab <- cpp_counts_table(cells)
+      tested <- which(grp$points >= so$min_occs)
       progress_tick(progress, length(st$raster_sp) - length(tested))
-      pairs <- vapply(tested, function(k) length(cells[[k]]$counts)^2, 0)
-      for (b in split(tested, floor(cumsum(pairs) / 2^31))) {
-        fc <- outlier_cells(lapply(b, function(k) as.numeric(names(cells[[k]]$counts))),
-                            lapply(b, function(k) cells[[k]]$counts), st$grid, so, cfg$n_threads %||% 1L)
-        for (i in seq_along(b)) if (length(fc[[i]])) st$raster[[b[i]]] <- fc[[i]]
+      len <- tabulate(tab$group, length(grp$name))
+      first <- cumsum(c(1L, len))[seq_along(len)]
+      for (b in split(tested, floor(cumsum(len[tested]^2) / 2^31))) {
+        rows <- lapply(b, function(g) first[g] + seq_len(len[g]) - 1L)
+        fc <- outlier_cells(lapply(rows, function(r) tab$key[r]), lapply(rows, function(r) tab$count[r]),
+                            st$grid, so, cfg$n_threads %||% 1L)
+        for (i in seq_along(b)) if (length(fc[[i]])) st$raster[[grp$name[b[i]]]] <- fc[[i]]
         progress_tick(progress, length(b))
       }
     }
@@ -633,7 +649,8 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     for (k in setdiff(names(stores), "hits")) parts_drop(stores[[k]])
     stores <- stores["hits"]
     ds <- new.env()
-    cells <- new.env()
+    cells <- cpp_counts_new(0L)
+    filled <- cpp_counts_new(0L)
     checkpoint(force = TRUE)
   }
   progress_end(progress)
@@ -730,20 +747,28 @@ ds_pass0 <- function(ds, key, lon, lat, ok) {
     if (!is.null(e)) r <- c(min(e$r[1], r[1]), max(e$r[2], r[2]), min(e$r[3], r[3]), max(e$r[4], r[4]),
                             min(e$r[5], r[5]), max(e$r[6], r[6]), min(e$r[7], r[7]), max(e$r[8], r[8]))
     pts <- first_unique(if (!is.null(e)) e$pts, cbind(x, y), 4L)
-    ds[[k]] <-list(r = r, pts = pts, cells = integer(), flon = NULL, flat = NULL)
+    ds[[k]] <- list(r = r, pts = pts, n = 0, n06 = 0, flon = NULL, flat = NULL)
   }
   invisible()
 }
 
-ds_pass1 <- function(ds, key, lon, lat, ok, s) {
+ds_pass1 <- function(ds, filled, key, lon, lat, ok, s) {
   ok <- ok & !is.na(key)
   if (!any(ok)) return(invisible())
+  ms <- s$dataset_ddmm$mat_size
+  cell <- rep(NA_integer_, length(key))
+  cell[ok] <- ddmm_cell(lon[ok], lat[ok], ms)
+  has <- which(!is.na(cell))
+  fresh <- logical(length(key))
+  fresh[has] <- cpp_counts_add(filled, key[has], cell[has], numeric(), numeric())
+  corner <- fresh & ddmm_corner(cell, ms) %in% TRUE
   rows <- split(which(ok), key[ok])
   for (k in names(rows)) {
     i <- rows[[k]]
     e <- ds[[k]]
     x <- lon[i]; y <- lat[i]
-    e$cells <- unique(c(e$cells, ddmm_cells(x, y, s$dataset_ddmm$mat_size)))
+    e$n <- e$n + sum(fresh[i])
+    e$n06 <- e$n06 + sum(corner[i])
     if (is.null(e$blon)) {
       e$blon <- act_breaks(e$r[5:6]); e$blat <- act_breaks(e$r[7:8])
       e$flon <- integer(length(e$blon) - 1); e$flat <- integer(length(e$blat) - 1)
@@ -761,7 +786,7 @@ ds_decide <- function(ds, tests, s) {
     e <- ds[[k]]
     if ("dataset_ddmm" %in% tests) {
       span_ok <- (e$r[2] - e$r[1]) >= s$dataset_ddmm$min_span && (e$r[4] - e$r[3]) >= s$dataset_ddmm$min_span
-      if (ddmm_fails(e$cells, span_ok, s$dataset_ddmm)) out$dataset_ddmm <- c(out$dataset_ddmm, k)
+      if (ddmm_fails(e$n, e$n06, span_ok, s$dataset_ddmm)) out$dataset_ddmm <- c(out$dataset_ddmm, k)
     }
     if ("dataset_rounded" %in% tests && nrow(e$pts) >= s$dataset_rounded$min_unique_ds_size) {
       mids <- function(b) (b[-1] + b[-length(b)]) / 2

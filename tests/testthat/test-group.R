@@ -237,35 +237,47 @@ test_that("an interrupted group stage resumes from its checkpoint with the same 
   x <- rbind(x, x[sample(nrow(x), 80), ])
   src <- tempfile(); dir.create(src)
   for (i in 1:3) vectra::write_vtr(x[seq(i, nrow(x), 3), ], file.path(src, sprintf("p%d.vtr", i)), batch_size = 61)
-  cfg <- flag_config(tests = c("invalid", "duplicate", "outlier", "dataset_ddmm", "dataset_rounded"))
   units <- stream_units(src)
-  cols <- resolve_test_columns(cfg$columns, table_names(units[[1]]$open()), cfg$tests)
-  ref <- group_pass(units, cfg, cols, dir = tempfile(), checkpoint_secs = 0, flush_rows = 40)
   bits <- function(res) unlist(lapply(seq_along(units), function(u)
     hits_lookup(hits_reader(res$hits), u, 1L, unit_rows(units[[u]]))))
-  expect_gt(sum(has_flag(bits(ref), "duplicate")), 0)
-
-  # Interrupt each pass after the first chunk of its second unit has been
-  # bucketed, then resume from the same directory.
   real <- each_chunk
-  for (stop_at in c(2L, 5L)) {
-    dir <- tempfile()
-    calls <- 0L
-    with_mocked_bindings(
-      expect_error(group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40), "interrupted"),
-      each_chunk = function(units, f, cols, which = seq_along(units)) {
-        calls <<- calls + 1L
-        if (calls != stop_at) return(real(units, f, cols, which))
-        real(units, function(chunk, u, first) {
-          f(chunk, u, first)
-          stop("interrupted")
-        }, cols, which)
-      })
-    expect_true(file.exists(file.path(dir, "state.rds")))
-    res <- group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40)
-    expect_identical(bits(res), bits(ref))
-    expect_identical(res$datasets, ref$datasets)
+  # The second configuration sends every species to the raster approximation,
+  # whose cell counts are checkpointed beside the state.
+  for (thin in c(FALSE, TRUE)) {
+    cfg <- flag_config(tests = c("invalid", "duplicate", "outlier", "dataset_ddmm", "dataset_rounded"),
+                       settings = list(outlier = list(thinning = thin)))
+    cols <- resolve_test_columns(cfg$columns, table_names(units[[1]]$open()), cfg$tests)
+    ref <- group_pass(units, cfg, cols, dir = tempfile(), checkpoint_secs = 0, flush_rows = 40)
+    expect_gt(sum(has_flag(bits(ref), "duplicate")), 0)
+    if (thin) expect_gt(length(ref$raster), 0)
+
+    # Interrupt each pass after the first chunk of its second unit has been
+    # bucketed, then resume from the same directory.
+    for (stop_at in c(2L, 5L)) {
+      dir <- tempfile()
+      calls <- 0L
+      with_mocked_bindings(
+        expect_error(group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40), "interrupted"),
+        each_chunk = function(units, f, cols, which = seq_along(units)) {
+          calls <<- calls + 1L
+          if (calls != stop_at) return(real(units, f, cols, which))
+          real(units, function(chunk, u, first) {
+            f(chunk, u, first)
+            stop("interrupted")
+          }, cols, which)
+        })
+      expect_true(file.exists(file.path(dir, "state.rds")))
+      res <- group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40)
+      expect_identical(bits(res), bits(ref))
+      expect_identical(res$datasets, ref$datasets)
+      expect_identical(res$raster, ref$raster)
+    }
   }
+
+  # A state written in the layout before the counts tables is not resumed.
+  dir <- tempfile(); dir.create(dir)
+  saveRDS(list(stage = "pass1", unit = 2L, cells = list()), file.path(dir, "state.rds"))
+  expect_error(group_pass(units, cfg, cols, dir = dir), "earlier version")
 })
 
 test_that("settings are validated", {

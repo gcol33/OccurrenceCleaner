@@ -41,6 +41,30 @@ cpp_polygon_info <- function(index) {
     .Call(`_OccurrenceCleaner_cpp_polygon_info`, index)
 }
 
+cpp_counts_new <- function(cap) {
+    .Call(`_OccurrenceCleaner_cpp_counts_new`, cap)
+}
+
+cpp_counts_add <- function(counts, group, key, lon, lat) {
+    .Call(`_OccurrenceCleaner_cpp_counts_add`, counts, group, key, lon, lat)
+}
+
+cpp_counts_groups <- function(counts) {
+    .Call(`_OccurrenceCleaner_cpp_counts_groups`, counts)
+}
+
+cpp_counts_table <- function(counts) {
+    .Call(`_OccurrenceCleaner_cpp_counts_table`, counts)
+}
+
+cpp_counts_save <- function(counts, path) {
+    invisible(.Call(`_OccurrenceCleaner_cpp_counts_save`, counts, path))
+}
+
+cpp_counts_load <- function(path) {
+    .Call(`_OccurrenceCleaner_cpp_counts_load`, path)
+}
+
 cpp_hash_strings <- function(x) {
     .Call(`_OccurrenceCleaner_cpp_hash_strings`, x)
 }
