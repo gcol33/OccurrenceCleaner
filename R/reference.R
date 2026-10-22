@@ -183,8 +183,27 @@ point_index <- function(test, reference) {
   idx
 }
 
-# Polygon layer (compact ring list) for a test under a reference.
+# Polygon layer (compact ring list) for a test under a reference, read once
+# per session.
 polygon_layer <- function(test, reference, land_scale) {
+  key <- paste("layer", test, reference, if (test == "sea") land_scale else "", sep = "/")
+  if (is.null(.occ_cache[[key]])) .occ_cache[[key]] <- read_polygon_layer(test, reference, land_scale)
+  .occ_cache[[key]]
+}
+
+# The polygon layers the record tests of `cfg` read from the reference, read
+# into the session cache; returns the cache entries, which hold no index and
+# can be handed to another R process.
+reference_layers <- function(cfg) {
+  tests <- intersect(cfg$tests, c("sea", "urban", "country_mismatch"))
+  if (any(.habitat_tests %in% cfg$tests)) tests <- union(tests, "sea")
+  tests <- setdiff(tests, names(cfg$custom))
+  for (t in tests) polygon_layer(t, cfg$reference, cfg$land_scale)
+  keys <- grep("^layer/", ls(.occ_cache, all.names = TRUE), value = TRUE)
+  mget(keys, envir = .occ_cache)
+}
+
+read_polygon_layer <- function(test, reference, land_scale) {
   if (reference == "OccurrenceCleaner") {
     return(switch(test,
       sea = switch(as.character(land_scale),

@@ -2,11 +2,17 @@
 # snapshot's columns support, then tally_flags() over the on-disk output.
 # Writes timing.csv (stage, seconds), tally.rds and session.txt to <out>.
 #
-# Usage: Rscript gbif_snapshot_run.R <parquet dir> <out dir> [max files]
+# Usage: Rscript gbif_snapshot_run.R <parquet dir> <out dir> [max files] [reference] [threads] [workers]
+#   reference: OccurrenceCleaner (default) or CoordinateCleaner (its countryref,
+#   institutions and aohi tables, rnaturalearth polygons); threads: n_threads, 0 = all cores;
+#   workers: R processes for the record pass.
 
 args <- commandArgs(TRUE)
 snap <- args[1]; out <- args[2]
 max_files <- if (length(args) >= 3) as.integer(args[3]) else Inf
+reference <- if (length(args) >= 4) args[4] else "OccurrenceCleaner"
+threads <- if (length(args) >= 5) as.integer(args[5]) else 1L
+workers <- if (length(args) >= 6) as.integer(args[6]) else 1L
 suppressMessages(library("OccurrenceCleaner"))
 
 files <- sort(list.files(snap, full.names = TRUE))
@@ -18,7 +24,8 @@ flag_dir <- file.path(out, "flags")
 tests <- c(flag_tests()$test[flag_tests()$bit <= 18], "outlier", "dataset_ddmm",
            "dataset_rounded", "aohi", "sea_nonmarine", "land_marine")
 cols <- occ_columns(id = "gbifid")
-keep <- c("kingdom", "class", "year", "coordinateuncertaintyinmeters", "basisofrecord")
+keep <- c("kingdom", "phylum", "class", "order", "year", "coordinateuncertaintyinmeters",
+          "basisofrecord")
 
 stamp <- function(stage, t0) {
   s <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
@@ -30,12 +37,14 @@ stamp <- function(stage, t0) {
 
 writeLines(c(capture.output(sessionInfo()),
              paste("OccurrenceCleaner RemoteSha:", utils::packageDescription("OccurrenceCleaner")$RemoteSha %||% "none"),
-             paste("files:", length(files)), paste("tests:", paste(tests, collapse = ", "))),
+             paste("files:", length(files)), paste("tests:", paste(tests, collapse = ", ")),
+             paste("reference:", reference), paste("threads:", threads), paste("workers:", workers)),
            file.path(out, "session.txt"))
 
 t0 <- Sys.time()
-f <- flag_occurrences(files, tests = tests, columns = cols, out = flag_dir, keep = keep,
-                      verbose = TRUE)
+f <- flag_occurrences(files, tests = tests, columns = cols, reference = reference,
+                      out = flag_dir, keep = keep, verbose = TRUE, n_threads = threads,
+                      workers = workers)
 stamp("flag", t0)
 print(f)
 

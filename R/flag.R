@@ -48,13 +48,25 @@
 #' run so far, so it is rough until the slower steps have started. With
 #' `verbose`, the same is reported on the console every minute.
 #'
-#' @section Threads:
+#' @section Threads and workers:
 #' `n_threads` spreads the exact outlier test over species and the
 #' proximity and point-in-polygon queries of the record tests over records.
 #' Each species and each record is computed on one thread, so the flags do not
 #' depend on the number of threads. Reading the input, the other tests and the
 #' bookkeeping of the group stage run on one thread. Without OpenMP support in
 #' the compiler every query runs on one thread.
+#'
+#' `workers` runs the record pass of a streamed run over several input files
+#' at once, one file per R process, so reading the input and every record
+#' test run in parallel. Each file is flagged by the same code as in a single
+#' process and writes its own parts and `.done` marker, so the output does not
+#' depend on the number of workers. The `n_threads` of the run are shared out,
+#' each worker using `n_threads %/% workers` threads (at least one). Each
+#' worker holds the memory of one record pass, so `workers` times the memory
+#' of a single-process record pass has to fit. The group stage runs in the
+#' main process with all `n_threads`. Workers load the
+#' installed package, so `workers` above 1 stops with an error under
+#' `pkgload::load_all()`.
 #'
 #' Memory in the record pass is one input chunk, up to `part_rows` buffered
 #' output rows and the group-test hits of the current block of 2^20 rows. The
@@ -166,6 +178,9 @@
 #' @param n_threads Number of threads for the outlier test and the spatial
 #'   queries. `0` uses every thread OpenMP hands out; a request above that is
 #'   reduced to it, with a message.
+#' @param workers Number of R processes for the record pass of streamed
+#'   input with more than one file; `1` flags the files one after another in
+#'   this session. Ignored for a data frame and a `vectra_node`.
 #' @return For a data frame: `x` with an integer column `flags` and one logical
 #'   column `flag_<test>` per test, class `occ_flags` added in front, and
 #'   attributes `occ_tests`, `occ_test_plan`, `occ_layout_version`,
@@ -187,15 +202,17 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              settings = NULL, duplicate_by = NULL,
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
-                             verbose = TRUE, n_threads = 1L) {
+                             verbose = TRUE, n_threads = 1L, workers = 1L) {
   cfg <- flag_config(tests, columns, match.arg(reference), gazetteers, land_scale, buffers, settings,
                      duplicate_by, duplicate_cell, n_threads)
   if (is.data.frame(x)) {
     if (is.null(tests)) cfg <- apply_plan(cfg, plan_tests(names(x), columns, cfg$has_range))
     return(flag_df(x, cfg))
   }
+  if (!is.numeric(workers) || length(workers) != 1L || is.na(workers) || workers < 1)
+    stop("`workers` must be a single number of at least 1")
   flag_stream(x, cfg, out = out, keep = keep, part_rows = part_rows, resume = resume,
-              verbose = verbose)
+              verbose = verbose, workers = as.integer(workers))
 }
 
 # The validated configuration of a call: tests, columns, reference layers and
@@ -216,7 +233,7 @@ flag_config <- function(tests = NULL, columns = occ_columns(), reference = "Occu
        columns = columns, reference = reference, land_scale = land_scale,
        buffers = check_buffers(buffers), settings = check_settings(settings),
        duplicate_by = duplicate_by,
-       duplicate_cell = duplicate_cell, custom = custom$index,
+       duplicate_cell = duplicate_cell, gazetteers = gazetteers, custom = custom$index,
        layout_version = .layout_version, n_threads = resolve_threads(n_threads),
        reference_label = reference_label(reference, land_scale, custom$label))
 }

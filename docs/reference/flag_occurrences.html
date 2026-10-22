@@ -94,7 +94,8 @@ record per test. Nothing is removed and no threshold is baked in.</p>
 <span>  part_rows <span class="op">=</span> <span class="fl">2e+06</span>,</span>
 <span>  resume <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  n_threads <span class="op">=</span> <span class="fl">1L</span></span>
+<span>  n_threads <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  workers <span class="op">=</span> <span class="fl">1L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -208,6 +209,12 @@ deletes the earlier output in <code>out</code> and starts over.</p></dd>
 queries. <code>0</code> uses every thread OpenMP hands out; a request above that is
 reduced to it, with a message.</p></dd>
 
+
+<dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
+<dd><p>Number of R processes for the record pass of streamed
+input with more than one file; <code>1</code> flags the files one after another in
+this session. Ignored for a data frame and a <code>vectra_node</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -267,7 +274,7 @@ run so far, so it is rough until the slower steps have started. With
 <code>verbose</code>, the same is reported on the console every minute.</p>
     </div>
     <div class="section level2">
-    <h2 id="threads">Threads<a class="anchor" aria-label="anchor" href="#threads"></a></h2>
+    <h2 id="threads-and-workers">Threads and workers<a class="anchor" aria-label="anchor" href="#threads-and-workers"></a></h2>
 
 
 <p><code>n_threads</code> spreads the exact outlier test over species and the
@@ -276,6 +283,17 @@ Each species and each record is computed on one thread, so the flags do not
 depend on the number of threads. Reading the input, the other tests and the
 bookkeeping of the group stage run on one thread. Without OpenMP support in
 the compiler every query runs on one thread.</p>
+<p><code>workers</code> runs the record pass of a streamed run over several input files
+at once, one file per R process, so reading the input and every record
+test run in parallel. Each file is flagged by the same code as in a single
+process and writes its own parts and <code>.done</code> marker, so the output does not
+depend on the number of workers. The <code>n_threads</code> of the run are shared out,
+each worker using <code>n_threads %/% workers</code> threads (at least one). Each
+worker holds the memory of one record pass, so <code>workers</code> times the memory
+of a single-process record pass has to fit. The group stage runs in the
+main process with all <code>n_threads</code>. Workers load the
+installed package, so <code>workers</code> above 1 stops with an error under
+<code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code>.</p>
 <p>Memory in the record pass is one input chunk, up to <code>part_rows</code> buffered
 output rows and the group-test hits of the current block of 2^20 rows. The
 group stage holds two million bucketed rows before writing them (more

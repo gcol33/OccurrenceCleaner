@@ -16,10 +16,14 @@ stream_units <- function(x) {
     sort(fs)
   }))
   if (!length(files)) stop("no files found under ", paste(x, collapse = ", "))
-  lapply(files, function(f) {
-    list(name = tools::file_path_sans_ext(basename(f)), path = normalizePath(f), open = function() open_table(f),
-         reopen = TRUE)
-  })
+  lapply(files, path_unit)
+}
+
+# The unit of one input file.
+path_unit <- function(f) {
+  force(f)
+  list(name = tools::file_path_sans_ext(basename(f)), path = normalizePath(f), open = function() open_table(f),
+       reopen = TRUE)
 }
 
 # Whether the rows of a unit are read from the table metadata rather than
@@ -44,7 +48,7 @@ open_table <- function(f) {
   vectra::tbl_parquet(f)
 }
 
-flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoint_secs = 300) {
+flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, workers = 1L, checkpoint_secs = 300) {
   if (is.null(out) || !is.character(out) || length(out) != 1L) stop("`out` (an output directory) is required for streamed input")
   dir.create(out, showWarnings = FALSE, recursive = TRUE)
   units <- stream_units(x)
@@ -78,73 +82,38 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
       if (verbose) message("group tests: done [", format(round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)), " s]")
     }
   }
-  total <- 0
-  parts <- character()
   progress_start(progress, if (is.null(rows)) "record_bytes" else "record")
+  todo <- integer()
   for (ui in seq_along(units)) {
-    u <- units[[ui]]
-    done_marker <- done_markers[ui]
-    if (resume && file.exists(done_marker)) {
-      info <- readRDS(done_marker)
-      total <- total + info$n
-      parts <- c(parts, info$parts)
+    if (resume && file.exists(done_markers[ui])) {
+      info <- readRDS(done_markers[ui])
       progress_credit(progress, if (is.null(rows)) unit_bytes(units[ui]) else info$n)
-      if (verbose) message(u$name, ": done (", info$n, " rows), skipped")
-      next
-    }
-    unlink(list.files(out, paste0("^part-", u$name, "-"), full.names = TRUE))
-    t0 <- Sys.time()
-    resolve <- function(avail, cfg) {
-      check_stream_columns(avail, keep, cfg$duplicate_by)
-      list(cols = resolve_test_columns(cfg$columns, avail, cfg$tests),
-           id = resolve_columns(cfg$columns, avail, "id", optional = "id")$id)
-    }
-    # A reopenable unit is read with only the columns the tests and keep use;
-    # a single-run node is resolved on its first chunk.
-    if (u$reopen) {
-      rc <- resolve(table_names(u$open()), cfg)
-      node <- project(u$open(), c(unlist(rc$cols), rc$id, keep))
+      if (verbose) message(units[[ui]]$name, ": done (", info$n, " rows), skipped")
     } else {
-      rc <- list(cols = NULL, id = NULL)
-      node <- u$open()
+      todo <- c(todo, ui)
     }
-    reader <- hits_reader(group$hits)
-    acc <- vectra::collect_chunked(node, function(acc, chunk) {
-      if (is.null(acc$cols)) {
-        if (is.null(acc$cfg$tests)) {
-          acc$cfg <- apply_plan(acc$cfg, plan_tests(names(chunk), acc$cfg$columns, acc$cfg$has_range,
-                                                    reopen = FALSE))
-          check_config(out, config_record(acc$cfg, keep, units))
-          if (verbose) message(plan_message(acc$cfg$plan))
-        }
-        rc <- resolve(names(chunk), acc$cfg)
-        acc$cols <- rc$cols
-        acc$id <- rc$id
-      }
-      r <- flag_chunk(chunk, acc$cfg, acc$cols)
-      if (!is.null(group)) r$flags <- bitwOr(r$flags, group_bits(group, chunk, ui, acc$n + 1L, acc$cols, reader))
-      o <- chunk[, c(acc$id, keep), drop = FALSE]
-      o$flags <- r$flags
-      acc$buf[[length(acc$buf) + 1L]] <- o
-      acc$n_buf <- acc$n_buf + nrow(o)
-      acc$n <- acc$n + nrow(o)
-      if (acc$n_buf >= part_rows) acc <- flush_part(acc, out, u$name)
-      if (!is.null(rows)) progress_tick(progress, nrow(o))
-      acc
-    }, .init = list(buf = list(), n_buf = 0, n = 0, k = 0L, parts = character(), cols = rc$cols, id = rc$id,
-                    cfg = cfg))
-    cfg <- acc$cfg
-    if (is.null(cfg$tests)) stop("the input has no rows, so no test could be chosen; name them with `tests`")
-    if (acc$n_buf > 0 || acc$k == 0L) acc <- flush_part(acc, out, u$name)
-    save_atomic(list(n = acc$n, parts = acc$parts), done_marker)
+  }
+  # Units count as items of the record step when their rows are not counted.
+  tick_unit <- function(ui, info) {
     if (is.null(rows)) progress_tick(progress, unit_bytes(units[ui]))
-    total <- total + acc$n
-    parts <- c(parts, acc$parts)
-    if (verbose) message(u$name, ": ", acc$n, " rows in ", length(acc$parts), " part(s) [",
-                         format(round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)), " s]")
+    if (verbose) message(units[[ui]]$name, ": ", info$n, " rows in ", length(info$parts), " part(s) [",
+                         format(round(info$secs, 1)), " s]")
+  }
+  if (workers > 1L && length(todo) > 1L && all(vapply(units, `[[`, TRUE, "reopen"))) {
+    record_pass_workers(units, todo, cfg, out, keep, part_rows, group, workers, tick_unit, progress, rows)
+  } else {
+    for (ui in todo) {
+      info <- flag_unit(units[[ui]], ui, cfg, out, keep, part_rows, group, verbose,
+                        tick = if (!is.null(rows)) function(n) progress_tick(progress, n), units = units)
+      cfg <- info$cfg
+      tick_unit(ui, info)
+    }
   }
   if (is.null(cfg$tests)) cfg <- c(cfg[setdiff(names(cfg), c("tests", "plan"))],
                                    readRDS(file.path(out, "flags_config.rds"))[c("tests", "plan")])
+  done <- lapply(done_markers, readRDS)
+  total <- sum(vapply(done, `[[`, 0, "n"))
+  parts <- unlist(lapply(done, `[[`, "parts"))
   progress_end(progress)
   unlink(gdir, recursive = TRUE)
   meta <- list(out = normalizePath(out), tests = cfg$tests, test_plan = cfg$plan,
@@ -157,6 +126,116 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, checkpoin
                finished = Sys.time())
   save_atomic(meta, file.path(out, "flags_meta.rds"))
   structure(meta, class = "occ_flagged")
+}
+
+# The record pass over unit u, the ui-th unit of the run: its parts, then
+# its .done marker. `tick(n)` is called with the rows of each chunk. A
+# single-run node fixes the tests on its first chunk and records the
+# configuration of `units` then. Returns the rows, the parts, the seconds
+# taken and the configuration.
+flag_unit <- function(u, ui, cfg, out, keep, part_rows, group, verbose, tick = NULL, units = list(u)) {
+  unlink(list.files(out, paste0("^part-", u$name, "-"), full.names = TRUE))
+  t0 <- Sys.time()
+  resolve <- function(avail, cfg) {
+    check_stream_columns(avail, keep, cfg$duplicate_by)
+    list(cols = resolve_test_columns(cfg$columns, avail, cfg$tests),
+         id = resolve_columns(cfg$columns, avail, "id", optional = "id")$id)
+  }
+  # A reopenable unit is read with only the columns the tests and keep use;
+  # a single-run node is resolved on its first chunk.
+  if (u$reopen) {
+    rc <- resolve(table_names(u$open()), cfg)
+    node <- project(u$open(), c(unlist(rc$cols), rc$id, keep))
+  } else {
+    rc <- list(cols = NULL, id = NULL)
+    node <- u$open()
+  }
+  reader <- hits_reader(group$hits)
+  acc <- vectra::collect_chunked(node, function(acc, chunk) {
+    if (is.null(acc$cols)) {
+      if (is.null(acc$cfg$tests)) {
+        acc$cfg <- apply_plan(acc$cfg, plan_tests(names(chunk), acc$cfg$columns, acc$cfg$has_range,
+                                                  reopen = FALSE))
+        check_config(out, config_record(acc$cfg, keep, units))
+        if (verbose) message(plan_message(acc$cfg$plan))
+      }
+      rc <- resolve(names(chunk), acc$cfg)
+      acc$cols <- rc$cols
+      acc$id <- rc$id
+    }
+    r <- flag_chunk(chunk, acc$cfg, acc$cols)
+    if (!is.null(group)) r$flags <- bitwOr(r$flags, group_bits(group, chunk, ui, acc$n + 1L, acc$cols, reader))
+    o <- chunk[, c(acc$id, keep), drop = FALSE]
+    o$flags <- r$flags
+    acc$buf[[length(acc$buf) + 1L]] <- o
+    acc$n_buf <- acc$n_buf + nrow(o)
+    acc$n <- acc$n + nrow(o)
+    if (acc$n_buf >= part_rows) acc <- flush_part(acc, out, u$name)
+    if (!is.null(tick)) tick(nrow(o))
+    acc
+  }, .init = list(buf = list(), n_buf = 0, n = 0, k = 0L, parts = character(), cols = rc$cols, id = rc$id,
+                  cfg = cfg))
+  if (is.null(acc$cfg$tests)) stop("the input has no rows, so no test could be chosen; name them with `tests`")
+  if (acc$n_buf > 0 || acc$k == 0L) acc <- flush_part(acc, out, u$name)
+  save_atomic(list(n = acc$n, parts = acc$parts), file.path(out, paste0(u$name, ".done")))
+  list(n = acc$n, parts = acc$parts, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")),
+       cfg = acc$cfg)
+}
+
+# The record pass over the units in `todo` on `workers` R processes. Each
+# unit is flagged by flag_unit() as in the serial pass, so its parts and
+# marker are the same whichever process wrote them. Units are handed out in
+# batches of eight per worker, and progress advances between batches.
+record_pass_workers <- function(units, todo, cfg, out, keep, part_rows, group, workers, tick_unit,
+                                progress, rows) {
+  pkg <- find.package("OccurrenceCleaner")
+  if (!file.exists(file.path(pkg, "Meta", "package.rds")))
+    stop("`workers` above 1 needs OccurrenceCleaner installed: the worker processes load the installed package")
+  workers <- min(workers, length(todo))
+  # The threads of the run are shared out over the workers.
+  ctx <- list(cfg = utils::modifyList(cfg, list(custom = NULL, n_threads = max(1L, cfg$n_threads %/% workers))),
+              out = out, keep = keep, part_rows = part_rows, group = group, layers = reference_layers(cfg))
+  cl <- parallel::makePSOCKcluster(workers)
+  on.exit(parallel::stopCluster(cl), add = TRUE)
+  # The workers load the package from the library this session loaded it from,
+  # before any function of its namespace reaches them.
+  load_pkg <- function(libs) {
+    .libPaths(libs)
+    loadNamespace("OccurrenceCleaner", lib.loc = libs[1])
+    invisible(TRUE)
+  }
+  environment(load_pkg) <- globalenv()
+  parallel::clusterCall(cl, load_pkg, unique(c(dirname(pkg), .libPaths())))
+  parallel::clusterCall(cl, worker_setup, ctx)
+  batch <- workers * 8L
+  for (b in split(todo, ceiling(seq_along(todo) / batch))) {
+    res <- parallel::clusterApplyLB(cl, lapply(b, function(ui) list(path = units[[ui]]$path, ui = ui)), worker_unit)
+    for (i in seq_along(b)) {
+      if (!is.null(rows)) progress_tick(progress, res[[i]]$n)
+      tick_unit(b[i], res[[i]])
+    }
+  }
+  invisible()
+}
+
+# Run in a worker process: the context of the record pass, with the
+# reference layers of the main process in the session cache and the user's
+# layers indexed again.
+worker_setup <- function(ctx) {
+  for (k in names(ctx$layers)) .occ_cache[[k]] <- ctx$layers[[k]]
+  ctx$cfg$custom <- prepare_gazetteers(ctx$cfg$gazetteers, ctx$cfg$columns)$index
+  ctx$layers <- NULL
+  .occ_cache$worker <- ctx
+  invisible(TRUE)
+}
+
+# Run in a worker process: one input file, the ui-th unit of the run.
+worker_unit <- function(task) {
+  ctx <- .occ_cache$worker
+  info <- flag_unit(path_unit(task$path), task$ui, ctx$cfg, ctx$out, ctx$keep, ctx$part_rows, ctx$group,
+                    verbose = FALSE)
+  info$cfg <- NULL
+  info
 }
 
 check_stream_columns <- function(avail, keep, duplicate_by) {

@@ -20,7 +20,8 @@ flag_occurrences(
   part_rows = 2e+06,
   resume = TRUE,
   verbose = TRUE,
-  n_threads = 1L
+  n_threads = 1L,
+  workers = 1L
 )
 }
 \arguments{
@@ -98,6 +99,10 @@ deletes the earlier output in \code{out} and starts over.}
 \item{n_threads}{Number of threads for the outlier test and the spatial
 queries. \code{0} uses every thread OpenMP hands out; a request above that is
 reduced to it, with a message.}
+
+\item{workers}{Number of R processes for the record pass of streamed
+input with more than one file; \code{1} flags the files one after another in
+this session. Ignored for a data frame and a \code{vectra_node}.}
 }
 \value{
 For a data frame: \code{x} with an integer column \code{flags} and one logical
@@ -161,7 +166,7 @@ run so far, so it is rough until the slower steps have started. With
 \code{verbose}, the same is reported on the console every minute.
 }
 
-\section{Threads}{
+\section{Threads and workers}{
 
 \code{n_threads} spreads the exact outlier test over species and the
 proximity and point-in-polygon queries of the record tests over records.
@@ -169,6 +174,18 @@ Each species and each record is computed on one thread, so the flags do not
 depend on the number of threads. Reading the input, the other tests and the
 bookkeeping of the group stage run on one thread. Without OpenMP support in
 the compiler every query runs on one thread.
+
+\code{workers} runs the record pass of a streamed run over several input files
+at once, one file per R process, so reading the input and every record
+test run in parallel. Each file is flagged by the same code as in a single
+process and writes its own parts and \code{.done} marker, so the output does not
+depend on the number of workers. The \code{n_threads} of the run are shared out,
+each worker using \code{n_threads \%/\% workers} threads (at least one). Each
+worker holds the memory of one record pass, so \code{workers} times the memory
+of a single-process record pass has to fit. The group stage runs in the
+main process with all \code{n_threads}. Workers load the
+installed package, so \code{workers} above 1 stops with an error under
+\code{pkgload::load_all()}.
 
 Memory in the record pass is one input chunk, up to \code{part_rows} buffered
 output rows and the group-test hits of the current block of 2^20 rows. The

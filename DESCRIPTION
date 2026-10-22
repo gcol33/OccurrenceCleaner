@@ -28,6 +28,7 @@ Depends:
 Imports:
     graphics,
     grDevices,
+    parallel,
     Rcpp,
     tools,
     utils,

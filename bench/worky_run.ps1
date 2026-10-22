@@ -1,9 +1,11 @@
 # Scheduled-task launcher on worky: runs one R script with its arguments,
 # logs stdout/stderr, records the peak working set of the R process every 30 s.
 # Usage: powershell -File worky_run.ps1 <name> <script.R> <args...>
+# OMP_NUM_THREADS caps n_threads of the R script; it is set to the core count
+# (the benchmark of 2026-10-09 ran with it at 1).
 param([string]$Name, [string]$Script, [Parameter(ValueFromRemainingArguments = $true)][string[]]$Rest)
 $env:R_LIBS = 'C:/Users/collingg/R/library/4.6'
-$env:OMP_NUM_THREADS = '1'
+$env:OMP_NUM_THREADS = [string][Environment]::ProcessorCount
 $dir = Join-Path $PSScriptRoot $Name
 New-Item -ItemType Directory -Force $dir | Out-Null
 $rs = 'C:\Program Files\R\R-4.6.1\bin\x64\Rscript.exe'

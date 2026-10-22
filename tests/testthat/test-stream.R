@@ -60,6 +60,40 @@ test_that("streamed flags equal in-memory flags, resume skips done units, tally 
   expect_error(flag_occurrences(tempfile(), tests = "zero", out = tempfile()), "not found")
 })
 
+test_that("worker processes write the same parts and markers as one process", {
+  skip_if_not_installed("vectra")
+  skip_on_cran()
+  skip_if_not(file.exists(file.path(find.package("OccurrenceCleaner"), "Meta", "package.rds")),
+              "workers load the installed package")
+  src <- tempfile("wsrc"); dir.create(src)
+  for (i in 1:5) {
+    d <- make_table(400, i)
+    d$species[1:40] <- make_table(400, 1)$species[1:40]
+    d[1:40, c("decimallongitude", "decimallatitude")] <- make_table(400, 1)[1:40, c("decimallongitude", "decimallatitude")]
+    d$countrycode <- sample(c("AT", "FR", "BR", ""), 400, TRUE)
+    vectra::write_vtr(d, file.path(src, sprintf("p%d.vtr", i)), batch_size = 150)
+  }
+  tests <- c("invalid", "zero", "capital", "institution", "sea", "urban", "country_mismatch", "duplicate",
+             "outlier")
+  run <- function(out, workers) flag_occurrences(src, tests = tests, out = out, keep = c("kingdom", "year"),
+                                                 part_rows = 200, verbose = FALSE, workers = workers)
+  one <- run(tempfile("w1"), 1)
+  two <- run(tempfile("w2"), 2)
+  files <- function(o) sort(list.files(o$out, "^part-|[.]done$"))
+  expect_identical(files(two), files(one))
+  md5 <- function(o) unname(tools::md5sum(file.path(o$out, files(o))))
+  expect_identical(md5(two), md5(one))
+  drop <- c("out", "finished")
+  expect_identical(unclass(two)[setdiff(names(two), drop)], unclass(one)[setdiff(names(one), drop)])
+  expect_true(any(has_flag(vectra::collect(flagged_table(one))$flags, "duplicate")))
+
+  # a resumed run hands only the files without a marker to the workers
+  unlink(file.path(two$out, c("p2.done", "p4.done")))
+  three <- run(two$out, 2)
+  expect_identical(md5(three), md5(one))
+  expect_error(flag_occurrences(src, tests = "zero", out = tempfile(), workers = 0), "at least 1")
+})
+
 test_that("duplicates are found across chunks and files, as in the whole table", {
   skip_if_not_installed("vectra")
   set.seed(3)
