@@ -161,16 +161,26 @@ grid_cell <- function(grid, lon, lat) {
   (row - 1) * grid$ncol + col
 }
 
-# Flagged cells of one species from its per-cell record counts.
-outlier_cells <- function(cells, counts, grid, s) {
-  col <- (cells - 1) %% grid$ncol + 1
-  row <- (cells - 1) %/% grid$ncol + 1
+# Flagged cells of each species from its per-cell record counts: `cells` and
+# `counts` are lists with one vector per species. Returns the list of flagged
+# cells, one vector per species.
+outlier_cells <- function(cells, counts, grid, s, n_threads = 1L) {
+  if (!length(cells)) return(list())
+  all <- unlist(cells, use.names = FALSE)
+  col <- (all - 1) %% grid$ncol + 1
+  row <- (all - 1) %/% grid$ncol + 1
   cx <- grid$xmin + (col - 0.5) * grid$xres
   cy <- grid$ymax - (row - 0.5) * grid$yres
-  d <- cpp_cell_dist(cx, cy, as.numeric(counts), weighted = !s$thinning,
-                     same_km = 100 * mean(c(grid$xres, grid$yres)) / 2)
-  hit <- if (s$method == "distance") d$min > s$tdi else fence_flags(d$mean, s$method, s$mltpl)
-  cells[hit]
+  len <- lengths(cells)
+  d <- cpp_cell_dist(cx, cy, as.numeric(unlist(counts, use.names = FALSE)), c(0L, cumsum(len)),
+                     weighted = !s$thinning, same_km = 100 * mean(c(grid$xres, grid$yres)) / 2,
+                     n_threads = n_threads)
+  sp <- rep.int(seq_along(cells), len)
+  stat <- split(if (s$method == "distance") d$min else d$mean, sp)
+  lapply(seq_along(cells), function(k) {
+    hit <- if (s$method == "distance") stat[[k]] > s$tdi else fence_flags(stat[[k]], s$method, s$mltpl)
+    cells[[k]][hit]
+  })
 }
 
 # ---- taxa: fossil ages ----------------------------------------------------------
@@ -605,12 +615,16 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     if (want_outlier) {
       progress_size(progress, "final", length(st$raster_sp))
       progress_start(progress, "final")
-      for (k in st$raster_sp) {
-        progress_tick(progress, 1)
-        e <- cells[[k]]
-        if (is.null(e) || nrow(e$pts) < so$min_occs) next
-        fc <- outlier_cells(as.numeric(names(e$counts)), e$counts, st$grid, so)
-        if (length(fc)) st$raster[[k]] <- fc
+      # Species with at least min_occs distinct points, in batches of about
+      # 2^31 cell pairs, so progress advances within the step.
+      tested <- Filter(function(k) !is.null(cells[[k]]) && nrow(cells[[k]]$pts) >= so$min_occs, st$raster_sp)
+      progress_tick(progress, length(st$raster_sp) - length(tested))
+      pairs <- vapply(tested, function(k) length(cells[[k]]$counts)^2, 0)
+      for (b in split(tested, floor(cumsum(pairs) / 2^31))) {
+        fc <- outlier_cells(lapply(b, function(k) as.numeric(names(cells[[k]]$counts))),
+                            lapply(b, function(k) cells[[k]]$counts), st$grid, so, cfg$n_threads %||% 1L)
+        for (i in seq_along(b)) if (length(fc[[i]])) st$raster[[b[i]]] <- fc[[i]]
+        progress_tick(progress, length(b))
       }
     }
     st$datasets <- if (length(want_ds)) ds_decide(ds, want_ds, s)

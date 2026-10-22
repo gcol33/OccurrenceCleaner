@@ -158,7 +158,9 @@ the current build.</p>
 <ul>
 <li><p>The outlier test computes the distances between the records of
 one species. Each species is one unit of work, and a species with many
-records is split by rows over several threads.</p></li>
+records is split by rows over several threads. Species of 10,000 records
+or more are tested on raster cells, and the statistics of each cell are
+one unit of work.</p></li>
 <li><p>The record tests that query reference data run per record: the
 proximity tests (<code>capital</code>, <code>centroid</code>,
 <code>institution</code>, <code>gbif_headquarters</code> and
@@ -179,8 +181,9 @@ The group stage stays in the main process.</p>
 </h2>
 <p>The distances of a species are summed as whole numbers of 2^-32 km
 (0.23 micrometres), which give the same sum in any order of addition,
-and each record is computed on one thread. The result does not depend on
-the number of threads or on how the work is divided between them.</p>
+and each record and each raster cell is computed on one thread. The
+result does not depend on the number of threads or on how the work is
+divided between them.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">f4</span><span class="op">$</span><span class="va">flags</span>, <span class="va">f1</span><span class="op">$</span><span class="va">flags</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>

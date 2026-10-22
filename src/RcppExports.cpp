@@ -205,17 +205,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_cell_dist
-List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, bool weighted, double same_km);
-RcppExport SEXP _OccurrenceCleaner_cpp_cell_dist(SEXP cxSEXP, SEXP cySEXP, SEXP countSEXP, SEXP weightedSEXP, SEXP same_kmSEXP) {
+List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, IntegerVector start, bool weighted, double same_km, int n_threads);
+RcppExport SEXP _OccurrenceCleaner_cpp_cell_dist(SEXP cxSEXP, SEXP cySEXP, SEXP countSEXP, SEXP startSEXP, SEXP weightedSEXP, SEXP same_kmSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type cx(cxSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type cy(cySEXP);
     Rcpp::traits::input_parameter< NumericVector >::type count(countSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type start(startSEXP);
     Rcpp::traits::input_parameter< bool >::type weighted(weightedSEXP);
     Rcpp::traits::input_parameter< double >::type same_km(same_kmSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_cell_dist(cx, cy, count, weighted, same_km));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_cell_dist(cx, cy, count, start, weighted, same_km, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -275,7 +277,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_OccurrenceCleaner_cpp_seen_new", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_new, 0},
     {"_OccurrenceCleaner_cpp_seen_mark", (DL_FUNC) &_OccurrenceCleaner_cpp_seen_mark, 5},
     {"_OccurrenceCleaner_cpp_outlier_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_outlier_dist, 5},
-    {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 5},
+    {"_OccurrenceCleaner_cpp_cell_dist", (DL_FUNC) &_OccurrenceCleaner_cpp_cell_dist, 7},
     {"_OccurrenceCleaner_cpp_lag_cov", (DL_FUNC) &_OccurrenceCleaner_cpp_lag_cov, 2},
     {"_OccurrenceCleaner_cpp_window_outlier_counts", (DL_FUNC) &_OccurrenceCleaner_cpp_window_outlier_counts, 3},
     {"_OccurrenceCleaner_cpp_spatiotemporal_mean", (DL_FUNC) &_OccurrenceCleaner_cpp_spatiotemporal_mean, 4},

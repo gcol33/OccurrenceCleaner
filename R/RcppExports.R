@@ -61,8 +61,8 @@ cpp_outlier_dist <- function(lon, lat, start, n_threads = 1L, split_n = 1000L) {
     .Call(`_OccurrenceCleaner_cpp_outlier_dist`, lon, lat, start, n_threads, split_n)
 }
 
-cpp_cell_dist <- function(cx, cy, count, weighted, same_km) {
-    .Call(`_OccurrenceCleaner_cpp_cell_dist`, cx, cy, count, weighted, same_km)
+cpp_cell_dist <- function(cx, cy, count, start, weighted, same_km, n_threads = 1L) {
+    .Call(`_OccurrenceCleaner_cpp_cell_dist`, cx, cy, count, start, weighted, same_km, n_threads)
 }
 
 cpp_lag_cov <- function(f, max_lag) {

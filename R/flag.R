@@ -49,12 +49,14 @@
 #' `verbose`, the same is reported on the console every minute.
 #'
 #' @section Threads and workers:
-#' `n_threads` spreads the exact outlier test over species and the
+#' `n_threads` spreads the exact outlier test over species, the cell
+#' statistics of its raster approximation over cells, and the
 #' proximity and point-in-polygon queries of the record tests over records.
 #' The distances of a species are summed as integers of 2^-32 km, which gives
-#' the same sum in any order, and each record is computed on one thread, so
-#' the flags do not depend on the number of threads. Reading the input, the other tests and the
-#' bookkeeping of the group stage run on one thread. Without OpenMP support in
+#' the same sum in any order, and each record and each raster cell is
+#' computed on one thread, so the flags do not depend on the number of
+#' threads. Reading the input, the other tests and the bookkeeping of the
+#' group stage run on one thread. Without OpenMP support in
 #' the compiler every query runs on one thread.
 #'
 #' `workers` runs the record pass of a streamed run over several input files

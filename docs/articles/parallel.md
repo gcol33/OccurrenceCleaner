@@ -49,7 +49,9 @@ Two kinds of work are spread over threads:
 
 - The outlier test computes the distances between the records of one
   species. Each species is one unit of work, and a species with many
-  records is split by rows over several threads.
+  records is split by rows over several threads. Species of 10,000
+  records or more are tested on raster cells, and the statistics of each
+  cell are one unit of work.
 
 - The record tests that query reference data run per record: the
   proximity tests (`capital`, `centroid`, `institution`,
@@ -71,8 +73,9 @@ stays in the main process.
 
 The distances of a species are summed as whole numbers of 2^-32 km (0.23
 micrometres), which give the same sum in any order of addition, and each
-record is computed on one thread. The result does not depend on the
-number of threads or on how the work is divided between them.
+record and each raster cell is computed on one thread. The result does
+not depend on the number of threads or on how the work is divided
+between them.
 
 ``` r
 

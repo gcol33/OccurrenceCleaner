@@ -59,14 +59,33 @@ test_that("raster cell statistics follow the terra grid and geosphere distances"
   xy <- terra::xyFromCell(ras, cells)
   d <- geosphere::distm(xy, fun = geosphere::distHaversine) / 1000
   d[d == 0] <- NA
-  expect_equal(OccurrenceCleaner:::cpp_cell_dist(xy[, 1], xy[, 2], as.numeric(tb), FALSE, 25)$mean,
+  one <- c(0L, length(tb))
+  expect_equal(OccurrenceCleaner:::cpp_cell_dist(xy[, 1], xy[, 2], as.numeric(tb), one, FALSE, 25)$mean,
                rowMeans(d, na.rm = TRUE))
   w <- outer(as.numeric(tb), as.numeric(tb))
   dw <- geosphere::distm(xy, fun = geosphere::distHaversine) / 1000
   dw[dw == 0] <- 100 * mean(terra::res(ras)) / 2
-  expect_equal(OccurrenceCleaner:::cpp_cell_dist(xy[, 1], xy[, 2], as.numeric(tb), TRUE,
+  expect_equal(OccurrenceCleaner:::cpp_cell_dist(xy[, 1], xy[, 2], as.numeric(tb), one, TRUE,
                                                  100 * mean(terra::res(ras)) / 2)$mean,
                rowSums(round(dw * w)) / rowSums(w))
+})
+
+test_that("grouped cell statistics equal one call per group on any number of threads", {
+  set.seed(8)
+  n <- c(40L, 1L, 300L, 25L)
+  cx <- runif(sum(n), -170, 170); cy <- runif(sum(n), -60, 70)
+  count <- as.numeric(sample(1:50, sum(n), TRUE))
+  start <- c(0L, cumsum(n))
+  for (weighted in c(TRUE, FALSE)) {
+    whole <- OccurrenceCleaner:::cpp_cell_dist(cx, cy, count, start, weighted, 25, n_threads = 1)
+    for (g in seq_along(n)) {
+      i <- (start[g] + 1L):start[g + 1L]
+      alone <- OccurrenceCleaner:::cpp_cell_dist(cx[i], cy[i], count[i], c(0L, n[g]), weighted, 25)
+      expect_identical(whole$mean[i], alone$mean)
+      expect_identical(whole$min[i], alone$min)
+    }
+    expect_identical(OccurrenceCleaner:::cpp_cell_dist(cx, cy, count, start, weighted, 25, n_threads = 4), whole)
+  }
 })
 
 test_that("age_range_outlier matches cf_range at taxon level", {

@@ -516,12 +516,12 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### par.tests  [A2]  (section)
 - idea: which work is spread
-- job: Lists the outlier test (per species, a large species split by rows) and the per-record proximity and point-in-polygon tests; names what stays on one thread; links the on-disk article; says `workers` flags the files of a directory in several R processes, sharing `n_threads`, with the same output per file.
+- job: Lists the outlier test (per species, a large species split by rows, raster cells of the large-species approximation) and the per-record proximity and point-in-polygon tests; names what stays on one thread; links the on-disk article; says `workers` flags the files of a directory in several R processes, sharing `n_threads`, with the same output per file.
 - leaves: the split between threaded and single-thread work
 
 ### par.identical  [A2]  (section)
 - idea: flags do not depend on the thread count
-- job: States that the distances of a species are summed as whole numbers of 2^-32 km (same sum in any order) and each record is computed on one thread, and shows `identical()` on the two flag vectors.
+- job: States that the distances of a species are summed as whole numbers of 2^-32 km (same sum in any order) and each record and raster cell is computed on one thread, and shows `identical()` on the two flag vectors.
 - leaves: `identical(f4$flags, f1$flags)`
 
 ### par.speedup  [A2]  (section)

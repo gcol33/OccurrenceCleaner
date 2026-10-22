@@ -314,23 +314,48 @@ List cpp_outlier_dist(NumericVector lon, NumericVector lat, IntegerVector start,
 }
 
 // Cell statistics of the raster approximation: cells with centre (cx, cy)
-// holding count records. Weighted: the distance between two cells is
+// holding count records, the cells of group g (a species) being rows
+// start[g] to start[g + 1] - 1 (0-based). Each cell is compared with the
+// cells of its own group. Weighted: the distance between two cells is
 // multiplied by the product of their counts and rounded to whole km, a cell's
 // distance to itself counts as same_km, and the statistic is the weighted
 // mean; min is the smallest weighted, rounded value. Unweighted: the plain
-// mean and minimum over the other cells.
+// mean and minimum over the other cells. A cell adds the cells of its group
+// in their order on one thread, so the result does not depend on n_threads.
 // [[Rcpp::export]]
-List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, bool weighted,
-                   double same_km) {
+List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, IntegerVector start,
+                   bool weighted, double same_km, int n_threads = 1) {
   const R_xlen_t n = cx.size();
+  if (cy.size() != n || count.size() != n) stop("cx, cy and count differ in length");
+  const R_xlen_t ng = start.size() - 1;
+  if (ng < 0 || start[0] != 0 || start[ng] != n) stop("start must run from 0 to the number of cells");
+  std::vector<R_xlen_t> first(n), last(n);
+  for (R_xlen_t g = 0; g < ng; ++g) {
+    if (start[g + 1] < start[g]) stop("start must be non-decreasing");
+    for (R_xlen_t i = start[g]; i < start[g + 1]; ++i) {
+      first[i] = start[g];
+      last[i] = start[g + 1];
+    }
+  }
+  std::vector<double> p(n), cp(n);
+  for (R_xlen_t i = 0; i < n; ++i) {
+    p[i] = cy[i] * kDeg;
+    cp[i] = std::cos(p[i]);
+  }
   NumericVector mean(n), mn(n);
+  const double* lon = REAL(cx);
+  const double* cnt = REAL(count);
+  double* pm = REAL(mean);
+  double* pn = REAL(mn);
+  const int nt = occ::threads(n_threads);
+  OCC_OMP(omp parallel for num_threads(nt) schedule(dynamic, 16))
   for (R_xlen_t a = 0; a < n; ++a) {
     double s = 0, w = 0, m = std::numeric_limits<double>::infinity();
-    for (R_xlen_t b = 0; b < n; ++b) {
-      double d = (a == b) ? 0.0 : haversine_km(cx[a], cy[a], cx[b], cy[b]);
+    for (R_xlen_t b = first[a]; b < last[a]; ++b) {
+      double d = (a == b) ? 0.0 : hav_km(lon, p.data(), cp.data(), a, b);
       if (weighted) {
         if (d == 0) d = same_km;
-        const double wab = count[a] * count[b];
+        const double wab = cnt[a] * cnt[b];
         const double v = std::nearbyint(d * wab);
         s += v;
         w += wab;
@@ -342,8 +367,8 @@ List cpp_cell_dist(NumericVector cx, NumericVector cy, NumericVector count, bool
         if (d < m) m = d;
       }
     }
-    mean[a] = w > 0 ? s / w : R_NaN;
-    mn[a] = m;
+    pm[a] = w > 0 ? s / w : R_NaN;
+    pn[a] = m;
   }
   return List::create(_["mean"] = mean, _["min"] = mn);
 }
