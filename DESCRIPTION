@@ -33,6 +33,8 @@ Imports:
     tools,
     utils,
     vectra (>= 0.13.4)
+Remotes:
+    gcol33/vectra
 LinkingTo:
     Rcpp
 Suggests:
