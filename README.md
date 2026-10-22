@@ -50,14 +50,18 @@ exclude. OccurrenceCleaner supports:
   counts exclusions by rule and by taxon, period or precision class for
   reporting in a methods section or data paper.
 - **Checked institution locations.** OccurrenceCleaner checks records
-  against 12,538 locations of museums, herbaria, botanic gardens and
-  other institutions to flag coordinates that may refer to the
-  collection’s address. These are CoordinateCleaner’s 9,773
-  institutions, with 567 moved, 566 of them to where Google Maps places
-  the institution, and 2,765 locations from other registries that a
-  [check against Google Maps or
-  OpenStreetMap](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions)
-  confirms.
+  against the locations of museums, herbaria, botanic gardens and other
+  institutions to flag coordinates that may refer to the collection’s
+  address. With CoordinateCleaner installed,
+  `reference = "CoordinateCleaner"` uses its 9,773 institutions as they
+  are. The default, `reference = "OccurrenceCleaner"`, corrects and
+  extends them to 12,538 locations. A check of CoordinateCleaner’s
+  points found 567 of them away from their institution, 180 by more than
+  1,000 km; these are corrected, 566 to where Google Maps places the
+  institution, and CoordinateCleaner’s coordinates are kept next to each
+  correction. The 2,765 added locations come from other registries and
+  are confirmed by a [check against Google Maps or
+  OpenStreetMap](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
   the type of record, and whether the organism is recorded as native or
   introduced. Habitat information for the recorded genus helps
