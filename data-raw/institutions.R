@@ -1081,11 +1081,11 @@ meta <- rbind(
              licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
                                                            "institutions; overrides and checks by Google Maps and OpenStreetMap"),
-             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-17",
+             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-22",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
                             sep = ", "),
-             retrieved = "2026-10-17", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+             retrieved = "2026-10-22", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")

@@ -34,9 +34,9 @@ institutions with coordinates in the table of
 points that a check beyond their own source confirms (\code{status}
 "confirmed").
 
-Of CoordinateCleaner's points, 9,206 are used as that package has them.
-The other 567 are moved (\code{status} "override", \code{source} the source of the
-new coordinates). For 566 of them, a Google Maps place of the
+Of CoordinateCleaner's points, 9,208 are used as that package has them.
+The other 565 are moved (\code{status} "override", \code{source} the source of the
+new coordinates). For 564 of them, a Google Maps place of the
 institution's name lies within 25 km of the city of CoordinateCleaner's
 record, while CoordinateCleaner's point lies more than 25 km from both;
 they are moved to that place (\code{source} "Google Maps"). The SCAR Expert
@@ -74,7 +74,7 @@ the whole table as \code{gazetteers = list(institution = ...)} uses them too
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
-differs from its \code{institutions} table by the 567 moved points and the
+differs from its \code{institutions} table by the 565 moved points and the
 2,765 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
 as it is.
 }

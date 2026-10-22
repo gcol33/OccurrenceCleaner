@@ -68,7 +68,7 @@
 - The institution test uses CoordinateCleaner’s 9,773 institution points
   and 2,765 points of other sources that a check beyond their own source
   confirms (12,538 points, from 18,245). Of CoordinateCleaner’s points,
-  567 are moved: 566 to the Google Maps place of the institution, where
+  565 are moved: 564 to the Google Maps place of the institution, where
   the place lies within 25 km of the city of CoordinateCleaner’s record
   and CoordinateCleaner’s point more than 25 km from both, and the SCAR
   Expert Group on Birds and Marine Mammals to the SCAR secretariat.

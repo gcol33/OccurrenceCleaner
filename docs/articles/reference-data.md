@@ -45,7 +45,7 @@ ri <- reference_info()
 | institutions_gbif_registry | GBIF registry, publishing organisations | 2026-10-13 | 2026-10-13 |
 | institutions_coordinatecleaner_list | CoordinateCleaner 3.0.1 institution list, placed by Wikidata, OpenStreetMap (Nominatim) and GeoNames | 3.0.1 | 2026-10-13 |
 | institutions_openstreetmap | OpenStreetMap, Overpass API (named institution features) | 2026-10-13 | 2026-10-13 |
-| institutions_status | CoordinateCleaner 3.0.1 institutions; overrides and checks by Google Maps and OpenStreetMap | 2026-10-17 | 2026-10-17 |
+| institutions_status | CoordinateCleaner 3.0.1 institutions; overrides and checks by Google Maps and OpenStreetMap | 2026-10-22 | 2026-10-22 |
 | aohi | AHOI (Park et al. 2023) | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG (Rees 2026) | 2026-10-06 | 2026-10-10 |
 
@@ -76,7 +76,7 @@ The tests use the following layers:
 |:---|:---|
 | capital | CIA World Factbook capital coordinates, Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories |
 | centroid | CIA World Factbook, thematicmapping.org World Borders and GEOLocate country points, Natural Earth admin-0 polygon centroids and label points, admin-1 label points |
-| institution | CoordinateCleaner’s institutions, 567 moved (566 to their Google Maps place), and the confirmed points of GBIF GRSciColl, Wikidata, Wikipedia’s lists of natural history museums, BGCI, Index Herbariorum, the GBIF registry and OpenStreetMap |
+| institution | CoordinateCleaner’s institutions, 565 moved (564 to their Google Maps place), and the confirmed points of GBIF GRSciColl, Wikidata, Wikipedia’s lists of natural history museums, BGCI, Index Herbariorum, the GBIF registry and OpenStreetMap |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
 | sea | Natural Earth land at 1:110 million (default), 1:50 million or 1:10 million |
@@ -144,24 +144,24 @@ table(inst$source, inst$status)
 #>                         
 #>                            cc confirmed override unconfirmed
 #>   BGCI                      0       285        0        3362
-#>   CoordinateCleaner      9206         0        0           0
+#>   CoordinateCleaner      9208         0        0           0
 #>   CoordinateCleaner list    0       931        0        2316
 #>   GBIF registry             0       341        0        2124
 #>   GeoNames                  0         0        0           3
-#>   Google Maps               0         0      566           0
+#>   Google Maps               0         0      564           0
 #>   GRSciColl                 0       826        0        5177
 #>   Index Herbariorum         0       161        0         900
 #>   Wikidata                  0       195        0        7598
 #>   Wikipedia                 0        26        1         674
 ```
 
-Of CoordinateCleaner’s points, 9,206 are used as that package has them.
-The other 567 are moved. Of these, 566 are moved to the place Google
+Of CoordinateCleaner’s points, 9,208 are used as that package has them.
+The other 565 are moved. Of these, 564 are moved to the place Google
 Maps gives for the institution. For each of them, a Google Maps place
 with the institution’s name lies within 25 km of the city in
 CoordinateCleaner’s record, while CoordinateCleaner’s point lies more
 than 25 km from both that place and the city. The median distance
-between the two points is 430 km. CoordinateCleaner places Duke
+between the two points is 431 km. CoordinateCleaner places Duke
 University, listed in Durham, North Carolina, in southern California,
 for example. The SCAR Expert Group on Birds and Marine Mammals has no
 site of its own; it is moved from a point in France to the secretariat
@@ -172,15 +172,18 @@ from.
 
 Every one of CoordinateCleaner’s points was searched in Google Maps by
 name, city and country between 2026-10-13 and 2026-10-17, and 628 met
-the conditions above. A review of each match kept 62 of them at
+the conditions above. A review of each match kept 64 of them at
 CoordinateCleaner’s coordinates:
 
 - 41 where the Google Maps place is a different institution;
 
 - 9 where the name is generic or the place is the town itself;
 
-- 11 organisations with several sites where the record does not name the
+- 12 organisations with several sites where the record does not name the
   site;
+
+- 1 large site, a wildlife refuge, where the Google Maps place is one
+  point of it;
 
 - 1 where the institution’s own address confirms CoordinateCleaner’s
   point.
@@ -346,7 +349,7 @@ check:
 | capitals | 225 (one per ISO3 code) | 475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate | 1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 12,538 used by the test: CoordinateCleaner’s 9,773 (567 moved, 566 of them to their Google Maps place) and 2,765 confirmed points of other sources; 22,154 unconfirmed points left out |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 12,538 used by the test: CoordinateCleaner’s 9,773 (565 moved, 564 of them to their Google Maps place) and 2,765 confirmed points of other sources; 22,154 unconfirmed points left out |
 
 - **Capitals.** Of CoordinateCleaner’s 225 capital points, 221 match
   this package’s Factbook points when rounded to 0.01 degrees. Rounding
@@ -384,8 +387,8 @@ check:
   match no tagged release.
 
 - **Institutions.** The institution test uses CoordinateCleaner’s 9,773
-  institution points, 9,206 of them at CoordinateCleaner’s coordinates
-  and 567 moved, 566 of them to the Google Maps place of the institution
+  institution points, 9,208 of them at CoordinateCleaner’s coordinates
+  and 565 moved, 564 of them to the Google Maps place of the institution
   ([Institutions](#institutions) gives the conditions). It also uses
   2,765 points of other sources that a check has confirmed. A record
   near a moved or confirmed point is flagged here and not by
@@ -580,7 +583,7 @@ attr(f, "occ_layout_version")
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-17, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-22, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed

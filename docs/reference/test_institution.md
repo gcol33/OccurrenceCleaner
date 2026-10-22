@@ -44,9 +44,9 @@ institutions with coordinates in the table of
 points that a check beyond their own source confirms (`status`
 "confirmed").
 
-Of CoordinateCleaner's points, 9,206 are used as that package has them.
-The other 567 are moved (`status` "override", `source` the source of the
-new coordinates). For 566 of them, a Google Maps place of the
+Of CoordinateCleaner's points, 9,208 are used as that package has them.
+The other 565 are moved (`status` "override", `source` the source of the
+new coordinates). For 564 of them, a Google Maps place of the
 institution's name lies within 25 km of the city of CoordinateCleaner's
 record, while CoordinateCleaner's point lies more than 25 km from both;
 they are moved to that place (`source` "Google Maps"). The SCAR Expert
@@ -86,7 +86,7 @@ has placed them on the institution. Passing the whole table as
 
 Equivalent to `cc_inst()`. Its 40-gon buffer edge lies within 0.31 m of
 the 100 m circle. The default gazetteer differs from its `institutions`
-table by the 567 moved points and the 2,765 confirmed points.
+table by the 565 moved points and the 2,765 confirmed points.
 `reference = "CoordinateCleaner"` uses its table as it is.
 
 ## Custom gazetteer
