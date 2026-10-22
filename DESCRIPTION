@@ -32,7 +32,7 @@ Imports:
     Rcpp,
     tools,
     utils,
-    vectra (>= 0.13.0)
+    vectra (>= 0.13.3)
 LinkingTo:
     Rcpp
 Suggests:

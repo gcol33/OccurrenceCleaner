@@ -184,10 +184,16 @@ LogicalVector cpp_seen_mark(SEXP set, IntegerVector h1, IntegerVector h2, Intege
   return out;
 }
 
-// Haversine distance (km) between points a < b of a group, from latitudes in
-// radians p, their cosines cp and longitudes in degrees. Both ways of
-// scanning a group call it with the lower index first, so a pair always gives
-// the same value.
+// Distances are summed as integers of 2^-32 km (0.23 micrometres), so a sum
+// is exact and the same in any order of addition; a mean is within half a
+// unit of the mean of the unrounded distances. A distance is at most half the
+// circumference, below 2^46.3 units, so a sum over fewer than kMaxSumPoints
+// points fits in 63 bits.
+const double kUnitsPerKm = 4294967296.0;
+const R_xlen_t kMaxSumPoints = 100000;
+
+// Haversine distance (km) between points a and b, from latitudes in radians
+// p, their cosines cp and longitudes in degrees.
 static inline double hav_km(const double* lon, const double* p, const double* cp, R_xlen_t a,
                             R_xlen_t b) {
   const double s1 = std::sin((p[b] - p[a]) / 2), s2 = std::sin((lon[b] - lon[a]) * kDeg / 2);
@@ -196,51 +202,76 @@ static inline double hav_km(const double* lon, const double* p, const double* cp
   return 2 * std::atan2(std::sqrt(h), std::sqrt(1 - h)) * kRadiusKm;
 }
 
+// Per-point accumulators of the distances to the other points: the sum in
+// integer units, the number of points summed and the minimum.
+struct DistAcc {
+  std::vector<std::int64_t> s, k;
+  std::vector<double> m;
+  explicit DistAcc(R_xlen_t n)
+      : s(n, 0), k(n, 0), m(n, std::numeric_limits<double>::infinity()) {}
+};
+
+// Add the pairs (i, j), j > i, of the u distinct points; point j stands for
+// w[j] records.
+static inline void add_row(const double* lon, const double* p, const double* cp, const int* w, R_xlen_t u,
+                           R_xlen_t i, DistAcc& a) {
+  for (R_xlen_t j = i + 1; j < u; ++j) {
+    const double d = hav_km(lon, p, cp, i, j);
+    if (!(d > 0)) continue;
+    const std::int64_t q = std::llround(d * kUnitsPerKm);
+    a.s[i] += q * w[j]; a.k[i] += w[j]; if (d < a.m[i]) a.m[i] = d;
+    a.s[j] += q * w[i]; a.k[j] += w[i]; if (d < a.m[j]) a.m[j] = d;
+  }
+}
+
 // For each of the n points of a group: the mean and the minimum of its
 // haversine distances (km) to the other points, leaving out zero distances
 // (itself and points at the same coordinates). A point with no non-zero
-// distance gets NaN and Inf. Every point's distances are added in increasing
-// order of the other point's index. On one thread each pair is computed once
-// and added to both points; with rows_threads > 1 the points are spread over
-// that many threads and each scans its own row, which computes every pair
-// twice but gives the same sums.
+// distance gets NaN and Inf. Points at the same coordinates share their
+// distances, so each pair of distinct coordinates is computed once and
+// weighted by the records at both. With threads > 1 the rows are spread over
+// the threads, each adding into its own accumulators, which are summed at the
+// end; integer sums make the result the same for any number of threads.
 static inline void outlier_dist_group(const double* lon, const double* lat, R_xlen_t n, double* mean,
-                                      double* mn, int rows_threads) {
-  std::vector<double> p(n), cp(n);
-  for (R_xlen_t i = 0; i < n; ++i) {
-    p[i] = lat[i] * kDeg;
-    cp[i] = std::cos(p[i]);
+                                      double* mn, int threads) {
+  if (n == 0) return;
+  std::vector<R_xlen_t> ord(n);
+  for (R_xlen_t i = 0; i < n; ++i) ord[i] = i;
+  std::sort(ord.begin(), ord.end(), [&](R_xlen_t a, R_xlen_t b) {
+    return lon[a] < lon[b] || (lon[a] == lon[b] && (lat[a] < lat[b] || (lat[a] == lat[b] && a < b)));
+  });
+  std::vector<R_xlen_t> of(n);
+  std::vector<double> ux, p, cp;
+  std::vector<int> w;
+  for (R_xlen_t r = 0; r < n; ++r) {
+    const R_xlen_t i = ord[r];
+    if (r == 0 || lon[i] != ux.back() || lat[i] != lat[ord[r - 1]]) {
+      ux.push_back(lon[i]);
+      p.push_back(lat[i] * kDeg);
+      cp.push_back(std::cos(lat[i] * kDeg));
+      w.push_back(0);
+    }
+    ++w.back();
+    of[i] = static_cast<R_xlen_t>(ux.size()) - 1;
   }
-  const double inf = std::numeric_limits<double>::infinity();
-  if (rows_threads > 1) {
-    OCC_OMP(omp parallel for num_threads(rows_threads) schedule(dynamic, 16))
-    for (R_xlen_t i = 0; i < n; ++i) {
-      double s = 0.0, m = inf;
-      R_xlen_t k = 0;
-      for (R_xlen_t j = 0; j < n; ++j) {
-        if (j == i) continue;
-        const double d = j < i ? hav_km(lon, p.data(), cp.data(), j, i) : hav_km(lon, p.data(), cp.data(), i, j);
-        if (!(d > 0)) continue;
-        s += d; ++k; if (d < m) m = d;
+  const R_xlen_t u = static_cast<R_xlen_t>(ux.size());
+  DistAcc acc(u);
+  if (threads > 1 && u > 1) {
+    std::vector<DistAcc> part(threads, DistAcc(u));
+    OCC_OMP(omp parallel for num_threads(threads) schedule(dynamic, 8))
+    for (R_xlen_t i = 0; i < u; ++i)
+      add_row(ux.data(), p.data(), cp.data(), w.data(), u, i, part[occ::thread_id()]);
+    for (const DistAcc& t : part)
+      for (R_xlen_t i = 0; i < u; ++i) {
+        acc.s[i] += t.s[i]; acc.k[i] += t.k[i]; if (t.m[i] < acc.m[i]) acc.m[i] = t.m[i];
       }
-      mean[i] = k ? s / static_cast<double>(k) : R_NaN;
-      mn[i] = m;
-    }
-    return;
-  }
-  std::vector<double> s(n, 0.0), m(n, inf);
-  std::vector<R_xlen_t> k(n, 0);
-  for (R_xlen_t i = 0; i < n; ++i) {
-    for (R_xlen_t j = i + 1; j < n; ++j) {
-      const double d = hav_km(lon, p.data(), cp.data(), i, j);
-      if (!(d > 0)) continue;
-      s[i] += d; ++k[i]; if (d < m[i]) m[i] = d;
-      s[j] += d; ++k[j]; if (d < m[j]) m[j] = d;
-    }
+  } else {
+    for (R_xlen_t i = 0; i < u; ++i) add_row(ux.data(), p.data(), cp.data(), w.data(), u, i, acc);
   }
   for (R_xlen_t i = 0; i < n; ++i) {
-    mean[i] = k[i] ? s[i] / static_cast<double>(k[i]) : R_NaN;
-    mn[i] = m[i];
+    const R_xlen_t c = of[i];
+    mean[i] = acc.k[c] ? static_cast<double>(acc.s[c]) / kUnitsPerKm / static_cast<double>(acc.k[c]) : R_NaN;
+    mn[i] = acc.m[c];
   }
 }
 
@@ -257,8 +288,10 @@ List cpp_outlier_dist(NumericVector lon, NumericVector lat, IntegerVector start,
   if (lat.size() != n) stop("lon and lat differ in length");
   const R_xlen_t ng = start.size() - 1;
   if (ng < 0 || start[0] != 0 || start[ng] != n) stop("start must run from 0 to the number of points");
-  for (R_xlen_t g = 0; g < ng; ++g)
+  for (R_xlen_t g = 0; g < ng; ++g) {
     if (start[g + 1] < start[g]) stop("start must be non-decreasing");
+    if (start[g + 1] - start[g] >= kMaxSumPoints) stop("a group of the exact outlier test has 100,000 points or more");
+  }
   NumericVector mean(n), mn(n);
   const double* px = REAL(lon);
   const double* py = REAL(lat);

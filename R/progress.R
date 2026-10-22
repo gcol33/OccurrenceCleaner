@@ -21,7 +21,7 @@
 # measured there and take the cost of pass1, which reads the same rows.
 # record_bytes is the only step of its run (no group tests, rows not counted),
 # so its cost sets the estimate only until the first file is done.
-.step_cost <- c(pass0 = 6.8e-7, pass1 = 9.2e-7, decide_duplicate = 5.6e-7, decide_outlier = 1.24e-4,
+.step_cost <- c(pass0 = 6.8e-7, pass1 = 9.2e-7, decide_duplicate = 5.6e-7, decide_outlier = 4.2e-5,
                 decide_taxon = 9.2e-7, final = 3.8e-2, record = 1.5e-5, record_bytes = 1.5e-5,
                 repair = 9.2e-7)
 

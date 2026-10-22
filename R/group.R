@@ -118,8 +118,9 @@ spread_flags <- function(g, rep_rows, flagged_rep) {
 
 # Exact test on the records of the species in `key` (each < 10000 records,
 # no thinning). A species is tested when it has at least min_occs distinct
-# coordinates; its records keep their input order, so the distance sums are
-# added in the same order whatever the other species or the threads.
+# coordinates. The distance sums are exact integer sums (see
+# cpp_outlier_dist()), so they do not depend on the other species, the order
+# of the records or the threads.
 outlier_exact <- function(key, lon, lat, s, n_threads = 1L) {
   hit <- logical(length(key))
   if (!length(key)) return(hit)

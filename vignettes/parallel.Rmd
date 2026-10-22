@@ -60,9 +60,11 @@ Two kinds of work are spread over threads:
 
 Reading the input, the other tests and the bookkeeping of the group stage run on one thread. On a table on disk each chunk of records is processed with the same number of threads (see [Large tables on disk](on-disk.html)).
 
+A directory of files, such as a GBIF snapshot, can also be flagged several files at a time: `workers = 8` runs the record pass in eight R processes, one file each, and shares `n_threads` out among them. Each file writes the same output as in a single process. The group stage stays in the main process.
+
 ## Identical flags
 
-Each species and each record is computed on one thread, and the distances of a species are added in the order of its records. The result does not depend on the number of threads or on how the work is divided between them.
+The distances of a species are summed as whole numbers of 2^-32 km (0.23 micrometres), which give the same sum in any order of addition, and each record is computed on one thread. The result does not depend on the number of threads or on how the work is divided between them.
 
 ```{r identical}
 identical(f4$flags, f1$flags)

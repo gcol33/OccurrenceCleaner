@@ -25,6 +25,16 @@ inline int threads(int requested) {
 #endif
 }
 
+// The number of the calling thread within its parallel region; 0 outside one
+// and without OpenMP.
+inline int thread_id() {
+#ifdef _OPENMP
+  return omp_get_thread_num();
+#else
+  return 0;
+#endif
+}
+
 }  // namespace occ
 
 #endif
