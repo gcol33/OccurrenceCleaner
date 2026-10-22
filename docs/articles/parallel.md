@@ -61,12 +61,18 @@ stage run on one thread. On a table on disk each chunk of records is
 processed with the same number of threads (see [Large tables on
 disk](https://gillescolling.com/OccurrenceCleaner/articles/on-disk.md)).
 
+A directory of files, such as a GBIF snapshot, can also be flagged
+several files at a time: `workers = 8` runs the record pass in eight R
+processes, one file each, and shares `n_threads` out among them. Each
+file writes the same output as in a single process. The group stage
+stays in the main process.
+
 ## Identical flags
 
-Each species and each record is computed on one thread, and the
-distances of a species are added in the order of its records. The result
-does not depend on the number of threads or on how the work is divided
-between them.
+The distances of a species are summed as whole numbers of 2^-32 km (0.23
+micrometres), which give the same sum in any order of addition, and each
+record is computed on one thread. The result does not depend on the
+number of threads or on how the work is divided between them.
 
 ``` r
 
@@ -84,11 +90,11 @@ median of three runs. It ran on an Intel(R) Core(TM) i9-14900K under R
 
 | Tests | Records | 1 thread(s), s | 2 thread(s), s | 4 thread(s), s | 8 thread(s), s | 16 thread(s), s |
 |:---|---:|---:|---:|---:|---:|---:|
-| Proximity and polygon tests | 5,000,000 | 3.64 | 1.94 | 1.10 | 0.69 | 0.52 |
-| Outlier test | 1,000,000 | 54.41 | 43.09 | 26.39 | 13.75 | 8.95 |
+| Proximity and polygon tests | 5,000,000 | 2.04 | 1.22 | 0.80 | 0.61 | 0.43 |
+| Outlier test | 1,000,000 | 52.27 | 29.73 | 15.46 | 9.17 | 5.87 |
 
-Proximity and polygon tests run 7 times faster with 16 threads than with
-one, and the outlier test 6.1 times faster. The machine has 8
+Proximity and polygon tests run 4.7 times faster with 16 threads than
+with one, and the outlier test 8.9 times faster. The machine has 8
 performance cores and 16 efficiency cores, 32 logical processors in all,
 so the gain per added thread falls beyond 8 threads.
 
