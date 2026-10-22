@@ -53,9 +53,9 @@ exclude. OccurrenceCleaner supports:
   against 12,538 locations of museums, herbaria, botanic gardens and
   other institutions to flag coordinates that may refer to the
   collection’s address. These are CoordinateCleaner’s 9,773
-  institutions, with 568 moved to where Google Maps places the
-  institution, and 2,765 locations from other registries that a [check
-  against Google Maps or
+  institutions, with 567 moved, 566 of them to where Google Maps places
+  the institution, and 2,765 locations from other registries that a
+  [check against Google Maps or
   OpenStreetMap](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions)
   confirms.
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,

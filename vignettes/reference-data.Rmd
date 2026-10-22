@@ -58,7 +58,7 @@ knitr::kable(data.frame(
            "sea_nonmarine, land_marine"),
   `reference data` = c("CIA World Factbook capital coordinates, Natural Earth populated places: admin-0 capitals, alternative capitals and capitals of dependent territories",
                        "CIA World Factbook, thematicmapping.org World Borders and GEOLocate country points, Natural Earth admin-0 polygon centroids and label points, admin-1 label points",
-                       "CoordinateCleaner's institutions, 568 moved to their Google Maps place, and the confirmed points of GBIF GRSciColl, Wikidata, Wikipedia's lists of natural history museums, BGCI, Index Herbariorum, the GBIF registry and OpenStreetMap",
+                       "CoordinateCleaner's institutions, 567 moved (566 to their Google Maps place), and the confirmed points of GBIF GRSciColl, Wikidata, Wikipedia's lists of natural history museums, BGCI, Index Herbariorum, the GBIF registry and OpenStreetMap",
                        "one fixed point, 12.58 E, 55.67 N",
                        "Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points",
                        "Natural Earth land at 1:110 million (default), 1:50 million or 1:10 million",
@@ -99,15 +99,17 @@ inst <- reference_points("institution")
 table(inst$source, inst$status)
 ```
 
-Of CoordinateCleaner's points, 9,205 are used as that package has them. The other 568 are moved to the place Google Maps gives for the institution. For each of them, a Google Maps place with the institution's name lies within 25 km of the city in CoordinateCleaner's record, while CoordinateCleaner's point lies more than 25 km from both that place and the city. The median distance between the two points is 428 km. CoordinateCleaner places Duke University, listed in Durham, North Carolina, in southern California, for example. The `cc_lon` and `cc_lat` columns keep CoordinateCleaner's coordinates, and `evidence` names the Google Maps place.
+Of CoordinateCleaner's points, 9,206 are used as that package has them. The other 567 are moved. Of these, 566 are moved to the place Google Maps gives for the institution. For each of them, a Google Maps place with the institution's name lies within 25 km of the city in CoordinateCleaner's record, while CoordinateCleaner's point lies more than 25 km from both that place and the city. The median distance between the two points is 430 km. CoordinateCleaner places Duke University, listed in Durham, North Carolina, in southern California, for example. The SCAR Expert Group on Birds and Marine Mammals has no site of its own; it is moved from a point in France to the secretariat of SCAR, the Scientific Committee on Antarctic Research, in Cambridge. The `cc_lon` and `cc_lat` columns keep CoordinateCleaner's coordinates, and `evidence` names the place and the URL its coordinates were read from.
 
-Every one of CoordinateCleaner's points was searched in Google Maps by name, city and country between 2026-10-13 and 2026-10-17, and 628 met the conditions above. A review of each match kept 60 of them at CoordinateCleaner's coordinates:
+Every one of CoordinateCleaner's points was searched in Google Maps by name, city and country between 2026-10-13 and 2026-10-17, and 628 met the conditions above. A review of each match kept 62 of them at CoordinateCleaner's coordinates:
 
 - 41 where the Google Maps place is a different institution;
 
 - 9 where the name is generic or the place is the town itself;
 
-- 10 organisations with several sites where the record does not name the site.
+- 11 organisations with several sites where the record does not name the site;
+
+- 1 where the institution's own address confirms CoordinateCleaner's point.
 
 A point from another source is confirmed when a Google Maps place with the institution's name lies within 300 m of it, or when it lies within 200 m of the OpenStreetMap feature with that name. Points taken from OpenStreetMap need the Google Maps check. These checks covered the point nearest each of CoordinateCleaner's institutions and confirm 2,765 points.
 
@@ -182,7 +184,7 @@ knitr::kable(data.frame(
   OccurrenceCleaner = c("475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension",
                         "1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension",
                         "4,594 (Natural Earth 5.1.1 admin-1 label points)",
-                        "12,538 used by the test: CoordinateCleaner's 9,773 (568 moved to their Google Maps place) and 2,765 confirmed points of other sources; 22,154 unconfirmed points left out")))
+                        "12,538 used by the test: CoordinateCleaner's 9,773 (567 moved, 566 of them to their Google Maps place) and 2,765 confirmed points of other sources; 22,154 unconfirmed points left out")))
 ```
 
 - **Capitals.** Of CoordinateCleaner's 225 capital points, 221 match this package's Factbook points when rounded to 0.01 degrees. Rounding shifts their positions by up to 523 m. The remaining four reflect Factbook entries that have since changed: Bujumbura to Gitega for Burundi; Buenos Aires from 58°40′ W to 58°22′ W, correcting a location 27 km west of the city; Melekeok to Ngerulmud for Palau; and a 1.8 km coordinate adjustment for Rangoon.
@@ -197,7 +199,7 @@ knitr::kable(data.frame(
 
   Of CoordinateCleaner's rows, 4,591 match this package's points exactly. Of the remaining 54, 50 lie more than 10 km from any included point: 15 use coordinates Natural Earth has since changed, and 39 match no tagged release.
 
-- **Institutions.** The institution test uses CoordinateCleaner's 9,773 institution points, 9,205 of them at CoordinateCleaner's coordinates and 568 moved to the Google Maps place of the institution ([Institutions](#institutions) gives the conditions). It also uses 2,765 points of other sources that a check has confirmed. A record near a moved or confirmed point is flagged here and not by CoordinateCleaner.
+- **Institutions.** The institution test uses CoordinateCleaner's 9,773 institution points, 9,206 of them at CoordinateCleaner's coordinates and 567 moved, 566 of them to the Google Maps place of the institution ([Institutions](#institutions) gives the conditions). It also uses 2,765 points of other sources that a check has confirmed. A record near a moved or confirmed point is flagged here and not by CoordinateCleaner.
 
   CoordinateCleaner geocoded nearly all its institutions itself. For example, it located 641 of its 712 BGCI gardens from names and addresses, while this package's BGCI points have BGCI's coordinates. A confirmed point can therefore mark another building of an institution than CoordinateCleaner's point. `reference = "CoordinateCleaner"` uses CoordinateCleaner's table as it is.
 

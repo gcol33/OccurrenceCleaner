@@ -168,7 +168,7 @@ test leaves out:
 table(inst$status)
 #> 
 #>          cc   confirmed    override unconfirmed 
-#>        9205        2765         568       22154
+#>        9206        2765         567       22154
 ```
 
 `gazetteers = list(institution = inst)` flags records near any point of

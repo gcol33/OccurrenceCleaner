@@ -325,10 +325,10 @@ and label points, admin-1 label points</td>
 </tr>
 <tr class="odd">
 <td align="left">institution</td>
-<td align="left">CoordinateCleaner’s institutions, 568 moved to their
-Google Maps place, and the confirmed points of GBIF GRSciColl, Wikidata,
-Wikipedia’s lists of natural history museums, BGCI, Index Herbariorum,
-the GBIF registry and OpenStreetMap</td>
+<td align="left">CoordinateCleaner’s institutions, 567 moved (566 to
+their Google Maps place), and the confirmed points of GBIF GRSciColl,
+Wikidata, Wikipedia’s lists of natural history museums, BGCI, Index
+Herbariorum, the GBIF registry and OpenStreetMap</td>
 </tr>
 <tr class="even">
 <td align="left">gbif_headquarters</td>
@@ -421,37 +421,42 @@ out.</p>
 <span><span class="co">#&gt;                         </span></span>
 <span><span class="co">#&gt;                            cc confirmed override unconfirmed</span></span>
 <span><span class="co">#&gt;   BGCI                      0       285        0        3362</span></span>
-<span><span class="co">#&gt;   CoordinateCleaner      9205         0        0           0</span></span>
+<span><span class="co">#&gt;   CoordinateCleaner      9206         0        0           0</span></span>
 <span><span class="co">#&gt;   CoordinateCleaner list    0       931        0        2316</span></span>
 <span><span class="co">#&gt;   GBIF registry             0       341        0        2124</span></span>
 <span><span class="co">#&gt;   GeoNames                  0         0        0           3</span></span>
-<span><span class="co">#&gt;   Google Maps               0         0      568           0</span></span>
+<span><span class="co">#&gt;   Google Maps               0         0      566           0</span></span>
 <span><span class="co">#&gt;   GRSciColl                 0       826        0        5177</span></span>
 <span><span class="co">#&gt;   Index Herbariorum         0       161        0         900</span></span>
 <span><span class="co">#&gt;   Wikidata                  0       195        0        7598</span></span>
-<span><span class="co">#&gt;   Wikipedia                 0        26        0         674</span></span></code></pre></div>
-<p>Of CoordinateCleaner’s points, 9,205 are used as that package has
-them. The other 568 are moved to the place Google Maps gives for the
-institution. For each of them, a Google Maps place with the
-institution’s name lies within 25 km of the city in CoordinateCleaner’s
-record, while CoordinateCleaner’s point lies more than 25 km from both
-that place and the city. The median distance between the two points is
-428 km. CoordinateCleaner places Duke University, listed in Durham,
-North Carolina, in southern California, for example. The
-<code>cc_lon</code> and <code>cc_lat</code> columns keep
+<span><span class="co">#&gt;   Wikipedia                 0        26        1         674</span></span></code></pre></div>
+<p>Of CoordinateCleaner’s points, 9,206 are used as that package has
+them. The other 567 are moved. Of these, 566 are moved to the place
+Google Maps gives for the institution. For each of them, a Google Maps
+place with the institution’s name lies within 25 km of the city in
+CoordinateCleaner’s record, while CoordinateCleaner’s point lies more
+than 25 km from both that place and the city. The median distance
+between the two points is 430 km. CoordinateCleaner places Duke
+University, listed in Durham, North Carolina, in southern California,
+for example. The SCAR Expert Group on Birds and Marine Mammals has no
+site of its own; it is moved from a point in France to the secretariat
+of SCAR, the Scientific Committee on Antarctic Research, in Cambridge.
+The <code>cc_lon</code> and <code>cc_lat</code> columns keep
 CoordinateCleaner’s coordinates, and <code>evidence</code> names the
-Google Maps place.</p>
+place and the URL its coordinates were read from.</p>
 <p>Every one of CoordinateCleaner’s points was searched in Google Maps
 by name, city and country between 2026-10-13 and 2026-10-17, and 628 met
-the conditions above. A review of each match kept 60 of them at
+the conditions above. A review of each match kept 62 of them at
 CoordinateCleaner’s coordinates:</p>
 <ul>
 <li><p>41 where the Google Maps place is a different
 institution;</p></li>
 <li><p>9 where the name is generic or the place is the town
 itself;</p></li>
-<li><p>10 organisations with several sites where the record does not
-name the site.</p></li>
+<li><p>11 organisations with several sites where the record does not
+name the site;</p></li>
+<li><p>1 where the institution’s own address confirms
+CoordinateCleaner’s point.</p></li>
 </ul>
 <p>A point from another source is confirmed when a Google Maps place
 with the institution’s name lies within 300 m of it, or when it lies
@@ -596,8 +601,8 @@ the last institution check:</p>
 <table class="table">
 <colgroup>
 <col width="6%">
-<col width="30%">
-<col width="62%">
+<col width="29%">
+<col width="64%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">gazetteer</th>
@@ -629,9 +634,9 @@ centroids and label points marked as extension</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">12,538 used by the test: CoordinateCleaner’s 9,773 (568
-moved to their Google Maps place) and 2,765 confirmed points of other
-sources; 22,154 unconfirmed points left out</td>
+<td align="left">12,538 used by the test: CoordinateCleaner’s 9,773 (567
+moved, 566 of them to their Google Maps place) and 2,765 confirmed
+points of other sources; 22,154 unconfirmed points left out</td>
 </tr>
 </tbody>
 </table>
@@ -676,12 +681,12 @@ no tagged release.</p>
 </li>
 <li>
 <p><strong>Institutions.</strong> The institution test uses
-CoordinateCleaner’s 9,773 institution points, 9,205 of them at
-CoordinateCleaner’s coordinates and 568 moved to the Google Maps place
-of the institution (<a href="#institutions">Institutions</a> gives the
-conditions). It also uses 2,765 points of other sources that a check has
-confirmed. A record near a moved or confirmed point is flagged here and
-not by CoordinateCleaner.</p>
+CoordinateCleaner’s 9,773 institution points, 9,206 of them at
+CoordinateCleaner’s coordinates and 567 moved, 566 of them to the Google
+Maps place of the institution (<a href="#institutions">Institutions</a>
+gives the conditions). It also uses 2,765 points of other sources that a
+check has confirmed. A record near a moved or confirmed point is flagged
+here and not by CoordinateCleaner.</p>
 <p>CoordinateCleaner geocoded nearly all its institutions itself. For
 example, it located 641 of its 712 BGCI gardens from names and
 addresses, while this package’s BGCI points have BGCI’s coordinates. A

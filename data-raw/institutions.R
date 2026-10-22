@@ -996,9 +996,12 @@ institutions$cc_lat <- NA_real_
 # of CoordinateCleaner's record, and CoordinateCleaner's point and the nearest
 # point of this table lie over 25 km from both. Those are moved to the Google
 # Maps place (status "override"); `cc_lon` and `cc_lat` keep CoordinateCleaner's
-# coordinates. Candidates whose Google place is another institution, a town or
-# one site of an organisation with several stay as CoordinateCleaner has them
-# (decision "kept", with the reason).
+# coordinates. An institution without a city of its own is placed at the place
+# its own pages give. Every override names the source of its coordinates
+# (`place_source`) and the page they were read from (`place_url`). Candidates whose
+# Google place is another institution, a town or one site of an organisation
+# with several stay as CoordinateCleaner has them (decision "kept", with the
+# reason).
 overrides <- read.csv("data-raw/institution_overrides.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 stopifnot(all(overrides$cc_row %in% cc$row))
 cc_points <- data.frame(key = paste0("cc:", cc$row), code = NA_character_, name = cc$shown, country = cc$iso2,
@@ -1007,6 +1010,7 @@ cc_points <- data.frame(key = paste0("cc:", cc$row), code = NA_character_, name 
                         source = "CoordinateCleaner", extension = FALSE, status = "cc", evidence = NA_character_,
                         cc_lon = NA_real_, cc_lat = NA_real_, stringsAsFactors = FALSE)
 ov <- overrides[overrides$decision == "override", ]
+stopifnot(nzchar(ov$place_source), startsWith(ov$place_url, "https://"))
 j <- match(ov$cc_row, cc$row)
 stopifnot(isTRUE(all.equal(cc_points$lon[j], ov$cc_lon)), isTRUE(all.equal(cc_points$lat[j], ov$cc_lat)))
 cc_points$cc_lon[j] <- cc_points$lon[j]
@@ -1014,9 +1018,11 @@ cc_points$cc_lat[j] <- cc_points$lat[j]
 cc_points$lon[j] <- ov$lon
 cc_points$lat[j] <- ov$lat
 cc_points$status[j] <- "override"
-cc_points$source[j] <- "Google Maps"
-cc_points$evidence[j] <- paste0("Google Maps place \"", ov$google_name, "\", ", ov$city_to_place_km,
-                                " km from the record's city; CoordinateCleaner's point ", ov$cc_to_place_km, " km away")
+cc_points$source[j] <- ov$place_source
+cc_points$evidence[j] <- paste0(ov$place_source, " place \"", ov$place_name, "\", ",
+                                ifelse(is.na(ov$city_to_place_km), "",
+                                       paste0(ov$city_to_place_km, " km from the record's city; ")),
+                                "CoordinateCleaner's point ", ov$cc_to_place_km, " km away; ", ov$place_url)
 stopifnot(!any(zero_xy(cc_points$lon, cc_points$lat)))
 # A point of the other sources at the coordinates of one of CoordinateCleaner's
 # adds nothing to the test.

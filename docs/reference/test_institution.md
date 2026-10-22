@@ -44,14 +44,16 @@ institutions with coordinates in the table of
 points that a check beyond their own source confirms (`status`
 "confirmed").
 
-Of CoordinateCleaner's points, 9,205 are used as that package has them.
-The other 568 are moved to the institution's place in Google Maps
-(`source` "Google Maps", `status` "override"). For each of them, a
-Google Maps place of the institution's name lies within 25 km of the
-city of CoordinateCleaner's record, while CoordinateCleaner's point lies
-more than 25 km from both. `cc_lon` and `cc_lat` keep
-CoordinateCleaner's coordinates, and `evidence` gives the place's name
-and the distances.
+Of CoordinateCleaner's points, 9,206 are used as that package has them.
+The other 567 are moved (`status` "override", `source` the source of the
+new coordinates). For 566 of them, a Google Maps place of the
+institution's name lies within 25 km of the city of CoordinateCleaner's
+record, while CoordinateCleaner's point lies more than 25 km from both;
+they are moved to that place (`source` "Google Maps"). The SCAR Expert
+Group on Birds and Marine Mammals has no site of its own and is moved to
+the SCAR secretariat in Cambridge (`source` "Wikipedia"). `cc_lon` and
+`cc_lat` keep CoordinateCleaner's coordinates, and `evidence` gives the
+place's name, the distances and the URL the coordinates were read from.
 
 A further point is confirmed when a Google Maps place of the
 institution's name lies within 300 m of it, or when it lies within 200 m
@@ -84,7 +86,7 @@ has placed them on the institution. Passing the whole table as
 
 Equivalent to `cc_inst()`. Its 40-gon buffer edge lies within 0.31 m of
 the 100 m circle. The default gazetteer differs from its `institutions`
-table by the 568 moved points and the 2,765 confirmed points.
+table by the 567 moved points and the 2,765 confirmed points.
 `reference = "CoordinateCleaner"` uses its table as it is.
 
 ## Custom gazetteer

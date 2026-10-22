@@ -34,13 +34,16 @@ institutions with coordinates in the table of
 points that a check beyond their own source confirms (\code{status}
 "confirmed").
 
-Of CoordinateCleaner's points, 9,205 are used as that package has them.
-The other 568 are moved to the institution's place in Google Maps
-(\code{source} "Google Maps", \code{status} "override"). For each of them, a Google
-Maps place of the institution's name lies within 25 km of the city of
-CoordinateCleaner's record, while CoordinateCleaner's point lies more than
-25 km from both. \code{cc_lon} and \code{cc_lat} keep CoordinateCleaner's
-coordinates, and \code{evidence} gives the place's name and the distances.
+Of CoordinateCleaner's points, 9,206 are used as that package has them.
+The other 567 are moved (\code{status} "override", \code{source} the source of the
+new coordinates). For 566 of them, a Google Maps place of the
+institution's name lies within 25 km of the city of CoordinateCleaner's
+record, while CoordinateCleaner's point lies more than 25 km from both;
+they are moved to that place (\code{source} "Google Maps"). The SCAR Expert
+Group on Birds and Marine Mammals has no site of its own and is moved to
+the SCAR secretariat in Cambridge (\code{source} "Wikipedia"). \code{cc_lon} and
+\code{cc_lat} keep CoordinateCleaner's coordinates, and \code{evidence} gives the
+place's name, the distances and the URL the coordinates were read from.
 
 A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
@@ -71,7 +74,7 @@ the whole table as \code{gazetteers = list(institution = ...)} uses them too
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
-differs from its \code{institutions} table by the 568 moved points and the
+differs from its \code{institutions} table by the 567 moved points and the
 2,765 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
 as it is.
 }
