@@ -51,8 +51,7 @@ exclude. OccurrenceCleaner supports:
   extends them to 12,538 locations. A check of CoordinateCleaner’s
   points found 567 of them away from their institution, 180 by more than
   1,000 km; these are corrected, 566 to where Google Maps places the
-  institution, and CoordinateCleaner’s coordinates are kept next to each
-  correction. The 2,765 added locations come from other registries and
+  institution. The 2,765 added locations come from other registries and
   are confirmed by a [check against Google Maps or
   OpenStreetMap](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
