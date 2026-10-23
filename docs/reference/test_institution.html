@@ -112,28 +112,30 @@ columns of <code>x</code> unchanged. See <code><a href="keep_unflagged.html">kee
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The default gazetteer has 12,538 points. Of these, 9,773 are the
+    <p>The default gazetteer has 12,559 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> 3.0.1
-(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 2,765 are further
+(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 2,786 are further
 points that a check beyond their own source confirms (<code>status</code>
 "confirmed").</p>
-<p>Of CoordinateCleaner's points, 9,208 are used as that package has them.
-The other 565 are moved (<code>status</code> "override", <code>source</code> the source of the
-new coordinates). For 564 of them, a Google Maps place of the
+<p>Of CoordinateCleaner's points, 9,200 are used as that package has them.
+The other 573 are moved (<code>status</code> "override", <code>source</code> the source of the
+new coordinates). For 565 of them, a Google Maps place of the
 institution's name lies within 25 km of the city of CoordinateCleaner's
 record, while CoordinateCleaner's point lies more than 25 km from both;
 they are moved to that place (<code>source</code> "Google Maps"). The SCAR Expert
 Group on Birds and Marine Mammals has no site of its own and is moved to
-the SCAR secretariat in Cambridge (<code>source</code> "Wikipedia"). <code>cc_lon</code> and
+the SCAR secretariat in Cambridge (<code>source</code> "Wikipedia"). Seven whose
+Google Maps search gave no place are moved to the site Wikipedia or
+OpenStreetMap gives (<code>source</code> "Wikipedia" or "OpenStreetMap"). <code>cc_lon</code> and
 <code>cc_lat</code> keep CoordinateCleaner's coordinates, and <code>evidence</code> gives the
 place's name, the distances and the URL the coordinates were read from.</p>
 <p>A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
 OpenStreetMap feature of that name; <code>evidence</code> says which. These checks
 covered the point of the package's table nearest each of
-CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-17.</p>
-<p><code><a href="reference_points.html">reference_points()</a></code> also returns 22,154 unconfirmed points, which the
+CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-23.</p>
+<p><code><a href="reference_points.html">reference_points()</a></code> also returns 22,133 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -157,8 +159,8 @@ the whole table as <code>gazetteers = list(institution = ...)</code> uses them t
     <h2 id="coordinatecleaner">CoordinateCleaner<a class="anchor" aria-label="anchor" href="#coordinatecleaner"></a></h2>
     <p>Equivalent to <code>cc_inst()</code>. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
-differs from its <code>institutions</code> table by the 565 moved points and the
-2,765 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
+differs from its <code>institutions</code> table by the 573 moved points and the
+2,786 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
 as it is.</p>
     </div>
     <div class="section level2">

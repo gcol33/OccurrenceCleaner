@@ -267,7 +267,7 @@ default result:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outlier <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;">
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;" aria-hidden="true">
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
@@ -1963,7 +1963,7 @@ size. A species of 15,001 records with one record in Madrid:</p>
 <span>                  decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">15000</span>, <span class="fl">46.8</span>, <span class="fl">0.6</span><span class="op">)</span>, <span class="fl">40.4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">fb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">big</span>, tests <span class="op">=</span> <span class="st">"outlier"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;    0.03    0.00    0.03</span></span>
+<span><span class="co">#&gt;    0.02    0.00    0.02</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">fb</span><span class="op">$</span><span class="va">flag_outlier</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 15001</span></span></code></pre></div>
 <p>The Madrid record is the only one flagged. CoordinateCleaner 3.0.1
@@ -2035,7 +2035,7 @@ the decimal parts of the coordinates show:</p>
 <span>        panel.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>        plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='288.00pt' viewBox='0 0 468.00 288.00' class="r-plt inline-svg" style="width:100%;height:auto;">
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='288.00pt' viewBox='0 0 468.00 288.00' class="r-plt inline-svg" style="width:100%;height:auto;" aria-hidden="true">
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
@@ -2078,7 +2078,7 @@ the decimal parts of the coordinates show:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8NDUuOTB8MjQyLjEw)'>
-<rect x='-0.000000000000064' y='45.90' width='468.00' height='196.20' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='-0.000000000000064' y='45.90' width='468.00' height='196.20' style='stroke-width: 1.65; stroke: none;' />
 </g>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyODguMDA=)'>
 </g>
@@ -2088,7 +2088,7 @@ the decimal parts of the coordinates show:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpNTQuOTh8MTY3LjQzfDgwLjUxfDE5My40Mw==)'>
-<rect x='54.98' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='54.98' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' />
 <polyline points='54.98,162.36 167.43,162.36 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='54.98,110.49 167.43,110.49 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='86.03,193.43 86.03,80.51 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
@@ -2408,7 +2408,7 @@ the decimal parts of the coordinates show:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMjAxLjAzfDMxMy40OHw4MC41MXwxOTMuNDM=)'>
-<rect x='201.03' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='201.03' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' />
 <polyline points='201.03,162.36 313.48,162.36 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='201.03,110.49 313.48,110.49 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='232.08,193.43 232.08,80.51 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
@@ -2728,7 +2728,7 @@ the decimal parts of the coordinates show:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMzQ3LjA4fDQ1OS41M3w4MC41MXwxOTMuNDM=)'>
-<rect x='347.08' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='347.08' y='80.51' width='112.45' height='112.92' style='stroke-width: 1.65; stroke: none;' />
 <polyline points='347.08,162.36 459.53,162.36 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='347.08,110.49 459.53,110.49 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='378.13,193.43 378.13,80.51 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />

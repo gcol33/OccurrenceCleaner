@@ -27,21 +27,23 @@ universities holding collections, where specimens are often georeferenced
 to the institution.
 }
 \details{
-The default gazetteer has 12,538 points. Of these, 9,773 are the
+The default gazetteer has 12,559 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} 3.0.1
-(\code{source} "CoordinateCleaner", \code{status} "cc"), and 2,765 are further
+(\code{source} "CoordinateCleaner", \code{status} "cc"), and 2,786 are further
 points that a check beyond their own source confirms (\code{status}
 "confirmed").
 
-Of CoordinateCleaner's points, 9,208 are used as that package has them.
-The other 565 are moved (\code{status} "override", \code{source} the source of the
-new coordinates). For 564 of them, a Google Maps place of the
+Of CoordinateCleaner's points, 9,200 are used as that package has them.
+The other 573 are moved (\code{status} "override", \code{source} the source of the
+new coordinates). For 565 of them, a Google Maps place of the
 institution's name lies within 25 km of the city of CoordinateCleaner's
 record, while CoordinateCleaner's point lies more than 25 km from both;
 they are moved to that place (\code{source} "Google Maps"). The SCAR Expert
 Group on Birds and Marine Mammals has no site of its own and is moved to
-the SCAR secretariat in Cambridge (\code{source} "Wikipedia"). \code{cc_lon} and
+the SCAR secretariat in Cambridge (\code{source} "Wikipedia"). Seven whose
+Google Maps search gave no place are moved to the site Wikipedia or
+OpenStreetMap gives (\code{source} "Wikipedia" or "OpenStreetMap"). \code{cc_lon} and
 \code{cc_lat} keep CoordinateCleaner's coordinates, and \code{evidence} gives the
 place's name, the distances and the URL the coordinates were read from.
 
@@ -49,9 +51,9 @@ A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
 OpenStreetMap feature of that name; \code{evidence} says which. These checks
 covered the point of the package's table nearest each of
-CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-17.
+CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-23.
 
-\code{\link[=reference_points]{reference_points()}} also returns 22,154 unconfirmed points, which the
+\code{\link[=reference_points]{reference_points()}} also returns 22,133 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -74,8 +76,8 @@ the whole table as \code{gazetteers = list(institution = ...)} uses them too
 \section{CoordinateCleaner}{
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
-differs from its \code{institutions} table by the 565 moved points and the
-2,765 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
+differs from its \code{institutions} table by the 573 moved points and the
+2,786 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
 as it is.
 }
 

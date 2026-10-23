@@ -272,7 +272,7 @@ that produced the flags, with the version of every layer. It is worth
 storing next to any cleaned table that goes into an analysis.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_reference.html">flag_reference</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-22, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.0 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-23, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> turns the flags into shares per test. With one
 rule of every test, it gives for each test the records it flags, their
 percentage, and the records for which it is the only flag:</p>
@@ -628,7 +628,7 @@ East Africa and the negated ones in the Atlantic stand out:</p>
 <span>             <span class="st">"sea"</span>, <span class="st">"country_mismatch"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">f</span>, type <span class="op">=</span> <span class="st">"map"</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>spatial <span class="op">=</span> <span class="va">spatial</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;">
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='360.00pt' viewBox='0 0 468.00 360.00' class="r-plt inline-svg" style="width:100%;height:auto;" aria-hidden="true">
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
@@ -3175,7 +3175,7 @@ every example record has valid coordinates:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">[</span><span class="st">"coordinatecleaner_gbif"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='432.00pt' viewBox='0 0 468.00 432.00' class="r-plt inline-svg" style="width:100%;height:auto;">
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='432.00pt' viewBox='0 0 468.00 432.00' class="r-plt inline-svg" style="width:100%;height:auto;" aria-hidden="true">
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
@@ -3348,7 +3348,7 @@ ladder:</p>
 <span>        plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>        legend.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"transparent"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='273.60pt' viewBox='0 0 468.00 273.60' class="r-plt inline-svg" style="width:100%;height:auto;">
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='468.00pt' height='273.60pt' viewBox='0 0 468.00 273.60' class="r-plt inline-svg" style="width:100%;height:auto;" aria-hidden="true">
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
@@ -3384,7 +3384,7 @@ ladder:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwyNzMuNjA=)'>
-<rect x='0.00' y='-0.000000000000057' width='468.00' height='273.60' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='0.00' y='-0.000000000000057' width='468.00' height='273.60' style='stroke-width: 1.65; stroke: none;' />
 </g>
 <defs>
   <clipPath id='cpNzguNDJ8MzQ0LjkxfDguNDd8MTU1LjI4'>
@@ -3392,7 +3392,7 @@ ladder:</p>
   </clipPath>
 </defs>
 <g clip-path='url(#cpNzguNDJ8MzQ0LjkxfDguNDd8MTU1LjI4)'>
-<rect x='78.42' y='8.47' width='266.48' height='146.81' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='78.42' y='8.47' width='266.48' height='146.81' style='stroke-width: 1.65; stroke: none;' />
 <polyline points='78.42,136.41 344.91,136.41 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='78.42,104.33 344.91,104.33 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
 <polyline points='78.42,72.25 344.91,72.25 ' style='stroke-width: 0.82; stroke: #DFD7CA; stroke-linecap: butt;' />
@@ -3438,7 +3438,7 @@ ladder:</p>
 <text transform='translate(268.49,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>wild</text>
 <text transform='translate(319.74,170.87) rotate(-35)' text-anchor='end' style='font-size: 1.36em;fill: #4D4D4D; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>strict</text>
 <text transform='translate(20.64,81.87) rotate(-90)' text-anchor='middle' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>records removed</text>
-<rect x='361.84' y='31.05' width='97.69' height='101.64' style='stroke-width: 1.65; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='361.84' y='31.05' width='97.69' height='101.64' style='stroke-width: 1.65; stroke: none;' />
 <text x='370.31' y='53.49' style='font-size: 1.7em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>kingdom</text>
 <line x1='372.33' y1='73.82' x2='388.45' y2='73.82' style='stroke-width: 2.13; stroke: #B5342B; stroke-linecap: butt;' />
 <circle cx='380.39' cy='73.82' r='3.22' style='stroke-width: 1.10; stroke: none; fill: #B5342B;' />

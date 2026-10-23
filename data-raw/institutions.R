@@ -997,11 +997,14 @@ institutions$cc_lat <- NA_real_
 # point of this table lie over 25 km from both. Those are moved to the Google
 # Maps place (status "override"); `cc_lon` and `cc_lat` keep CoordinateCleaner's
 # coordinates. An institution without a city of its own is placed at the place
-# its own pages give. Every override names the source of its coordinates
-# (`place_source`) and the page they were read from (`place_url`). Candidates whose
-# Google place is another institution, a town or one site of an organisation
-# with several stay as CoordinateCleaner has them (decision "kept", with the
-# reason).
+# its own pages give. Where the Google Maps search gave no place, the site was
+# looked up in Wikipedia, OpenStreetMap and the institution's own pages, and the
+# point is moved when the site lies over 25 km from CoordinateCleaner's point.
+# Every override names the source of its coordinates (`place_source`) and the
+# page they were read from (`place_url`). Candidates whose place is another
+# institution, a town or one site of an organisation with several, whose site
+# no source confirms, or that have no site of their own stay as
+# CoordinateCleaner has them (decision "kept", with the reason).
 overrides <- read.csv("data-raw/institution_overrides.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 stopifnot(all(overrides$cc_row %in% cc$row))
 cc_points <- data.frame(key = paste0("cc:", cc$row), code = NA_character_, name = cc$shown, country = cc$iso2,
@@ -1081,11 +1084,11 @@ meta <- rbind(
              licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
                                                            "institutions; overrides and checks by Google Maps and OpenStreetMap"),
-             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-22",
+             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-23",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
                             sep = ", "),
-             retrieved = "2026-10-22", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+             retrieved = "2026-10-23", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
