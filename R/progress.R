@@ -7,23 +7,32 @@
 # timed from its own items once it has some; the steps ahead are estimated from
 # their sizes and costs, scaled by the ratio of the seconds this session has
 # taken to the reference seconds of the items it has done, so the estimate
-# follows the speed of the machine. Items done before a resume are counted as
-# done but not timed.
+# follows the speed of the machine. The ratio is taken over the steps of the
+# same kind (.step_kind: serial reads, threaded bucket work, the record pass)
+# where one has been timed, and over all timed steps otherwise, because the
+# kinds scale differently with cores. Items done before a resume are counted
+# as done but not timed.
 #
 # Each report overwrites `file` with one line:
 #   <step> <done> <total> <elapsed_s> <step_eta_s> <run_eta_s> <run_fraction>
 # A file write reaches a reader of a detached run whose console output is
-# buffered.
+# buffered. At the end of each step, `steps_file` is overwritten with the
+# items and seconds of every step in this session, as CSV.
 
-# Reference seconds per item of each step, measured on the first 12 files
-# (2.1 million records) of the GBIF snapshot of 2026-10-01 with the tests of
-# bench/gbif_snapshot_run.R, on one core. decide_taxon and repair were not
-# measured there and take the cost of pass1, which reads the same rows.
-# record_bytes is the only step of its run (no group tests, rows not counted),
-# so its cost sets the estimate only until the first file is done.
-.step_cost <- c(pass0 = 6.8e-7, pass1 = 9.2e-7, decide_duplicate = 5.6e-7, decide_outlier = 4.2e-5,
-                decide_taxon = 9.2e-7, final = 3.8e-2, record = 1.5e-5, record_bytes = 1.5e-5,
-                repair = 9.2e-7)
+# Reference seconds per item of each step, measured by bench/progress_costs.R
+# on the first 200 files (58.9 million records) of the GBIF snapshot of
+# 2026-10-01 with the tests of bench/gbif_snapshot_run.R, 8 threads and 6
+# workers. decide_taxon and repair were not measured there and take the cost
+# of pass1, which reads the same rows. record_bytes is the only step of its
+# run (no group tests, rows not counted), so its cost sets the estimate only
+# until the first file is done.
+.step_cost <- c(pass0 = 6.2e-7, pass1 = 2.8e-6, decide_duplicate = 9.2e-7, decide_outlier = 7.3e-6,
+                decide_taxon = 2.8e-6, final = 7.4e-2, record = 2.6e-6, record_bytes = 4.5e-8,
+                repair = 2.8e-6)
+
+.step_kind <- c(pass0 = "read", pass1 = "read", decide_duplicate = "read", decide_outlier = "threads",
+                decide_taxon = "read", final = "threads", record = "record", record_bytes = "record",
+                repair = "read")
 
 .step_label <- c(pass0 = "group pass (counts)", pass1 = "group pass (buckets)", decide_duplicate = "duplicate buckets",
                  decide_outlier = "outlier buckets", decide_taxon = "taxon buckets",
@@ -32,14 +41,16 @@
 
 .step_unit <- c(final = "species", record_bytes = "bytes")
 
-# `steps`: the step names in run order. `file`: the heartbeat file or NULL.
+# `steps`: the step names in run order. `file`: the heartbeat file or NULL;
+# `steps_file`: the per-step CSV or NULL.
 # `every`: seconds between console reports.
-new_progress <- function(steps, file = NULL, verbose = FALSE, every = 60,
+new_progress <- function(steps, file = NULL, steps_file = NULL, verbose = FALSE, every = 60,
                          clock = function() proc.time()[["elapsed"]]) {
   p <- new.env()
   p$steps <- data.frame(step = steps, total = NA_real_, done = 0, session = 0, secs = 0,
                         cost = unname(.step_cost[steps]), stringsAsFactors = FALSE)
   p$file <- file
+  p$steps_file <- steps_file
   p$verbose <- verbose
   p$every <- every
   p$clock <- clock
@@ -98,6 +109,8 @@ progress_end <- function(p) {
   p$steps$secs[i] <- p$clock() - p$step_t0
   p$steps$total[i] <- p$steps$done[i]
   progress_report(p, force = TRUE)
+  if (!is.null(p$steps_file))
+    utils::write.csv(p$steps[c("step", "total", "done", "session", "secs")], p$steps_file, row.names = FALSE)
   if (p$verbose) message("progress: ", .step_label[[p$steps$step[i]]], " done [",
                          format_secs(p$steps$secs[i]), "]")
   p$cur <- NA_integer_
@@ -109,8 +122,12 @@ progress_end <- function(p) {
 progress_estimate <- function(p) {
   s <- p$steps
   total <- ifelse(is.na(s$total), s$done, pmax(s$total, s$done))
-  ref_done <- sum(s$session * s$cost)
-  scale <- if (ref_done > 0) sum(s$secs) / ref_done else 1
+  ref <- s$session * s$cost
+  ratio <- function(w) if (sum(ref[w]) > 0) sum(s$secs[w]) / sum(ref[w]) else NA_real_
+  kind <- unname(.step_kind[s$step])
+  scale <- vapply(kind, function(k) ratio(kind == k), 0, USE.NAMES = FALSE)
+  pooled <- ratio(rep(TRUE, nrow(s)))
+  scale[is.na(scale)] <- if (is.na(pooled)) 1 else pooled
   left <- (total - s$done) * s$cost * scale
   i <- p$cur
   if (!is.na(i) && s$session[i] > 0) left[i] <- (total[i] - s$done[i]) * s$secs[i] / s$session[i]

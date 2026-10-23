@@ -31,6 +31,26 @@ test_that("the estimate times the current step and scales the steps ahead", {
   expect_equal(q$steps$total[1], 75)
 })
 
+test_that("the steps ahead are scaled by the timed steps of their own kind", {
+  now <- 0
+  f <- tempfile(fileext = ".csv")
+  p <- new_progress(c("pass0", "decide_outlier", "pass1", "final"), steps_file = f, clock = function() now)
+  p$steps$cost <- c(1, 1, 1, 1)
+  for (k in p$steps$step) progress_size(p, k, 100)
+  progress_start(p, "pass0")
+  now <- 400
+  progress_tick(p, 100)
+  progress_start(p, "decide_outlier")
+  now <- 450
+  progress_tick(p, 100)
+  progress_end(p)
+  # pass1 takes the 4 s per reference second of pass0, final the 0.5 of decide_outlier
+  expect_equal(progress_estimate(p)$run_eta, 100 * 4 + 100 * 0.5)
+  steps <- utils::read.csv(f)
+  expect_identical(steps$step, c("pass0", "decide_outlier", "pass1", "final"))
+  expect_equal(steps$secs, c(400, 50, 0, 0))
+})
+
 test_that("a streamed run writes its progress file and finishes at the whole run", {
   skip_if_not_installed("vectra")
   src <- tempfile("src"); dir.create(src)

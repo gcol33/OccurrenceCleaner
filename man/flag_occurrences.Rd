@@ -162,8 +162,10 @@ overwritten on every report: the step, items done and total, seconds
 elapsed, and the estimated seconds left in the step and in the run, and the
 share of the run done. The estimate for the steps ahead uses per-record
 costs measured on a part of the GBIF snapshot, scaled to the speed of the
-run so far, so it is rough until the slower steps have started. With
-\code{verbose}, the same is reported on the console every minute.
+run so far, so it is rough until the slower steps have started. At the end
+of each step, \code{out/progress_steps.csv} lists the items and seconds of every
+step in the session. With \code{verbose}, the same is reported on the console
+every minute.
 }
 
 \section{Threads and workers}{

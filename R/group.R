@@ -449,11 +449,19 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   filled <- open_counts("filled", 0L)
   steps <- group_steps(cfg)
   n_rows <- sum(st$unit_rows)
-  for (k in intersect(c("pass0", "pass1"), steps)) progress_size(progress, k, n_rows)
+  # The size of each step: the rows of its store once pass 1 has filled it;
+  # before that, the valid rows and the rows of species below the raster
+  # threshold as pass 0 counted them, or all rows before pass 0.
   store_step <- c(decide_duplicate = "dup", decide_outlier = "sp", decide_taxon = "tx")
-  for (k in intersect(names(store_step), steps))
-    progress_size(progress, k, if (st$stage %in% c("count", "pass0", "pass1")) n_rows else
-      sum(stores[[store_step[[k]]]]$rows))
+  size_steps <- function() {
+    size <- c(pass0 = n_rows, pass1 = n_rows, decide_duplicate = st$n_valid %||% n_rows,
+              decide_outlier = st$n_small %||% n_rows, decide_taxon = n_rows,
+              final = if (is.null(st$raster_sp)) NA else length(st$raster_sp))
+    if (!st$stage %in% c("count", "pass0", "pass1"))
+      for (k in names(store_step)) size[[k]] <- sum(stores[[store_step[[k]]]]$rows)
+    for (k in intersect(names(size), steps)) progress_size(progress, k, size[[k]])
+  }
+  size_steps()
   last <- Sys.time()
   checkpoint <- function(force = FALSE) {
     if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible())
@@ -516,6 +524,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   run_pass("pass0", "pass1", function(chunk, u, first) {
     lon <- to_numeric(chunk[[cols$lon]]); lat <- to_numeric(chunk[[cols$lat]])
     ok <- valid_coords(lon, lat)
+    st$n_valid <<- (st$n_valid %||% 0) + sum(ok)
     if (any(ok)) st$ext <<- c(min(st$ext[1], lon[ok]), max(st$ext[2], lon[ok]),
                                min(st$ext[3], lat[ok]), max(st$ext[4], lat[ok]))
     if (want_outlier) {
@@ -540,9 +549,11 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   if (want_outlier && is.null(st$raster_sp)) {
     sp_n <- sum_counts(st$sp_parts)
     st$raster_sp <- names(sp_n)[sp_n >= 10000 | so$thinning]
+    st$n_small <- sum(sp_n[!names(sp_n) %in% st$raster_sp])
     st$grid <- if (length(st$raster_sp)) outlier_grid(st$ext, so$thinning_res)
     st$sp_parts <- list()
   }
+  size_steps()
   nb <- st$n_buckets
   run_pass("pass1", "decide_duplicate", function(chunk, u, first) {
     rows <- first + seq_len(nrow(chunk)) - 1L

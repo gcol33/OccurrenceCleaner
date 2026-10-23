@@ -65,7 +65,8 @@ flag_stream <- function(x, cfg, out, keep, part_rows, resume, verbose, workers =
   run_group <- any(cfg$tests %in% .group_tests) && !all(file.exists(done_markers))
   rows <- if (run_group || all(vapply(units, counted_rows, TRUE))) vapply(units, unit_rows, 0)
   progress <- new_progress(c(if (run_group) group_steps(cfg), if (is.null(rows)) "record_bytes" else "record"),
-                           file = file.path(out, "progress.txt"), verbose = verbose)
+                           file = file.path(out, "progress.txt"), steps_file = file.path(out, "progress_steps.csv"),
+                           verbose = verbose)
   progress_size(progress, if (is.null(rows)) "record_bytes" else "record",
                 if (is.null(rows)) sum(unit_bytes(units)) else sum(rows))
   if (any(cfg$tests %in% .group_tests)) {
@@ -295,7 +296,7 @@ check_config <- function(out, rec) {
 
 # Remove the output of an earlier run from `out`.
 clear_output <- function(out) {
-  unlink(list.files(out, "^part-.*[.]vtr$|[.]done$|^flags_(meta|config)[.]rds$|^progress[.]txt$", full.names = TRUE))
+  unlink(list.files(out, "^part-.*[.]vtr$|[.]done$|^flags_(meta|config)[.]rds$|^progress([.]txt|_steps[.]csv)$", full.names = TRUE))
   unlink(file.path(out, ".group"), recursive = TRUE)
   invisible()
 }
@@ -319,7 +320,8 @@ repair_duplicates <- function(out, x, checkpoint_secs = 300, verbose = TRUE) {
   check_stream_columns(avail, NULL, cfg$duplicate_by)
   cols <- resolve_test_columns(cfg$columns, avail, cfg$tests)
   rows <- vapply(units, unit_rows, 0)
-  progress <- new_progress(c(group_steps(cfg), "repair"), file = file.path(rdir, "progress.txt"), verbose = verbose)
+  progress <- new_progress(c(group_steps(cfg), "repair"), file = file.path(rdir, "progress.txt"),
+                           steps_file = file.path(rdir, "progress_steps.csv"), verbose = verbose)
   progress_size(progress, "repair", sum(rows))
   g <- group_pass(units, cfg, cols, dir = file.path(rdir, "group"), checkpoint_secs = checkpoint_secs,
                   verbose = verbose, rows = rows, progress = progress)
