@@ -584,7 +584,7 @@ snapshot date or page revision:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 f
-#> <occ_flags> 2 records, 2 tests, reference OccurrenceCleaner 0.2.0, land 50
+#> <occ_flags> 2 records, 2 tests, reference OccurrenceCleaner 0.2.1, land 50
 #>   species decimalLongitude decimalLatitude flags flagged_by
 #> 1       a            16.37           48.21     8    capital
 #> 2       a            16.45           48.21     8    capital
@@ -595,7 +595,7 @@ attr(f, "occ_layout_version")
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-23, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.2.1 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-23, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed

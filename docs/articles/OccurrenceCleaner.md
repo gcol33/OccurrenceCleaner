@@ -71,7 +71,7 @@ runs the tests named in `tests`. The first three need no reference data:
 
 f <- flag_occurrences(x, tests = c("invalid", "zero", "duplicate"))
 f
-#> <occ_flags> 7 records, 3 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 7 records, 3 tests, reference OccurrenceCleaner 0.2.1, land 110
 #>   id         species decimalLongitude decimalLatitude flags flagged_by
 #> 1  1   Quercus robur            14.05           47.85     0           
 #> 2  2   Quercus robur             0.00            0.00     2       zero
@@ -156,7 +156,7 @@ lists those tests with the reason for each.
 
 f <- flag_occurrences(x)
 f
-#> <occ_flags> 7 records, 12 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 7 records, 12 tests, reference OccurrenceCleaner 0.2.1, land 110
 #> # not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   id         species decimalLongitude decimalLatitude     flags
 #> 1  1   Quercus robur            14.05           47.85         0
@@ -268,7 +268,7 @@ default. With 200 m, the Vienna records pass it:
 
 f200 <- flag_occurrences(x, buffers = list(capital = 200))
 f200[3:4, ]
-#> <occ_flags> 2 records, 12 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 2 records, 12 tests, reference OccurrenceCleaner 0.2.1, land 110
 #> # not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   id         species decimalLongitude decimalLatitude flags      flagged_by
 #> 1  3 Fagus sylvatica            16.37           48.21   256           urban
@@ -315,7 +315,7 @@ and these names change:
 
 cols <- occ_columns(lon = "lon", lat = "lat", species = "taxon")
 flag_occurrences(y, columns = cols)
-#> <occ_flags> 7 records, 12 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 7 records, 12 tests, reference OccurrenceCleaner 0.2.1, land 110
 #> # not run, missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>             taxon    lon   lat     flags              flagged_by
 #> 1   Quercus robur  14.05 47.85         0                        
@@ -335,7 +335,7 @@ that column do not run. Here the species column is left out:
 
 cols_xy <- occ_columns(lon = "lon", lat = "lat")
 print(flag_occurrences(y, columns = cols_xy), n = 3)
-#> <occ_flags> 7 records, 10 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 7 records, 10 tests, reference OccurrenceCleaner 0.2.1, land 110
 #> # not run, missing input: countryCode, species, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, genus (20 tests); test_plan() lists them
 #>             taxon   lon   lat     flags          flagged_by
 #> 1   Quercus robur 14.05 47.85         0                    
@@ -444,11 +444,11 @@ out <- flag_occurrences(src, out = tempfile("flags"),
                         keep = "species", verbose = FALSE)
 out
 #> <occ_flagged> 7 records in 2 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmpa4jZ3n\flags101ac1374139d
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpeCyWsh\flags1276c6ac96ce8
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
-#>   reference: OccurrenceCleaner 0.2.0, land 110
+#>   reference: OccurrenceCleaner 0.2.1, land 110
 #>   keep:      species
 ```
 

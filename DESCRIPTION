@@ -1,6 +1,6 @@
 Package: OccurrenceCleaner
 Title: Fast Quality Checks for Species Occurrence Records
-Version: 0.2.0
+Version: 0.2.1
 Authors@R:
     person("Gilles", "Colling", , "gilles.colling051@gmail.com",
            role = c("aut", "cre", "cph"),

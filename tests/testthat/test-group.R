@@ -280,6 +280,53 @@ test_that("an interrupted group stage resumes from its checkpoint with the same 
   expect_error(group_pass(units, cfg, cols, dir = dir), "earlier version")
 })
 
+test_that("decided buckets are removed once a checkpoint records them", {
+  x <- species_data()
+  x <- rbind(x, x[sample(nrow(x), 80), ])
+  src <- tempfile(); dir.create(src)
+  for (i in 1:3) vectra::write_vtr(x[seq(i, nrow(x), 3), ], file.path(src, sprintf("p%d.vtr", i)), batch_size = 61)
+  units <- stream_units(src)
+  bits <- function(res) unlist(lapply(seq_along(units), function(u)
+    hits_lookup(hits_reader(res$hits), u, 1L, unit_rows(units[[u]]))))
+  cfg <- flag_config(tests = c("invalid", "duplicate"))
+  cols <- resolve_test_columns(cfg$columns, table_names(units[[1]]$open()), cfg$tests)
+  ref <- group_pass(units, cfg, cols, dir = tempfile(), checkpoint_secs = 0, flush_rows = 40)
+
+  dir <- tempfile()
+  real <- parts_each
+  calls <- 0L
+  with_mocked_bindings(
+    expect_error(group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40), "interrupted"),
+    parts_each = function(p, key, f) {
+      calls <<- calls + 1L
+      if (calls == 3L) stop("interrupted")
+      real(p, key, f)
+    })
+  st <- readRDS(file.path(dir, "state.rds"))
+  expect_identical(st$stage, "decide_duplicate")
+  expect_identical(st$decided, 2L)
+  keys <- as.character(sort(as.numeric(names(st$stores$dup))))
+  left <- sub("^b-(.*)[.]vtr$", "\\1", list.files(file.path(dir, "duplicate")))
+  expect_setequal(left, keys[-(1:2)])
+  # Leftovers of interrupted writes are removed on resume.
+  junk <- file.path(dir, c("state.rds.tmp", "cells-999.bin", "hits/h-1-0.vtr.tmp", "duplicate/sub-5/b-1.vtr"))
+  dir.create(file.path(dir, "duplicate/sub-5"))
+  for (f in junk) writeLines("x", f)
+  res <- group_pass(units, cfg, cols, dir = dir, checkpoint_secs = 0, flush_rows = 40)
+  expect_identical(bits(res), bits(ref))
+  expect_false(any(file.exists(junk)))
+})
+
+test_that("compacting a store keeps its rows and their order", {
+  p <- new_parts(tempfile(), "h", flush_rows = 5)
+  for (i in 1:40) parts_add(p, data.frame(row = i, bits = i %% 3L), if (i %% 2L) "a" else "b")
+  before <- lapply(parts_keys(p), function(k) parts_read(p, k))
+  size <- sum(file.size(list.files(p$dir, full.names = TRUE)))
+  parts_compact(p)
+  expect_identical(lapply(parts_keys(p), function(k) parts_read(p, k)), before)
+  expect_lt(sum(file.size(list.files(p$dir, full.names = TRUE))), size)
+})
+
 test_that("settings are validated", {
   x <- species_data()
   expect_error(flag_occurrences(x, tests = "outlier", settings = list(nope = list())), "no entry")

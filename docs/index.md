@@ -440,7 +440,7 @@ which provides the test definitions and default buffers.
 
 ``` text
 Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
-Occurrence Records_. R package version 0.2.0,
+Occurrence Records_. R package version 0.2.1,
 <https://gillescolling.com/OccurrenceCleaner/>.
 ```
 
@@ -451,7 +451,7 @@ BibTeX:
   title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
   author = {Gilles Colling},
   year = {2026},
-  note = {R package version 0.2.0},
+  note = {R package version 0.2.1},
   url = {https://gillescolling.com/OccurrenceCleaner/},
 }
 ```

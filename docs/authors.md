@@ -11,13 +11,13 @@ Source:
 [`inst/CITATION`](https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/inst/CITATION)
 
 Colling G (2026). *OccurrenceCleaner: Fast Quality Checks for Species
-Occurrence Records*. R package version 0.2.0,
+Occurrence Records*. R package version 0.2.1,
 <https://gillescolling.com/OccurrenceCleaner/>.
 
     @Manual{colling2026occurrencecleaner,
       title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
       author = {Gilles Colling},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.2.1},
       url = {https://gillescolling.com/OccurrenceCleaner/},
     }

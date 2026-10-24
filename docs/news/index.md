@@ -1,5 +1,36 @@
 # Changelog
 
+## OccurrenceCleaner 0.2.1
+
+- The group stage of a streamed run has a waste collector, so its
+  scratch space in `out/.group` stays near the size of the rows still to
+  be decided. The rows of a bucket are removed once a checkpoint records
+  the bucket as decided, the flagged rows are held until there are about
+  5,000 per file before they are appended, and they are rewritten in one
+  write at the end of each step. A resumed run first removes what an
+  interruption left behind (files of unfinished writes, count tables of
+  other checkpoints, splits of a bucket being decided) and says how much
+  it freed. Every append to a `.vtr` file adds an index of its row
+  groups, so files built from many small appends grew to many times
+  their rows: on the GBIF snapshot the flagged rows of the duplicate
+  step took 386 GB on disk.
+- `flag_occurrences(workers = )` runs the record pass of streamed input
+  with more than one file in several R processes.
+- The group stage keeps its per-species and per-dataset counts in C++
+  tables, so a chunk takes time in proportion to its own rows; the cell
+  statistics of raster-approximated species are computed in one threaded
+  call per batch of species, and the exact outlier distances once per
+  distinct coordinate.
+- The progress estimate scales each step by the measured speed of the
+  steps of the same kind (reading the input, threaded computation, the
+  record pass) and sizes the duplicate and outlier steps from the first
+  pass; a streamed run writes the time of each step to
+  `out/progress_steps.csv`.
+- Each moved institution point records the source of its new position;
+  the hand-placed points follow the same bar for a move as the others.
+- Requires vectra 0.13.4, which appends the rows of a data frame without
+  a temporary file.
+
 ## OccurrenceCleaner 0.2.0
 
 - `flag_occurrences(n_threads = )` runs the exact outlier test and the

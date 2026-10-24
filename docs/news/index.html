@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,16 @@
       <small>Source: <a href="https://github.com/gcol33/OccurrenceCleaner/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="occurrencecleaner-021">OccurrenceCleaner 0.2.1<a class="anchor" aria-label="anchor" href="#occurrencecleaner-021"></a></h2>
+<ul><li>The group stage of a streamed run has a waste collector, so its scratch space in <code>out/.group</code> stays near the size of the rows still to be decided. The rows of a bucket are removed once a checkpoint records the bucket as decided, the flagged rows are held until there are about 5,000 per file before they are appended, and they are rewritten in one write at the end of each step. A resumed run first removes what an interruption left behind (files of unfinished writes, count tables of other checkpoints, splits of a bucket being decided) and says how much it freed. Every append to a <code>.vtr</code> file adds an index of its row groups, so files built from many small appends grew to many times their rows: on the GBIF snapshot the flagged rows of the duplicate step took 386 GB on disk.</li>
+<li>
+<code>flag_occurrences(workers = )</code> runs the record pass of streamed input with more than one file in several R processes.</li>
+<li>The group stage keeps its per-species and per-dataset counts in C++ tables, so a chunk takes time in proportion to its own rows; the cell statistics of raster-approximated species are computed in one threaded call per batch of species, and the exact outlier distances once per distinct coordinate.</li>
+<li>The progress estimate scales each step by the measured speed of the steps of the same kind (reading the input, threaded computation, the record pass) and sizes the duplicate and outlier steps from the first pass; a streamed run writes the time of each step to <code>out/progress_steps.csv</code>.</li>
+<li>Each moved institution point records the source of its new position; the hand-placed points follow the same bar for a move as the others.</li>
+<li>Requires vectra 0.13.4, which appends the rows of a data frame without a temporary file.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="occurrencecleaner-020">OccurrenceCleaner 0.2.0<a class="anchor" aria-label="anchor" href="#occurrencecleaner-020"></a></h2>
 <ul><li>

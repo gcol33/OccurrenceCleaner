@@ -88,7 +88,7 @@ tests <- c("invalid", "zero", "equal", "centroid", "institution",
            "gbif_headquarters", "country_mismatch", "age_equal")
 f <- flag_occurrences(fos, tests = tests, columns = cols)
 f[, c("occurrence_no", "accepted_name", "min_ma", "max_ma", "flags")]
-#> <occ_flags> 9 records, 8 tests, reference OccurrenceCleaner 0.2.0, land 110
+#> <occ_flags> 9 records, 8 tests, reference OccurrenceCleaner 0.2.1, land 110
 #>   occurrence_no accepted_name min_ma max_ma  flags                  flagged_by
 #> 1             1    Coryphodon   53.0   56.0      0                            
 #> 2             2    Coryphodon   55.8   55.8 524288                   age_equal

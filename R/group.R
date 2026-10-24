@@ -411,6 +411,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     list(stage = "count", unit = 1L, unit_rows = NULL, ext = c(Inf, -Inf, Inf, -Inf),
          sp_parts = list(), sp_len = 0, ds = list(), stores = list(), decided = 0L, counts = list(),
          datasets = NULL, raster = list(), grid = NULL, sampling = NULL)
+  freed <- collect_waste(dir, st)
   if (st$stage == "done") return(group_result(st, dir))
   if (!identical(st$format, .group_state_format) && !is.null(st$format %||% st$cells))
     stop("the group stage in ", dir, " was checkpointed by an earlier version of the package; ",
@@ -421,6 +422,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     return(group_result(st, dir))
   }
   say <- function(...) if (verbose) message("group tests: ", ...)
+  if (freed > 0) say("waste collector removed ", format_bytes(freed), " left by an interrupted run")
 
   if (st$stage == "count") {
     st$unit_rows <- rows %||% vapply(units, unit_rows, 0)
@@ -430,9 +432,13 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     st$stage <- if (want_outlier || length(want_ds)) "pass0" else "pass1"
     if (disk) save_atomic(st, state_path)
   }
+  # The hits store has a file per unit and block of rows, and each append to a
+  # file adds a row-group index to it, so hits are held until there are about
+  # 5000 per file.
+  hits_flush <- flush_rows %||% max(2e6, 5000 * sum(ceiling(st$unit_rows / .hit_block)))
   flush_rows <- flush_rows %||% max(2e6, 2000 * st$n_buckets)
   subdir <- function(name) if (disk) file.path(dir, name)
-  stores <- list(hits = new_parts(subdir("hits"), "h", flush_rows))
+  stores <- list(hits = new_parts(subdir("hits"), "h", hits_flush))
   if (want_outlier) stores$sp <- new_parts(subdir("species"), "b", flush_rows)
   if (length(want_taxon)) stores$tx <- new_parts(subdir("taxa"), "b", flush_rows)
   if (want_dup) stores$dup <- new_parts(subdir("duplicate"), "b", flush_rows)
@@ -463,8 +469,9 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
   }
   size_steps()
   last <- Sys.time()
+  # Returns whether the state was written.
   checkpoint <- function(force = FALSE) {
-    if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible())
+    if (!disk || (!force && difftime(Sys.time(), last, units = "secs") < checkpoint_secs)) return(invisible(FALSE))
     st$stores <<- lapply(stores, parts_state)
     st$ds <<- as.list(ds, all.names = TRUE)
     # Each checkpoint writes its tables under new names that the state then
@@ -478,6 +485,7 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     save_atomic(st, state_path)
     unlink(file.path(dir, unlist(old)))
     last <<- Sys.time()
+    invisible(TRUE)
   }
   # One pass over the units, from the first unit not yet done.
   run_pass <- function(stage, next_stage, f) {
@@ -497,7 +505,9 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
     st$unit <<- 1L
     checkpoint(force = TRUE)
   }
-  # The buckets of one store, from the first bucket not yet decided.
+  # The buckets of one store, from the first bucket not yet decided. A bucket's
+  # rows are removed once a checkpoint records it as decided (with no
+  # directory, at once), and the hits are compacted at the end of the step.
   run_buckets <- function(stage, next_stage, store, f, resumable = TRUE) {
     if (st$stage != stage) return(invisible())
     keys <- if (is.null(store)) character() else as.character(sort(as.numeric(parts_keys(store))))
@@ -506,18 +516,26 @@ group_pass <- function(units, cfg, cols, dir = NULL, checkpoint_secs = 300, verb
       progress_size(progress, stage, sum(store$rows))
       progress_start(progress, stage, done = sum(store$rows[keys[seq_len(st$decided)]]))
     }
+    released <- st$decided
+    freed <- parts_release(store, keys[seq_len(released)])
+    if (freed > 0) say("waste collector removed ", format_bytes(freed), " of buckets decided before the resume")
     for (i in seq_along(keys)) {
       if (i <= st$decided) next
       f(keys[i])
       progress_tick(progress, store$rows[[keys[i]]])
       if (resumable) {
         st$decided <<- i
-        checkpoint()
+        if (checkpoint() || !disk) {
+          parts_release(store, keys[seq.int(released + 1L, i)])
+          released <- i
+        }
       }
     }
+    parts_compact(stores$hits)
     st$stage <<- next_stage
     st$decided <<- 0L
     checkpoint(force = TRUE)
+    parts_release(store, keys)
   }
 
   # Pass 0: extent of valid records, records per species, per-dataset ranges.
@@ -677,6 +695,27 @@ group_steps <- function(cfg) {
     if ("duplicate" %in% tests) "decide_duplicate", if (outlier) "decide_outlier",
     if (any(tests %in% .taxon_tests)) "decide_taxon", if (outlier) "final")
 }
+
+# The waste collector of the group stage. On start it removes what an
+# interrupted session left in `dir` that the checkpoint in `st` does not refer
+# to: files of interrupted writes (*.tmp), the count tables of other
+# checkpoints, and the splits of a bucket that was being decided (sub-*).
+# During the run, run_buckets() removes the rows of each decided bucket and
+# compacts the hits. Returns the bytes removed.
+collect_waste <- function(dir, st) {
+  if (is.null(dir) || !dir.exists(dir)) return(0)
+  files <- c(list.files(dir, "[.]tmp$", full.names = TRUE, recursive = TRUE),
+             file.path(dir, setdiff(list.files(dir, "^(cells|filled)-[0-9]+[.]bin$"), unlist(st$counts))))
+  subs <- list.dirs(dir, full.names = TRUE)
+  subs <- subs[grepl("^sub-", basename(subs))]
+  bytes <- sum(file.size(c(files, list.files(subs, full.names = TRUE, recursive = TRUE))), na.rm = TRUE)
+  unlink(files)
+  unlink(subs, recursive = TRUE)
+  bytes
+}
+
+# Bytes as a short size for messages.
+format_bytes <- function(b) format(structure(b, class = "object_size"), units = "auto", standard = "SI")
 
 # The lookup of a finished group stage.
 group_result <- function(st, dir, hits = NULL) {

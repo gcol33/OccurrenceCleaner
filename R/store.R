@@ -61,8 +61,8 @@ parts_state <- function(p) {
   p$rows
 }
 
-# Return a store to a checkpoint: partitions written after it are removed, and
-# a partition grown since is cut back to its rows at the checkpoint.
+# Return a store to a checkpoint: partitions written after it are removed, and a partition grown since is cut back to
+# its rows at the checkpoint.
 parts_restore <- function(p, state) {
   p$buf <- list()
   p$held <- 0
@@ -117,6 +117,37 @@ parts_drop <- function(p) {
   p$mem <- list()
   p$rows <- stats::setNames(numeric(), character())
   if (!is.null(p$dir)) unlink(p$dir, recursive = TRUE)
+  invisible()
+}
+
+# Remove the rows of partitions that will not be read again; their row counts
+# stay, so the checkpoint and the progress of the store are unchanged. Returns
+# the bytes removed from disk.
+parts_release <- function(p, keys) {
+  if (is.null(p) || !length(keys)) return(invisible(0))
+  if (is.null(p$dir)) {
+    p$mem[keys] <- NULL
+    return(invisible(0))
+  }
+  files <- parts_file(p, keys)
+  bytes <- sum(file.size(files), na.rm = TRUE)
+  unlink(files)
+  invisible(bytes)
+}
+
+# Rewrite each partition file in one write. Every append to a .vtr file adds a
+# row-group index after the previous one, so a file filled by many small
+# appends is mostly indexes.
+parts_compact <- function(p) {
+  parts_flush(p)
+  if (is.null(p$dir)) return(invisible())
+  for (k in names(p$rows)) {
+    path <- parts_file(p, k)
+    if (!file.exists(path)) next
+    tmp <- paste0(path, ".tmp")
+    vectra::write_vtr(vectra::tbl(path), tmp)
+    if (!file.rename(tmp, path)) stop("could not write ", path)
+  }
   invisible()
 }
 
