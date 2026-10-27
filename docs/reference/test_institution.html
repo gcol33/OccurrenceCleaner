@@ -112,10 +112,10 @@ columns of <code>x</code> unchanged. See <code><a href="keep_unflagged.html">kee
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The default gazetteer has 12,559 points. Of these, 9,773 are the
+    <p>The default gazetteer has 21,832 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> 3.0.1
-(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 2,786 are further
+(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 12,059 are further
 points that a check beyond their own source confirms (<code>status</code>
 "confirmed").</p>
 <p>Of CoordinateCleaner's points, 9,200 are used as that package has them.
@@ -132,18 +132,21 @@ OpenStreetMap gives (<code>source</code> "Wikipedia" or "OpenStreetMap"). <code>
 place's name, the distances and the URL the coordinates were read from.</p>
 <p>A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
-OpenStreetMap feature of that name; <code>evidence</code> says which. These checks
-covered the point of the package's table nearest each of
-CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-23.</p>
-<p><code><a href="reference_points.html">reference_points()</a></code> also returns 22,133 unconfirmed points, which the
+OpenStreetMap feature of that name; <code>evidence</code> says which. The Google Maps
+search used the institution's name with its city and country. These checks
+covered every point of the package's table, retrieved 2026-10-13 to
+2026-10-27. In a hand reading of 100 points confirmed by Google Maps, 97
+were at the named institution, 2 were unclear and 1 was another
+institution, which was left out.</p>
+<p><code><a href="reference_points.html">reference_points()</a></code> also returns 12,860 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
 GardenSearch, Index Herbariorum, the GBIF registry of publishing
 organisations and OpenStreetMap, and from searches for
 CoordinateCleaner's institutions by name. <code>source</code> and <code>master_source</code> say
-which, and <code><a href="reference_info.html">reference_info()</a></code> gives the versions and retrieval dates. No
-check beyond their own source has placed them on the institution. Passing
+which, and <code><a href="reference_info.html">reference_info()</a></code> gives the versions and retrieval dates.
+Neither check placed them on the institution. Passing
 the whole table as <code>gazetteers = list(institution = ...)</code> uses them too
 (see the examples).</p>
     </div>
@@ -160,7 +163,7 @@ the whole table as <code>gazetteers = list(institution = ...)</code> uses them t
     <p>Equivalent to <code>cc_inst()</code>. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
 differs from its <code>institutions</code> table by the 573 moved points and the
-2,786 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
+12,059 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
 as it is.</p>
     </div>
     <div class="section level2">

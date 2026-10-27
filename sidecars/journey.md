@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, checked institution locations as a choice of two tables: `reference = "CoordinateCleaner"` for its 9,773 institutions as they are, or the default `reference = "OccurrenceCleaner"`, which corrects and extends them to 12,559 (565 of CoordinateCleaner's points over 25 km from their listed city moved to the Google Maps place; 2,786 points of other registries confirmed by a Google Maps or OpenStreetMap check, linked to the reference-data Institutions section), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, checked institution locations as a choice of two tables: `reference = "CoordinateCleaner"` for its 9,773 institutions as they are, or the default `reference = "OccurrenceCleaner"`, which corrects and extends them to 21,832 (565 of CoordinateCleaner's points over 25 km from their listed city moved to the Google Maps place; 12,059 points of other registries confirmed by a Google Maps or OpenStreetMap check, linked to the reference-data Institutions section), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -600,7 +600,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.vs-cc  [A1 A5]  (section, "How the reference data differ from CoordinateCleaner's")
 - idea: same places, different tables
-- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-10-23, the date of the last institution check; institutions: CoordinateCleaner's points used, 573 moved, 2,786 confirmed points added; its own geocoding against the source coordinates; `reference = "CoordinateCleaner"` uses its table as it is), and shows the capital difference in flags.
+- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-10-27, the date of the last institution check; institutions: CoordinateCleaner's points used, 573 moved, 12,059 confirmed points added; its own geocoding against the source coordinates; `reference = "CoordinateCleaner"` uses its table as it is), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.extension  [A1 A5]  (section)

@@ -60,7 +60,7 @@ data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
 ```
 
-Each record lies about 0.005 degrees (a few hundred metres) east of an institution: three herbaria, then three museums. The full table flags all six at a 1 km buffer. The herbarium table flags `r sum(f_herb$flag_institution)`: the three records next to the herbaria, and the record next to the Bernardino Rivadavia museum in Buenos Aires, whose herbarium is listed as its own point about 450 m away.
+Each record lies about 0.005 degrees (a few hundred metres) east of an institution: three herbaria, then three museums. The full table flags all six at a 1 km buffer. The herbarium table flags `r sum(f_herb$flag_institution)`, the records next to the herbaria.
 
 The same works with the `extension` column. It is `TRUE` for points from sources CoordinateCleaner does not use; the rows with `extension` `FALSE` restrict a test to CoordinateCleaner's sources, as [Reference data](reference-data.html#extension-points) shows for the capitals. That article also lists the sources of every layer ([Institutions](reference-data.html#institutions) for the `source` and `master_source` columns of the institution table).
 

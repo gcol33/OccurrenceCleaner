@@ -183,7 +183,7 @@ in a plant table, and use a wider buffer for them:</p>
 <code class="sourceCode R"><span><span class="va">used</span> <span class="op">&lt;-</span> <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span> <span class="op">!=</span> <span class="st">"unconfirmed"</span>, <span class="op">]</span></span>
 <span><span class="va">herbaria</span> <span class="op">&lt;-</span> <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Herbarium"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 4212</span></span>
+<span><span class="co">#&gt; [1] 5177</span></span>
 <span><span class="va">near</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span>, <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Museum"</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Quercus robur"</span>, decimalLongitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lon</span> <span class="op">+</span> <span class="fl">0.005</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
@@ -193,25 +193,23 @@ in a plant table, and use a wider buffer for them:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>near <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">name</span>, type <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">type</span>, all <span class="op">=</span> <span class="va">f_all</span><span class="op">$</span><span class="va">flag_institution</span>,</span>
 <span>           herbaria_only <span class="op">=</span> <span class="va">f_herb</span><span class="op">$</span><span class="va">flag_institution</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                                                                            near</span></span>
-<span><span class="co">#&gt; 1                                                           CENMA, Institut d Estudis Andorrans</span></span>
-<span><span class="co">#&gt; 2 United Arab Emirates University, Islamic Institute, Faculty of Science, Department of Biology</span></span>
-<span><span class="co">#&gt; 3                                      Kabul University, Faculty of Science, Biology Department</span></span>
-<span><span class="co">#&gt; 4                                                             Museum of Natural History, Tirane</span></span>
-<span><span class="co">#&gt; 5                                                                        Natural Science Museum</span></span>
-<span><span class="co">#&gt; 6                                                  Bernardino Rivadavia Natural Sciences Museum</span></span>
+<span><span class="co">#&gt; 1                                                                 Andorra Research + Innovation</span></span>
+<span><span class="co">#&gt; 2                                                           CENMA, Institut d Estudis Andorrans</span></span>
+<span><span class="co">#&gt; 3 United Arab Emirates University, Islamic Institute, Faculty of Science, Department of Biology</span></span>
+<span><span class="co">#&gt; 4                                                              Natural History Museum Abu Dhabi</span></span>
+<span><span class="co">#&gt; 5                                                             Museum of Natural History, Tirane</span></span>
+<span><span class="co">#&gt; 6                                                                        Natural Science Museum</span></span>
 <span><span class="co">#&gt;        type  all herbaria_only</span></span>
 <span><span class="co">#&gt; 1 Herbarium TRUE          TRUE</span></span>
 <span><span class="co">#&gt; 2 Herbarium TRUE          TRUE</span></span>
 <span><span class="co">#&gt; 3 Herbarium TRUE          TRUE</span></span>
 <span><span class="co">#&gt; 4    Museum TRUE         FALSE</span></span>
 <span><span class="co">#&gt; 5    Museum TRUE         FALSE</span></span>
-<span><span class="co">#&gt; 6    Museum TRUE          TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 6    Museum TRUE         FALSE</span></span></code></pre></div>
 <p>Each record lies about 0.005 degrees (a few hundred metres) east of
 an institution: three herbaria, then three museums. The full table flags
-all six at a 1 km buffer. The herbarium table flags 4: the three records
-next to the herbaria, and the record next to the Bernardino Rivadavia
-museum in Buenos Aires, whose herbarium is listed as its own point about
-450 m away.</p>
+all six at a 1 km buffer. The herbarium table flags 3, the records next
+to the herbaria.</p>
 <p>The same works with the <code>extension</code> column. It is
 <code>TRUE</code> for points from sources CoordinateCleaner does not
 use; the rows with <code>extension</code> <code>FALSE</code> restrict a
@@ -255,7 +253,7 @@ confirmed, which the test leaves out:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;          cc   confirmed    override unconfirmed </span></span>
-<span><span class="co">#&gt;        9200        2786         573       22133</span></span></code></pre></div>
+<span><span class="co">#&gt;        9200       12059         573       12860</span></span></code></pre></div>
 <p><code>gazetteers = list(institution = inst)</code> flags records near
 any point of the table, the unconfirmed ones included.</p>
 <p>The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
@@ -399,7 +397,7 @@ output:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-23, aohi 2022-10-10, habitat 2026-10-06); custom: institution 4212 points md5 03cde236023d3b85e65a66994b5a5e0b"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-27, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5177 points md5 883779e75eaae5f00f3ab4bb2b168eec"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a

@@ -120,7 +120,7 @@
 - forms: `extension` column; points marked `extension`; extension points
 - as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (243 Natural Earth capitals, 516 Natural Earth country centroids and label points, 7,660 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); capitals and centroids used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
 - defined: @p:ref.extension; ?test_capital, ?test_centroid, ?test_institution
-- note: the 7,660 institution extension points are all unconfirmed, so the institution test leaves them out (institutions-status)
+- note: of the 7,660 institution extension points, 4,589 are confirmed and used by the institution test, 3,071 unconfirmed and left out (institutions-status)
 - stated-at: @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md
 
 ### reference-points
@@ -235,11 +235,11 @@
 - stated-at: @p:ref.layers (sources); dev_notes/reference_data.md. The counts above describe the whole table; since 2026-10-17 the test uses only the points of institutions-status
 
 ### institutions-status
-- metric: the institution test uses 12,559 points: CoordinateCleaner 3.0.1's 9,773 institutions with coordinates (`status` cc 9,200, override 573) and 2,786 confirmed points of other sources; 22,133 unconfirmed points (all 7,660 `extension` points among them) are in `reference_points("institution")` and left out by the test; 34,692 rows in all
+- metric: the institution test uses 21,832 points: CoordinateCleaner 3.0.1's 9,773 institutions with coordinates (`status` cc 9,200, override 573) and 12,059 confirmed points of other sources; 12,860 unconfirmed points (3,071 of the 7,660 `extension` points among them) are in `reference_points("institution")` and left out by the test; 34,692 rows in all
 - metric: overrides: every CoordinateCleaner point searched in Google Maps by name, city and country (2026-10-13 to 2026-10-23; Korean place links read by their plus code); 630 candidates with a Google place of the name within 25 km of the record's city and CoordinateCleaner's point and the nearest other point over 25 km from both; hand review kept 65 (42 other institution, 9 generic name or town, 12 several sites, 1 large site, 1 confirmed by the institution's address), 565 moved to the Google place; median move 430 km, 473 over 100 km, 180 over 1,000 km; 513 of 565 automatic, 52 hand-placed; 39 points without a Google place looked up in Wikipedia, OpenStreetMap and own pages (2026-10-23): 26 within 25 km, 1 unidentified, 7 moved (source Wikipedia or OpenStreetMap; e.g. Canadian National Mycological Herbarium, Edmonton to Ottawa), 5 kept (1 several sites, 1 site unconfirmed, 3 no site of their own); SCAR Expert Group on Birds and Marine Mammals (no site of its own) moved to the SCAR secretariat, Cambridge, 785 km
-- metric: confirmed: Google Maps place of the name within 300 m (3,545 checks) or within 200 m of the OpenStreetMap feature of the name (3,509 checks, not counted for OpenStreetMap points), on the point nearest each CoordinateCleaner institution; 3,132 distinct points, 2,786 kept after dropping points at CoordinateCleaner's coordinates and OpenStreetMap-only confirmations
+- metric: confirmed: Google Maps place of the name within 300 m (11,470 checks) or within 200 m of the OpenStreetMap feature of the name (7,973 checks, not counted for OpenStreetMap points); first on the point nearest each CoordinateCleaner institution (2026-10-13 to 2026-10-23), then on every other point, searched by name, city and country (2026-10-22 to 2026-10-27); 12,288 distinct points, 12,059 kept after dropping points at CoordinateCleaner's coordinates and OpenStreetMap-only confirmations of OpenStreetMap points; hand reading of 100 Google-confirmed points of the second pass: 97 at the institution, 2 unclear, 1 another institution (left out)
 - source: data-raw/institution_overrides.csv, data-raw/institution_checks.csv (exported by occurrencecleaner-qa/export_evidence.R), data-raw/institutions.R; dev_notes/points.md
-- stated-at: @p:readme.usecases (12,559, 9,773, 565, 2,786); NEWS.md; @p:ref.layers (Institutions); @p:ref.vs-cc; ?test_institution; ?reference_points; @p:gaz.filtered (status), @p:gaz.extended (table(inst$status))
+- stated-at: @p:readme.usecases (21,832, 9,773, 565, 12,059); NEWS.md; @p:ref.layers (Institutions); @p:ref.vs-cc; ?test_institution; ?reference_points; @p:gaz.filtered (status), @p:gaz.extended (table(inst$status))
 - avoid: "all but one" and the 25,029 / 7,665 counts (pre-2026-10-17 table); describing unconfirmed points as used by default
 
 ### habitat-genera

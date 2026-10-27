@@ -158,10 +158,10 @@ NULL
 #' universities holding collections, where specimens are often georeferenced
 #' to the institution.
 #'
-#' The default gazetteer has 12,559 points. Of these, 9,773 are the
+#' The default gazetteer has 21,832 points. Of these, 9,773 are the
 #' institutions with coordinates in the table of
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-#' (`source` "CoordinateCleaner", `status` "cc"), and 2,786 are further
+#' (`source` "CoordinateCleaner", `status` "cc"), and 12,059 are further
 #' points that a check beyond their own source confirms (`status`
 #' "confirmed").
 #'
@@ -180,19 +180,22 @@ NULL
 #'
 #' A further point is confirmed when a Google Maps place of the institution's
 #' name lies within 300 m of it, or when it lies within 200 m of the
-#' OpenStreetMap feature of that name; `evidence` says which. These checks
-#' covered the point of the package's table nearest each of
-#' CoordinateCleaner's institutions, retrieved 2026-10-13 to 2026-10-23.
+#' OpenStreetMap feature of that name; `evidence` says which. The Google Maps
+#' search used the institution's name with its city and country. These checks
+#' covered every point of the package's table, retrieved 2026-10-13 to
+#' 2026-10-27. In a hand reading of 100 points confirmed by Google Maps, 97
+#' were at the named institution, 2 were unclear and 1 was another
+#' institution, which was left out.
 #'
-#' [reference_points()] also returns 22,133 unconfirmed points, which the
+#' [reference_points()] also returns 12,860 unconfirmed points, which the
 #' test leaves out. They come from GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 #' museums, GeoNames, Botanic Gardens Conservation International (BGCI)
 #' GardenSearch, Index Herbariorum, the GBIF registry of publishing
 #' organisations and OpenStreetMap, and from searches for
 #' CoordinateCleaner's institutions by name. `source` and `master_source` say
-#' which, and [reference_info()] gives the versions and retrieval dates. No
-#' check beyond their own source has placed them on the institution. Passing
+#' which, and [reference_info()] gives the versions and retrieval dates.
+#' Neither check placed them on the institution. Passing
 #' the whole table as `gazetteers = list(institution = ...)` uses them too
 #' (see the examples).
 #'
@@ -201,7 +204,7 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. The default gazetteer
 #'   differs from its `institutions` table by the 573 moved points and the
-#'   2,786 confirmed points. `reference = "CoordinateCleaner"` uses its table
+#'   12,059 confirmed points. `reference = "CoordinateCleaner"` uses its table
 #'   as it is.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].

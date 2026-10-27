@@ -97,21 +97,21 @@
   on every bar however many tests a rule holds; the map takes `xlim` and
   `ylim`.
 - The institution test uses CoordinateCleaner’s 9,773 institution points
-  and 2,786 points of other sources that a check beyond their own source
-  confirms (12,559 points, from 18,245). Of CoordinateCleaner’s points,
-  573 are moved: 565 to the Google Maps place of the institution, where
-  the place lies within 25 km of the city of CoordinateCleaner’s record
-  and CoordinateCleaner’s point more than 25 km from both, 7 whose
-  Google Maps search gave no place to the site Wikipedia or
-  OpenStreetMap gives, and the SCAR Expert Group on Birds and Marine
-  Mammals to the SCAR secretariat. `reference_points("institution")`
-  gives each point a `status` (“cc”, “override”, “confirmed”,
-  “unconfirmed”) and `evidence`, and keeps CoordinateCleaner’s
-  coordinates of a moved point in `cc_lon` and `cc_lat`. A point of
-  another source is confirmed by a Google Maps place of the
-  institution’s name within 300 m or the OpenStreetMap feature of that
-  name within 200 m.
-- The table also contains 22,133 unconfirmed points, which the test
+  and 12,059 points of other sources that a check beyond their own
+  source confirms (21,832 points, from 18,245). Of CoordinateCleaner’s
+  points, 573 are moved: 565 to the Google Maps place of the
+  institution, where the place lies within 25 km of the city of
+  CoordinateCleaner’s record and CoordinateCleaner’s point more than 25
+  km from both, 7 whose Google Maps search gave no place to the site
+  Wikipedia or OpenStreetMap gives, and the SCAR Expert Group on Birds
+  and Marine Mammals to the SCAR secretariat.
+  `reference_points("institution")` gives each point a `status` (“cc”,
+  “override”, “confirmed”, “unconfirmed”) and `evidence`, and keeps
+  CoordinateCleaner’s coordinates of a moved point in `cc_lon` and
+  `cc_lat`. A point of another source is confirmed by a Google Maps
+  place of the institution’s name within 300 m or the OpenStreetMap
+  feature of that name within 200 m.
+- The table also contains 12,860 unconfirmed points, which the test
   leaves out unless they are passed through `gazetteers`. They come from
   GRSciColl, Wikidata, Wikipedia’s lists of natural history museums,
   GeoNames, BGCI, the 1,062 herbaria of Index Herbariorum that GRSciColl

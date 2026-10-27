@@ -115,7 +115,7 @@ Every one of CoordinateCleaner's points was searched in Google Maps by name, cit
 
 For the 39 points whose Google Maps search gave no place, the site was looked up in Wikipedia, OpenStreetMap and the institutions' own pages. Of these, 26 lie within 25 km of CoordinateCleaner's point and one could not be identified. Seven are moved. Five stay at CoordinateCleaner's coordinates: an organisation with several sites, one whose site no source confirms, and three databases or networks with no site of their own.
 
-A point from another source is confirmed when a Google Maps place with the institution's name lies within 300 m of it, or when it lies within 200 m of the OpenStreetMap feature with that name. Points taken from OpenStreetMap need the Google Maps check. These checks covered the point nearest each of CoordinateCleaner's institutions and confirm 2,786 points.
+A point from another source is confirmed when a Google Maps place with the institution's name lies within 300 m of it, or when it lies within 200 m of the OpenStreetMap feature with that name. Points taken from OpenStreetMap need the Google Maps check. The Google Maps search used the institution's name with its city and country. These checks covered every point of the table and confirm 12,059 points. In a hand reading of 100 points confirmed by Google Maps, 97 were at the named institution, 2 were unclear and 1 was another institution, which was left out.
 
 The other points come from the sources below. The first set is the bulk export of GBIF's Global Registry of Scientific Collections (GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which 6,085 have coordinates. The five of these that the `zero` test would flag are left out: four are registered within 0.14 degrees of (0, 0), although they are in Portugal, Nigeria, Turkey and Taiwan, and one has a longitude of exactly 0. Kept, they would mark every record at (0, 0) as lying at an institution as well. GRSciColl absorbed the Global Registry of Biodiversity Repositories (GRBio) in 2018 and is synchronised weekly with Index Herbariorum. GBIF publishes the registry through its open API and states no separate licence for it.
 
@@ -188,7 +188,7 @@ knitr::kable(data.frame(
   OccurrenceCleaner = c("475: 232 Factbook capitals and 243 Natural Earth capitals, alternative capitals and dependent-territory capitals marked as extension",
                         "1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension",
                         "4,594 (Natural Earth 5.1.1 admin-1 label points)",
-                        "12,559 used by the test: CoordinateCleaner's 9,773 (573 moved, 565 of them to their Google Maps place) and 2,786 confirmed points of other sources; 22,133 unconfirmed points left out")))
+                        "21,832 used by the test: CoordinateCleaner's 9,773 (573 moved, 565 of them to their Google Maps place) and 12,059 confirmed points of other sources; 12,860 unconfirmed points left out")))
 ```
 
 - **Capitals.** Of CoordinateCleaner's 225 capital points, 221 match this package's Factbook points when rounded to 0.01 degrees. Rounding shifts their positions by up to 523 m. The remaining four reflect Factbook entries that have since changed: Bujumbura to Gitega for Burundi; Buenos Aires from 58°40′ W to 58°22′ W, correcting a location 27 km west of the city; Melekeok to Ngerulmud for Palau; and a 1.8 km coordinate adjustment for Rangoon.
@@ -203,7 +203,7 @@ knitr::kable(data.frame(
 
   Of CoordinateCleaner's rows, 4,591 match this package's points exactly. Of the remaining 54, 50 lie more than 10 km from any included point: 15 use coordinates Natural Earth has since changed, and 39 match no tagged release.
 
-- **Institutions.** The institution test uses CoordinateCleaner's 9,773 institution points, 9,200 of them at CoordinateCleaner's coordinates and 573 moved, 565 of them to the Google Maps place of the institution ([Institutions](#institutions) gives the conditions). It also uses 2,786 points of other sources that a check has confirmed. A record near a moved or confirmed point is flagged here and not by CoordinateCleaner.
+- **Institutions.** The institution test uses CoordinateCleaner's 9,773 institution points, 9,200 of them at CoordinateCleaner's coordinates and 573 moved, 565 of them to the Google Maps place of the institution ([Institutions](#institutions) gives the conditions). It also uses 12,059 points of other sources that a check has confirmed. A record near a moved or confirmed point is flagged here and not by CoordinateCleaner.
 
   CoordinateCleaner geocoded nearly all its institutions itself. For example, it located 641 of its 712 BGCI gardens from names and addresses, while this package's BGCI points have BGCI's coordinates. A confirmed point can therefore mark another building of an institution than CoordinateCleaner's point. `reference = "CoordinateCleaner"` uses CoordinateCleaner's table as it is.
 
@@ -229,7 +229,7 @@ The capital, country centroid and institution tables also contain points from so
 
 - country centroids: 516 Natural Earth polygon centroids and label points;
 
-- institutions: 7,660 points, the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata beyond the museums of the English Wikipedia list, and the museums of the Arabic, Dutch, Esperanto, French, German and Portuguese lists. No check has confirmed any of them, so the institution test leaves them out.
+- institutions: 7,660 points, the botanical gardens, natural history museums, zoos, aquaria and herbaria of Wikidata beyond the museums of the English Wikipedia list, and the museums of the Arabic, Dutch, Esperanto, French, German and Portuguese lists. A check confirms 4,589 of them, which the institution test uses; it leaves out the other 3,071.
 
 The capital and centroid tests use them by default. Passing the rows with `extension` `FALSE` through `gazetteers` restricts a test to CoordinateCleaner's sources; for the capitals above, that leaves Cape Town, Sucre and Naypyidaw unflagged:
 

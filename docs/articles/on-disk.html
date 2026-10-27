@@ -216,7 +216,7 @@ The call and its progress messages
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species done [0 s]</span></span>
-<span><span class="co">#&gt; group tests: done [0.4 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.3 s]</span></span>
 <span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; occurrence-1: 3000 rows in 1 part(s) [0.1 s]</span></span>
 <span><span class="co">#&gt; occurrence-2: 3000 rows in 1 part(s) [0 s]</span></span>
@@ -226,7 +226,7 @@ The call and its progress messages
 </details><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 9,000 records in 3 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpglPEAd\flags</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpmcXXi2\flags</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi</span></span>
 <span><span class="co">#&gt;   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
@@ -517,7 +517,7 @@ Messages after removing one marker
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species done [0 s]</span></span>
-<span><span class="co">#&gt; group tests: done [0.4 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.3 s]</span></span>
 <span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; occurrence-1: done (3000 rows), skipped</span></span>
 <span><span class="co">#&gt; occurrence-3: done (3000 rows), skipped</span></span>
@@ -586,7 +586,7 @@ until the slower steps have started. With <code>verbose = TRUE</code>
 the same line is printed every minute.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"progress.txt"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "record 9000 9000 0.4 0.0 0.0 1.0000"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "record 9000 9000 0.3 0.0 0.0 1.0000"</span></span></code></pre></div>
 <p><code>n_threads</code> spreads the exact outlier test and the
 proximity and point-in-polygon queries over several threads, and the
 flags are the same for any number of threads. <a href="parallel.html">Running on several threads</a> lists the tests that
