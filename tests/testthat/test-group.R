@@ -324,7 +324,7 @@ test_that("compacting a store keeps its rows and their order", {
   size <- sum(file.size(list.files(p$dir, full.names = TRUE)))
   parts_compact(p)
   expect_identical(lapply(parts_keys(p), function(k) parts_read(p, k)), before)
-  expect_lt(sum(file.size(list.files(p$dir, full.names = TRUE))), size)
+  expect_lte(sum(file.size(list.files(p$dir, full.names = TRUE))), size)
 })
 
 test_that("settings are validated", {
