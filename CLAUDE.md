@@ -58,7 +58,7 @@ changing a test or a gazetteer.
   GBIF's GRSciColl bulk export, Wikidata, Wikipedia's lists of natural history museums, GeoNames
   and BGCI GardenSearch (terms per source in
   `dev_notes/reference_data.md`).
-- **Imports**: `vectra (>= 0.13.0)` (CRAN, the user's own C11 columnar engine;
+- **Imports**: `vectra (>= 0.14.1)` (CRAN, the user's own C11 columnar engine;
   `tbl_parquet()` and `collect_chunked()` for streaming, `write_vtr()` for the flag parts) and
   `Rcpp` (kd-tree, geodesic and point-in-polygon core). Check the recursive footprint before
   adding anything else.
