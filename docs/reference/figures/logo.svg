@@ -2,16 +2,15 @@
 <title>OccurrenceCleaner logo</title>
 <style>
 .rec { fill: #2B3A4A; }
-.rec.flagged { fill: #B5342B; stroke: #FFFFFF; stroke-width: 3; }
-.ring { fill: none; stroke: #B5342B; stroke-width: 5; transform-box: fill-box; transform-origin: center;
-  animation: pulse 2.8s ease-in-out infinite; }
-@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.22); opacity: 0.45; } }
+.rec.flagged { fill: #B5342B; transform-box: fill-box; transform-origin: center;
+  animation: pulse 4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.12); opacity: 0.7; } }
 .grat { fill: none; stroke: #BCC2C9; stroke-width: 2; }
 .still { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .moving { display: none; }
   .still { display: inline; }
-  .ring { animation: none; } }
+  .rec.flagged { animation: none; } }
 </style>
 <defs>
 <clipPath id="inner"><polygon points="260.0,12.0 10.6,156.0 10.6,444.0 260.0,588.0 509.4,444.0 509.4,156.0"/></clipPath>
@@ -38,21 +37,14 @@
 <circle class="rec" cx="71.3" cy="289.6" r="11"/>
 <circle class="rec" cx="253.0" cy="241.7" r="11"/>
 <circle class="rec" cx="267.9" cy="315.6" r="11"/>
-<circle class="rec" cx="220.5" cy="151.0" r="11"/>
-<circle class="rec" cx="302.2" cy="202.2" r="11"/>
 <circle class="rec" cx="371.9" cy="192.2" r="11"/>
 <circle class="rec" cx="339.7" cy="116.1" r="11"/>
-<circle class="rec" cx="413.5" cy="150.7" r="11"/>
 <circle class="rec" cx="281.5" cy="125.1" r="11"/>
 <circle class="rec" cx="411.1" cy="110.5" r="11"/>
-<circle class="rec flagged" cx="200.0" cy="255.9" r="11"/>
-<circle class="ring" cx="200.0" cy="255.9" r="21" style="animation-delay:-0.7s"/>
-<circle class="rec flagged" cx="139.3" cy="174.3" r="11"/>
-<circle class="ring" cx="139.3" cy="174.3" r="21" style="animation-delay:-1.4s"/>
-<circle class="rec flagged" cx="241.4" cy="130.8" r="11"/>
-<circle class="ring" cx="241.4" cy="130.8" r="21" style="animation-delay:-2.1s"/>
-<circle class="rec flagged" cx="71.4" cy="248.3" r="11"/>
-<circle class="ring" cx="71.4" cy="248.3" r="21" style="animation-delay:-2.8s"/>
+<circle class="rec flagged" cx="200.0" cy="255.9" r="11" style="animation-delay:-1.0s"/>
+<circle class="rec flagged" cx="139.3" cy="174.3" r="11" style="animation-delay:-2.0s"/>
+<circle class="rec flagged" cx="241.4" cy="130.8" r="11" style="animation-delay:-3.0s"/>
+<circle class="rec flagged" cx="71.4" cy="248.3" r="11" style="animation-delay:-4.0s"/>
 <text x="260.0" y="428" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-weight="bold" font-size="62" fill="#2E6F9E" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" paint-order="stroke">Occurrence</text>
 <text x="260.0" y="488" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-weight="bold" font-size="62" fill="#2E6F9E" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" paint-order="stroke">Cleaner</text>
 </g>

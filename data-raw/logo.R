@@ -1,11 +1,11 @@
 # Build the animated hex logo man/figures/logo.svg.
 #
 # A Winkel tripel world map (Natural Earth 1:110m land, public domain) inside a
-# hex, with occurrence records on it; the flagged ones are red and ringed. Two
-# quiet motions, both looping: the meridians drift eastwards, one graticule
-# step (30 degrees) every six seconds, as in the sf logo, and the red rings
-# pulse slowly, out of step with each other. Under prefers-reduced-motion a
-# still graticule replaces the moving one and the rings stay still.
+# hex, with occurrence records on it; the flagged ones are red. Two quiet
+# motions, both looping: the meridians drift eastwards, one graticule step
+# (30 degrees) every six seconds, as in the sf logo, and the red dots pulse
+# slowly, out of step with each other. Under prefers-reduced-motion a still
+# graticule replaces the moving one and the red dots stay still.
 #
 # Run from the package root:  Rscript data-raw/logo.R
 # Needs sf only here; it is not a package dependency.
@@ -128,37 +128,30 @@ still <- vapply(rest, meridian, "")
 # Records. Flagged ones: zero coordinates, open sea, the GBIF headquarters
 # (an institution) and the centroid of Brazil.
 records <- data.frame(
-  lon = c(-50, 22, 28, 2, 45, 78, 80, 105, 40, 118,
+  lon = c(-50, 22, 28, 78, 80, 40, 118,
           0, -35, 12.58, -53.1),
-  lat = c(-28, 8, -24, 46, 24, 22, 56, 32, 58, 46,
+  lat = c(-28, 8, -24, 22, 56, 58, 46,
           0, 28, 55.68, -10.8),
-  flag = c(rep(FALSE, 10), rep(TRUE, 4))
+  flag = c(rep(FALSE, 7), rep(TRUE, 4))
 )
 xy <- to_view(cbind(records$lon, records$lat))
 records$x <- xy[, 1]; records$y <- xy[, 2]
 
-rec_svg <- character()
-for (i in seq_len(nrow(records))) {
-  rec_svg <- c(rec_svg, sprintf('<circle class="rec%s" cx="%.1f" cy="%.1f" r="11"/>',
-                                if (records$flag[i]) " flagged" else "", records$x[i], records$y[i]))
-  if (records$flag[i]) {
-    rec_svg <- c(rec_svg, sprintf('<circle class="ring" cx="%.1f" cy="%.1f" r="21" style="animation-delay:-%.1fs"/>',
-                                  records$x[i], records$y[i], 0.7 * sum(records$flag[seq_len(i)])))
-  }
-}
+delay <- ifelse(records$flag, sprintf(' style="animation-delay:-%.1fs"', 1 * cumsum(records$flag)), "")
+rec_svg <- sprintf('<circle class="rec%s" cx="%.1f" cy="%.1f" r="11"%s/>',
+                   ifelse(records$flag, " flagged", ""), records$x, records$y, delay)
 
 css <- sprintf('
 .rec { fill: %1$s; }
-.rec.flagged { fill: %2$s; stroke: #FFFFFF; stroke-width: 3; }
-.ring { fill: none; stroke: %2$s; stroke-width: 5; transform-box: fill-box; transform-origin: center;
-  animation: pulse 2.8s ease-in-out infinite; }
-@keyframes pulse { 0%%, 100%% { transform: scale(1); opacity: 1; } 50%% { transform: scale(1.22); opacity: 0.45; } }
+.rec.flagged { fill: %2$s; transform-box: fill-box; transform-origin: center;
+  animation: pulse 4s ease-in-out infinite; }
+@keyframes pulse { 0%%, 100%% { transform: scale(1); opacity: 1; } 50%% { transform: scale(1.12); opacity: 0.7; } }
 .grat { fill: none; stroke: %3$s; stroke-width: 2; }
 .still { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .moving { display: none; }
   .still { display: inline; }
-  .ring { animation: none; } }
+  .rec.flagged { animation: none; } }
 ', col[["record"]], col[["flag"]], col[["grat"]])
 
 name_y <- 428
