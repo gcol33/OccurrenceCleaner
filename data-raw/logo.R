@@ -1,11 +1,12 @@
 # Build the animated hex logo man/figures/logo.svg.
 #
 # A Winkel tripel world map (Natural Earth 1:110m land, public domain) inside a
-# hex, with occurrence records on it; the flagged ones are red. Two quiet
-# motions, both looping: the meridians drift eastwards, one graticule step
-# (30 degrees) every six seconds, as in the sf logo, and the red dots pulse
-# slowly, out of step with each other. Under prefers-reduced-motion a still
-# graticule replaces the moving one and the red dots stay still.
+# hex, with occurrence records on it; the flagged ones are red and ringed. Two
+# quiet motions, both looping: the meridians drift eastwards, one graticule
+# step (30 degrees) every six seconds, as in the sf logo, and each red dot
+# pulses slowly with its ring, out of step with the others. Under
+# prefers-reduced-motion a still graticule replaces the moving one and the
+# flagged records stay still.
 #
 # Run from the package root:  Rscript data-raw/logo.R
 # Needs sf only here; it is not a package dependency.
@@ -137,13 +138,17 @@ records <- data.frame(
 xy <- to_view(cbind(records$lon, records$lat))
 records$x <- xy[, 1]; records$y <- xy[, 2]
 
-delay <- ifelse(records$flag, sprintf(' style="animation-delay:-%.1fs"', 1 * cumsum(records$flag)), "")
-rec_svg <- sprintf('<circle class="rec%s" cx="%.1f" cy="%.1f" r="11"%s/>',
-                   ifelse(records$flag, " flagged", ""), records$x, records$y, delay)
+rec_svg <- ifelse(
+  records$flag,
+  sprintf('<g class="flagged" style="animation-delay:-%.1fs"><circle class="ring" cx="%.1f" cy="%.1f" r="21"/><circle class="rec" cx="%.1f" cy="%.1f" r="11"/></g>',
+          1 * cumsum(records$flag), records$x, records$y, records$x, records$y),
+  sprintf('<circle class="rec" cx="%.1f" cy="%.1f" r="11"/>', records$x, records$y))
 
 css <- sprintf('
 .rec { fill: %1$s; }
-.rec.flagged { fill: %2$s; transform-box: fill-box; transform-origin: center;
+.flagged .rec { fill: %2$s; stroke: #FFFFFF; stroke-width: 3; }
+.ring { fill: none; stroke: %2$s; stroke-width: 5; }
+.flagged { transform-box: fill-box; transform-origin: center;
   animation: pulse 4s ease-in-out infinite; }
 @keyframes pulse { 0%%, 100%% { transform: scale(1); opacity: 1; } 50%% { transform: scale(1.12); opacity: 0.7; } }
 .grat { fill: none; stroke: %3$s; stroke-width: 2; }
@@ -151,7 +156,7 @@ css <- sprintf('
 @media (prefers-reduced-motion: reduce) {
   .moving { display: none; }
   .still { display: inline; }
-  .rec.flagged { animation: none; } }
+  .flagged { animation: none; } }
 ', col[["record"]], col[["flag"]], col[["grat"]])
 
 name_y <- 428

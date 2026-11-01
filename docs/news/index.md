@@ -10,10 +10,7 @@
   write at the end of each step. A resumed run first removes what an
   interruption left behind (files of unfinished writes, count tables of
   other checkpoints, splits of a bucket being decided) and says how much
-  it freed. Every append to a `.vtr` file adds an index of its row
-  groups, so files built from many small appends grew to many times
-  their rows: on the GBIF snapshot the flagged rows of the duplicate
-  step took 386 GB on disk.
+  it freed.
 - `flag_occurrences(workers = )` runs the record pass of streamed input
   with more than one file in several R processes.
 - The group stage keeps its per-species and per-dataset counts in C++
@@ -28,8 +25,12 @@
   `out/progress_steps.csv`.
 - Each moved institution point records the source of its new position;
   the hand-placed points follow the same bar for a move as the others.
-- Requires vectra 0.13.4, which appends the rows of a data frame without
-  a temporary file.
+- Requires vectra 0.14.1. Its appends no longer leave the previous index
+  of row groups in the file, so a file built from many appends is the
+  size of its rows; under vectra 0.13.4 the flagged rows of the
+  duplicate step took 386 GB on the GBIF snapshot. Flag files are
+  written in the storage format of vectra 0.14, which earlier versions
+  cannot read.
 
 ## OccurrenceCleaner 0.2.0
 
