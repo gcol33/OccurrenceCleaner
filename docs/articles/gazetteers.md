@@ -60,17 +60,17 @@ head(inst[, c("name", "type", "source", "lon", "lat")], 3)
 head(sort(table(inst$type), decreasing = TRUE))
 #> 
 #>                                 Herbarium 
-#>                                      8272 
+#>                                      8233 
 #>                           BotanicalGarden 
-#>                                      7810 
+#>                                      7801 
 #>                                    Museum 
-#>                                      4879 
+#>                                      4864 
 #>                         UniversityCollege 
-#>                                      3007 
+#>                                      2988 
 #>                               ZooAquarium 
-#>                                      2861 
+#>                                      2858 
 #> OtherTypeResearchInstitutionBiorepository 
-#>                                       507
+#>                                       501
 ```
 
 The institution test uses the points whose `status` is not
@@ -85,7 +85,7 @@ museum is unlikely in a plant table, and use a wider buffer for them:
 used <- inst[inst$status != "unconfirmed", ]
 herbaria <- used[used$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 5177
+#> [1] 5139
 near <- rbind(herbaria[1:3, ], used[used$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -138,7 +138,7 @@ records near either:
 caps <- reference_points("capital")
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
 nrow(both)
-#> [1] 700
+#> [1] 488
 y <- data.frame(city = c("Cape Town", "Naypyidaw", "Vienna"), decimalLongitude = c(18.42, 96.13, 16.37),
                 decimalLatitude = c(-33.92, 19.75, 48.21))
 data.frame(city = y$city,
@@ -166,7 +166,7 @@ test leaves out:
 table(inst$status)
 #> 
 #>          cc   confirmed    override unconfirmed 
-#>        9200       12059         573       12860
+#>        9200       11911         573       12891
 ```
 
 `gazetteers = list(institution = inst)` flags records near any point of
@@ -328,7 +328,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-27, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5177 points md5 883779e75eaae5f00f3ab4bb2b168eec"
+#> [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-02, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5139 points md5 1df71732363ee8a762b5cd586cb5d32d"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

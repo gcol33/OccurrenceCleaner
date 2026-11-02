@@ -23,9 +23,10 @@ test_that("proximity tests use the default buffers and the own gazetteers", {
   skip_if_not_installed("geosphere")
   cap <- OccurrenceCleaner:::ref_capitals
   vienna <- cap[cap$key == "factbook:AU", ]
-  # away from the Natural Earth point of Vienna, 0.45 km off the Factbook one
-  vienna_ne <- cap[cap$source == "Natural Earth" & cap$name == "Vienna", ]
-  b_vienna <- geosphere::bearing(c(vienna_ne$lon, vienna_ne$lat), c(vienna$lon, vienna$lat))
+  # Vienna is the only capital point within 20 km, so the 10 km edge holds in any direction
+  d_cap <- geosphere::distGeo(c(vienna$lon, vienna$lat), cbind(cap$lon, cap$lat))
+  expect_identical(sum(d_cap <= 20000), 1L)
+  b_vienna <- 37
   cen <-OccurrenceCleaner:::ref_centroids
   tirol <- cen[!is.na(cen$code) & cen$code == "AUT-2320", ][1, ]  # Vorarlberg label point
   inst <- OccurrenceCleaner:::ref_institutions

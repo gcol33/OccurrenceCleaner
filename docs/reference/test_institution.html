@@ -112,10 +112,10 @@ columns of <code>x</code> unchanged. See <code><a href="keep_unflagged.html">kee
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The default gazetteer has 21,832 points. Of these, 9,773 are the
+    <p>The default gazetteer has 21,684 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a> 3.0.1
-(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 12,059 are further
+(<code>source</code> "CoordinateCleaner", <code>status</code> "cc"), and 11,911 are further
 points that a check beyond their own source confirms (<code>status</code>
 "confirmed").</p>
 <p>Of CoordinateCleaner's points, 9,200 are used as that package has them.
@@ -133,12 +133,17 @@ place's name, the distances and the URL the coordinates were read from.</p>
 <p>A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
 OpenStreetMap feature of that name; <code>evidence</code> says which. The Google Maps
-search used the institution's name with its city and country. These checks
+search used the institution's name with its city and country. When the two
+names share only words of place names, they must also name the same kind
+of institution (university, museum, garden, zoo, herbarium, institute), so
+Durban Botanic Gardens does not confirm the Durban Museum. These checks
 covered every point of the package's table, retrieved 2026-10-13 to
 2026-10-27. In a hand reading of 100 points confirmed by Google Maps, 97
 were at the named institution, 2 were unclear and 1 was another
-institution, which was left out.</p>
-<p><code><a href="reference_points.html">reference_points()</a></code> also returns 12,860 unconfirmed points, which the
+institution, which was left out. In a hand reading of 99 points confirmed
+by OpenStreetMap alone, 95 were at the named institution, 2 at another
+institution, 1 at another site of the same organisation and 1 unclear.</p>
+<p><code><a href="reference_points.html">reference_points()</a></code> also returns 12,891 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -163,7 +168,7 @@ the whole table as <code>gazetteers = list(institution = ...)</code> uses them t
     <p>Equivalent to <code>cc_inst()</code>. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
 differs from its <code>institutions</code> table by the 573 moved points and the
-12,059 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
+11,911 confirmed points. <code>reference = "CoordinateCleaner"</code> uses its table
 as it is.</p>
     </div>
     <div class="section level2">

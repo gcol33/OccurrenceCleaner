@@ -229,12 +229,12 @@ Without a <code>rules</code> argument it uses one rule,
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;occ_summary&gt; 3,120 records</span></span>
-<span><span class="co">#&gt;   rule all: removes 745 (23.88 %)</span></span>
+<span><span class="co">#&gt;   rule all: removes 743 (23.81 %)</span></span>
 <span><span class="co">#&gt;  rule              test    n flagged   pct only pct_only</span></span>
 <span><span class="co">#&gt;   all           invalid 3120       0  0.00    0     0.00</span></span>
 <span><span class="co">#&gt;   all              zero 3120      44  1.41    0     0.00</span></span>
 <span><span class="co">#&gt;   all             equal 3120      44  1.41    0     0.00</span></span>
-<span><span class="co">#&gt;   all           capital 3120     167  5.35  134     4.29</span></span>
+<span><span class="co">#&gt;   all           capital 3120     165  5.29  132     4.23</span></span>
 <span><span class="co">#&gt;   all          centroid 3120      11  0.35    1     0.03</span></span>
 <span><span class="co">#&gt;   all       institution 3120       4  0.13    0     0.00</span></span>
 <span><span class="co">#&gt;   all gbif_headquarters 3120       0  0.00    0     0.00</span></span>
@@ -243,7 +243,7 @@ Without a <code>rules</code> argument it uses one rule,
 <span><span class="co">#&gt;   all  issue_coordinate 3120       0  0.00    0     0.00</span></span>
 <span><span class="co">#&gt;   all     issue_rounded 3120     394 12.63  349    11.19</span></span>
 <span><span class="co">#&gt;   all      basis_fossil 3120      16  0.51   11     0.35</span></span>
-<span><span class="co">#&gt;   all             (any) 3120     745 23.88</span></span></code></pre></div>
+<span><span class="co">#&gt;   all             (any) 3120     743 23.81</span></span></code></pre></div>
 <p>For each test of the rule, <code>flagged</code> is the number of
 records carrying that test and <code>pct</code> the same as a percentage
 of all records. <code>only</code> counts the records for which that test
@@ -311,7 +311,7 @@ dark part <code>pct_only</code>.</p>
 <rect x='173.88' y='157.51' width='26.93' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='133.56' width='64.88' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='109.62' width='80.18' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='85.68' width='102.21' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='85.68' width='100.99' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='61.73' width='241.15' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <text x='312.54' y='420.24' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>% of records</text>
 <line x1='173.88' y1='356.40' x2='441.22' y2='356.40' style='stroke-width: 0.75;' />
@@ -341,7 +341,7 @@ dark part <code>pct_only</code>.</p>
 <rect x='173.88' y='157.51' width='0.00' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='133.56' width='30.60' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='109.62' width='58.14' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='85.68' width='82.01' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='85.68' width='80.79' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='61.73' width='213.61' height='19.95' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <text x='167.16' y='340.10' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
 <text x='167.16' y='316.16' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
@@ -365,9 +365,9 @@ dark part <code>pct_only</code>.</p>
 <text x='209.21' y='170.82' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
 <text x='247.16' y='146.88' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
 <text x='262.46' y='122.94' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.2</text>
-<text x='284.49' y='98.99' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.4</text>
+<text x='283.27' y='98.99' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.3</text>
 <text x='423.43' y='75.05' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>12.6</text>
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule all removes 23.9 % of 3,120 records</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule all removes 23.8 % of 3,120 records</text>
 </g>
 <defs>
   <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwzNTYuNDA='>
@@ -411,8 +411,8 @@ species, <code>sea</code> would remove valid records.</p></li>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">f</span>, rules <span class="op">=</span> <span class="va">rules</span><span class="op">)</span></span>
 <span><span class="va">s</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">test</span> <span class="op">==</span> <span class="st">"(any)"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rule"</span>, <span class="st">"n"</span>, <span class="st">"flagged"</span>, <span class="st">"pct"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;               rule    n flagged   pct</span></span>
-<span><span class="co">#&gt;             strict 3120     745 23.88</span></span>
-<span><span class="co">#&gt;  coordinatecleaner 3120     274  8.78</span></span>
+<span><span class="co">#&gt;             strict 3120     743 23.81</span></span>
+<span><span class="co">#&gt;  coordinatecleaner 3120     272  8.72</span></span>
 <span><span class="co">#&gt;            minimal 3120     106  3.40</span></span></code></pre></div>
 <p>The selection above keeps one row per rule. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws
 one rule at a time. This plot and the kingdom comparison below use
@@ -459,36 +459,36 @@ article:</p>
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwzMjQuMDA=)'>
 <rect x='173.88' y='221.56' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='198.16' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='174.75' width='5.78' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='151.35' width='15.88' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='127.95' width='63.54' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='104.54' width='63.54' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='81.14' width='153.06' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='174.75' width='5.85' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='151.35' width='16.08' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='127.95' width='64.31' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='104.54' width='64.31' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='81.14' width='154.92' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='57.73' width='241.15' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <text x='312.54' y='312.24' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>% of records</text>
-<line x1='173.88' y1='248.40' x2='444.20' y2='248.40' style='stroke-width: 0.75;' />
+<line x1='173.88' y1='248.40' x2='447.47' y2='248.40' style='stroke-width: 0.75;' />
 <line x1='173.88' y1='248.40' x2='173.88' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='218.93' y1='248.40' x2='218.93' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='263.99' y1='248.40' x2='263.99' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='309.04' y1='248.40' x2='309.04' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='354.09' y1='248.40' x2='354.09' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='399.14' y1='248.40' x2='399.14' y2='256.80' style='stroke-width: 0.75;' />
-<line x1='444.20' y1='248.40' x2='444.20' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='219.48' y1='248.40' x2='219.48' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='265.08' y1='248.40' x2='265.08' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='310.68' y1='248.40' x2='310.68' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='356.28' y1='248.40' x2='356.28' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='401.87' y1='248.40' x2='401.87' y2='256.80' style='stroke-width: 0.75;' />
+<line x1='447.47' y1='248.40' x2='447.47' y2='256.80' style='stroke-width: 0.75;' />
 <text x='173.88' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0</text>
-<text x='218.93' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1</text>
-<text x='263.99' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
-<text x='309.04' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
-<text x='354.09' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4</text>
-<text x='399.14' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5</text>
-<text x='444.20' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>6</text>
+<text x='219.48' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1</text>
+<text x='265.08' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>2</text>
+<text x='310.68' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3</text>
+<text x='356.28' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4</text>
+<text x='401.87' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5</text>
+<text x='447.47' y='278.64' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>6</text>
 <rect x='173.88' y='221.56' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='198.16' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='174.75' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='151.35' width='1.44' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='151.35' width='1.46' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='127.95' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='104.54' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='81.14' width='89.53' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='57.73' width='220.93' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='81.14' width='90.61' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='57.73' width='220.69' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <text x='167.16' y='236.33' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
 <text x='167.16' y='212.92' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
 <text x='167.16' y='189.52' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
@@ -499,13 +499,13 @@ article:</p>
 <text x='167.16' y='72.50' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
 <text x='182.28' y='234.66' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
 <text x='182.28' y='211.25' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text x='188.06' y='187.85' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.1</text>
-<text x='198.16' y='164.44' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.4</text>
-<text x='245.82' y='141.04' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
-<text x='245.82' y='117.63' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
-<text x='335.34' y='94.23' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
-<text x='423.43' y='70.83' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.4</text>
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner removes 8.8 % of 3,120 records</text>
+<text x='188.13' y='187.85' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.1</text>
+<text x='198.36' y='164.44' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.4</text>
+<text x='246.59' y='141.04' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
+<text x='246.59' y='117.63' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
+<text x='337.20' y='94.23' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.4</text>
+<text x='423.43' y='70.83' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.3</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner removes 8.7 % of 3,120 records</text>
 </g>
 <defs>
   <clipPath id='cpMTczLjg4fDQ1MS4yMHw1MC40MHwyNDguNDA='>
@@ -539,9 +539,9 @@ group.</p>
 <span><span class="co">#&gt;  Animalia coordinatecleaner capital 1770      92 5.20   83     4.69</span></span>
 <span><span class="co">#&gt;  Animalia coordinatecleaner     sea 1770      64 3.62   36     2.03</span></span>
 <span><span class="co">#&gt;  Animalia coordinatecleaner   (any) 1770     156 8.81              </span></span>
-<span><span class="co">#&gt;     Fungi coordinatecleaner capital  311      20 6.43   18     5.79</span></span>
+<span><span class="co">#&gt;     Fungi coordinatecleaner capital  311      18 5.79   16     5.14</span></span>
 <span><span class="co">#&gt;     Fungi coordinatecleaner     sea  311       6 1.93    3     0.96</span></span>
-<span><span class="co">#&gt;     Fungi coordinatecleaner   (any)  311      26 8.36              </span></span>
+<span><span class="co">#&gt;     Fungi coordinatecleaner   (any)  311      24 7.72              </span></span>
 <span><span class="co">#&gt;   Plantae coordinatecleaner capital 1039      55 5.29   52     5.00</span></span>
 <span><span class="co">#&gt;   Plantae coordinatecleaner     sea 1039      36 3.46   23     2.21</span></span>
 <span><span class="co">#&gt;   Plantae coordinatecleaner   (any) 1039      92 8.85</span></span></code></pre></div>
@@ -595,7 +595,7 @@ in the bottom row.</p>
 </defs>
 <g clip-path='url(#cpMjIwLjA4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
 <rect x='220.08' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='297.12' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A1B7C2;' />
+<rect x='297.12' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #A7BCC6;' />
 <rect x='374.16' y='282.93' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='220.08' y='253.87' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #D0DBE1;' />
 <rect x='297.12' y='253.87' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E1E8EC;' />
@@ -610,7 +610,7 @@ in the bottom row.</p>
 <rect x='297.12' y='166.67' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EDF2F4;' />
 <rect x='374.16' y='166.67' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #F1F4F6;' />
 <rect x='220.08' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C1CFD7;' />
-<rect x='297.12' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #B4C6CF;' />
+<rect x='297.12' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #BACBD3;' />
 <rect x='374.16' y='137.60' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #C0CFD6;' />
 <rect x='220.08' y='108.53' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #E5EBEE;' />
 <rect x='297.12' y='108.53' width='77.04' height='29.07' style='stroke-width: 0.75; stroke: none; fill: #EBF0F2;' />
@@ -639,7 +639,7 @@ in the bottom row.</p>
 <g clip-path='url(#cpMjIwLjA4fDQ1MS4yMHw1MC40MHwzMTIuMDA=)'>
 <line x1='220.08' y1='282.93' x2='451.20' y2='282.93' style='stroke-width: 2.25; stroke: #FFFFFF;' />
 <text class='preserve-color' x='258.60' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.81</text>
-<text class='preserve-color' x='335.64' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.36</text>
+<text class='preserve-color' x='335.64' y='302.50' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>7.72</text>
 <text class='preserve-color' x='412.68' y='302.41' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>8.85</text>
 <text class='preserve-color' x='258.60' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>3.62</text>
 <text class='preserve-color' x='335.64' y='273.34' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.93</text>
@@ -654,7 +654,7 @@ in the bottom row.</p>
 <text class='preserve-color' x='335.64' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.64</text>
 <text class='preserve-color' x='412.68' y='186.15' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.29</text>
 <text class='preserve-color' x='258.60' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.20</text>
-<text class='preserve-color' x='335.64' y='157.07' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>6.43</text>
+<text class='preserve-color' x='335.64' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.79</text>
 <text class='preserve-color' x='412.68' y='157.08' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.29</text>
 <text class='preserve-color' x='258.60' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.58</text>
 <text class='preserve-color' x='335.64' y='128.01' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.96</text>
@@ -704,7 +704,7 @@ and uncertainty classes.</p>
 <span><span class="co">#&gt;  1970-2000 issue_rounded  867  3.11</span></span>
 <span><span class="co">#&gt;  1970-2000         (any)  867 15.80</span></span>
 <span><span class="co">#&gt;     &gt;=2000 issue_rounded 1161  3.19</span></span>
-<span><span class="co">#&gt;     &gt;=2000         (any) 1161 15.76</span></span></code></pre></div>
+<span><span class="co">#&gt;     &gt;=2000         (any) 1161 15.59</span></span></code></pre></div>
 <p>The higher <code>issue_rounded</code> share before 1970 reproduces
 the rate the simulation assigned to older records.</p>
 <p><code><a href="../reference/tally_flags.html">tally_flags()</a></code> returns the counts; <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>
@@ -761,7 +761,7 @@ later.</p>
 <rect x='229.34' y='417.05' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #9EB5C1;' />
 <rect x='284.81' y='417.05' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='340.27' y='417.05' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #D1DCE1;' />
-<rect x='395.74' y='417.05' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #D1DCE1;' />
+<rect x='395.74' y='417.05' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #D2DDE2;' />
 <rect x='173.88' y='386.49' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #F4F7F8;' />
 <rect x='229.34' y='386.49' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #F2F5F6;' />
 <rect x='284.81' y='386.49' width='55.46' height='30.55' style='stroke-width: 0.75; stroke: none; fill: #F3F6F7;' />
@@ -849,7 +849,7 @@ later.</p>
 <text class='preserve-color' x='257.08' y='437.26' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>39.2</text>
 <text class='preserve-color' x='312.54' y='437.27' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40.4</text>
 <text class='preserve-color' x='368.00' y='437.27' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>15.8</text>
-<text class='preserve-color' x='423.47' y='437.27' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>15.8</text>
+<text class='preserve-color' x='423.47' y='437.27' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>15.6</text>
 <text class='preserve-color' x='201.61' y='406.72' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
 <text class='preserve-color' x='257.08' y='406.72' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.0</text>
 <text class='preserve-color' x='312.54' y='406.72' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.5</text>
@@ -894,7 +894,7 @@ later.</p>
 <text class='preserve-color' x='257.08' y='162.37' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>4.2</text>
 <text class='preserve-color' x='312.54' y='162.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.2</text>
 <text class='preserve-color' x='368.00' y='162.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.9</text>
-<text class='preserve-color' x='423.47' y='162.28' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.9</text>
+<text class='preserve-color' x='423.47' y='162.20' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>5.7</text>
 <text class='preserve-color' x='201.61' y='131.72' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.3</text>
 <text class='preserve-color' x='257.08' y='131.73' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.6</text>
 <text class='preserve-color' x='312.54' y='131.73' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.5</text>
@@ -927,9 +927,9 @@ describing how uncertain the stated location is:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coordinateUncertaintyInMeters_bin"</span>, <span class="st">"test"</span>, <span class="st">"n"</span>, <span class="st">"pct"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;  coordinateUncertaintyInMeters_bin          test    n   pct</span></span>
 <span><span class="co">#&gt;                               &lt;100 issue_rounded 1203  2.66</span></span>
-<span><span class="co">#&gt;                               &lt;100         (any) 1203 15.05</span></span>
+<span><span class="co">#&gt;                               &lt;100         (any) 1203 14.96</span></span>
 <span><span class="co">#&gt;                           100-1000 issue_rounded  544  9.38</span></span>
-<span><span class="co">#&gt;                           100-1000         (any)  544 21.69</span></span>
+<span><span class="co">#&gt;                           100-1000         (any)  544 21.51</span></span>
 <span><span class="co">#&gt;                         1000-10000 issue_rounded  645 30.08</span></span>
 <span><span class="co">#&gt;                         1000-10000         (any)  645 39.53</span></span>
 <span><span class="co">#&gt;                            &gt;=10000 issue_rounded  102 27.45</span></span>
@@ -2779,6 +2779,7 @@ of <code>rules</code> removes them. The map returns to
 <circle cx='306.01' cy='125.58' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='255.26' cy='116.99' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='295.10' cy='82.51' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
+<circle cx='264.90' cy='114.33' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='316.03' cy='129.22' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='315.46' cy='90.08' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='309.96' cy='141.46' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
@@ -2873,6 +2874,7 @@ of <code>rules</code> removes them. The map returns to
 <circle cx='239.98' cy='93.73' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='241.99' cy='120.93' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='297.67' cy='101.22' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
+<circle cx='330.79' cy='123.26' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='304.26' cy='141.84' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='323.13' cy='142.48' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='310.34' cy='128.42' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
@@ -4014,7 +4016,6 @@ of <code>rules</code> removes them. The map returns to
 <circle cx='294.40' cy='119.27' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='299.18' cy='82.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='247.11' cy='280.00' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
-<circle cx='264.90' cy='114.33' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='283.17' cy='140.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='186.02' cy='98.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.41' cy='145.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
@@ -4025,7 +4026,6 @@ of <code>rules</code> removes them. The map returns to
 <circle cx='294.40' cy='119.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.40' cy='145.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='283.20' cy='140.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
-<circle cx='330.79' cy='123.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.41' cy='145.28' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='247.11' cy='280.00' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='294.40' cy='119.28' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
@@ -4143,7 +4143,7 @@ of <code>rules</code> removes them. The map returns to
 <text x='42.00' y='151.66' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text x='42.00' y='84.98' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='58.80,309.60 451.20,309.60 451.20,50.40 58.80,50.40 ' style='stroke-width: 0.75; stroke: #5C6166;' />
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 274 of 3,120 records removed</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 272 of 3,120 records removed</text>
 </g>
 <g clip-path='url(#cpNTguODB8NDUxLjIwfDUwLjQwfDMwOS42MA==)'>
 <circle cx='71.40' cy='276.00' r='3.15' style='stroke-width: 0.75; stroke: none; fill: #5C6166;' />
@@ -4187,7 +4187,7 @@ rule.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/keep_unflagged.html">keep_unflagged</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">rules</span><span class="op">$</span><span class="va">coordinatecleaner</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2846</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2848</span></span></code></pre></div>
 <p>A cut on record age or coordinate uncertainty is a filter on the raw
 columns, with an explicit choice for missing values. This one keeps
 records from 1950 on, and records whose coordinate uncertainty is at
@@ -4196,7 +4196,7 @@ most 10 km or not stated:</p>
 <code class="sourceCode R"><span><span class="va">u</span> <span class="op">&lt;-</span> <span class="va">clean</span><span class="op">$</span><span class="va">coordinateUncertaintyInMeters</span></span>
 <span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">year</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">clean</span><span class="op">$</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">1950</span> <span class="op">&amp;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span> <span class="op">|</span> <span class="va">u</span> <span class="op">&lt;=</span> <span class="fl">10000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2143</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2145</span></span></code></pre></div>
 <p>The removed records keep their flags. Another rule built from the
 tests already run reads the same <code>f</code>. Adding a test that was
 not run, or changing buffers, <code>settings</code>, reference data or

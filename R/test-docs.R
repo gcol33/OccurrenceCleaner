@@ -69,10 +69,12 @@ NULL
 #' CIA World Factbook (public domain; 232 points, one per country profile,
 #' through the factbook.json mirror retrieved 2026-10-11), the source
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s capitals are taken from. The column `extension` marks
-#' the 243 Natural Earth populated places of the classes admin-0 capital,
-#' alternative capital and admin-0 region capital (dependent territories),
-#' which add the second capitals of countries that have several (Cape Town,
-#' Sucre, Naypyidaw); passing the points with `extension` FALSE as
+#' 31 Natural Earth populated places of the classes admin-0 capital,
+#' alternative capital and admin-0 region capital (dependent territories)
+#' that lie more than 20 km from every Factbook capital. They add the second
+#' capitals of countries that have several (The Hague, Cape Town); a Natural
+#' Earth point nearer a Factbook capital places the same city a second time
+#' and is not used. Passing the points with `extension` FALSE as
 #' `gazetteers = list(capital = ...)` leaves them out. See [reference_info()].
 #'
 #' @section Fields: `lon`, `lat`.
@@ -158,10 +160,10 @@ NULL
 #' universities holding collections, where specimens are often georeferenced
 #' to the institution.
 #'
-#' The default gazetteer has 21,832 points. Of these, 9,773 are the
+#' The default gazetteer has 21,684 points. Of these, 9,773 are the
 #' institutions with coordinates in the table of
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-#' (`source` "CoordinateCleaner", `status` "cc"), and 12,059 are further
+#' (`source` "CoordinateCleaner", `status` "cc"), and 11,911 are further
 #' points that a check beyond their own source confirms (`status`
 #' "confirmed").
 #'
@@ -181,13 +183,18 @@ NULL
 #' A further point is confirmed when a Google Maps place of the institution's
 #' name lies within 300 m of it, or when it lies within 200 m of the
 #' OpenStreetMap feature of that name; `evidence` says which. The Google Maps
-#' search used the institution's name with its city and country. These checks
+#' search used the institution's name with its city and country. When the two
+#' names share only words of place names, they must also name the same kind
+#' of institution (university, museum, garden, zoo, herbarium, institute), so
+#' Durban Botanic Gardens does not confirm the Durban Museum. These checks
 #' covered every point of the package's table, retrieved 2026-10-13 to
 #' 2026-10-27. In a hand reading of 100 points confirmed by Google Maps, 97
 #' were at the named institution, 2 were unclear and 1 was another
-#' institution, which was left out.
+#' institution, which was left out. In a hand reading of 99 points confirmed
+#' by OpenStreetMap alone, 95 were at the named institution, 2 at another
+#' institution, 1 at another site of the same organisation and 1 unclear.
 #'
-#' [reference_points()] also returns 12,860 unconfirmed points, which the
+#' [reference_points()] also returns 12,891 unconfirmed points, which the
 #' test leaves out. They come from GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 #' museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -204,7 +211,7 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. The default gazetteer
 #'   differs from its `institutions` table by the 573 moved points and the
-#'   12,059 confirmed points. `reference = "CoordinateCleaner"` uses its table
+#'   11,911 confirmed points. `reference = "CoordinateCleaner"` uses its table
 #'   as it is.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].

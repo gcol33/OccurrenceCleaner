@@ -27,10 +27,10 @@ universities holding collections, where specimens are often georeferenced
 to the institution.
 }
 \details{
-The default gazetteer has 21,832 points. Of these, 9,773 are the
+The default gazetteer has 21,684 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} 3.0.1
-(\code{source} "CoordinateCleaner", \code{status} "cc"), and 12,059 are further
+(\code{source} "CoordinateCleaner", \code{status} "cc"), and 11,911 are further
 points that a check beyond their own source confirms (\code{status}
 "confirmed").
 
@@ -50,13 +50,18 @@ place's name, the distances and the URL the coordinates were read from.
 A further point is confirmed when a Google Maps place of the institution's
 name lies within 300 m of it, or when it lies within 200 m of the
 OpenStreetMap feature of that name; \code{evidence} says which. The Google Maps
-search used the institution's name with its city and country. These checks
+search used the institution's name with its city and country. When the two
+names share only words of place names, they must also name the same kind
+of institution (university, museum, garden, zoo, herbarium, institute), so
+Durban Botanic Gardens does not confirm the Durban Museum. These checks
 covered every point of the package's table, retrieved 2026-10-13 to
 2026-10-27. In a hand reading of 100 points confirmed by Google Maps, 97
 were at the named institution, 2 were unclear and 1 was another
-institution, which was left out.
+institution, which was left out. In a hand reading of 99 points confirmed
+by OpenStreetMap alone, 95 were at the named institution, 2 at another
+institution, 1 at another site of the same organisation and 1 unclear.
 
-\code{\link[=reference_points]{reference_points()}} also returns 12,860 unconfirmed points, which the
+\code{\link[=reference_points]{reference_points()}} also returns 12,891 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -80,7 +85,7 @@ the whole table as \code{gazetteers = list(institution = ...)} uses them too
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
 differs from its \code{institutions} table by the 573 moved points and the
-12,059 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
+11,911 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
 as it is.
 }
 

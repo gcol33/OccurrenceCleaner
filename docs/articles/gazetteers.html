@@ -163,17 +163,17 @@ comes from:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                                 Herbarium </span></span>
-<span><span class="co">#&gt;                                      8272 </span></span>
+<span><span class="co">#&gt;                                      8233 </span></span>
 <span><span class="co">#&gt;                           BotanicalGarden </span></span>
-<span><span class="co">#&gt;                                      7810 </span></span>
+<span><span class="co">#&gt;                                      7801 </span></span>
 <span><span class="co">#&gt;                                    Museum </span></span>
-<span><span class="co">#&gt;                                      4879 </span></span>
+<span><span class="co">#&gt;                                      4864 </span></span>
 <span><span class="co">#&gt;                         UniversityCollege </span></span>
-<span><span class="co">#&gt;                                      3007 </span></span>
+<span><span class="co">#&gt;                                      2988 </span></span>
 <span><span class="co">#&gt;                               ZooAquarium </span></span>
-<span><span class="co">#&gt;                                      2861 </span></span>
+<span><span class="co">#&gt;                                      2858 </span></span>
 <span><span class="co">#&gt; OtherTypeResearchInstitutionBiorepository </span></span>
-<span><span class="co">#&gt;                                       507</span></span></code></pre></div>
+<span><span class="co">#&gt;                                       501</span></span></code></pre></div>
 <p>The institution test uses the points whose <code>status</code> is not
 <code>"unconfirmed"</code>; <a href="reference-data.html#institutions">Reference data</a> explains the
 status. A plant study, for example, may want to flag records at herbaria
@@ -183,7 +183,7 @@ in a plant table, and use a wider buffer for them:</p>
 <code class="sourceCode R"><span><span class="va">used</span> <span class="op">&lt;-</span> <span class="va">inst</span><span class="op">[</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span> <span class="op">!=</span> <span class="st">"unconfirmed"</span>, <span class="op">]</span></span>
 <span><span class="va">herbaria</span> <span class="op">&lt;-</span> <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Herbarium"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 5177</span></span>
+<span><span class="co">#&gt; [1] 5139</span></span>
 <span><span class="va">near</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">herbaria</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span>, <span class="va">used</span><span class="op">[</span><span class="va">used</span><span class="op">$</span><span class="va">type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Museum"</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Quercus robur"</span>, decimalLongitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lon</span> <span class="op">+</span> <span class="fl">0.005</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="va">near</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
@@ -230,7 +230,7 @@ records near either:</p>
 <code class="sourceCode R"><span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span><span class="op">)</span></span>
 <span><span class="va">both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="../reference/reference_points.html">reference_points</a></span><span class="op">(</span><span class="st">"capital"</span>, reference <span class="op">=</span> <span class="st">"CoordinateCleaner"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">both</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 700</span></span>
+<span><span class="co">#&gt; [1] 488</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cape Town"</span>, <span class="st">"Naypyidaw"</span>, <span class="st">"Vienna"</span><span class="op">)</span>, decimalLongitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18.42</span>, <span class="fl">96.13</span>, <span class="fl">16.37</span><span class="op">)</span>,</span>
 <span>                decimalLatitude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">33.92</span>, <span class="fl">19.75</span>, <span class="fl">48.21</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>city <span class="op">=</span> <span class="va">y</span><span class="op">$</span><span class="va">city</span>,</span>
@@ -253,7 +253,7 @@ confirmed, which the test leaves out:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;          cc   confirmed    override unconfirmed </span></span>
-<span><span class="co">#&gt;        9200       12059         573       12860</span></span></code></pre></div>
+<span><span class="co">#&gt;        9200       11911         573       12891</span></span></code></pre></div>
 <p><code>gazetteers = list(institution = inst)</code> flags records near
 any point of the table, the unconfirmed ones included.</p>
 <p>The Artificial Hotspot Occurrence Inventory (Park et al. 2023) behind
@@ -397,7 +397,7 @@ output:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flag_occurrences.html">flag_occurrences</a></span><span class="op">(</span><span class="va">x</span>, tests <span class="op">=</span> <span class="st">"institution"</span>, gazetteers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>institution <span class="op">=</span> <span class="va">herbaria</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">f</span>, <span class="st">"occ_reference"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-10-27, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5177 points md5 883779e75eaae5f00f3ab4bb2b168eec"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-02, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5139 points md5 1df71732363ee8a762b5cd586cb5d32d"</span></span></code></pre></div>
 <p>The checksum identifies the exact table, so two analyses that report
 the same label used the same points. For streamed input the label is
 stored in the output directory, and a rerun into that directory with a

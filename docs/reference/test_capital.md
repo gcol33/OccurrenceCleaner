@@ -42,11 +42,13 @@ the CIA World Factbook (public domain; 232 points, one per country
 profile, through the factbook.json mirror retrieved 2026-10-11), the
 source
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s
-capitals are taken from. The column `extension` marks the 243 Natural
-Earth populated places of the classes admin-0 capital, alternative
-capital and admin-0 region capital (dependent territories), which add
-the second capitals of countries that have several (Cape Town, Sucre,
-Naypyidaw); passing the points with `extension` FALSE as
+capitals are taken from. The column `extension` marks 31 Natural Earth
+populated places of the classes admin-0 capital, alternative capital and
+admin-0 region capital (dependent territories) that lie more than 20 km
+from every Factbook capital. They add the second capitals of countries
+that have several (The Hague, Cape Town); a Natural Earth point nearer a
+Factbook capital places the same city a second time and is not used.
+Passing the points with `extension` FALSE as
 `gazetteers = list(capital = ...)` leaves them out. See
 [`reference_info()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_info.md).
 

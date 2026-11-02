@@ -5,8 +5,11 @@
 # Factbook itself (country_sources.R), unrounded: one point per profile, named
 # after the first capital the profile lists (Akrotiri and Dhekelia share one). Natural Earth populated places of
 # the classes admin-0 capital, alternative capital and admin-0 region capital
-# (natural_earth.R) are kept as `extension` TRUE; an extension point at the
-# coordinates of another row is dropped.
+# (natural_earth.R) are kept as `extension` TRUE when they add a capital: an
+# extension point within 20 km of a Factbook capital (twice the default buffer)
+# places the same city a second time and is dropped (Natural Earth's Berlin lies
+# 0.8 km from the Factbook point, Washington 2.8 km, London 2.5 km), as is an
+# extension point at the coordinates of another row.
 #
 # Run from the package root after natural_earth.R:  Rscript data-raw/capitals.R
 
@@ -32,6 +35,10 @@ cap_ne <- ne$capitals
 cap_ne$source <- "Natural Earth"
 cap_ne$key <- paste0("ne:", cap_ne$adm0_a3, ":", cap_ne$name)
 cap_ne$extension <- TRUE
+d_fb <- vapply(seq_len(nrow(cap_ne)), function(i) min(km_to(cap_ne$lon[i], cap_ne$lat[i], cap_fb$lon, cap_fb$lat)),
+               numeric(1))
+cat("extension points within 20 km of a Factbook capital, dropped:", sum(d_fb <= 20), "of", nrow(cap_ne), "\n")
+cap_ne <- cap_ne[d_fb > 20, ]
 
 capitals <- rbind(cap_fb, cap_ne)
 capitals <- capitals[!duplicated(capitals[, c("source", "lon", "lat")]), ]

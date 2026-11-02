@@ -141,12 +141,12 @@ holding every test that was run.
 
 summary(f)
 #> <occ_summary> 3,120 records
-#>   rule all: removes 745 (23.88 %)
+#>   rule all: removes 743 (23.81 %)
 #>  rule              test    n flagged   pct only pct_only
 #>   all           invalid 3120       0  0.00    0     0.00
 #>   all              zero 3120      44  1.41    0     0.00
 #>   all             equal 3120      44  1.41    0     0.00
-#>   all           capital 3120     167  5.35  134     4.29
+#>   all           capital 3120     165  5.29  132     4.23
 #>   all          centroid 3120      11  0.35    1     0.03
 #>   all       institution 3120       4  0.13    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
@@ -155,7 +155,7 @@ summary(f)
 #>   all  issue_coordinate 3120       0  0.00    0     0.00
 #>   all     issue_rounded 3120     394 12.63  349    11.19
 #>   all      basis_fossil 3120      16  0.51   11     0.35
-#>   all             (any) 3120     745 23.88
+#>   all             (any) 3120     743 23.81
 ```
 
 For each test of the rule, `flagged` is the number of records carrying
@@ -212,8 +212,8 @@ rules <- list(strict = tests,
 s <- summary(f, rules = rules)
 s[s$test == "(any)", c("rule", "n", "flagged", "pct")]
 #>               rule    n flagged   pct
-#>             strict 3120     745 23.88
-#>  coordinatecleaner 3120     274  8.78
+#>             strict 3120     743 23.81
+#>  coordinatecleaner 3120     272  8.72
 #>            minimal 3120     106  3.40
 ```
 
@@ -250,9 +250,9 @@ s[s$test %in% c("capital", "sea", "(any)"), ]
 #>  Animalia coordinatecleaner capital 1770      92 5.20   83     4.69
 #>  Animalia coordinatecleaner     sea 1770      64 3.62   36     2.03
 #>  Animalia coordinatecleaner   (any) 1770     156 8.81              
-#>     Fungi coordinatecleaner capital  311      20 6.43   18     5.79
+#>     Fungi coordinatecleaner capital  311      18 5.79   16     5.14
 #>     Fungi coordinatecleaner     sea  311       6 1.93    3     0.96
-#>     Fungi coordinatecleaner   (any)  311      26 8.36              
+#>     Fungi coordinatecleaner   (any)  311      24 7.72              
 #>   Plantae coordinatecleaner capital 1039      55 5.29   52     5.00
 #>   Plantae coordinatecleaner     sea 1039      36 3.46   23     2.21
 #>   Plantae coordinatecleaner   (any) 1039      92 8.85
@@ -300,7 +300,7 @@ s[s$rule == "strict" & s$test %in% c("issue_rounded", "(any)"),
 #>  1970-2000 issue_rounded  867  3.11
 #>  1970-2000         (any)  867 15.80
 #>     >=2000 issue_rounded 1161  3.19
-#>     >=2000         (any) 1161 15.76
+#>     >=2000         (any) 1161 15.59
 ```
 
 The higher `issue_rounded` share before 1970 reproduces the rate the
@@ -332,9 +332,9 @@ s[s$test %in% c("issue_rounded", "(any)"),
   c("coordinateUncertaintyInMeters_bin", "test", "n", "pct")]
 #>  coordinateUncertaintyInMeters_bin          test    n   pct
 #>                               <100 issue_rounded 1203  2.66
-#>                               <100         (any) 1203 15.05
+#>                               <100         (any) 1203 14.96
 #>                           100-1000 issue_rounded  544  9.38
-#>                           100-1000         (any)  544 21.69
+#>                           100-1000         (any)  544 21.51
 #>                         1000-10000 issue_rounded  645 30.08
 #>                         1000-10000         (any)  645 39.53
 #>                            >=10000 issue_rounded  102 27.45
@@ -396,7 +396,7 @@ least one test of the rule.
 
 clean <- keep_unflagged(f, rules$coordinatecleaner)
 nrow(clean)
-#> [1] 2846
+#> [1] 2848
 ```
 
 A cut on record age or coordinate uncertainty is a filter on the raw
@@ -409,7 +409,7 @@ most 10 km or not stated:
 u <- clean$coordinateUncertaintyInMeters
 keep <- !is.na(clean$year) & clean$year >= 1950 & (is.na(u) | u <= 10000)
 sum(keep)
-#> [1] 2143
+#> [1] 2145
 ```
 
 The removed records keep their flags. Another rule built from the tests

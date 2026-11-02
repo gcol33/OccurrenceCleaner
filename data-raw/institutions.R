@@ -127,6 +127,11 @@ gn_cities <- gn_read(unz(gn_get("cities500.zip"), "cities500.txt"))
 wp_gn_files <- file.path(cache, paste0("geonames_", c("countryInfo.txt", "admin1CodesASCII.txt", "cities500.zip")))
 
 ascii_key <- function(x) trimws(tolower(gsub("[^A-Za-z0-9]+", " ", iconv(x, "UTF-8", "ASCII//TRANSLIT", sub = ""))))
+# Words of place names: GeoNames towns of 1,000 people or more, countries and
+# first-level divisions. Two institution names that share only such words
+# ("Oxford Zoo", "University of Oxford") share a town, not an institution.
+place_words <- setdiff(unique(unlist(strsplit(ascii_key(c(gn_cities$V3[as.numeric(gn_cities$V15) >= 1000],
+                                                          gn_country$V5, gn_admin1$V3)), " "))), "")
 gn_alt <- strsplit(ifelse(is.na(gn_cities$V4), "", gn_cities$V4), ",", fixed = TRUE)
 gn_row <- c(seq_len(nrow(gn_cities)), seq_len(nrow(gn_cities)), rep(seq_len(nrow(gn_cities)), lengths(gn_alt)))
 gn_index <- data.frame(key = paste(gn_cities$V9[gn_row],
@@ -464,8 +469,6 @@ wp_town <- function(e) {
   }
   NULL
 }
-km <- function(a, b) 6371.0088 * 2 * asin(sqrt(sin((b[2] - a[2]) * pi / 360)^2 +
-  cos(a[2] * pi / 180) * cos(b[2] * pi / 180) * sin((b[1] - a[1]) * pi / 360)^2))
 
 # A museum matched by name is taken when the entry names no town, or names
 # one within 25 km of it; branches of a museum are listed under the branch's
@@ -479,7 +482,7 @@ wp_located <- do.call(rbind, lapply(wpl, function(e) {
     town <- wp_town(e)
     qn <- if (is.na(q) && !is.na(e$iso2)) wp_by_name(e) else NA_character_
     xn <- wp_point(qn)
-    if (!is.null(xn) && (is.null(town) || km(xn, town$xy) <= 25)) {
+    if (!is.null(xn) && (is.null(town) || km_to(xn[1], xn[2], town$xy[1], town$xy[2]) <= 25)) {
       q <- qn; xy <- xn; how <- "museum by name"
     } else if (!is.null(town)) {
       xy <- town$xy; how <- town$how; place <- town$place
@@ -676,8 +679,7 @@ known <- rbind(
 known <- known[!is.na(known$name) & nzchar(known$name), ]
 cc_open <- cc[!paste(cc$iso2, ascii_key(cc$name)) %in% paste(known$iso2, ascii_key(known$name)), ]
 
-nearest <- function(lon, lat, x, y) which.min(6371.0088 * 2 * asin(sqrt(sin((y - lat) * pi / 360)^2 +
-  cos(lat * pi / 180) * cos(y * pi / 180) * sin((x - lon) * pi / 360)^2)))
+nearest <- function(lon, lat, x, y) which.min(km_to(lon, lat, x, y))
 
 # Wikidata: items whose label or alias in English is the full name or its
 # part before the first comma, located in the country.
@@ -739,8 +741,6 @@ nominatim <- function(q, iso2) {
 name_stop <- c("the", "of", "and", "de", "la", "del", "des", "du", "di", "der", "und", "e", "y", "et", "for", "at",
                "in", "d", "l", "")
 name_words <- function(s) setdiff(strsplit(ascii_key(s), " ")[[1]], name_stop)
-km_to <- function(lon, lat, x, y) 6371.0088 * 2 * asin(sqrt(sin((y - lat) * pi / 360)^2 +
-  cos(lat * pi / 180) * cos(y * pi / 180) * sin((x - lon) * pi / 360)^2))
 cc_osm <- function(r) {
   city <- if (is.na(r$city) || grepl("\032", r$city, useBytes = TRUE)) NA_character_ else r$city
   qs <- unique(na.omit(c(paste_some(r$query, city), r$query, paste_some(r$first, city))))
@@ -885,8 +885,13 @@ rownames(osm) <- NULL
 # (a word that is not a generic word for an institution, a field or a place
 # rank) occurs in CoordinateCleaner's name, and its distinctive words cover at
 # least half of those of CoordinateCleaner's name; a name of generic words only
-# has to equal the part before the first comma. Of several such features the
-# one sharing most words wins, then the one nearest CoordinateCleaner's point.
+# has to equal the part before the first comma. When the distinctive words the
+# two names share are all place words, and both names say what kind of
+# institution they are (university, museum, garden, zoo, herbarium, institute),
+# the kinds must agree (kind_ok), so that "Oxford Zoo" and "University of
+# Oxford" are not a match; a herbarium may sit inside a university, museum,
+# garden or institute. Of several such features the one sharing most words
+# wins, then the one nearest CoordinateCleaner's point.
 generic_words <- c(
   "university", "universidad", "universidade", "universite", "universita", "universitat", "universiteit",
   "uniwersytet", "univ", "college", "colegio", "faculty", "facultad", "faculdade", "school", "escuela", "national",
@@ -901,6 +906,28 @@ generic_words <- c(
   "forestry", "fisheries", "marine", "biology", "biological", "biologia", "botany", "zoology", "geology", "society",
   "foundation", "fundacion", "campus", "city", "municipal", "regional", "provincial", "academy", "academia",
   "royal", "ministry", "public", "park", "parque", "parc", "i", "ii", "iii")
+kind_words <- list(
+  university = c("university", "universidad", "universidade", "universite", "universita", "universitat", "universiteit",
+                 "uniwersytet", "uniwersytetu", "univ", "college", "colegio", "faculty", "facultad", "faculdade",
+                 "school", "escuela", "campus", "universitaet", "hochschule", "politecnico", "polytechnic"),
+  museum = c("museum", "museo", "musee", "museu", "muzeum", "museet", "naturkunde"),
+  garden = c("botanical", "botanic", "botanico", "botanique", "botanischer", "botanicka", "botaniczny", "garden",
+             "gardens", "jardin", "jardim", "giardino", "garten", "hortus", "arboretum", "arboreto", "zahrada", "ogrod"),
+  zoo = c("zoo", "zoological", "zoologico", "zoologique", "zoologischer", "aquarium", "tierpark", "wildpark",
+          "dierenpark", "zoopark", "safari"),
+  herbarium = c("herbarium", "herbario", "herbier", "herbar"),
+  institute = c("institute", "institut", "instituto", "istituto", "research", "laboratory", "laboratorio",
+                "laboratoire", "lab", "academy", "academia", "ministry", "station", "estacion"))
+kind_of <- function(w) names(kind_words)[vapply(kind_words, function(k) any(w %in% k), logical(1))]
+kinds_agree <- function(kq, kf) {
+  if (!length(kq) || !length(kf) || length(intersect(kq, kf))) return(TRUE)
+  host <- c("university", "museum", "garden", "institute")
+  ("herbarium" %in% kq && any(kf %in% host)) || ("herbarium" %in% kf && any(kq %in% host))
+}
+kind_ok <- function(w1, w2) {
+  shared <- setdiff(intersect(w1, w2), generic_words)
+  (length(shared) && !all(shared %in% place_words)) || kinds_agree(kind_of(w1), kind_of(w2))
+}
 osm_names <- strsplit(osm$names, "|", fixed = TRUE)
 osm_flat <- lapply(strsplit(ascii_key(unlist(osm_names)), " ", fixed = TRUE), setdiff, name_stop)
 osm_words <- split(osm_flat, rep(seq_len(nrow(osm)), lengths(osm_names)))
@@ -923,7 +950,7 @@ osm_match <- function(r) {
   score <- vapply(f, function(j) max(vapply(osm_words[[j]], function(wf) {
     df <- setdiff(wf, generic_words)
     ok <- if (length(df)) all(df %in% wq) && mean(dq %in% df) >= 0.5 else length(wf) && setequal(wf, wfirst)
-    if (ok) sum(wf %in% wq) else 0
+    if (ok && kind_ok(wq, wf)) sum(wf %in% wq) else 0
   }, numeric(1))), numeric(1))
   if (max(score) == 0) return(NA_integer_)
   best <- f[score == max(score)]
@@ -978,13 +1005,25 @@ institutions <- institutions[!ext_dup, ]
 # within 300 m, or within 200 m of the extent of the OpenStreetMap feature of
 # that name (not counted for points taken from OpenStreetMap); for every other
 # point, a Google Maps place of its name, searched with its city and country,
-# within 300 m, or the same OpenStreetMap test (`cc_row` empty).
+# within 300 m, or the same OpenStreetMap test (`cc_row` empty). A Google Maps
+# place counts only under the kind rule of the OpenStreetMap match (kind_ok
+# above), so "Durban Museum" is not confirmed by Durban Botanic Gardens. A
+# check on coordinates no longer in the table (a point the
+# OpenStreetMap match no longer adds, or adds at another feature) is not used.
 checks <- read.csv("data-raw/institution_checks.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 from_osm <- startsWith(institutions$key, "osm:") | grepl("OpenStreetMap", institutions$master_source)
 at <- paste(institutions$lon, institutions$lat)
-ok_google <- at %in% with(checks[checks$check == "Google Maps place of that name", ], paste(lon, lat))
+stale <- !paste(checks$lon, checks$lat) %in% at
+cat("checks on coordinates no longer in the table:", sum(stale), "rows,",
+    length(unique(paste(checks$lon, checks$lat)[stale])), "points\n")
+checks <- checks[!stale, ]
+names_at <- split(institutions$name, at)
+g_chk <- checks[checks$check == "Google Maps place of that name", ]
+g_kind <- mapply(function(p, ev) any(vapply(names_at[[p]], function(n) kind_ok(name_words(n), name_words(ev)),
+                                             logical(1))), paste(g_chk$lon, g_chk$lat), g_chk$evidence)
+cat("Google checks whose kind of institution disagrees with the point's name:", sum(!g_kind), "\n")
+ok_google <- at %in% with(g_chk[g_kind, ], paste(lon, lat))
 ok_osm <- at %in% with(checks[checks$check == "OpenStreetMap feature of that name", ], paste(lon, lat)) & !from_osm
-stopifnot(all(paste(checks$lon, checks$lat) %in% at))
 institutions$status <- ifelse(ok_google | ok_osm, "confirmed", "unconfirmed")
 institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenStreetMap feature of that name",
                          ifelse(ok_google, "Google Maps place of that name",
@@ -1086,11 +1125,11 @@ meta <- rbind(
              licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
                                                            "institutions; overrides and checks by Google Maps and OpenStreetMap"),
-             file = "institution_overrides.csv, institution_checks.csv", version = "2026-10-27",
+             file = "institution_overrides.csv, institution_checks.csv", version = "2026-11-02",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
                             sep = ", "),
-             retrieved = "2026-10-27", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+             retrieved = "2026-11-02", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")

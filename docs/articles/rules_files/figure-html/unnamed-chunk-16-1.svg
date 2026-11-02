@@ -1828,6 +1828,7 @@
 <circle cx='306.01' cy='125.58' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='255.26' cy='116.99' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='295.10' cy='82.51' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
+<circle cx='264.90' cy='114.33' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='316.03' cy='129.22' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='315.46' cy='90.08' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='309.96' cy='141.46' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
@@ -1922,6 +1923,7 @@
 <circle cx='239.98' cy='93.73' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='241.99' cy='120.93' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='297.67' cy='101.22' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
+<circle cx='330.79' cy='123.26' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='304.26' cy='141.84' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='323.13' cy='142.48' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
 <circle cx='310.34' cy='128.42' r='1.89' style='stroke-width: 0.75; stroke: none; fill: #5C6166; fill-opacity: 0.60;' />
@@ -3063,7 +3065,6 @@
 <circle cx='294.40' cy='119.27' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='299.18' cy='82.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='247.11' cy='280.00' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
-<circle cx='264.90' cy='114.33' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='283.17' cy='140.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='186.02' cy='98.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.41' cy='145.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
@@ -3074,7 +3075,6 @@
 <circle cx='294.40' cy='119.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.40' cy='145.31' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='283.20' cy='140.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
-<circle cx='330.79' cy='123.26' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='236.41' cy='145.28' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='247.11' cy='280.00' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
 <circle cx='294.40' cy='119.28' r='2.21' style='stroke-width: 0.75; stroke: none; fill: #B5342B; fill-opacity: 0.80;' />
@@ -3192,7 +3192,7 @@
 <text x='42.00' y='151.66' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>40</text>
 <text x='42.00' y='84.98' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>60</text>
 <polygon points='58.80,309.60 451.20,309.60 451.20,50.40 58.80,50.40 ' style='stroke-width: 0.75; stroke: #5C6166;' />
-<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 274 of 3,120 records removed</text>
+<text x='234.00' y='26.88' text-anchor='middle' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>rule coordinatecleaner: 272 of 3,120 records removed</text>
 </g>
 <g clip-path='url(#cpNTguODB8NDUxLjIwfDUwLjQwfDMwOS42MA==)'>
 <circle cx='71.40' cy='276.00' r='3.15' style='stroke-width: 0.75; stroke: none; fill: #5C6166;' />

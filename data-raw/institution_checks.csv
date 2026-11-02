@@ -195,7 +195,6 @@
 -123.802181,49.486583,"Google Maps place of that name","Sunshine Coast Botanical Garden Society",246,8393
 -123.802181,49.486583,"OpenStreetMap feature of that name","osm:way/1098247808",6,8393
 -123.658976,42.141164,"Google Maps place of that name","Great Cats World Park",106,NA
--123.477595,48.439643,"OpenStreetMap feature of that name","osm:relation/2379502",0,NA
 -123.46908,48.56509,"Google Maps place of that name","The Butchart Gardens",203,NA
 -123.426,43.1417,"Google Maps place of that name","Wildlife Safari",153,NA
 -123.426,43.1417,"OpenStreetMap feature of that name","osm:way/469267605",0,NA
@@ -348,7 +347,6 @@
 -122.686121,45.5118121,"OpenStreetMap feature of that name","osm:relation/4677878",0,7199
 -122.686121,45.5118121,"OpenStreetMap feature of that name","osm:relation/4677878",0,7200
 -122.6861,45.5131,"OpenStreetMap feature of that name","osm:relation/4677878",0,NA
--122.686,37.9094,"OpenStreetMap feature of that name","osm:way/966229122",114,NA
 -122.67339855,38.341062,"Google Maps place of that name","Sonoma State University",167,8091
 -122.67339855,38.341062,"Google Maps place of that name","Sonoma State University",167,8090
 -122.67339855,38.341062,"Google Maps place of that name","Sonoma State University",167,8092
@@ -719,7 +717,6 @@
 -119.7728,39.5312,"Google Maps place of that name","Nevada Department of Agriculture",62,6518
 -119.7728,39.5312,"Google Maps place of that name","Nevada Department of Agriculture",62,6520
 -119.767,39.1665,"Google Maps place of that name","Nevada State Museum, Carson City",159,NA
--119.74525,36.81275,"OpenStreetMap feature of that name","osm:way/44175866",0,NA
 -119.7438,36.8136,"Google Maps place of that name","California State University, Fresno",212,NA
 -119.7438,36.8136,"OpenStreetMap feature of that name","osm:way/44175866",0,NA
 -119.74354,36.81218,"Google Maps place of that name","California State University, Fresno",288,NA
@@ -787,7 +784,6 @@
 -118.77272,36.564723,"OpenStreetMap feature of that name","osm:way/229138120",0,NA
 -118.593,34.1113,"Google Maps place of that name","Will Geer Theatricum Botanicum",52,NA
 -118.5827,34.1856,"OpenStreetMap feature of that name","osm:way/621618238",0,7119
--118.528638,34.235638,"OpenStreetMap feature of that name","osm:relation/6997624",0,NA
 -118.5286363,34.24546525,"OpenStreetMap feature of that name","osm:relation/6997624",0,1070
 -118.527,34.2362,"OpenStreetMap feature of that name","osm:relation/6997624",0,NA
 -118.527,34.2389,"OpenStreetMap feature of that name","osm:relation/6997624",0,NA
@@ -1234,10 +1230,7 @@
 -112.457,34.5456,"OpenStreetMap feature of that name","osm:way/1153355609",0,NA
 -112.434286,42.861261,"Google Maps place of that name","Idaho Museum of Natural History",122,NA
 -112.434286,42.861261,"OpenStreetMap feature of that name","osm:relation/6205902",0,NA
--112.434,42.8613,"OpenStreetMap feature of that name","osm:relation/6205902",0,NA
 -112.4337,42.86032,"Google Maps place of that name","Idaho Museum of Natural History",11,3449
--112.4337,42.86032,"OpenStreetMap feature of that name","osm:relation/6205902",0,3449
--112.433,42.8669,"OpenStreetMap feature of that name","osm:relation/6205902",0,NA
 -112.4313,42.8603,"Google Maps place of that name","Idaho Museum of Natural History",201,3451
 -112.4313,42.8603,"OpenStreetMap feature of that name","osm:relation/6205902",0,3451
 -112.422,42.8427,"Google Maps place of that name","Zoo Idaho",43,NA
@@ -1298,7 +1291,6 @@
 -111.85035,40.76454,"OpenStreetMap feature of that name","osm:way/238655718",0,10800
 -111.847222222,41.719444444,"Google Maps place of that name","Zootah",75,NA
 -111.847222222,41.719444444,"OpenStreetMap feature of that name","osm:way/36003988",0,NA
--111.84,40.77,"OpenStreetMap feature of that name","osm:way/238655718",0,NA
 -111.834,33.4162,"Google Maps place of that name","Arizona Museum of Natural History",55,NA
 -111.834,33.4162,"OpenStreetMap feature of that name","osm:way/134180156",9,NA
 -111.82495,40.76281,"Google Maps place of that name","Natural History Museum of Utah",240,10801
@@ -1380,7 +1372,6 @@
 -111.051,45.6679,"OpenStreetMap feature of that name","osm:way/312833325",0,NA
 -111.05085,45.66756,"Google Maps place of that name","Montana State University",294,NA
 -111.05085,45.66756,"OpenStreetMap feature of that name","osm:way/312833325",0,NA
--111.05,45.6683,"OpenStreetMap feature of that name","osm:way/312833325",0,NA
 -111.0456145,45.6587077,"Google Maps place of that name","Museum of the Rockies",39,5953
 -111.0456145,45.6587077,"OpenStreetMap feature of that name","osm:way/1008294436",0,5953
 -110.987222222,32.213611111,"Google Maps place of that name","Mission Garden",129,NA
@@ -1443,7 +1434,7 @@
 -109.0734262,44.5243412,"Google Maps place of that name","Buffalo Bill Center of the West",75,956
 -109.0734262,44.5243412,"OpenStreetMap feature of that name","osm:node/10914707559",0,956
 -109.051,35.6642,"Google Maps place of that name","Navajo Nation Zoo",285,NA
--109.051,35.6642,"OpenStreetMap feature of that name","osm:way/128839013",0,NA
+-109.051,35.6642,"OpenStreetMap feature of that name","osm:way/280078749",73,NA
 -109.04972,35.6647,"Google Maps place of that name","Navajo Nation Zoo",178,NA
 -109.04972,35.6647,"OpenStreetMap feature of that name","osm:way/280078749",0,NA
 -109.0072,25.7891,"Google Maps place of that name","Centro de educación ambiental del JBBFJ",143,NA
@@ -1725,7 +1716,6 @@
 -104.602,50.4633,"OpenStreetMap feature of that name","osm:node/13151973888",87,NA
 -104.59229,50.41855,"OpenStreetMap feature of that name","osm:way/155526740",0,10605
 -104.5868578,50.4149561,"Google Maps place of that name","University of Regina",86,7375
--104.5868578,50.4149561,"OpenStreetMap feature of that name","osm:way/155526740",0,7375
 -104.5811,38.3039,"OpenStreetMap feature of that name","osm:way/967849741",0,NA
 -104.578471,38.307517,"Google Maps place of that name","Colorado State University Pueblo",234,1668
 -104.578471,38.307517,"Google Maps place of that name","Colorado State University Pueblo",234,1669
@@ -1767,7 +1757,6 @@
 -103.5149,20.7471,"Google Maps place of that name","Centro Universitario de Ciencias Biológicas y Agropecuarias (CUCBA)",255,NA
 -103.5148,20.7475,"Google Maps place of that name","Laboratorio de Ecosistemas Marinos y Acuicultura",6,NA
 -103.5133,20.7477,"Google Maps place of that name","Centro Universitario de Ciencias Biológicas y Agropecuarias (CUCBA)",235,NA
--103.5133,20.7477,"OpenStreetMap feature of that name","osm:node/3802568321",60,NA
 -103.5129,20.747,"Google Maps place of that name","Departamento de Madera, Celulosa y Papel",49,NA
 -103.5016,25.5885,"Google Maps place of that name","Facultad de Ciencias Biológicas Universidad Juárez del Estado de Durango",266,NA
 -103.501564,25.588549,"Google Maps place of that name","Facultad de Ciencias Biológicas Universidad Juárez del Estado de Durango",272,NA
@@ -1960,7 +1949,6 @@
 -99.19410824,19.32052914,"OpenStreetMap feature of that name","osm:way/26531801",0,4162
 -99.19410824,19.32052914,"OpenStreetMap feature of that name","osm:way/26531801",0,9255
 -99.194066664,19.32081293,"Google Maps place of that name","Herbario Nacional de México",7,NA
--99.1924,19.3216,"OpenStreetMap feature of that name","osm:way/26531801",0,NA
 -99.1918,19.6933,"OpenStreetMap feature of that name","osm:relation/12323197",0,NA
 -99.18921667,19.42391944,"Google Maps place of that name","Chapultepec Zoo",85,NA
 -99.18921667,19.42391944,"OpenStreetMap feature of that name","osm:way/189976015",0,NA
@@ -1986,7 +1974,6 @@
 -99.1802,19.324,"Google Maps place of that name","UNAM - Facultad De Ciencias",114,2523
 -99.1802,19.324,"OpenStreetMap feature of that name","osm:way/731810779",0,2523
 -99.1802,19.324,"OpenStreetMap feature of that name","osm:way/26531801",0,5518
--99.1802,19.324,"OpenStreetMap feature of that name","osm:way/26531801",0,5523
 -99.1802,19.324,"OpenStreetMap feature of that name","osm:way/26531801",0,9250
 -99.1802,19.324,"OpenStreetMap feature of that name","osm:way/26531801",0,9252
 -99.1802,19.3245,"Google Maps place of that name","UNAM - Facultad De Ciencias",136,NA
@@ -2144,7 +2131,6 @@
 -97.739388,30.286183,"Google Maps place of that name","UTEX Culture Collection of Algae",126,1832
 -97.739388,30.286183,"OpenStreetMap feature of that name","osm:relation/1701848",0,10723
 -97.739388,30.286183,"OpenStreetMap feature of that name","osm:relation/1701848",0,10725
--97.73915995,30.2802916,"OpenStreetMap feature of that name","osm:way/27397820",0,8549
 -97.7383,30.2875,"Google Maps place of that name","UTEX Culture Collection of Algae",140,NA
 -97.7339352,30.2851494,"Google Maps place of that name","The University of Texas at Austin",42,10720
 -97.7339352,30.2851494,"Google Maps place of that name","The University of Texas at Austin",42,10722
@@ -2193,7 +2179,6 @@
 -97.44919,35.19445,"Google Maps place of that name","Sam Noble Oklahoma Museum of Natural History",18,6812
 -97.44919,35.19445,"Google Maps place of that name","Sam Noble Oklahoma Museum of Natural History",18,7663
 -97.44919,35.19445,"Google Maps place of that name","Sam Noble Oklahoma Museum of Natural History",18,6807
--97.44919,35.19445,"OpenStreetMap feature of that name","osm:way/392003756",0,6807
 -97.44919,35.19445,"OpenStreetMap feature of that name","osm:way/392003756",0,6812
 -97.44919,35.19445,"OpenStreetMap feature of that name","osm:way/183891412",0,7663
 -97.44919,35.19445,"OpenStreetMap feature of that name","osm:way/392003756",0,8149
@@ -2294,7 +2279,6 @@
 -97.1139,31.5472,"OpenStreetMap feature of that name","osm:way/163627351",0,8350
 -97.11275,32.72881,"Google Maps place of that name","The University of Texas at Arlington",233,NA
 -97.11275,32.72881,"OpenStreetMap feature of that name","osm:way/445352238",0,NA
--97.1026,36.1207,"OpenStreetMap feature of that name","osm:way/209631175",0,NA
 -97.0836829,32.937813,"Google Maps place of that name","Grapevine Botanical Garden at Heritage Park",6,NA
 -97.0836829,32.937813,"OpenStreetMap feature of that name","osm:node/10956637214",34,NA
 -97.0823,47.9222,"OpenStreetMap feature of that name","osm:relation/12482514",0,NA
@@ -2351,7 +2335,6 @@
 -96.80211,46.89285,"OpenStreetMap feature of that name","osm:way/163840024",0,6631
 -96.80211,46.89285,"OpenStreetMap feature of that name","osm:way/163840024",0,6632
 -96.7998505,33.8820666,"Google Maps place of that name","University of Oklahoma Biological Station",0,NA
--96.798388,44.311357,"OpenStreetMap feature of that name","osm:relation/13120925",20,NA
 -96.7813162,32.842018,"OpenStreetMap feature of that name","osm:way/30894474",0,7957
 -96.7813162,32.842018,"OpenStreetMap feature of that name","osm:way/30894474",0,8167
 -96.77822,44.32277,"OpenStreetMap feature of that name","osm:relation/13120925",0,8129
@@ -2359,7 +2342,6 @@
 -96.771,46.8648,"Google Maps place of that name","Concordia College",233,NA
 -96.771,46.8648,"OpenStreetMap feature of that name","osm:way/132357134",0,NA
 -96.7699,44.3129,"Google Maps place of that name","McCrory Gardens",258,NA
--96.7699,44.3129,"OpenStreetMap feature of that name","osm:relation/13120925",0,NA
 -96.7686,46.86387,"Google Maps place of that name","Concordia College",162,NA
 -96.7648,43.5374,"Google Maps place of that name","Great Plains Zoo",265,NA
 -96.7648,43.5374,"OpenStreetMap feature of that name","osm:way/302349339",0,NA
@@ -2436,7 +2418,6 @@
 -96.0105966,41.25777005,"OpenStreetMap feature of that name","osm:way/185570716",0,10462
 -96.0051,41.2596,"OpenStreetMap feature of that name","osm:way/185570716",4,10463
 -95.9891,30.0874,"OpenStreetMap feature of that name","osm:way/452801963",38,NA
--95.988956,30.087885,"OpenStreetMap feature of that name","osm:way/452801963",0,NA
 -95.98773,30.09327,"OpenStreetMap feature of that name","osm:way/452801963",0,7213
 -95.975626,36.130758,"Google Maps place of that name","Tulsa Garden Center at Woodward Park",198,NA
 -95.9572,36.0195,"Google Maps place of that name","Oklahoma Aquarium",45,NA
@@ -2708,7 +2689,6 @@
 -93.12237194,16.775915,"Google Maps place of that name","University of Science and Arts of Chiapas",118,NA
 -93.1212,16.7758,"Google Maps place of that name","University of Science and Arts of Chiapas",47,NA
 -93.107,16.758,"Google Maps place of that name","Jardín Botánico Faustino Miranda",32,NA
--93.1067827,16.7599401,"OpenStreetMap feature of that name","osm:node/4580624568",0,9044
 -93.099,31.7482,"Google Maps place of that name","Northwestern State University",137,6687
 -93.099,31.7482,"Google Maps place of that name","Northwestern State University",137,6686
 -93.099,31.7482,"OpenStreetMap feature of that name","osm:way/189192304",0,6686
@@ -2968,7 +2948,6 @@
 -90.2905,38.6355,"OpenStreetMap feature of that name","osm:relation/20254181",0,NA
 -90.286,30.629,"Google Maps place of that name","Global Wildlife Center",64,NA
 -90.286,30.629,"OpenStreetMap feature of that name","osm:way/908929394",0,NA
--90.285805,38.6451593,"OpenStreetMap feature of that name","osm:relation/20071806",0,6672
 -90.2619,38.6101,"Google Maps place of that name","Seiwa-en",7,NA
 -90.2596,38.6133,"Google Maps place of that name","Missouri Botanical Garden",62,5198
 -90.2596,38.6133,"Google Maps place of that name","Missouri Botanical Garden",62,5196
@@ -3010,7 +2989,6 @@
 -90.0969,29.9874,"OpenStreetMap feature of that name","osm:way/591049489",0,NA
 -90.0744,32.4493,"Google Maps place of that name","Simmons Arboretum",111,NA
 -90.0655923,30.02838885,"Google Maps place of that name","LSU New Orleans",101,6548
--90.0655923,30.02838885,"OpenStreetMap feature of that name","osm:way/38499519",0,6548
 -90.0655923,30.02838885,"OpenStreetMap feature of that name","osm:way/38499519",0,10486
 -90.064,29.95,"Google Maps place of that name","Audubon Insectarium",94,NA
 -90.064,29.95,"OpenStreetMap feature of that name","osm:node/9588493777",165,NA
@@ -3151,7 +3129,6 @@
 -88.991439,40.510795,"OpenStreetMap feature of that name","osm:relation/11664205",0,3467
 -88.991439,40.510795,"OpenStreetMap feature of that name","osm:relation/11664205",0,3468
 -88.991439,40.510795,"OpenStreetMap feature of that name","osm:relation/11664205",0,6608
--88.99138889,40.50972222,"OpenStreetMap feature of that name","osm:relation/11664205",0,NA
 -88.988611111,40.512222222,"OpenStreetMap feature of that name","osm:relation/11664205",0,NA
 -88.98855,40.50995,"OpenStreetMap feature of that name","osm:relation/11664205",0,NA
 -88.9092899,47.9958654,"Google Maps place of that name","Isle Royale National Park",0,4028
@@ -3260,7 +3237,6 @@
 -87.961828,42.24717,"Google Maps place of that name","Century Park Arboretum",170,NA
 -87.946,43.0264,"Google Maps place of that name","Mitchell Park Domes Horticulture Conservatory",6,NA
 -87.944832,41.89594,"Google Maps place of that name","Elmhurst University",215,NA
--87.944832,41.89594,"OpenStreetMap feature of that name","osm:way/186595095",0,NA
 -87.944,41.8948,"Google Maps place of that name","Wilder Park Conservatory",21,NA
 -87.944,41.8948,"OpenStreetMap feature of that name","osm:relation/8039166",1,NA
 -87.943834,43.026236,"Google Maps place of that name","Mitchell Park Domes Horticulture Conservatory",173,NA
@@ -3338,7 +3314,6 @@
 -87.633888888,41.921388888,"Google Maps place of that name","Lincoln Park Zoo",40,NA
 -87.633888888,41.921388888,"OpenStreetMap feature of that name","osm:relation/5328430",0,NA
 -87.6338,41.9262,"Google Maps place of that name","Chicago Academy of Sciences",132,NA
--87.63152085,41.91199075,"OpenStreetMap feature of that name","osm:way/23987046",0,1424
 -87.62716,41.83593,"Google Maps place of that name","Illinois Institute of Technology",132,NA
 -87.62716,41.83593,"OpenStreetMap feature of that name","osm:relation/21277281",0,NA
 -87.6185,41.865,"Google Maps place of that name","Field Museum",188,NA
@@ -3433,12 +3408,8 @@
 -86.7796,33.4874,"Google Maps place of that name","Birmingham Zoo",43,NA
 -86.7796,33.4874,"OpenStreetMap feature of that name","osm:way/129478062",0,NA
 -86.7745,33.4917,"Google Maps place of that name","Birmingham Botanical Gardens",2,NA
--86.7745,33.4917,"OpenStreetMap feature of that name","osm:way/129478062",147,NA
--86.7744,33.4862,"OpenStreetMap feature of that name","osm:way/129478062",46,NA
 -86.774363,33.489072,"Google Maps place of that name","Birmingham Botanical Gardens",294,684
 -86.774363,33.489072,"Google Maps place of that name","Birmingham Botanical Gardens",294,686
--86.774363,33.489072,"OpenStreetMap feature of that name","osm:way/129478062",49,684
--86.774363,33.489072,"OpenStreetMap feature of that name","osm:way/129478062",49,686
 -86.74245,36.08931,"Google Maps place of that name","Nashville Zoo at Grassmere",21,NA
 -86.733432,36.08986,"OpenStreetMap feature of that name","osm:way/69796196",0,NA
 -86.6409226,34.72563555,"Google Maps place of that name","University of Alabama Huntsville Bookstore",189,9968
@@ -3725,7 +3696,6 @@
 -84.50521261,38.031393549,"OpenStreetMap feature of that name","osm:relation/4815526",0,10302
 -84.5052,38.0314,"Google Maps place of that name","University of Kentucky",136,NA
 -84.5052,38.0314,"OpenStreetMap feature of that name","osm:relation/4815526",0,NA
--84.505084,38.018505,"OpenStreetMap feature of that name","osm:relation/4815526",0,NA
 -84.503888888,38.014722222,"Google Maps place of that name","The Arboretum, State Botanical Garden of Kentucky",37,NA
 -84.503888888,38.014722222,"OpenStreetMap feature of that name","osm:relation/4815526",0,NA
 -84.5003,39.1296,"Google Maps place of that name","Hauck Botanic Gardens",16,NA
@@ -3807,7 +3777,6 @@
 -84.2957,33.77,"OpenStreetMap feature of that name","osm:node/358710274",170,86
 -84.2944452,33.7688851,"Google Maps place of that name","Agnes Scott College Bullock Science Center",197,87
 -84.2944452,33.7688851,"OpenStreetMap feature of that name","osm:node/358710274",0,87
--84.2937,30.4402,"OpenStreetMap feature of that name","osm:relation/18587875",0,2618
 -84.2937,30.4402,"OpenStreetMap feature of that name","osm:relation/18587875",0,2620
 -84.29188,37.57244,"OpenStreetMap feature of that name","osm:way/1156348407",0,596
 -84.2878,30.4228,"Google Maps place of that name","Florida A&M University",12,NA
@@ -3929,7 +3898,6 @@
 -83.7233,42.2813,"Google Maps place of that name","University of Michigan Nichols Arboretum",262,NA
 -83.7039,37.7932,"Google Maps place of that name","Kentucky Reptile Zoo",5,NA
 -83.7039,37.7932,"OpenStreetMap feature of that name","osm:node/4484835854",5,NA
--83.68677955,22.412916,"OpenStreetMap feature of that name","osm:way/372927149",0,3925
 -83.673587,43.023975,"Google Maps place of that name","Applewood Estate",167,NA
 -83.672738,41.668806,"Google Maps place of that name","Toledo Botanical Garden",276,NA
 -83.6722222,41.6680556,"Google Maps place of that name","Toledo Botanical Garden",188,NA
@@ -3948,7 +3916,6 @@
 -83.5806039,41.619296,"OpenStreetMap feature of that name","osm:relation/6858046",0,NA
 -83.57753,9.47229,"Google Maps place of that name","Cloudbridge Nature Reserve",19,NA
 -83.57473,35.87097,"Google Maps place of that name","Burchfiel Grove and Arboretum",12,NA
--83.52596325,31.48110355,"OpenStreetMap feature of that name","osm:way/825629834",0,2917
 -83.4322783,38.19098405,"Google Maps place of that name","Morehead State University",206,5260
 -83.4322783,38.19098405,"Google Maps place of that name","Morehead State University",206,5259
 -83.4322783,38.19098405,"Google Maps place of that name","Morehead State University",206,5258
@@ -4213,7 +4180,6 @@
 -81.779892,32.424179,"OpenStreetMap feature of that name","osm:relation/6431103",0,NA
 -81.7749785,32.4220715,"OpenStreetMap feature of that name","osm:relation/6431103",2,2919
 -81.7741,32.4209,"Google Maps place of that name","Botanic Garden at Georgia Southern University",27,NA
--81.7741,32.4209,"OpenStreetMap feature of that name","osm:relation/6431103",85,NA
 -81.7734,26.46364,"Google Maps place of that name","Florida Gulf Coast University",78,NA
 -81.7734,26.46364,"OpenStreetMap feature of that name","osm:way/165049342",0,NA
 -81.77258,26.10657,"Google Maps place of that name","Naples Botanical Garden",154,6088
@@ -4224,7 +4190,6 @@
 -81.771408,26.108516,"OpenStreetMap feature of that name","osm:way/498652133",0,6089
 -81.771,26.107,"Google Maps place of that name","Naples Botanical Garden",18,NA
 -81.771,26.107,"OpenStreetMap feature of that name","osm:way/498652133",0,NA
--81.76813695,38.37946905,"OpenStreetMap feature of that name","osm:way/386835483",0,11196
 -81.74938,39.82491,"OpenStreetMap feature of that name","osm:relation/16252963",0,NA
 -81.7493,24.5737,"Google Maps place of that name","Key West Tropical Forest & Botanical Garden",89,NA
 -81.7493,24.5737,"OpenStreetMap feature of that name","osm:way/84902777",0,NA
@@ -4608,7 +4573,6 @@
 -79.936,32.7896,"OpenStreetMap feature of that name","osm:relation/19379717",0,NA
 -79.92555556,32.79111111,"Google Maps place of that name","South Carolina Aquarium",14,NA
 -79.92555556,32.79111111,"OpenStreetMap feature of that name","osm:way/447142912",0,NA
--79.9254923,32.7910735,"OpenStreetMap feature of that name","osm:way/447142912",0,8115
 -79.925491,40.4512758,"OpenStreetMap feature of that name","osm:way/172206707",21,NA
 -79.9234,40.4476,"Google Maps place of that name","Chatham University Arboretum",4,NA
 -79.9234,40.4476,"OpenStreetMap feature of that name","osm:way/172206707",0,NA
@@ -4783,7 +4747,6 @@
 -79.19671,-3.9872,"Google Maps place of that name","Herbario HUTPL",132,NA
 -79.19671,-3.9872,"OpenStreetMap feature of that name","osm:way/37647775",0,NA
 -79.1967,-3.9872,"Google Maps place of that name","Herbario HUTPL",133,NA
--79.1967,-3.9872,"OpenStreetMap feature of that name","osm:way/37647775",0,NA
 -79.1865357,43.7851996,"Google Maps place of that name","University of Toronto Scarborough",77,7742
 -79.1865357,43.7851996,"Google Maps place of that name","University of Toronto Scarborough",77,7741
 -79.1865357,43.7851996,"OpenStreetMap feature of that name","osm:relation/21058560",0,7741
@@ -4891,7 +4854,7 @@
 -78.8536,42.9391,"Google Maps place of that name","The Buffalo Zoo",273,NA
 -78.8536,42.9391,"OpenStreetMap feature of that name","osm:way/24219597",0,NA
 -78.8506629,42.9382314,"Google Maps place of that name","The Buffalo Zoo",145,NA
--78.8506629,42.9382314,"OpenStreetMap feature of that name","osm:relation/14332031",0,NA
+-78.8506629,42.9382314,"OpenStreetMap feature of that name","osm:way/24219597",10,NA
 -78.8438,42.9062,"Google Maps place of that name","Buffalo Museum of Science",18,957
 -78.8438,42.9062,"OpenStreetMap feature of that name","osm:relation/12792676",2,957
 -78.8258,42.8281,"Google Maps place of that name","Buffalo and Erie County Botanical Gardens",8,NA
@@ -5037,7 +5000,6 @@
 -77.9261,33.9626,"OpenStreetMap feature of that name","osm:relation/12856295",0,NA
 -77.8976,34.1262,"Google Maps place of that name","Tregembo Animal Park",130,NA
 -77.8855,21.3922,"Google Maps place of that name","Universidad de Ciencias Pedagógicas José Martí",63,3927
--77.8855,21.3922,"OpenStreetMap feature of that name","osm:relation/20345420",121,21
 -77.878047222,34.2266,"OpenStreetMap feature of that name","osm:relation/7126636",0,NA
 -77.873333333,34.225833333,"OpenStreetMap feature of that name","osm:relation/7126636",0,10506
 -77.87011,34.22805,"OpenStreetMap feature of that name","osm:relation/7126636",0,NA
@@ -5057,7 +5019,6 @@
 -77.862041,40.803706,"Google Maps place of that name","Frost Entomological Museum",83,NA
 -77.862041,40.803706,"OpenStreetMap feature of that name","osm:node/4153603432",88,NA
 -77.861931,-0.949944,"OpenStreetMap feature of that name","osm:node/4150086495",129,NA
--77.8619,-0.9502,"OpenStreetMap feature of that name","osm:node/4150086495",138,NA
 -77.85938,40.813325,"OpenStreetMap feature of that name","osm:relation/14073946",0,NA
 -77.8353,34.2104,"Google Maps place of that name","N.C. Cooperative Extension, New Hanover County Center",12,NA
 -77.829163,34.217777,"Google Maps place of that name","Airlie Gardens",115,NA
@@ -5071,7 +5032,6 @@
 -77.6238,43.2065,"OpenStreetMap feature of that name","osm:way/37609724",0,NA
 -77.623408,43.131855,"Google Maps place of that name","University of Rochester",256,NA
 -77.6151,43.1377,"Google Maps place of that name","Ellwanger Garden",43,NA
--77.5871,43.1529,"OpenStreetMap feature of that name","osm:way/108282587",3,7458
 -77.543068,39.841541,"Google Maps place of that name","Penn State Mont Alto",90,NA
 -77.543068,39.841541,"OpenStreetMap feature of that name","osm:way/434417353",0,NA
 -77.5399,37.5743,"Google Maps place of that name","University of Richmond",170,10609
@@ -5226,7 +5186,6 @@
 -76.7896308,17.9669703,"Google Maps place of that name","Natural History Museum of Jamaica",15,3706
 -76.7896308,17.9669703,"Google Maps place of that name","The Institute of Jamaica",22,3705
 -76.7896308,17.9669703,"Google Maps place of that name","Natural History Museum of Jamaica",15,6392
--76.7896308,17.9669703,"OpenStreetMap feature of that name","osm:way/375253489",14,3705
 -76.7896308,17.9669703,"OpenStreetMap feature of that name","osm:way/375253489",14,3706
 -76.7896308,17.9669703,"OpenStreetMap feature of that name","osm:way/375253489",14,6392
 -76.7895631,17.9671736,"Google Maps place of that name","The Institute of Jamaica",42,NA
@@ -5340,7 +5299,6 @@
 -76.472145,42.449487,"OpenStreetMap feature of that name","osm:relation/11625564",0,1744
 -76.472145,42.449487,"OpenStreetMap feature of that name","osm:relation/11625564",0,1745
 -76.472,42.45,"Google Maps place of that name","Cornell Botanic Gardens",81,NA
--76.472,42.45,"OpenStreetMap feature of that name","osm:relation/11625564",0,NA
 -76.45274,42.44483,"Google Maps place of that name","Cornell University Plant Pathology Herbarium (CUP)",163,NA
 -76.45274,42.44483,"OpenStreetMap feature of that name","osm:way/447300205",137,NA
 -76.45109,42.47999,"Google Maps place of that name","Cornell University Museum of Vertebrates",19,1747
@@ -5528,7 +5486,6 @@
 -75.5756861,6.2603768,"OpenStreetMap feature of that name","osm:node/4781772912",17,NA
 -75.57295,6.24502,"Google Maps place of that name","Secretaría del Medio Ambiente",80,NA
 -75.57261,6.20168,"Google Maps place of that name","Fundacion Grupo Argos",175,NA
--75.571869,6.253615,"OpenStreetMap feature of that name","osm:relation/17863554",0,NA
 -75.56941,6.26706,"Google Maps place of that name","University of Antioquia Museum",38,5481
 -75.56941,6.26706,"OpenStreetMap feature of that name","osm:relation/17863554",0,5481
 -75.569396,6.265304,"Google Maps place of that name","U de A. Facultad de Ciencias Exactas y Naturales",94,9020
@@ -5611,7 +5568,6 @@
 -75.35188,39.906552,"Google Maps place of that name","Scott Arboretum & Gardens",60,NA
 -75.35188,39.906552,"OpenStreetMap feature of that name","osm:relation/552971",0,NA
 -75.34991,39.90206,"OpenStreetMap feature of that name","osm:relation/552971",0,NA
--75.3433,40.037,"OpenStreetMap feature of that name","osm:way/68730290",0,NA
 -75.340909,40.042614,"Google Maps place of that name","Stoneleigh: a natural garden",81,NA
 -75.3406,40.043,"Google Maps place of that name","Stoneleigh: a natural garden",116,NA
 -75.3375,40.1332,"Google Maps place of that name","Elmwood Park Zoo",104,NA
@@ -6319,7 +6275,6 @@
 -71.6254608,-33.0407143,"Google Maps place of that name","Universidad de Valparaíso",30,NA
 -71.62266,-33.0435,"Google Maps place of that name","Subsecretaría de Pesca y Acuicultura",20,NA
 -71.621305555,-33.046611111,"Google Maps place of that name","Valparaíso Natural History Museum",19,NA
--71.61711565,-33.0439271,"OpenStreetMap feature of that name","osm:way/332226726",0,5492
 -71.61711565,-33.0439271,"OpenStreetMap feature of that name","osm:way/332226726",0,10803
 -71.6059,-33.0434,"Google Maps place of that name","Pontifical Catholic University of Valparaíso",169,NA
 -71.6056,-33.0447,"Google Maps place of that name","Pontifical Catholic University of Valparaíso",24,NA
@@ -6346,7 +6301,6 @@
 -71.4265,42.3412,"Google Maps place of that name","Garden in the Woods",62,NA
 -71.4239,41.4896,"Google Maps place of that name","Marine Geological Samples Laboratory",10,NA
 -71.4239,41.4896,"OpenStreetMap feature of that name","osm:way/184978266",0,NA
--71.41718765,41.78856115,"OpenStreetMap feature of that name","osm:way/295190363",0,7479
 -71.4099,41.8259,"Google Maps place of that name","The Edna W. Lawrence Nature Lab at Rhode Island School of Design",197,NA
 -71.4099,41.8259,"OpenStreetMap feature of that name","osm:node/8769619385",194,NA
 -71.408,41.8271,"Google Maps place of that name","Rhode Island School of Design (RISD)",108,NA
@@ -6419,8 +6373,6 @@
 -71.150268,8.627834,"OpenStreetMap feature of that name","osm:node/12240970111",64,NA
 -71.14739855,21.4713343,"Google Maps place of that name","Turks and Caicos National Museum",40,8832
 -71.14739855,21.4713343,"Google Maps place of that name","Turks and Caicos National Museum",40,8833
--71.14739855,21.4713343,"OpenStreetMap feature of that name","osm:way/410322609",0,8832
--71.14739855,21.4713343,"OpenStreetMap feature of that name","osm:way/410322609",0,8833
 -71.14611111,8.63194444,"Google Maps place of that name","Parque Zoológico Chorros de Milla",111,NA
 -71.14551,8.59759,"Google Maps place of that name","Rectorado de la Universidad de Los Andes",29,NA
 -71.144997,8.59833,"Google Maps place of that name","Rectorado de la Universidad de Los Andes",71,NA
@@ -6893,7 +6845,6 @@
 -64.30188889,-33.10977778,"OpenStreetMap feature of that name","osm:way/220018948",0,9300
 -64.30188889,-33.10977778,"OpenStreetMap feature of that name","osm:way/220018948",0,9302
 -64.3004894,-36.5566365,"Google Maps place of that name","Faculty of Agriculture - National University of La Pampa",105,9287
--64.3004894,-36.5566365,"OpenStreetMap feature of that name","osm:node/12740083956",0,2516
 -64.3004894,-36.5566365,"OpenStreetMap feature of that name","osm:node/12740083956",0,9286
 -64.3004894,-36.5566365,"OpenStreetMap feature of that name","osm:node/12740083956",0,9287
 -64.3002,-33.1112,"Google Maps place of that name","Facultad de Ciencias Económicas - Universidad Nacional de Río Cuarto",52,1970
@@ -7015,7 +6966,6 @@
 -60.0465619,-3.1036162,"OpenStreetMap feature of that name","osm:way/1525895538",0,NA
 -60.0129,-3.1349,"Google Maps place of that name","Federal Institute of Education, Science and Technology of Amazonas",38,NA
 -60.01277305,-3.13383075,"Google Maps place of that name","Federal Institute of Education, Science and Technology of Amazonas",83,3847
--60.01277305,-3.13383075,"OpenStreetMap feature of that name","osm:way/719028815",0,3847
 -59.98864,-3.09508,"Google Maps place of that name","INPA - National Institute of Amazonian Research",21,3891
 -59.97698,-3.10082,"Google Maps place of that name","Federal University of Amazonas",81,NA
 -59.976519444,-3.10025,"Google Maps place of that name","Federal University of Amazonas",2,NA
@@ -7073,7 +7023,6 @@
 -58.42,-34.58097222,"OpenStreetMap feature of that name","osm:relation/13880533",0,NA
 -58.419,-34.5828,"Google Maps place of that name","Jardín Botánico Carlos Thays",9,NA
 -58.4186824,-34.5826168,"Google Maps place of that name","Jardín Botánico Carlos Thays",40,5387
--58.418597222,-34.582469444,"OpenStreetMap feature of that name","osm:relation/13880533",119,NA
 -58.4174,-34.583,"Google Maps place of that name","Jardín Botánico Carlos Thays",146,4149
 -58.4174,-34.583,"Google Maps place of that name","Jardin Botanico Carlos Thays",146,4099
 -58.4174,-34.583,"Google Maps place of that name","Jardin Botanico Carlos Thays",146,4098
@@ -7146,7 +7095,6 @@
 -55.946,-31.700111111,"Google Maps place of that name","Zoologico Municipal",55,NA
 -55.89666,-27.4081,"Google Maps place of that name","Jardín Botánico Alberto Roth",61,NA
 -55.4825,-11.8632,"Google Maps place of that name","Federal University of Mato Grosso, Sinop",129,9500
--55.4825,-11.8632,"OpenStreetMap feature of that name","osm:way/544181830",0,9500
 -55.21709,5.81323,"Google Maps place of that name","Anton de Kom University of Suriname",47,10682
 -55.2151,5.815,"Google Maps place of that name","The National Herbarium Of Suriname (BBS)",4,NA
 -55.215083333,5.814944444,"Google Maps place of that name","The National Herbarium Of Suriname (BBS)",2,NA
@@ -7182,7 +7130,6 @@
 -53.4499,-24.9868,"Google Maps place of that name","Universidade Estadual do Oeste do Paraná",126,NA
 -53.4499,-24.9868,"OpenStreetMap feature of that name","osm:way/465447944",0,NA
 -53.098,-25.703,"Google Maps place of that name","UTFPR - Dois Vizinhos",187,9639
--53.098,-25.703,"OpenStreetMap feature of that name","osm:way/556725961",0,9639
 -53.0973507,-25.7042151,"Google Maps place of that name","UTFPR - Dois Vizinhos",55,NA
 -52.7590109,47.5715315,"Google Maps place of that name","Memorial University Botanical Garden",3,5067
 -52.7590109,47.5715315,"OpenStreetMap feature of that name","osm:node/11936384489",0,5067
@@ -7222,7 +7169,6 @@
 -52.16743615,-32.07223545,"OpenStreetMap feature of that name","osm:relation/11515921",0,9437
 -51.9976,-29.4587,"OpenStreetMap feature of that name","osm:relation/15822773",0,NA
 -51.9565,-29.4447,"Google Maps place of that name","Univates",4,1342
--51.9565,-29.4447,"OpenStreetMap feature of that name","osm:node/1561102682",129,1342
 -51.9554481,-29.4439944,"Google Maps place of that name","Univates",131,NA
 -51.9397,-23.4035,"Google Maps place of that name","DBI - Departamento de Biologia",24,9459
 -51.9397,-23.4035,"OpenStreetMap feature of that name","osm:way/131707521",0,9459
@@ -7310,9 +7256,7 @@
 -48.8559,-26.25189,"Google Maps place of that name","Udesc Joinville",166,9383
 -48.7843,-28.4772,"Google Maps place of that name","Universidade do Estado de Santa Catarina - CERES / UDESC",4,NA
 -48.7843,-28.4772,"OpenStreetMap feature of that name","osm:way/573258549",0,NA
--48.6851049,-26.93168945,"OpenStreetMap feature of that name","osm:way/681517229",0,9540
 -48.68294705,-27.62526225,"OpenStreetMap feature of that name","osm:way/215664425",0,9438
--48.6644915,-26.9164996,"OpenStreetMap feature of that name","osm:relation/6698811",0,5738
 -48.6611357,-26.9086036,"Google Maps place of that name","Herbário Barbosa Rodrigues",12,NA
 -48.6611357,-26.9086036,"OpenStreetMap feature of that name","osm:way/1097042548",0,NA
 -48.6562,-27.5526,"Google Maps place of that name","Jardim Botânico de São José",13,NA
@@ -7387,7 +7331,6 @@
 -47.31292,-22.78081,"OpenStreetMap feature of that name","osm:way/342307908",0,3908
 -47.31292,-22.78081,"OpenStreetMap feature of that name","osm:way/342307908",0,3909
 -47.31292,-22.78081,"OpenStreetMap feature of that name","osm:way/342307908",0,3910
--47.31292,-22.78081,"OpenStreetMap feature of that name","osm:way/342307908",0,4114
 -47.31292,-22.78081,"OpenStreetMap feature of that name","osm:way/342307908",0,4134
 -47.078939,-22.874941,"OpenStreetMap feature of that name","osm:way/761868579",0,NA
 -47.070042,-22.8199817,"Google Maps place of that name","Departamento de Biologia Animal- Ecologia e Zoologia",131,1983
@@ -7634,7 +7577,6 @@
 -21.9488,64.1556,"OpenStreetMap feature of that name","osm:way/289048109",0,NA
 -21.9417,64.1493,"Google Maps place of that name","Volcano House, Iceland",73,NA
 -21.87083333,64.13833333,"Google Maps place of that name","Reykjavík Park and Zoo",198,NA
--21.87083333,64.13833333,"OpenStreetMap feature of that name","osm:relation/4663715",104,NA
 -21.869444444,64.140833333,"OpenStreetMap feature of that name","osm:relation/4663715",0,NA
 -18.11935,65.68489,"Google Maps place of that name","Conservation of Arctic Flora and Fauna (CAFF)",32,1699
 -18.0959267,65.6746985,"OpenStreetMap feature of that name","osm:way/420562262",0,NA
@@ -7886,8 +7828,6 @@
 -7.97324,37.0433,"Google Maps place of that name","Universidade do Algarve - Campus de Gambelas",86,9414
 -7.90705735,38.572038,"Google Maps place of that name","University of Évora",189,9391
 -7.90705735,38.572038,"Google Maps place of that name","University of Évora",189,9392
--7.90705735,38.572038,"OpenStreetMap feature of that name","osm:relation/2173928",0,9391
--7.90705735,38.572038,"OpenStreetMap feature of that name","osm:relation/2173928",0,9392
 -7.8672,38.00634,"Google Maps place of that name","EDIA - Empresa de Desenvolvimento e Infra-estruturas do Alqueva, S.A.",7,NA
 -7.826944444,31.401944444,"Google Maps place of that name","Anima (André Heller Garden)",163,NA
 -7.826944444,31.401944444,"OpenStreetMap feature of that name","osm:way/483544037",0,NA
@@ -7994,8 +7934,6 @@
 -5.67839265,40.964913,"OpenStreetMap feature of that name","osm:relation/364100",0,9162
 -5.676489,43.542198,"Google Maps place of that name","BIOPARC Acuario de Gijón",31,NA
 -5.6682516,40.96190885,"Google Maps place of that name","University of Salamanca",128,9160
--5.6682516,40.96190885,"OpenStreetMap feature of that name","osm:relation/1241689",0,9160
--5.6682516,40.96190885,"OpenStreetMap feature of that name","osm:relation/1241689",0,9161
 -5.6618,40.9579,"Google Maps place of that name","Instituto de Recursos Naturales y Agrobiología de Salamanca",6,NA
 -5.6618,40.9579,"OpenStreetMap feature of that name","osm:way/48871738",0,NA
 -5.61578,43.5215,"Google Maps place of that name","Jardín Botánico Atlántico",10,4142
@@ -8143,7 +8081,6 @@
 -4.43568,48.39038,"OpenStreetMap feature of that name","osm:way/998872051",0,NA
 -4.4299,55.845,"Google Maps place of that name","Paisley Museum",35,6943
 -4.4299,55.845,"Google Maps place of that name","Paisley Museum",35,6942
--4.4299,55.845,"OpenStreetMap feature of that name","osm:way/4543895",19,6942
 -4.4277,36.70748,"Google Maps place of that name","Instituto español de Oceanografía, Centro Oceanográfico deMálaga",46,NA
 -4.4277,36.7075,"Google Maps place of that name","Instituto español de Oceanografía, Centro Oceanográfico deMálaga",48,NA
 -4.426552,36.7624626,"Google Maps place of that name","Jardín Botánico - Histórico La Concepción",264,1687
@@ -8194,7 +8131,6 @@
 -4.27154,57.4657,"Google Maps place of that name","NatureScot",41,NA
 -4.2669,51.8655,"Google Maps place of that name","Carmarthenshire Museum",65,NA
 -4.26506,48.36175,"Google Maps place of that name","Daoulas Abbey",61,NA
--4.25763,55.86515,"OpenStreetMap feature of that name","osm:relation/8947642",188,NA
 -4.24261845,55.86187455,"Google Maps place of that name","Strathclyde Institute of Pharmacy & Biomedical Sciences (Sipbs)",152,10680
 -4.24261845,55.86187455,"OpenStreetMap feature of that name","osm:way/20448384",0,10680
 -4.2418,55.8619,"Google Maps place of that name","Andersonian Library",200,NA
@@ -8406,7 +8342,6 @@
 -3.6023,37.1823,"Google Maps place of that name","University of Granada (UGR)",247,NA
 -3.6023,37.182331,"Google Maps place of that name","University of Granada (UGR)",244,NA
 -3.59122795,55.0506121,"Google Maps place of that name","Crichton Institute",109,1793
--3.59122795,55.0506121,"OpenStreetMap feature of that name","osm:way/42739894",0,1793
 -3.591,37.1658,"Google Maps place of that name","Zaidín Experimental Station",21,NA
 -3.591,37.1658,"OpenStreetMap feature of that name","osm:relation/20594412",1,NA
 -3.59097,37.16585,"Google Maps place of that name","Zaidín Experimental Station",17,NA
@@ -8421,7 +8356,6 @@
 -3.582388888,40.598888888,"Google Maps place of that name","Desert CITY   Visita suspendida temporalmente. Seguimos aquí: cultivando y manteniendo nuestra colección botánica.",4,NA
 -3.582388888,40.598888888,"OpenStreetMap feature of that name","osm:way/509551405",0,NA
 -3.5818219,50.3572524,"Google Maps place of that name","Britannia Royal Naval College",42,911
--3.5818219,50.3572524,"OpenStreetMap feature of that name","osm:node/12551799989",0,911
 -3.562285026,55.86303091,"Google Maps place of that name","Five Sisters Zoo",98,NA
 -3.562285026,55.86303091,"OpenStreetMap feature of that name","osm:way/213219546",0,NA
 -3.56103,51.51874,"Google Maps place of that name","Project Seagrass",11,NA
@@ -8474,9 +8408,6 @@
 -3.3231,55.6031,"Google Maps place of that name","Dawyck Botanic Garden",265,NA
 -3.32286,55.603193,"Google Maps place of that name","Dawyck Botanic Garden",247,1930
 -3.32286,55.603193,"Google Maps place of that name","Dawyck Botanic Garden",247,1929
--3.319855,50.668955,"OpenStreetMap feature of that name","osm:way/41504564",0,NA
--3.317751,50.67211,"OpenStreetMap feature of that name","osm:way/41504564",0,NA
--3.317748,50.672105,"OpenStreetMap feature of that name","osm:way/41504564",0,625
 -3.310541,57.649118,"Google Maps place of that name","Elgin Museum",27,2373
 -3.310541,57.649118,"OpenStreetMap feature of that name","osm:way/71143006",18,2373
 -3.31001575,57.64918605,"Google Maps place of that name","Elgin Museum",14,2374
@@ -8602,7 +8533,6 @@
 -2.97861111,56.45777778,"Google Maps place of that name","D'Arcy Thompson Zoology Museum - University of Dundee",10,NA
 -2.97861111,56.45777778,"OpenStreetMap feature of that name","osm:node/2762663484",21,NA
 -2.97855,53.409359,"Google Maps place of that name","World Museum",245,NA
--2.975067,53.40070025,"OpenStreetMap feature of that name","osm:way/249599303",0,4802
 -2.9714,56.4625,"Google Maps place of that name","The McManus: Dundee's Art Gallery & Museum",22,5042
 -2.9714,56.4625,"OpenStreetMap feature of that name","osm:way/741113746",0,5042
 -2.9711154,56.4626291,"Google Maps place of that name","The McManus: Dundee's Art Gallery & Museum",7,5043
@@ -8728,10 +8658,7 @@
 -2.622305,51.463467,"Google Maps place of that name","Bristol Zoo Gardens",16,909
 -2.622305,51.463467,"Google Maps place of that name","Bristol Zoo Gardens",16,908
 -2.622305,51.463467,"Google Maps place of that name","Bristol Zoo",133,910
--2.622305,51.463467,"OpenStreetMap feature of that name","osm:relation/15914002",0,908
--2.622305,51.463467,"OpenStreetMap feature of that name","osm:relation/15914002",0,909
 -2.622222222,51.463333333,"Google Maps place of that name","Bristol Zoo Gardens",17,NA
--2.622222222,51.463333333,"OpenStreetMap feature of that name","osm:relation/15914002",0,NA
 -2.6187,50.6637,"Google Maps place of that name","Abbotsbury Subtropical Gardens",42,NA
 -2.61601,51.5296,"Google Maps place of that name","Bristol Zoo Project",282,NA
 -2.61601,51.5296,"OpenStreetMap feature of that name","osm:way/421510133",0,NA
@@ -8740,13 +8667,11 @@
 -2.6053,51.4561,"Google Maps place of that name","Bristol Museum & Art Gallery",46,900
 -2.6053,51.4561,"Google Maps place of that name","Bristol Museum & Art Gallery",46,901
 -2.6053,51.4561,"OpenStreetMap feature of that name","osm:way/36990873",0,900
--2.6053,51.4561,"OpenStreetMap feature of that name","osm:relation/15914002",0,901
 -2.6053,51.4561,"OpenStreetMap feature of that name","osm:way/36990873",0,902
 -2.6053,51.4561,"OpenStreetMap feature of that name","osm:way/36990873",0,903
 -2.605262,51.456139,"Google Maps place of that name","Bristol Museum & Art Gallery",41,905
 -2.605262,51.456139,"Google Maps place of that name","Bristol Museum & Art Gallery",41,904
 -2.605262,51.456139,"OpenStreetMap feature of that name","osm:way/36990873",0,904
--2.605262,51.456139,"OpenStreetMap feature of that name","osm:relation/15914002",0,905
 -2.6050385,51.4564942,"Google Maps place of that name","Bristol Museum & Art Gallery",4,NA
 -2.605,51.4566,"Google Maps place of that name","Bristol Museum & Art Gallery",13,NA
 -2.605,51.4566,"OpenStreetMap feature of that name","osm:way/36990873",0,NA
@@ -8755,7 +8680,6 @@
 -2.6044,51.4565,"OpenStreetMap feature of that name","osm:relation/15914002",0,10054
 -2.602,51.4588,"Google Maps place of that name","University of Bristol",32,10055
 -2.602,51.4588,"OpenStreetMap feature of that name","osm:relation/15914002",0,10055
--2.6012,51.46,"OpenStreetMap feature of that name","osm:relation/15914002",0,906
 -2.6009,51.4515,"Google Maps place of that name","Bristol Central Library",84,899
 -2.596692,54.646758,"Google Maps place of that name","National Trust - Acorn Bank",148,NA
 -2.596692,54.646758,"OpenStreetMap feature of that name","osm:way/338339180",131,NA
@@ -8763,7 +8687,6 @@
 -2.5964,53.387,"OpenStreetMap feature of that name","osm:way/562300370",22,NA
 -2.5959108,53.3870799,"Google Maps place of that name","Warrington Museum & Art Gallery",17,11129
 -2.5959108,53.3870799,"OpenStreetMap feature of that name","osm:way/562300370",0,11129
--2.5833,51.45,"OpenStreetMap feature of that name","osm:relation/15914002",0,NA
 -2.5574066,52.59600135,"Google Maps place of that name","Much Wenlock Museum",5,5294
 -2.5574066,52.59600135,"Google Maps place of that name","Much Wenlock Museum",5,5295
 -2.5574066,52.59600135,"OpenStreetMap feature of that name","osm:way/160126362",0,5294
@@ -8795,10 +8718,8 @@
 -2.43734835,50.71565315,"OpenStreetMap feature of that name","osm:way/256984483",0,2218
 -2.43734835,50.71565315,"OpenStreetMap feature of that name","osm:way/256984483",0,2220
 -2.43156,53.5774,"Google Maps place of that name","Bolton Museum, Aquarium and Archive",24,NA
--2.43156,53.5774,"OpenStreetMap feature of that name","osm:node/6869586282",7,NA
 -2.4313,53.5779,"Google Maps place of that name","Bolton Museum, Aquarium and Archive",36,727
 -2.4313,53.5779,"Google Maps place of that name","Bolton Museum, Aquarium and Archive",36,726
--2.4313,53.5779,"OpenStreetMap feature of that name","osm:node/6869586282",59,726
 -2.431299,53.577493,"Google Maps place of that name","Bolton Museum, Aquarium and Archive",11,NA
 -2.42911835,52.77898385,"Google Maps place of that name","Harper Adams University",95,3172
 -2.42911835,52.77898385,"OpenStreetMap feature of that name","osm:relation/13731704",0,3172
@@ -8825,7 +8746,6 @@
 -2.300172,53.200365,"Google Maps place of that name","The Lovell Quinta Arboretum",137,NA
 -2.28825,52.3755,"Google Maps place of that name","West Midlands Safari Park",296,NA
 -2.2802559,50.7030439,"Google Maps place of that name","The Walled Garden, Moreton",51,NA
--2.28024665,53.4815452,"OpenStreetMap feature of that name","osm:relation/1662158",0,7648
 -2.2734,53.0031,"Google Maps place of that name","Keele University",74,10297
 -2.2734,53.0031,"OpenStreetMap feature of that name","osm:way/728225498",0,10297
 -2.2734,53.0031,"OpenStreetMap feature of that name","osm:way/728225498",0,10298
@@ -8881,7 +8801,6 @@
 -2.1768,30.1292,"OpenStreetMap feature of that name","osm:node/1937168048",11,5333
 -2.162013352,53.12988048,"Google Maps place of that name","National Trust - Biddulph Grange Garden",33,NA
 -2.132222,47.773056,"Google Maps place of that name","Jardin botanique Yves Rocher de La Gacilly",72,NA
--2.1183,53.5405,"OpenStreetMap feature of that name","osm:way/404200646",164,NA
 -2.11712122,51.41454485,"Google Maps place of that name","Lacock Abbey",121,NA
 -2.1098,53.54,"Google Maps place of that name","Gallery Oldham",44,2838
 -2.1098,53.54,"Google Maps place of that name","Gallery Oldham",44,2837
@@ -8960,11 +8879,9 @@
 -1.93217,52.4491,"OpenStreetMap feature of that name","osm:relation/16068271",0,10037
 -1.9314929,43.3217289,"Google Maps place of that name","AZTI   Itsasoko eta elikadurako zientzia eta teknologia",12,475
 -1.929637,52.466492,"Google Maps place of that name","Birmingham Botanical Gardens",83,685
--1.929637,52.466492,"OpenStreetMap feature of that name","osm:relation/16068271",0,685
 -1.9296,52.45,"Google Maps place of that name","University of Birmingham",95,NA
 -1.9296,52.45,"OpenStreetMap feature of that name","osm:relation/16068271",0,NA
 -1.9293,52.4665,"Google Maps place of that name","Birmingham Botanical Gardens",86,NA
--1.9293,52.4665,"OpenStreetMap feature of that name","osm:relation/16068271",0,NA
 -1.9249,52.4535,"OpenStreetMap feature of that name","osm:relation/16068271",0,NA
 -1.92484,52.4537,"Google Maps place of that name","Winterbourne House and Garden",119,NA
 -1.924838,52.453445,"Google Maps place of that name","Winterbourne House and Garden",101,10038
@@ -8982,8 +8899,6 @@
 -1.9044,52.4801,"Google Maps place of that name","Birmingham & Midland Institute",138,682
 -1.9044,52.4801,"Google Maps place of that name","Library of Birmingham",285,1523
 -1.9044,52.4801,"Google Maps place of that name","Library of Birmingham",285,1522
--1.9044,52.4801,"OpenStreetMap feature of that name","osm:relation/16068271",0,682
--1.9044,52.4801,"OpenStreetMap feature of that name","osm:relation/16068271",0,683
 -1.90361,52.479622,"Google Maps place of that name","Birmingham Museum & Art Gallery",55,NA
 -1.9036,52.4796,"Google Maps place of that name","Birmingham Museum & Art Gallery",58,NA
 -1.8883231,52.48611865,"Google Maps place of that name","Aston University Main Building",118,10016
@@ -8997,7 +8912,6 @@
 -1.8708,50.7176,"Google Maps place of that name","Russell Cotes Art Gallery & Museum",27,NA
 -1.8708,50.7176,"OpenStreetMap feature of that name","osm:way/119347194",0,NA
 -1.8621258,38.9736062,"Google Maps place of that name","Jardín Botánico de Castilla-La Mancha",280,4101
--1.8621258,38.9736062,"OpenStreetMap feature of that name","osm:way/139980346",39,4101
 -1.86001667,38.975175,"Google Maps place of that name","Jardín Botánico de Castilla-La Mancha",38,NA
 -1.86001667,38.975175,"OpenStreetMap feature of that name","osm:way/139980346",0,NA
 -1.8575,50.7223,"Google Maps place of that name","Bournemouth Natural Science Society",80,NA
@@ -9123,8 +9037,6 @@
 -1.5469,53.8015,"Google Maps place of that name","Leeds City Museum",11,4730
 -1.546851,53.801543,"Google Maps place of that name","Leeds City Museum",8,NA
 -1.54277778,47.21944444,"Google Maps place of that name","Jardin des Plantes",17,NA
--1.5422643,54.52887085,"OpenStreetMap feature of that name","osm:way/806081140",0,1909
--1.5422643,54.52887085,"OpenStreetMap feature of that name","osm:way/806081140",0,1910
 -1.535902619,52.95918012,"Google Maps place of that name","National Trust - Kedleston Hall",1,NA
 -1.534899473,51.04113081,"Google Maps place of that name","National Trust - Mottisfont",1,NA
 -1.53084275,53.78866105,"Google Maps place of that name","Leeds Discovery Centre",11,4728
@@ -9196,17 +9108,13 @@
 -1.3931,50.8926,"Google Maps place of that name","British Ocean Sediment Core Research Facility (BOSCORF)",1,NA
 -1.380649,54.904253,"Google Maps place of that name","Sunderland Museum & Winter Gardens",24,8386
 -1.380649,54.904253,"Google Maps place of that name","Sunderland Museum & Winter Gardens",24,8385
--1.380649,54.904253,"OpenStreetMap feature of that name","osm:relation/16193003",0,8385
--1.380649,54.904253,"OpenStreetMap feature of that name","osm:relation/16193003",0,8386
 -1.380449,54.904254,"Google Maps place of that name","Sunderland Museum & Winter Gardens",11,NA
 -1.380449,54.904254,"OpenStreetMap feature of that name","osm:way/30977185",0,NA
 -1.38,54.9039,"Google Maps place of that name","Sunderland Museum & Winter Gardens",41,NA
--1.38,54.9039,"OpenStreetMap feature of that name","osm:relation/16193003",0,NA
 -1.36079,53.4292,"Google Maps place of that name","Rotherham Metropolitan Borough Council",0,5307
 -1.35678,53.43012,"Google Maps place of that name","Rotherham Metropolitan Borough Council",284,NA
 -1.32417,48.8339,"Google Maps place of that name","Zoo de Champrépus",28,NA
 -1.32417,48.8339,"OpenStreetMap feature of that name","osm:way/108243858",0,NA
--1.32337295,51.3821588,"OpenStreetMap feature of that name","osm:way/1292057618",0,6573
 -1.31494045,51.0619931,"Google Maps place of that name","Winchester City Museum",2,11300
 -1.31494045,51.0619931,"OpenStreetMap feature of that name","osm:way/222795694",0,11300
 -1.3144,51.0584,"Google Maps place of that name","Winchester College",122,11302
@@ -9220,7 +9128,6 @@
 -1.284004,50.990451,"Google Maps place of that name","Marwell Zoo",31,NA
 -1.284004,50.990451,"OpenStreetMap feature of that name","osm:relation/4039449",0,NA
 -1.27773611,50.99316389,"OpenStreetMap feature of that name","osm:relation/4039449",0,NA
--1.27719,51.8125,"OpenStreetMap feature of that name","osm:relation/16193258",0,NA
 -1.260271,51.762812,"OpenStreetMap feature of that name","osm:relation/16193258",0,10546
 -1.260271,51.762812,"OpenStreetMap feature of that name","osm:relation/16193258",0,10547
 -1.260271,51.762812,"OpenStreetMap feature of that name","osm:relation/16193258",0,10548
@@ -9306,7 +9213,6 @@
 -1.150539,46.153274,"Google Maps place of that name","La Rochelle Aquarium",7,NA
 -1.150539,46.153274,"OpenStreetMap feature of that name","osm:way/119832587",0,NA
 -1.1505,52.9536,"Google Maps place of that name","Theosophical Society",265,NA
--1.1505,52.9536,"OpenStreetMap feature of that name","osm:relation/16193280",103,NA
 -1.15047,52.953602,"OpenStreetMap feature of that name","osm:relation/16193280",105,NA
 -1.1502,60.1579,"Google Maps place of that name","Shetland Museum & Archives",10,7937
 -1.150111111,60.157833333,"Google Maps place of that name","Shetland Museum & Archives",2,NA
@@ -9415,7 +9321,6 @@
 -0.74604,46.511,"Google Maps place of that name","Natur'Zoo Mervent",80,NA
 -0.74604,46.511,"OpenStreetMap feature of that name","osm:way/534442453",0,NA
 -0.7336,47.2141,"Google Maps place of that name","Camifolia Garden",186,NA
--0.7183128,50.81786695,"OpenStreetMap feature of that name","osm:relation/16196888",0,1430
 -0.7178591,54.11993,"Google Maps place of that name","Settrington Estate",136,NA
 -0.7176,49.2855,"Google Maps place of that name","Jardin Botanique de Bayeux",154,NA
 -0.7081,51.0893,"Google Maps place of that name","Haslemere Educational Museum",106,NA
@@ -9590,7 +9495,6 @@
 -0.293611111,51.478888888,"OpenStreetMap feature of that name","osm:relation/8048808",0,NA
 -0.291111111,51.485,"OpenStreetMap feature of that name","osm:relation/8048808",0,NA
 -0.290657224,51.48512165,"Google Maps place of that name","Herbarium & Library",39,NA
--0.2899,51.47953,"OpenStreetMap feature of that name","osm:relation/16193297",0,815
 -0.289691,51.347058,"Google Maps place of that name","Hobbledown Adventure Farm Park and Zoo",258,NA
 -0.289691,51.347058,"OpenStreetMap feature of that name","osm:way/377585341",0,NA
 -0.2793641,51.9493628,"Google Maps place of that name","North Hertfordshire Museum",9,6636
@@ -9687,7 +9591,6 @@
 -0.1304,51.522,"OpenStreetMap feature of that name","osm:relation/11373735",0,545
 -0.1304,51.522,"OpenStreetMap feature of that name","osm:relation/11373735",0,10352
 -0.126944,51.529444,"Google Maps place of that name","The British Library",78,8590
--0.1247,51.511,"OpenStreetMap feature of that name","osm:relation/16193297",0,NA
 -0.118889,51.5019,"Google Maps place of that name","SEA LIFE London Aquarium",57,NA
 -0.118889,51.5019,"OpenStreetMap feature of that name","osm:node/9777763616",50,NA
 -0.1178,53.2089,"Google Maps place of that name","Sir Joseph Banks Centre",2,NA
@@ -9700,7 +9603,6 @@
 -0.1055,51.4424,"OpenStreetMap feature of that name","osm:relation/16193297",0,NA
 -0.10508515,51.4421833,"Google Maps place of that name","South London Botanical Institute",11,816
 -0.10508515,51.4421833,"Google Maps place of that name","South London Botanical Institute",11,8133
--0.10508515,51.4421833,"OpenStreetMap feature of that name","osm:relation/16193297",0,816
 -0.10508515,51.4421833,"OpenStreetMap feature of that name","osm:way/843840821",0,8133
 -0.104907,51.443473,"Google Maps place of that name","South London Botanical Institute",140,8132
 -0.104907,51.443473,"OpenStreetMap feature of that name","osm:way/843840821",127,8132
@@ -9747,9 +9649,7 @@
 -0.0052689,53.3681526,"Google Maps place of that name","Louth Library",153,4844
 -0.0052689,53.3681526,"OpenStreetMap feature of that name","osm:way/54682329",0,4844
 -0.0044,53.3666,"Google Maps place of that name","Louth Museum",177,NA
--0.0044,53.3666,"OpenStreetMap feature of that name","osm:way/54682329",169,NA
 -0.001124,51.473578,"Google Maps place of that name","Rose Garden",19,NA
--0.001124,51.473578,"OpenStreetMap feature of that name","osm:relation/16193648",0,NA
 0.035486776,52.114529268,"Google Maps place of that name","Shepreth Wildlife Park",64,NA
 0.035486776,52.114529268,"OpenStreetMap feature of that name","osm:way/5015900",0,NA
 0.055703,52.745579,"Google Maps place of that name","Grange Farm Arboretum",270,NA
@@ -9881,7 +9781,6 @@
 0.5203,51.276,"Google Maps place of that name","Maidstone Museum",12,4925
 0.520556,51.2758,"Google Maps place of that name","Maidstone Museum",20,NA
 0.5341686,51.09751315,"Google Maps place of that name","Cranbrook School",287,1785
-0.5341686,51.09751315,"OpenStreetMap feature of that name","osm:way/408003196",0,1785
 0.5529,51.8782,"Google Maps place of that name","Braintree District Museum",68,NA
 0.5686,50.8576,"Google Maps place of that name","Hastings Museum & Art Gallery",226,7261
 0.57441,51.666508,"Google Maps place of that name","RHS Garden Hyde Hall",164,7556
@@ -9949,7 +9848,6 @@
 1.11917,51.3311,"Google Maps place of that name","Wildwood Trust",133,NA
 1.11917,51.3311,"OpenStreetMap feature of that name","osm:way/601110116",4,NA
 1.15,51.2667,"OpenStreetMap feature of that name","osm:way/23281184",0,NA
-1.150394,52.059863,"OpenStreetMap feature of that name","osm:way/105069173",48,4001
 1.1507,52.0601,"Google Maps place of that name","Ipswich Museum",55,NA
 1.1509,52.0606,"Google Maps place of that name","Ipswich Museum",8,NA
 1.1509,52.0606,"OpenStreetMap feature of that name","osm:way/105069173",0,NA
@@ -10031,17 +9929,13 @@
 1.448,43.5939,"Google Maps place of that name","Jardin botanique Henri-Gaussen",159,NA
 1.448,43.5939,"OpenStreetMap feature of that name","osm:way/858254066",97,NA
 1.449166666,43.593055555,"Google Maps place of that name","Muséum de Toulouse",116,NA
-1.449166666,43.593055555,"OpenStreetMap feature of that name","osm:way/133908207",63,NA
 1.4492,43.5943,"Google Maps place of that name","Muséum de Toulouse",23,5793
 1.4492,43.5943,"Google Maps place of that name","Muséum de Toulouse",23,5800
-1.4492,43.5943,"OpenStreetMap feature of that name","osm:way/133908207",18,5793
-1.4492,43.5943,"OpenStreetMap feature of that name","osm:way/133908207",18,5800
 1.44972222,43.59333333,"Google Maps place of that name","Jardin botanique Henri-Gaussen",11,NA
 1.44972222,43.59333333,"OpenStreetMap feature of that name","osm:way/858254066",0,NA
 1.45028,43.5956,"Google Maps place of that name","Jardin Royal",22,NA
 1.450882,50.025553,"Google Maps place of that name","jungle Garden",23,NA
 1.4511,43.5929,"Google Maps place of that name","Jardin des Plantes",15,NA
-1.4511,43.5929,"OpenStreetMap feature of that name","osm:way/133908207",77,NA
 1.46101,43.562765,"Google Maps place of that name","Université Paul Sabatier",246,NA
 1.46343,43.56113,"Google Maps place of that name","Paul Sabatier University",274,9887
 1.46343,43.56113,"Google Maps place of that name","Paul Sabatier University",274,9886
@@ -10049,7 +9943,6 @@
 1.46608,43.56087,"Google Maps place of that name","Paul Sabatier University",200,9890
 1.46608,43.56087,"Google Maps place of that name","Paul Sabatier University",200,4576
 1.4921,42.4665,"Google Maps place of that name","Andorra Recerca + Innovació",266,NA
-1.4921,42.4665,"OpenStreetMap feature of that name","osm:way/270902310",172,NA
 1.49218,42.46876,"Google Maps place of that name","Andorra Recerca + Innovació",31,NA
 1.4924,42.46887,"Google Maps place of that name","CENMA - Institut d'Estudis Andorrans",3,1237
 1.551338888,48.449880555,"Google Maps place of that name","Refuge La Tanière",270,NA
@@ -10296,7 +10189,6 @@
 3.0447,50.6327,"Google Maps place of that name","Nicolas Boulay Botanical Garden",23,NA
 3.0464,50.6318,"Google Maps place of that name","Université catholique",18,3558
 3.0464,50.6318,"Google Maps place of that name","Faculté Libre des Sciences et Technologies",164,3559
-3.0464,50.6318,"OpenStreetMap feature of that name","osm:way/959708001",0,3558
 3.04694,50.6381,"Google Maps place of that name","Zoo de Lille",69,NA
 3.04694,50.6381,"OpenStreetMap feature of that name","osm:way/76232210",0,NA
 3.06466389,39.3423,"Google Maps place of that name","Botanicactus",253,NA
@@ -10395,7 +10287,6 @@
 3.86388889,43.63194444,"OpenStreetMap feature of that name","osm:way/32343110",0,NA
 3.86389,7.3925,"Google Maps place of that name","Forestry Research Institute of Nigeria",113,NA
 3.8649172,43.63207015,"Google Maps place of that name","Isem - Institut Des Sciences De L'evolution De Montpellier",211,9646
-3.8649172,43.63207015,"OpenStreetMap feature of that name","osm:way/32343110",0,9646
 3.8673,43.6452,"OpenStreetMap feature of that name","osm:way/164433938",0,NA
 3.86777,43.64549,"Google Maps place of that name","Cirad",231,1506
 3.8717,43.6143,"Google Maps place of that name","Jardin des plantes de Montpellier",94,NA
@@ -10688,7 +10579,6 @@
 5.0289424,47.3218523,"OpenStreetMap feature of that name","osm:node/255935624",0,5771
 5.0289424,47.3218523,"OpenStreetMap feature of that name","osm:node/255935624",0,5773
 5.0289424,47.3218523,"OpenStreetMap feature of that name","osm:node/255935624",0,5892
-5.0381,51.5604,"OpenStreetMap feature of that name","osm:way/34107438",144,NA
 5.062058,51.5708549,"Google Maps place of that name","Zoo De Oliemeulen",20,NA
 5.062058,51.5708549,"OpenStreetMap feature of that name","osm:way/77838543",0,NA
 5.06215,51.57068,"Google Maps place of that name","Zoo De Oliemeulen",1,NA
@@ -11008,7 +10898,6 @@
 6.624377,52.097861,"Google Maps place of that name","Hof van Eckberge",50,NA
 6.624377,52.097861,"OpenStreetMap feature of that name","osm:way/55986226",0,NA
 6.62818,50.4898,"Google Maps place of that name","Naturzentrum Eifel (Tourist Information)",52,NA
-6.6338,46.5236,"OpenStreetMap feature of that name","osm:relation/12865618",0,5318
 6.63389,46.52367,"OpenStreetMap feature of that name","osm:relation/12865619",0,NA
 6.6339,46.5236,"Google Maps place of that name","Naturéum - département de zoologie",10,5327
 6.6339,46.5236,"OpenStreetMap feature of that name","osm:relation/12865618",0,5327
@@ -11016,7 +10905,6 @@
 6.63395,46.52375,"OpenStreetMap feature of that name","osm:relation/12865618",0,NA
 6.64302,49.47262,"Google Maps place of that name","Wolf Park Werner Freund",227,NA
 6.64302,49.47262,"OpenStreetMap feature of that name","osm:way/29238427",0,NA
-6.6553054,44.3874423,"OpenStreetMap feature of that name","osm:node/2148911432",0,5319
 6.65729,46.54086,"Google Maps place of that name","AQUATIS Aquarium-Vivarium",19,NA
 6.65729,46.54086,"OpenStreetMap feature of that name","osm:way/442695818",0,NA
 6.659186,52.843475,"Google Maps place of that name","Zoo Bizar",0,NA
@@ -11165,12 +11053,8 @@
 7.1571403,46.7931478,"Google Maps place of that name","Musée d'histoire naturelle",6,5329
 7.1571403,46.7931478,"OpenStreetMap feature of that name","osm:node/7579857319",0,5329
 7.1571403,46.7931478,"OpenStreetMap feature of that name","osm:node/7579857319",0,5330
-7.1571403,46.7931478,"OpenStreetMap feature of that name","osm:way/488752356",0,6378
 7.1572,46.7931,"Google Maps place of that name","Musée d'histoire naturelle",2,NA
-7.1572,46.7931,"OpenStreetMap feature of that name","osm:way/488752356",0,NA
 7.1574,46.7934,"Google Maps place of that name","Musée d'histoire naturelle",35,NA
-7.1574,46.7934,"OpenStreetMap feature of that name","osm:way/488752356",25,NA
-7.157408,46.793446,"OpenStreetMap feature of that name","osm:way/488752356",30,NA
 7.15944,53.6128,"Google Maps place of that name","Seehundstation Nationalpark-Haus",30,NA
 7.16911,50.7152,"Google Maps place of that name","Foundation Arboretum Park Härle",51,NA
 7.1707,45.869,"Google Maps place of that name","Grand St.Bernard Hospice museum",30,NA
@@ -11302,7 +11186,7 @@
 7.5625,50.4531,"Google Maps place of that name","Zoo Neuwied",17,NA
 7.5625,50.4531,"OpenStreetMap feature of that name","osm:way/41957011",0,NA
 7.578763888,47.547336111,"Google Maps place of that name","Zoo Basel",20,NA
-7.578763888,47.547336111,"OpenStreetMap feature of that name","osm:relation/8129744",0,NA
+7.578763888,47.547336111,"OpenStreetMap feature of that name","osm:way/25108339",0,NA
 7.5806,47.5596,"Google Maps place of that name","Universität Basel",273,9736
 7.5806,47.5596,"Google Maps place of that name","University of Basel Botanical Garden",101,9739
 7.5806,47.5596,"Google Maps place of that name","University of Basel Botanical Garden",101,522
@@ -11337,8 +11221,6 @@
 7.5904,47.5577,"Google Maps place of that name","Museum of Natural History Basel",5,6452
 7.5904,47.5577,"Google Maps place of that name","Museum of Natural History Basel",5,6445
 7.5904,47.5577,"Google Maps place of that name","Museum of Natural History Basel",5,6464
-7.5904,47.5577,"OpenStreetMap feature of that name","osm:relation/8129744",0,5781
-7.5904,47.5577,"OpenStreetMap feature of that name","osm:relation/8129744",0,6445
 7.5904,47.5577,"OpenStreetMap feature of that name","osm:way/137472370",0,6452
 7.5904,47.5577,"OpenStreetMap feature of that name","osm:way/137472370",0,6464
 7.590555555,47.5575,"Google Maps place of that name","Museum of Natural History Basel",20,NA
@@ -11352,7 +11234,6 @@
 7.6097,51.9647,"OpenStreetMap feature of that name","osm:relation/4745499",0,11237
 7.6097,51.9647,"OpenStreetMap feature of that name","osm:relation/4745499",0,11238
 7.61056,51.9637,"Google Maps place of that name","Botanical Garden of the University of Münster",56,NA
-7.61056,51.9637,"OpenStreetMap feature of that name","osm:relation/4745499",0,NA
 7.6121,51.9624,"OpenStreetMap feature of that name","osm:relation/4745499",0,NA
 7.6208371,45.6236445,"Google Maps place of that name","Visitor Center Parco Naturale Mont Avic",6,NA
 7.62571,51.96236,"OpenStreetMap feature of that name","osm:relation/4745499",0,NA
@@ -11477,7 +11358,6 @@
 8.1074,53.5421,"Google Maps place of that name","Förderverein Rosarium e.V.",24,NA
 8.1074,53.5421,"OpenStreetMap feature of that name","osm:way/26039882",0,NA
 8.11083,49.2028,"Google Maps place of that name","Landau Zoo",110,NA
-8.11083,49.2028,"OpenStreetMap feature of that name","osm:way/30066097",82,NA
 8.13004,49.1913,"OpenStreetMap feature of that name","osm:node/5648159200",101,NA
 8.135539055,33.89610191,"Google Maps place of that name","Zoo of Sahara",63,NA
 8.135539055,33.89610191,"OpenStreetMap feature of that name","osm:node/6413656385",54,NA
@@ -11743,9 +11623,7 @@
 8.8077,56.0962,"Google Maps place of that name","Jyllands Park Zoo",22,NA
 8.8077,56.0962,"OpenStreetMap feature of that name","osm:way/26952581",0,NA
 8.8105,53.0823,"Google Maps place of that name","Overseas Museum, Bremen",110,NA
-8.8105,53.0823,"OpenStreetMap feature of that name","osm:relation/31489",0,NA
 8.81056,53.0833,"Google Maps place of that name","Overseas Museum, Bremen",31,8845
-8.81056,53.0833,"OpenStreetMap feature of that name","osm:relation/31489",0,8845
 8.8108,53.08335,"Google Maps place of that name","Overseas Museum, Bremen",19,8846
 8.8108,53.08335,"Google Maps place of that name","Overseas Museum, Bremen",19,8853
 8.81291,47.2264,"Google Maps place of that name","Rosengarten Schlossberg Rapperswil",49,NA
@@ -12093,7 +11971,6 @@
 9.97444444,53.56805556,"OpenStreetMap feature of that name","osm:way/28207271",16,NA
 9.97638889,54.40305556,"Google Maps place of that name","Gettorf Zoo",53,NA
 9.97638889,54.40305556,"OpenStreetMap feature of that name","osm:way/25728711",0,NA
-9.978182,53.567165,"OpenStreetMap feature of that name","osm:relation/10460644",0,NA
 9.97822195,53.5671317,"Google Maps place of that name","Botanisches Museum c/o Biozentrum Grindel und Zoologisches Museum",104,11586
 9.97822195,53.5671317,"Google Maps place of that name","Botanisches Museum c/o Biozentrum Grindel und Zoologisches Museum",104,675
 9.97822195,53.5671317,"OpenStreetMap feature of that name","osm:way/27443629",0,11586
@@ -12101,7 +11978,6 @@
 9.98047,57.5871,"Google Maps place of that name","The North Sea Oceanarium",56,NA
 9.98047,57.5871,"OpenStreetMap feature of that name","osm:node/277626838",48,NA
 9.98097,53.56707,"OpenStreetMap feature of that name","osm:way/34544690",106,5146
-9.982088,53.563241,"OpenStreetMap feature of that name","osm:relation/10460644",0,NA
 9.98247222,53.56636111,"OpenStreetMap feature of that name","osm:way/34544690",0,NA
 10.0119,48.4103,"Google Maps place of that name","Tiergarten Ulm",25,NA
 10.0119,48.4103,"OpenStreetMap feature of that name","osm:way/30570791",0,NA
@@ -12147,7 +12023,6 @@
 10.20482,56.16529,"Google Maps place of that name","Department of Ecoscience",212,NA
 10.20482,56.16529,"OpenStreetMap feature of that name","osm:relation/2440251",0,NA
 10.21076,56.15674,"OpenStreetMap feature of that name","osm:relation/2440251",125,NA
-10.212,56.1581,"OpenStreetMap feature of that name","osm:relation/2440251",0,NA
 10.2194,56.1208,"Google Maps place of that name","Marselisborg Deer Park",210,NA
 10.225148988,45.542821911,"Google Maps place of that name","Castello di Brescia",9,NA
 10.225217,45.542911,"Google Maps place of that name","Castello di Brescia",6,NA
@@ -12324,7 +12199,6 @@
 10.7711,59.92,"OpenStreetMap feature of that name","osm:node/5412354900",42,6375
 10.7711,59.92,"OpenStreetMap feature of that name","osm:node/5412354900",42,6425
 10.771132,59.919745,"OpenStreetMap feature of that name","osm:node/5412354900",33,NA
-10.77168703,59.91983913,"OpenStreetMap feature of that name","osm:node/5412354900",6,NA
 10.77174,59.92002,"OpenStreetMap feature of that name","osm:node/5412354900",26,NA
 10.7722173,59.9198772,"OpenStreetMap feature of that name","osm:node/5412354900",30,NA
 10.77262,59.918055,"OpenStreetMap feature of that name","osm:node/5412354900",199,NA
@@ -12348,7 +12222,6 @@
 10.84275,64.50504,"Google Maps place of that name","Aqua Competence AS",147,NA
 10.85835,45.69847,"Google Maps place of that name","Orto Botanico del Monte Baldo",72,NA
 10.8656,50.2328,"OpenStreetMap feature of that name","osm:way/28108407",0,NA
-10.86561365,48.35299715,"OpenStreetMap feature of that name","osm:relation/7359067",0,6463
 10.865653415,43.929621468,"Google Maps place of that name","Zoo of Pistoia",177,NA
 10.865653415,43.929621468,"OpenStreetMap feature of that name","osm:way/185413524",0,NA
 10.8817,49.8919,"Google Maps place of that name","Cafè Rosengarten Bamberg",44,NA
@@ -12657,7 +12530,6 @@
 11.5854,49.9235,"OpenStreetMap feature of that name","osm:way/23939354",0,NA
 11.5856205,42.8314647,"Google Maps place of that name","Museum of Mines of Mercury Monte Amiata",14,NA
 11.5856205,42.8314647,"OpenStreetMap feature of that name","osm:node/3757606638",13,NA
-11.5861,50.9311,"OpenStreetMap feature of that name","osm:relation/3603763",0,NA
 11.58733705,50.9330806,"Google Maps place of that name","Institut für Spezielle Botanik der Friedrich-Schiller-Universität Jena",278,NA
 11.59001,50.9297,"OpenStreetMap feature of that name","osm:relation/3603763",0,2739
 11.5902,50.9297,"Google Maps place of that name","Friedrich-Schiller-Universität Jena",48,2738
@@ -13026,7 +12898,6 @@
 12.94916667,57.74138889,"OpenStreetMap feature of that name","osm:relation/10595178",0,NA
 12.952194,41.86212,"Google Maps place of that name","Museo Civico Naturalistico dei Monti Prenestini",21,NA
 12.970393,43.40226,"Google Maps place of that name","Museo Speleopaleontologico ed Archeologico",24,NA
-12.9936885,55.60273035,"OpenStreetMap feature of that name","osm:relation/2220493",0,4946
 13.00815,51.55821,"Google Maps place of that name","Rosengarten",30,NA
 13.0114,52.40092,"Google Maps place of that name","University of Potsdam",37,NA
 13.0252,52.4041,"Google Maps place of that name","Botanical Garden of the University of Potsdam",52,NA
@@ -13047,7 +12918,6 @@
 13.0392,47.80169,"OpenStreetMap feature of that name","osm:way/751019784",0,3195
 13.0392,47.80169,"OpenStreetMap feature of that name","osm:way/751019784",0,3196
 13.0392,47.80169,"OpenStreetMap feature of that name","osm:way/751019784",0,3198
-13.0392,47.80169,"OpenStreetMap feature of that name","osm:way/751019784",0,3199
 13.0392,47.8017,"Google Maps place of that name","Haus der Natur",6,NA
 13.0392,47.8017,"OpenStreetMap feature of that name","osm:way/751019784",0,NA
 13.0503,54.317,"Google Maps place of that name","Zoo Stralsund",295,NA
@@ -13605,7 +13475,6 @@
 15.8729,49.2162,"OpenStreetMap feature of that name","osm:node/21315877",56,6026
 15.8730548,49.2166893,"OpenStreetMap feature of that name","osm:node/21315877",0,6027
 15.9387,45.8197,"Google Maps place of that name","Croatian Mycological Society",23,NA
-15.97086,45.80695,"OpenStreetMap feature of that name","osm:way/35866855",157,NA
 15.9717,45.8164,"Google Maps place of that name","Croatian Natural History Museum",91,NA
 15.9717,45.8164,"OpenStreetMap feature of that name","osm:node/325705511",94,NA
 15.9717269,45.80484415,"Google Maps place of that name","Botanical Garden of the Faculty of Science, University of Zagreb",76,794
@@ -14070,8 +13939,6 @@
 19.25566,47.63126,"Google Maps place of that name","Bear Farm",120,NA
 19.259808,42.436013,"Google Maps place of that name","Natural History Museum of Montenegro",291,6397
 19.259808,42.436013,"OpenStreetMap feature of that name","osm:node/12887035418",30,6397
-19.259808,42.436013,"OpenStreetMap feature of that name","osm:node/12887035418",30,10447
-19.259808,42.436013,"OpenStreetMap feature of that name","osm:node/12887035418",30,10448
 19.2599,42.4358,"Google Maps place of that name","Natural History Museum of Montenegro",269,NA
 19.2599,42.4358,"OpenStreetMap feature of that name","osm:node/12887035418",6,NA
 19.26253,50.48212,"Google Maps place of that name","PGL LP Nadleśnictwo Siewierz",35,NA
@@ -14168,7 +14035,6 @@
 20.4515604,44.82215975,"OpenStreetMap feature of that name","osm:way/40298269",0,5908
 20.453332,44.825832,"Google Maps place of that name","Belgrade Zoo",116,NA
 20.453332,44.825832,"OpenStreetMap feature of that name","osm:way/33517093",0,NA
-20.45368465,44.8259214,"OpenStreetMap feature of that name","osm:way/33517093",0,10030
 20.4583,53.7593,"Google Maps place of that name","University of Warmia and Mazury in Olsztyn",192,10821
 20.4583,53.7593,"Google Maps place of that name","Faculty of Biology and Biotechnology",160,10822
 20.46719,44.80454,"Google Maps place of that name","Institute of chemistry, technology and metallurgy - ICTM",16,NA
@@ -14310,9 +14176,6 @@
 22.2864098,60.4560732,"OpenStreetMap feature of that name","osm:relation/7498116",0,10796
 22.2876,48.6206,"OpenStreetMap feature of that name","osm:relation/12498178",0,NA
 22.2883,52.1723,"OpenStreetMap feature of that name","osm:relation/3743395",0,NA
-22.295,48.623889,"OpenStreetMap feature of that name","osm:relation/12498178",0,NA
-22.295,48.62389,"OpenStreetMap feature of that name","osm:relation/12498178",0,NA
-22.304611,48.620056,"OpenStreetMap feature of that name","osm:relation/12498178",0,NA
 22.4343,60.5671,"Google Maps place of that name","Zoolandia",116,NA
 22.4343,60.5671,"OpenStreetMap feature of that name","osm:way/298335632",0,NA
 22.46333333,-33.94722222,"Google Maps place of that name","Garden Route Botanical Garden",81,NA
@@ -14519,7 +14382,6 @@
 24.8898,60.1919,"Google Maps place of that name","Meilahti arboretum",196,NA
 24.9313,60.1713,"OpenStreetMap feature of that name","osm:relation/13548706",0,10241
 24.931942094,60.185823394,"Google Maps place of that name","Helsinki Winter Garden",38,NA
-24.931942094,60.185823394,"OpenStreetMap feature of that name","osm:relation/13548706",0,NA
 24.93212,60.17225,"OpenStreetMap feature of that name","osm:relation/13548706",0,NA
 24.93545,60.16952,"OpenStreetMap feature of that name","osm:relation/13548706",0,NA
 24.93567,60.19852,"Google Maps place of that name","Metsähallitus",7,NA
@@ -14530,7 +14392,6 @@
 24.9495468,60.1697263,"OpenStreetMap feature of that name","osm:node/606949808",0,NA
 24.95,60.169444444,"Google Maps place of that name","University of Helsinki",23,NA
 24.95,60.169444444,"OpenStreetMap feature of that name","osm:relation/13548706",0,NA
-24.95,60.1833,"OpenStreetMap feature of that name","osm:relation/13548706",0,NA
 24.950439,60.173149,"OpenStreetMap feature of that name","osm:relation/13548706",0,10235
 24.950989,60.172672,"OpenStreetMap feature of that name","osm:relation/13548706",0,3228
 24.950989,60.172672,"OpenStreetMap feature of that name","osm:relation/13548706",0,10234
@@ -14840,11 +14701,9 @@
 28.9622,41.0124,"Google Maps place of that name","Istanbul Univ. Biology Museum",142,4037
 28.9622,41.0124,"Google Maps place of that name","Istanbul University",38,4036
 28.9622,41.0124,"Google Maps place of that name","Istanbul University",38,4035
-28.9622,41.0124,"OpenStreetMap feature of that name","osm:way/928868044",31,4037
 28.9622,41.0124,"OpenStreetMap feature of that name","osm:way/928868044",31,10276
 28.9622,41.0124,"OpenStreetMap feature of that name","osm:way/928868044",31,11558
 28.963611,41.013333,"Google Maps place of that name","Istanbul Univ. Biology Museum",292,NA
-28.963611,41.013333,"OpenStreetMap feature of that name","osm:way/928868044",0,NA
 28.963875,41.013036111,"Google Maps place of that name","Istanbul University",178,NA
 28.985,41.17638889,"Google Maps place of that name","Ataturk Arboretum",41,NA
 29.0094,41.0422,"Google Maps place of that name","Bahcesehir University",12,NA
@@ -14902,7 +14761,6 @@
 30.2987,59.9419,"OpenStreetMap feature of that name","osm:relation/6601724",0,8250
 30.2987,59.9419,"OpenStreetMap feature of that name","osm:relation/6601724",0,8252
 30.2987,59.9419,"OpenStreetMap feature of that name","osm:relation/6601724",0,8253
-30.2987,59.9419,"OpenStreetMap feature of that name","osm:relation/6601724",0,11532
 30.2999,59.9396,"Google Maps place of that name","Saint Petersburg State University",261,NA
 30.300445,59.940555,"OpenStreetMap feature of that name","osm:relation/6601724",0,NA
 30.304444444,59.941666666,"Google Maps place of that name","Zoological Museum of the Zoological Institute of the Russian Academy of Sciences",97,7589
@@ -14949,12 +14807,8 @@
 30.5125,50.445,"Google Maps place of that name","National Science and Natural History Museum of the National Academy of Sciences of Ukraine",184,6257
 30.5125,50.445,"Google Maps place of that name","Ukrainian National Academy of Sciences",12,8860
 30.5125,50.445,"OpenStreetMap feature of that name","osm:way/320049307",154,6105
-30.5125,50.445,"OpenStreetMap feature of that name","osm:node/5927775410",189,8860
-30.5125,50.445,"OpenStreetMap feature of that name","osm:node/5927775410",189,11534
-30.5125,50.445,"OpenStreetMap feature of that name","osm:node/5927775410",189,11548
 30.51489444,50.44544722,"Google Maps place of that name","National Science and Natural History Museum of the National Academy of Sciences of Ukraine",8,6295
 30.51489444,50.44544722,"Google Maps place of that name","Ukrainian National Academy of Sciences",175,8862
-30.51489444,50.44544722,"OpenStreetMap feature of that name","osm:node/5927775410",68,8862
 30.51496,50.44491,"OpenStreetMap feature of that name","osm:way/320049307",0,NA
 30.515,50.445,"Google Maps place of that name","Schmalhausen Institute of Zoology of National Academy of Sciences of Ukraine",19,NA
 30.515,50.445,"OpenStreetMap feature of that name","osm:node/4266240030",17,NA
@@ -15175,7 +15029,6 @@
 35.014819,32.351579,"Google Maps place of that name","פארק אוטופיה - Utopia Park",35,NA
 35.0394839,-15.8040824,"Google Maps place of that name","Museum of Malawi",27,5898
 35.0394839,-15.8040824,"OpenStreetMap feature of that name","osm:node/3047298959",0,5898
-35.042,48.436,"OpenStreetMap feature of that name","osm:way/86700472",0,NA
 35.08102,32.84534,"OpenStreetMap feature of that name","osm:way/81024356",88,NA
 35.10075,33.025611111,"Google Maps place of that name","Botanical and Zoological Garden Nahariya",36,NA
 35.107961,32.711992,"OpenStreetMap feature of that name","osm:way/91373745",0,NA
@@ -15241,7 +15094,6 @@
 36.225,50.002777777,"OpenStreetMap feature of that name","osm:relation/19742230",0,NA
 36.2278056,50.0043326,"Google Maps place of that name","Kharkiv National University",15,NA
 36.228014,49.999836,"Google Maps place of that name","Kharkiv Botanical Garden",228,NA
-36.228014,49.999836,"OpenStreetMap feature of that name","osm:relation/19742230",95,NA
 36.2281,50.0007,"Google Maps place of that name","Kharkiv Dolphinarium Nemo",106,NA
 36.2281,50.0007,"OpenStreetMap feature of that name","osm:relation/19742230",0,NA
 36.228333333,50.004444444,"Google Maps place of that name","Kharkiv National University",39,4416
@@ -15265,9 +15117,7 @@
 36.77731,-1.3368,"OpenStreetMap feature of that name","osm:way/76833395",0,NA
 36.7966,-3.4011,"Google Maps place of that name","The Nelson Mandela African Institution of Science and Technology (NM-AIST)",183,NA
 36.7966,-3.4011,"OpenStreetMap feature of that name","osm:way/1121139164",0,NA
-36.81309983,-1.27429983,"OpenStreetMap feature of that name","osm:way/95122002",181,NA
 36.8131,-1.2743,"Google Maps place of that name","National Museum of Kenya",152,6290
-36.8131,-1.2743,"OpenStreetMap feature of that name","osm:way/95122002",181,10454
 36.81332,-1.30993,"Google Maps place of that name","Strathmore University",178,NA
 36.81332,-1.30993,"OpenStreetMap feature of that name","osm:way/105267819",0,NA
 36.8145,-1.27404,"OpenStreetMap feature of that name","osm:way/95122002",25,NA
@@ -15336,10 +15186,8 @@
 38.7587357,9.046613,"Google Maps place of that name","Addis Ababa University",166,62
 38.7587357,9.046613,"OpenStreetMap feature of that name","osm:relation/21062226",0,62
 38.7615,9.0385,"Google Maps place of that name","National Museum of Ethiopia",42,NA
-38.76194444,9.04277778,"OpenStreetMap feature of that name","osm:relation/21062226",0,NA
 38.76514525,9.0343673,"OpenStreetMap feature of that name","osm:way/798392118",0,64
 38.765333333,9.033111111,"OpenStreetMap feature of that name","osm:way/798392118",0,63
-38.765333333,9.033111111,"OpenStreetMap feature of that name","osm:way/798392118",0,6413
 38.7826,9.0334,"Google Maps place of that name","Ethiopian Biodiversity Institute",127,NA
 38.814572,9.015703,"Google Maps place of that name","International Livestock Research Institute",76,3978
 38.814572,9.015703,"Google Maps place of that name","International Livestock Research Institute",76,3977
@@ -15411,7 +15259,6 @@
 43.1423226,36.38359395,"Google Maps place of that name","University of Mosul",171,10452
 43.1423226,36.38359395,"OpenStreetMap feature of that name","osm:relation/12272928",0,10452
 43.1423226,36.38359395,"OpenStreetMap feature of that name","osm:relation/12272928",0,10453
-43.148055555,11.595,"OpenStreetMap feature of that name","osm:way/266382354",63,NA
 43.521094,41.759508,"Google Maps place of that name","ალპური ბოტანიკური ბაღი / Alpine Botanical Garden",234,NA
 43.619444,-23.123056,"Google Maps place of that name","Reniala Reserve",113,NA
 43.67352,-23.36815,"Google Maps place of that name","Institut Halieutique et des Sciences Marines",17,NA
@@ -15447,7 +15294,6 @@
 44.74847,41.71288,"OpenStreetMap feature of that name","osm:relation/18087876",0,NA
 44.74855,41.71248,"Google Maps place of that name","Ilia State University, T Building / ილიას სახელმწიფო უნივერსიტეტი, T კორპუსი",41,NA
 44.74855,41.71248,"OpenStreetMap feature of that name","osm:relation/18087876",0,NA
-44.77691515,41.71303345,"OpenStreetMap feature of that name","osm:way/104122415",0,8498
 44.777,41.713,"Google Maps place of that name","Tbilisi Zoo",281,NA
 44.777,41.713,"OpenStreetMap feature of that name","osm:way/104122415",0,NA
 44.7907362,41.70312345,"Google Maps place of that name","Georgian National Academy of Sciences",24,2925
@@ -15467,7 +15313,6 @@
 44.969508,40.557203,"Google Maps place of that name","Sevan Botanical Garden",160,NA
 45.00026,53.17589,"Google Maps place of that name","Penza Zoo",190,NA
 45.00382555,53.1819718,"Google Maps place of that name","Penza State University",84,7063
-45.00382555,53.1819718,"OpenStreetMap feature of that name","osm:relation/6582637",0,7063
 45.0394,12.8121,"Google Maps place of that name","Presidency of the University of Aden",4,NA
 45.0394,12.8121,"OpenStreetMap feature of that name","osm:way/995512757",0,NA
 45.1839,-12.8434,"Google Maps place of that name","Consevatoire Botanique De Mascarin Antenna De Mayotte",68,NA
@@ -15511,9 +15356,6 @@
 47.53246,-18.87378,"Google Maps place of that name","Kew Madagascar Conservation Centre",270,NA
 47.5527,-18.9138,"Google Maps place of that name","University of Antananarivo",97,9994
 47.5529,-18.9138,"Google Maps place of that name","University of Antananarivo",117,NA
-47.8433585,30.5144974,"OpenStreetMap feature of that name","osm:node/4072387718",0,4008
-47.9062153,29.3361866,"OpenStreetMap feature of that name","osm:node/13261949689",0,4543
-47.9062153,29.3361866,"OpenStreetMap feature of that name","osm:node/13261949689",0,4544
 47.96245,29.300167,"Google Maps place of that name","Kuwait Zoo",102,NA
 47.96245,29.300167,"OpenStreetMap feature of that name","osm:way/167443095",0,NA
 47.9763,29.3707,"Google Maps place of that name","Kuwait Science and Natural History Museum",42,8613
@@ -15556,7 +15398,6 @@
 50.49555556,26.01555556,"Google Maps place of that name","Mohamed bin Zayed Nature Reserve,Birds area",110,NA
 50.8289,34.5965,"Google Maps place of that name","University of Qom",234,NA
 50.8289,34.5965,"OpenStreetMap feature of that name","osm:way/232318237",0,NA
-50.8386,34.59877,"OpenStreetMap feature of that name","osm:way/232318237",21,NA
 50.9968,35.8046,"Google Maps place of that name","College of Agriculture & Natural Resources of University of Tehran",211,10702
 51.174722222,35.738611111,"Google Maps place of that name","National Botanical Garden of Iran",78,NA
 51.174722222,35.738611111,"OpenStreetMap feature of that name","osm:way/99886906",0,NA
@@ -15600,7 +15441,6 @@
 51.612138888,32.637722222,"Google Maps place of that name","Isfahan Aquarium",6,NA
 51.612138888,32.637722222,"OpenStreetMap feature of that name","osm:way/421718224",0,NA
 51.612805555,32.637666666,"Google Maps place of that name","Reptiles Garden",5,NA
-51.612805555,32.637666666,"OpenStreetMap feature of that name","osm:way/421718224",35,NA
 51.67363056,32.65830833,"OpenStreetMap feature of that name","osm:way/244276825",0,6360
 51.67363056,32.65830833,"OpenStreetMap feature of that name","osm:way/244276825",0,6361
 51.67363056,32.65830833,"OpenStreetMap feature of that name","osm:way/244276825",0,6362
@@ -15720,7 +15560,6 @@
 68.764,27.4916,"OpenStreetMap feature of that name","osm:relation/8116378",0,NA
 68.764022,27.491647,"OpenStreetMap feature of that name","osm:relation/8116378",0,7862
 68.77194444,38.585,"Google Maps place of that name","Dushanbe Zoo",98,NA
-68.79479625,38.565437,"OpenStreetMap feature of that name","osm:way/662680400",0,803
 69.1321,54.8774,"Google Maps place of that name","North Kazakhstan University",260,NA
 69.133787,34.514935,"Google Maps place of that name","Kabul University",174,NA
 69.133787,34.514935,"OpenStreetMap feature of that name","osm:way/199999770",0,NA
@@ -15733,10 +15572,8 @@
 69.15527778,34.50944444,"Google Maps place of that name","Kabul Zoo",55,NA
 69.15527778,34.50944444,"OpenStreetMap feature of that name","osm:way/784170240",0,NA
 69.3078197,41.3440127,"Google Maps place of that name","Tashkent Botanical Garden",256,NA
-69.3078197,41.3440127,"OpenStreetMap feature of that name","osm:relation/5519342",0,NA
 69.31,41.344,"Google Maps place of that name","Institute of Zoology of Uzbekistan Academy of Sciences",26,NA
 69.31083333,41.34027778,"OpenStreetMap feature of that name","osm:relation/5519342",0,NA
-69.31527778,41.34388889,"OpenStreetMap feature of that name","osm:relation/5519342",0,NA
 69.33439,41.32818,"Google Maps place of that name","Juru",41,NA
 70.465,21.542,"Google Maps place of that name","Sakkarbaug Zoological Park",40,NA
 70.465,21.542,"OpenStreetMap feature of that name","osm:way/1240814227",0,NA
@@ -15760,7 +15597,6 @@
 71.487777777,34.008333333,"OpenStreetMap feature of that name","osm:way/451765356",0,10559
 71.4878,34.0049,"OpenStreetMap feature of that name","osm:way/451765356",0,NA
 71.48972222,34.01730556,"Google Maps place of that name","Peshawar Zoo",47,NA
-71.48972222,34.01730556,"OpenStreetMap feature of that name","osm:way/451765356",0,NA
 71.681666666,29.4025,"Google Maps place of that name","Bahawalpur Zoo",148,NA
 71.681666666,29.4025,"OpenStreetMap feature of that name","osm:way/756188959",0,NA
 71.699902,40.982148,"Google Maps place of that name","Namangan State University",132,NA
@@ -16030,12 +15866,10 @@
 76.95049,11.017886,"Google Maps place of that name","Institute of Forest Genetics and Tree Breeding (IFGTB)",103,3688
 76.951379,11.0175714,"Google Maps place of that name","Institute of Forest Genetics and Tree Breeding (IFGTB)",0,3690
 76.9522958,43.2461815,"Google Maps place of that name","Academy of Science",64,5177
-76.9541,8.5101,"OpenStreetMap feature of that name","osm:way/315280240",0,NA
 76.955,8.51173,"Google Maps place of that name","Thiruvananthapuram Zoo",126,NA
 76.955,8.51173,"OpenStreetMap feature of that name","osm:way/315280240",0,NA
 76.9551,8.5089,"Google Maps place of that name","Napier Museum",13,6086
 76.9551,8.5089,"OpenStreetMap feature of that name","osm:way/28188229",0,6086
-76.95656,8.5101,"OpenStreetMap feature of that name","osm:way/315280240",0,NA
 76.96666,52.26552,"OpenStreetMap feature of that name","osm:way/273732645",0,NA
 76.9667,52.2656,"OpenStreetMap feature of that name","osm:way/273732645",0,NA
 76.970914,11.005718,"Google Maps place of that name","VOC park and zoo",161,NA
@@ -16230,7 +16064,6 @@
 87.56762355,43.86540235,"Google Maps place of that name","Chinese Academy of Sciences Xinjiang Ecology And Geography Institute",205,11368
 87.56762355,43.86540235,"OpenStreetMap feature of that name","osm:way/864534611",0,11369
 87.5737,43.8162,"Google Maps place of that name","Xinjiang Academy of Agricultural Sciences",224,11364
-87.5737,43.8162,"OpenStreetMap feature of that name","osm:way/223618418",81,11364
 87.5737,43.8162,"OpenStreetMap feature of that name","osm:way/223618418",81,11366
 87.5771927,43.8364309,"OpenStreetMap feature of that name","osm:way/37760534",0,11370
 87.5771927,43.8364309,"OpenStreetMap feature of that name","osm:way/37760534",0,11371
@@ -16414,7 +16247,6 @@
 100.4973,7.0078,"Google Maps place of that name","Faculty of Medicine, Prince of Songkla University",223,7226
 100.4973,7.0078,"Google Maps place of that name","Faculty of Science, Prince of Songkla University",14,7227
 100.4973,7.0078,"OpenStreetMap feature of that name","osm:way/1212041014",0,7227
-100.500628,7.007023,"OpenStreetMap feature of that name","osm:way/1212041014",0,NA
 100.516388888,13.7725,"Google Maps place of that name","Opposite Dusit Zoo",233,NA
 100.5257,13.7641,"OpenStreetMap feature of that name","osm:way/156924992",0,NA
 100.525726,13.764128,"Google Maps place of that name","Faculty of Science, Mahidol University Phayathai",74,4922
@@ -16519,8 +16351,6 @@
 102.708449812,25.056644234,"OpenStreetMap feature of that name","osm:way/35842505",0,NA
 102.72698055,25.03538415,"OpenStreetMap feature of that name","osm:way/37276051",0,4534
 102.7308,2.1484,"OpenStreetMap feature of that name","osm:way/648123495",0,NA
-102.74156185,25.143353,"OpenStreetMap feature of that name","osm:way/303018152",0,4530
-102.75219825,24.95223895,"OpenStreetMap feature of that name","osm:way/631619836",0,11453
 102.8226,16.4767,"OpenStreetMap feature of that name","osm:relation/812288",0,4422
 102.8248,24.8369,"Google Maps place of that name","Yunnan University of Traditional Chinese Medicine （Southeast Gate）",8,NA
 103.0877,5.4078,"OpenStreetMap feature of that name","osm:way/374421326",0,NA
@@ -16568,8 +16398,6 @@
 103.8186,1.2587,"Google Maps place of that name","Marine Life Park",73,NA
 103.818611,1.258611,"Google Maps place of that name","Singapore Oceanarium",214,NA
 103.818611,1.258611,"OpenStreetMap feature of that name","osm:way/171984328",171,NA
-103.8573556,36.0502899,"OpenStreetMap feature of that name","osm:node/4619078505",0,4691
-103.8573556,36.0502899,"OpenStreetMap feature of that name","osm:node/4619078505",0,4692
 103.9135,1.7031,"Google Maps place of that name","Firefly Valley Leisure Park",56,NA
 103.94096,13.50869,"Google Maps place of that name","Banteay Srey Butterfly Centre (BBC)",12,NA
 103.94096,13.50869,"OpenStreetMap feature of that name","osm:node/2600868472",4,NA
@@ -16617,8 +16445,6 @@
 105.980011133957,49.4641809752071,"Google Maps place of that name","Institute of Plant and Agricultural Sciences",7,NA
 106.0776,-2.0727,"Google Maps place of that name","Universitas Bangka Belitung",236,NA
 106.0776,-2.0727,"OpenStreetMap feature of that name","osm:way/700794865",0,NA
-106.23072915,38.48445775,"OpenStreetMap feature of that name","osm:way/334447456",0,6597
-106.4036499,29.8213429,"OpenStreetMap feature of that name","osm:way/901715774",0,1468
 106.41475,29.82353,"Google Maps place of that name","Chongqing Museum of Natural History",11,NA
 106.41693,-2.50477,"Google Maps place of that name","Kampung Literasi Mahadaya/PKBM Rumah Inspirasi",76,NA
 106.4183465,29.8232398,"OpenStreetMap feature of that name","osm:way/413071891",0,8182
@@ -16676,7 +16502,6 @@
 108.28812475,22.84716755,"OpenStreetMap feature of that name","osm:way/398115378",0,3074
 108.28812475,22.84716755,"OpenStreetMap feature of that name","osm:way/398115378",0,3075
 108.3272,22.8048,"Google Maps place of that name","Guangxi Institute for Food and Drug Control",2,3063
-108.3281536,22.83043785,"OpenStreetMap feature of that name","osm:way/991635900",0,3060
 108.3281783,22.8304251,"OpenStreetMap feature of that name","osm:way/991635900",0,3069
 108.3281783,22.8304251,"OpenStreetMap feature of that name","osm:way/991635900",0,3070
 108.3281783,22.8304251,"OpenStreetMap feature of that name","osm:way/991635900",0,6391
@@ -16684,7 +16509,6 @@
 108.406612,-6.815555,"Google Maps place of that name","Kebun Raya Kuningan",118,NA
 108.441352,30.755122,"OpenStreetMap feature of that name","osm:way/906731369",0,NA
 108.4443,11.9539,"OpenStreetMap feature of that name","osm:way/969458761",0,1880
-108.9419991,34.1991504,"OpenStreetMap feature of that name","osm:node/2434633315",0,7859
 109.2145,12.2079,"Google Maps place of that name","Institute of Oceanography",26,NA
 109.2145,12.2079,"OpenStreetMap feature of that name","osm:way/1158459582",0,NA
 109.215,12.207,"Google Maps place of that name","Museum of Oceanography",52,NA
@@ -16703,15 +16527,12 @@
 110.421106,-7.607462,"OpenStreetMap feature of that name","osm:node/10302018234",0,NA
 110.4243329,-7.6159272,"Google Maps place of that name","Merapi Volcano Museum",25,5842
 110.444083333,1.466111111,"OpenStreetMap feature of that name","osm:relation/12493502",0,9916
-111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3531
 111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3535
 111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3536
 111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3537
 111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3538
 111.69728465,40.804458,"OpenStreetMap feature of that name","osm:way/154459189",0,3539
-111.70405185,40.81120055,"OpenStreetMap feature of that name","osm:way/154462357",0,3530
 111.70405185,40.81120055,"OpenStreetMap feature of that name","osm:way/154462357",0,3532
-112.4457038,34.6442662,"OpenStreetMap feature of that name","osm:way/295599891",0,4865
 112.4893,23.1092,"OpenStreetMap feature of that name","osm:way/387284673",0,NA
 112.529557323,-7.888733741,"Google Maps place of that name","Museum Satwa",9,NA
 112.529557323,-7.888733741,"OpenStreetMap feature of that name","osm:way/403418111",3,NA
@@ -16739,7 +16560,6 @@
 112.94406555,28.1908543,"OpenStreetMap feature of that name","osm:way/486904541",0,3409
 112.94406555,28.1908543,"OpenStreetMap feature of that name","osm:way/486904541",0,3410
 112.94406555,28.1908543,"OpenStreetMap feature of that name","osm:way/486904541",0,3411
-112.97670755,28.11084525,"OpenStreetMap feature of that name","osm:way/492256966",0,3404
 112.9882414,28.2153133,"OpenStreetMap feature of that name","osm:way/269856520",0,3407
 113.27709,23.184373,"OpenStreetMap feature of that name","osm:way/490710270",0,NA
 113.2805,23.1087,"Google Maps place of that name","Zhongkai University of Agriculture and Engineering",91,NA
@@ -16788,7 +16608,6 @@
 114.156388888,22.277777777,"Google Maps place of that name","Hong Kong Zoological and Botanical Gardens",48,NA
 114.156388888,22.277777777,"OpenStreetMap feature of that name","osm:relation/12955557",0,NA
 114.156948,22.405431,"Google Maps place of that name","Shing Mun Arboretum",1,NA
-114.1686,22.3813,"OpenStreetMap feature of that name","osm:relation/2817891",0,NA
 114.1747999,22.58069035,"OpenStreetMap feature of that name","osm:way/270859682",0,2550
 114.1747999,22.58069035,"OpenStreetMap feature of that name","osm:way/270859682",0,2551
 114.175916666,22.245861111,"Google Maps place of that name","Ocean Park Hong Kong The Waterfront",10,NA
@@ -16957,7 +16776,6 @@
 119.60288889,23.64972222,"OpenStreetMap feature of that name","osm:way/588589102",120,NA
 119.637639,29.13677605,"OpenStreetMap feature of that name","osm:way/297356404",0,11500
 119.7268503,30.2563636,"OpenStreetMap feature of that name","osm:way/431603403",0,11483
-119.7268503,30.2563636,"OpenStreetMap feature of that name","osm:way/431603403",0,11484
 119.7268503,30.2563636,"OpenStreetMap feature of that name","osm:way/431603403",0,11485
 119.7268503,30.2563636,"OpenStreetMap feature of that name","osm:way/431603403",0,11486
 119.743,5.0375,"Google Maps place of that name","Mindanao State University - Tawi-Tawi College of Technology and Oceanography",154,5141
@@ -17007,13 +16825,6 @@
 120.6088056,22.64294745,"OpenStreetMap feature of that name","osm:way/224941422",0,6301
 120.613192067,16.414562166,"Google Maps place of that name","Baguio Botanical Garden",59,NA
 120.613192067,16.414562166,"OpenStreetMap feature of that name","osm:relation/14181288",0,NA
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8397
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8398
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8399
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8400
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8401
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8402
-120.623497,31.3254217,"OpenStreetMap feature of that name","osm:way/542534202",0,8405
 120.6737533,24.1245847,"Google Maps place of that name","National Chung Hsing University",197,NA
 120.6737533,24.1245847,"OpenStreetMap feature of that name","osm:relation/6277679",92,NA
 120.6738,24.1246,"Google Maps place of that name","National Chung Hsing University",194,NA
@@ -17130,7 +16941,6 @@
 121.45236,25.04,"Google Maps place of that name","研海生態顧問股份有限公司Ceta explorers",28,NA
 121.4580124,31.23688225,"OpenStreetMap feature of that name","osm:way/425762388",0,7898
 121.494416666,22.671611111,"Google Maps place of that name","Sika Deer Ecological Park",115,NA
-121.4953624,31.2415862,"OpenStreetMap feature of that name","osm:node/4498281092",0,7890
 121.49717,31.24255,"OpenStreetMap feature of that name","osm:way/404676268",0,NA
 121.499166666,31.298888888,"OpenStreetMap feature of that name","osm:relation/3936746",0,2752
 121.499166666,31.298888888,"OpenStreetMap feature of that name","osm:relation/3936746",0,2753
@@ -17186,7 +16996,6 @@
 121.61415,25.04525,"Google Maps place of that name","Biodiversity Research Center, Academia Sinica",32,NA
 121.61461,25.0452,"Google Maps place of that name","Biodiversity Research Center, Academia Sinica",71,NA
 121.615,25.043,"Google Maps place of that name","Academia Sinica",144,NA
-121.615,25.043,"OpenStreetMap feature of that name","osm:way/155772172",0,NA
 121.6155068,25.0431137,"Google Maps place of that name","Institute of Biomedical Sciences, Academia Sinica",102,NA
 121.673517,29.808072,"OpenStreetMap feature of that name","osm:way/691951921",0,NA
 121.691,25.2053,"Google Maps place of that name","Yehliu Ocean World",38,NA
@@ -17226,8 +17035,6 @@
 125.2849,43.826,"OpenStreetMap feature of that name","osm:relation/17863099",0,NA
 125.31527778,24.80138889,"Google Maps place of that name","Miyakojima Botanical Garden",77,NA
 125.3179,24.7965,"Google Maps place of that name","Miyakojima City Museum",6,NA
-125.3208,43.8861,"OpenStreetMap feature of that name","osm:relation/17863099",0,NA
-125.322777777,43.88,"OpenStreetMap feature of that name","osm:relation/17863099",0,NA
 125.3228,43.88,"OpenStreetMap feature of that name","osm:relation/20629231",0,NA
 125.3993,44.0015,"Google Maps place of that name","Northeast Institute of Geography and Agroecology Chinese Academy of Sciences",2,NA
 125.4063,43.814,"Google Maps place of that name","Jilin Agricultural University",28,3267
@@ -17248,8 +17055,6 @@
 126.5614,33.4578,"Google Maps place of that name","Jeju National University, Ara Campus",218,4247
 126.5614,33.4578,"OpenStreetMap feature of that name","osm:way/471697017",76,4247
 126.59639,45.81333,"OpenStreetMap feature of that name","osm:way/221582261",0,NA
-126.61833985,45.70676545,"OpenStreetMap feature of that name","osm:relation/16802494",0,2671
-126.61833985,45.70676545,"OpenStreetMap feature of that name","osm:relation/16802494",0,3218
 126.6534266,37.4494108,"Google Maps place of that name","Inha University, Yonghyeon Campus",67,3516
 126.6534266,37.4494108,"Google Maps place of that name","Inha University, Yonghyeon Campus",67,3517
 126.6534266,37.4494108,"Google Maps place of that name","Inha University, Yonghyeon Campus",67,3518
@@ -17284,7 +17089,6 @@
 127.04589185,37.2829445,"OpenStreetMap feature of that name","osm:way/477523965",0,147
 127.04589185,37.2829445,"OpenStreetMap feature of that name","osm:way/477523965",0,148
 127.058812,37.512619,"OpenStreetMap feature of that name","osm:node/2676488130",65,NA
-127.089704,35.801028,"OpenStreetMap feature of that name","osm:node/368733861",0,4251
 127.1,45.391,"OpenStreetMap feature of that name","osm:relation/9417468",0,NA
 127.1272,37.451,"Google Maps place of that name","Gachon University, Global Campus",150,2834
 127.1272,37.451,"Google Maps place of that name","Gachon University, Global Campus",150,2835
@@ -17309,7 +17113,6 @@
 127.4599132,36.3355648,"OpenStreetMap feature of that name","osm:way/30757856",0,1884
 127.650416666,26.156305555,"Google Maps place of that name","DMM Kariyushi Aquarium okinawa",28,NA
 127.650416666,26.156305555,"OpenStreetMap feature of that name","osm:way/1025453072",0,NA
-127.6993853,26.20121265,"OpenStreetMap feature of that name","osm:way/986106561",0,6804
 127.73856075,37.8860649,"Google Maps place of that name","한림대학교",245,3131
 127.73856075,37.8860649,"Google Maps place of that name","한림대학교",245,3132
 127.73856075,37.8860649,"OpenStreetMap feature of that name","osm:way/300174107",0,3131
@@ -17403,7 +17206,6 @@
 130.5282,33.3195,"Google Maps place of that name","Kurume Bird Center",6,NA
 130.5282,33.3195,"OpenStreetMap feature of that name","osm:way/238999385",0,NA
 130.5381,33.5183,"Google Maps place of that name","Kyushu National Museum",5,NA
-130.5398,31.5753,"OpenStreetMap feature of that name","osm:relation/3836820",190,NA
 130.54398975,31.57046925,"Google Maps place of that name","Faculty of Science, Kagoshima University",21,NA
 130.546024,31.571636,"Google Maps place of that name","Faculty of Science, Kagoshima University",227,4321
 130.546024,31.571636,"Google Maps place of that name","Kagoshima University Museum",4,4319
@@ -17969,13 +17771,11 @@
 137.399375,35.496742,"OpenStreetMap feature of that name","osm:node/1420978445",4,NA
 137.4256,36.9013,"Google Maps place of that name","Kurobe Yoshida Science Museum",4,NA
 137.431944,34.721111,"Google Maps place of that name","Nonhoi Park, Toyohashi Zoo and Botanical Park",91,NA
-137.431944,34.721111,"OpenStreetMap feature of that name","osm:relation/13569829",0,NA
 137.432,34.7211,"Google Maps place of that name","Toyohashi Museum of Natural History",4,NA
 137.432,34.7211,"OpenStreetMap feature of that name","osm:relation/13569829",0,NA
 137.43211111,34.72113889,"Google Maps place of that name","Toyohashi Museum of Natural History",15,NA
 137.43211111,34.72113889,"OpenStreetMap feature of that name","osm:relation/13569829",0,NA
 137.4322,34.7203,"Google Maps place of that name","Nonhoi Park, Toyohashi Zoo and Botanical Park",4,NA
-137.4322,34.7203,"OpenStreetMap feature of that name","osm:relation/13569829",46,NA
 137.54313889,36.21927778,"Google Maps place of that name","Okuhida Bear's Ranch",37,NA
 137.5962,36.5768,"Google Maps place of that name","Tateyama Nature Conservation Center",3,NA
 137.6332,34.7625,"Google Maps place of that name","Hamamatsu Flower Park",4,NA
@@ -18460,9 +18260,7 @@
 139.94338889,37.49138889,"Google Maps place of that name","Oyaku Garden",59,NA
 139.944,37.4912,"Google Maps place of that name","Oyaku Garden",3,NA
 139.965219,35.764778,"Google Maps place of that name","Ichikawa City Zoo",94,NA
-139.965219,35.764778,"OpenStreetMap feature of that name","osm:node/1420736352",93,NA
 139.966,35.7642,"Google Maps place of that name","Ichikawa City Zoo",1,NA
-139.966,35.7642,"OpenStreetMap feature of that name","osm:node/1420736352",77,NA
 139.966,35.76425,"Google Maps place of that name","Municipal Museum of Natural History in Ichikawa",3,NA
 139.966,35.76425,"OpenStreetMap feature of that name","osm:node/1420736352",71,NA
 139.969,36.8996,"Google Maps place of that name","Nasunogahara Museum",5,NA
@@ -19012,7 +18810,6 @@
 149.10985,-35.27947,"Google Maps place of that name","Australian National Botanic Gardens",107,NA
 149.10985,-35.27947,"OpenStreetMap feature of that name","osm:way/20289807",0,NA
 149.1123,-35.27156,"Google Maps place of that name","Centre for Australian National Biodiversity Research",15,NA
-149.1123,-35.27156,"OpenStreetMap feature of that name","osm:way/279984863",120,NA
 149.1126,-35.2715,"Google Maps place of that name","Centre for Australian National Biodiversity Research",14,NA
 149.1126,-35.2715,"OpenStreetMap feature of that name","osm:way/279984863",126,NA
 149.1126156,-35.2715224,"Google Maps place of that name","Centre for Australian National Biodiversity Research",15,NA
@@ -19048,7 +18845,6 @@
 150.423,-33.5391,"Google Maps place of that name","Blue Mountains Botanic Garden Mount Tomah",116,NA
 150.423,-33.5391,"OpenStreetMap feature of that name","osm:way/466011025",0,NA
 150.489952,-23.399208,"Google Maps place of that name","Rockhampton Botanic Gardens & ZOO",294,NA
-150.489952,-23.399208,"OpenStreetMap feature of that name","osm:way/1308433944",51,NA
 150.490753,-23.397878,"Google Maps place of that name","Rockhampton Zoo",10,NA
 150.490753,-23.397878,"OpenStreetMap feature of that name","osm:way/1308433944",1,NA
 150.4915,-23.4007,"Google Maps place of that name","Rockhampton Botanic Gardens & ZOO",81,NA
@@ -19225,7 +19021,6 @@
 153.0183,-27.473,"Google Maps place of that name","Queensland Museum Kurilpa",16,NA
 153.0183,-27.473,"OpenStreetMap feature of that name","osm:relation/18157403",0,NA
 153.0238434,-26.7192356,"Google Maps place of that name","Maroochy Regional Bushland Botanic Garden",25,NA
-153.02809,-27.46794,"OpenStreetMap feature of that name","osm:way/1219100085",16,7320
 153.03,-27.4747,"Google Maps place of that name","City Botanic Gardens",48,NA
 153.0539,-27.5526,"Google Maps place of that name","Griffith University, Brisbane South (Nathan) Campus",282,3032
 153.099182,-27.2315981,"Google Maps place of that name","Redcliffe Botanic Gardens",128,NA
@@ -19357,7 +19152,6 @@
 174.766,-41.2829,"Google Maps place of that name","Wellington Botanic Garden",50,NA
 174.766,-41.2829,"OpenStreetMap feature of that name","osm:way/20266439",0,NA
 174.76613355,-41.28253345,"Google Maps place of that name","Wellington Botanic Garden",60,11168
-174.76613355,-41.28253345,"OpenStreetMap feature of that name","osm:way/20266439",0,11032
 174.76613355,-41.28253345,"OpenStreetMap feature of that name","osm:way/20266439",0,11168
 174.76745,-41.28316,"Google Maps place of that name","Wellington Botanic Garden",75,11169
 174.76745,-41.28316,"OpenStreetMap feature of that name","osm:way/20266439",0,11169
