@@ -12,6 +12,8 @@ $rs = 'C:\Program Files\R\R-4.6.1\bin\x64\Rscript.exe'
 $argList = @('--no-save', (Join-Path $PSScriptRoot $Script)) + $Rest
 $p = Start-Process -FilePath $rs -ArgumentList $argList -WorkingDirectory $PSScriptRoot `
   -RedirectStandardOutput "$dir\stdout.log" -RedirectStandardError "$dir\stderr.log" -PassThru -WindowStyle Hidden
+# Holding the process handle keeps ExitCode readable after Refresh() and redirected streams.
+$null = $p.Handle
 Set-Content "$dir\pid.txt" $p.Id
 $peak = 0
 while (-not $p.HasExited) {
