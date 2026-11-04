@@ -160,10 +160,10 @@ NULL
 #' universities holding collections, where specimens are often georeferenced
 #' to the institution.
 #'
-#' The default gazetteer has 21,684 points. Of these, 9,773 are the
+#' The default gazetteer has 21,672 points. Of these, 9,773 are the
 #' institutions with coordinates in the table of
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-#' (`source` "CoordinateCleaner", `status` "cc"), and 11,911 are further
+#' (`source` "CoordinateCleaner", `status` "cc"), and 11,899 are further
 #' points that a check beyond their own source confirms (`status`
 #' "confirmed").
 #'
@@ -194,7 +194,7 @@ NULL
 #' by OpenStreetMap alone, 95 were at the named institution, 2 at another
 #' institution, 1 at another site of the same organisation and 1 unclear.
 #'
-#' [reference_points()] also returns 12,891 unconfirmed points, which the
+#' [reference_points()] also returns 12,903 unconfirmed points, which the
 #' test leaves out. They come from GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 #' museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -211,7 +211,7 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. The default gazetteer
 #'   differs from its `institutions` table by the 573 moved points and the
-#'   11,911 confirmed points. `reference = "CoordinateCleaner"` uses its table
+#'   11,899 confirmed points. `reference = "CoordinateCleaner"` uses its table
 #'   as it is.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].

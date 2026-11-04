@@ -98,8 +98,8 @@
   on every bar however many tests a rule holds; the map takes `xlim` and
   `ylim`.
 - The institution test uses CoordinateCleaner’s 9,773 institution points
-  and 11,911 points of other sources that a check beyond their own
-  source confirms (21,684 points, from 18,245). Of CoordinateCleaner’s
+  and 11,899 points of other sources that a check beyond their own
+  source confirms (21,672 points, from 18,245). Of CoordinateCleaner’s
   points, 573 are moved: 565 to the Google Maps place of the
   institution, where the place lies within 25 km of the city of
   CoordinateCleaner’s record and CoordinateCleaner’s point more than 25
@@ -119,7 +119,7 @@
   more than 20 km from every Factbook capital (The Hague, Cape Town,
   Edinburgh). The other 212 placed a Factbook capital a second time,
   within 20 km of it, and widened its buffer beyond 10 km.
-- The table also contains 12,891 unconfirmed points, which the test
+- The table also contains 12,903 unconfirmed points, which the test
   leaves out unless they are passed through `gazetteers`. They come from
   GRSciColl, Wikidata, Wikipedia’s lists of natural history museums,
   GeoNames, BGCI, the 1,062 herbaria of Index Herbariorum that GRSciColl

@@ -268,8 +268,8 @@ features)</td>
 <td align="left">institutions_status</td>
 <td align="left">CoordinateCleaner 3.0.1 institutions; overrides and
 checks by Google Maps and OpenStreetMap</td>
-<td align="left">2026-11-02</td>
-<td align="left"><span style="white-space: nowrap">2026-11-02</span></td>
+<td align="left">2026-11-04</td>
+<td align="left"><span style="white-space: nowrap">2026-11-04</span></td>
 </tr>
 <tr class="even">
 <td align="left">aohi</td>
@@ -423,16 +423,16 @@ out.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">source</span>, <span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                         </span></span>
 <span><span class="co">#&gt;                            cc confirmed override unconfirmed</span></span>
-<span><span class="co">#&gt;   BGCI                      0      1254        0        2393</span></span>
+<span><span class="co">#&gt;   BGCI                      0      1253        0        2394</span></span>
 <span><span class="co">#&gt;   CoordinateCleaner      9200         0        0           0</span></span>
-<span><span class="co">#&gt;   CoordinateCleaner list    0      1249        0        1881</span></span>
-<span><span class="co">#&gt;   GBIF registry             0      1110        0        1355</span></span>
+<span><span class="co">#&gt;   CoordinateCleaner list    0      1244        0        1886</span></span>
+<span><span class="co">#&gt;   GBIF registry             0      1109        0        1356</span></span>
 <span><span class="co">#&gt;   GeoNames                  0         3        0           0</span></span>
 <span><span class="co">#&gt;   Google Maps               0         0      565           0</span></span>
-<span><span class="co">#&gt;   GRSciColl                 0      2837        0        3166</span></span>
-<span><span class="co">#&gt;   Index Herbariorum         0       477        0         584</span></span>
+<span><span class="co">#&gt;   GRSciColl                 0      2834        0        3169</span></span>
+<span><span class="co">#&gt;   Index Herbariorum         0       476        0         585</span></span>
 <span><span class="co">#&gt;   OpenStreetMap             0         0        4           0</span></span>
-<span><span class="co">#&gt;   Wikidata                  0      4925        0        2868</span></span>
+<span><span class="co">#&gt;   Wikidata                  0      4924        0        2869</span></span>
 <span><span class="co">#&gt;   Wikipedia                 0        56        4         644</span></span></code></pre></div>
 <p>Of CoordinateCleaner’s points, 9,200 are used as that package has
 them. The other 573 are moved. Of these, 565 are moved to the place
@@ -483,12 +483,16 @@ names share only words of place names, they must also name the same kind
 of institution (university, museum, garden, zoo, herbarium, institute):
 Durban Botanic Gardens shares only “Durban” with the Durban Museum and
 does not confirm it. These checks covered every point of the table and
-confirm 11,911 points. In a hand reading of 100 points confirmed by
+confirm 11,899 points. In a hand reading of 100 points confirmed by
 Google Maps, 97 were at the named institution, 2 were unclear and 1 was
 another institution, which was left out. In a hand reading of 99 points
 confirmed by OpenStreetMap alone, 95 were at the named institution, 2 at
 another institution, 1 at another site of the same organisation and 1
-unclear.</p>
+unclear. Of the 99 points confirmed by OpenStreetMap alone where Google
+Maps places the name more than 5 km away, satellite imagery and the
+institutions’ own names showed 12 that are not at the named institution;
+they are listed in <code>data-raw/institution_rejections.csv</code> and
+stay unconfirmed.</p>
 <p>The other points come from the sources below. The first set is the
 bulk export of GBIF’s Global Registry of Scientific Collections
 (GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which
@@ -659,9 +663,9 @@ centroids and label points marked as extension</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">21,684 used by the test: CoordinateCleaner’s 9,773 (573
-moved, 565 of them to their Google Maps place) and 11,911 confirmed
-points of other sources; 12,891 unconfirmed points left out</td>
+<td align="left">21,672 used by the test: CoordinateCleaner’s 9,773 (573
+moved, 565 of them to their Google Maps place) and 11,899 confirmed
+points of other sources; 12,903 unconfirmed points left out</td>
 </tr>
 </tbody>
 </table>
@@ -709,7 +713,7 @@ no tagged release.</p>
 CoordinateCleaner’s 9,773 institution points, 9,200 of them at
 CoordinateCleaner’s coordinates and 573 moved, 565 of them to the Google
 Maps place of the institution (<a href="#institutions">Institutions</a>
-gives the conditions). It also uses 11,911 points of other sources that
+gives the conditions). It also uses 11,899 points of other sources that
 a check has confirmed. A record near a moved or confirmed point is
 flagged here and not by CoordinateCleaner.</p>
 <p>CoordinateCleaner geocoded nearly all its institutions itself. For
@@ -14014,7 +14018,7 @@ layer with its version, snapshot date or page revision:</p>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/flag_reference.html">flag_reference</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-02, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "OccurrenceCleaner 0.2.1 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-04, aohi 2022-10-10, habitat 2026-10-06)"</span></span></code></pre></div>
 <p><code>reference = "CoordinateCleaner"</code> stamps the installed <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>
 version instead. For streamed input the same label is written to the
 output directory, and a rerun into that directory with a different

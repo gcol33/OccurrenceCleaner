@@ -1010,7 +1010,12 @@ institutions <- institutions[!ext_dup, ]
 # above), so "Durban Museum" is not confirmed by Durban Botanic Gardens. A
 # check on coordinates no longer in the table (a point the
 # OpenStreetMap match no longer adds, or adds at another feature) is not used.
+# data-raw/institution_rejections.csv lists points that a later reading
+# (satellite imagery, or the institution's name and site) shows are not on the
+# institution; matched on coordinates and name, they stay unconfirmed whatever
+# their checks say.
 checks <- read.csv("data-raw/institution_checks.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
+rejections <- read.csv("data-raw/institution_rejections.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 from_osm <- startsWith(institutions$key, "osm:") | grepl("OpenStreetMap", institutions$master_source)
 at <- paste(institutions$lon, institutions$lat)
 stale <- !paste(checks$lon, checks$lat) %in% at
@@ -1024,6 +1029,12 @@ g_kind <- mapply(function(p, ev) any(vapply(names_at[[p]], function(n) kind_ok(n
 cat("Google checks whose kind of institution disagrees with the point's name:", sum(!g_kind), "\n")
 ok_google <- at %in% with(g_chk[g_kind, ], paste(lon, lat))
 ok_osm <- at %in% with(checks[checks$check == "OpenStreetMap feature of that name", ], paste(lon, lat)) & !from_osm
+at_name <- paste(at, institutions$name)
+rejected <- at_name %in% paste(rejections$lon, rejections$lat, rejections$name)
+cat("rejected points:", nrow(rejections), "- rows of the table matched:", sum(rejected), "\n")
+stopifnot(all(paste(rejections$lon, rejections$lat, rejections$name) %in% at_name))
+ok_google <- ok_google & !rejected
+ok_osm <- ok_osm & !rejected
 institutions$status <- ifelse(ok_google | ok_osm, "confirmed", "unconfirmed")
 institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenStreetMap feature of that name",
                          ifelse(ok_google, "Google Maps place of that name",
@@ -1125,11 +1136,12 @@ meta <- rbind(
              licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
                                                            "institutions; overrides and checks by Google Maps and OpenStreetMap"),
-             file = "institution_overrides.csv, institution_checks.csv", version = "2026-11-02",
+             file = "institution_overrides.csv, institution_checks.csv, institution_rejections.csv",
+             version = "2026-11-04",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
-                            sep = ", "),
-             retrieved = "2026-11-02", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+                            sha256("data-raw/institution_rejections.csv"), sep = ", "),
+             retrieved = "2026-11-04", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
