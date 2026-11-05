@@ -47,10 +47,11 @@ exclude. OccurrenceCleaner supports:
   CoordinateCleaner installed, `reference = "CoordinateCleaner"` uses
   its 9,773 institutions as they are. The default,
   `reference = "OccurrenceCleaner"`, corrects and extends them to
-  21,672: 565 points lying over 25 km from their listed city move to the
-  institution’s Google Maps place, and 11,899 locations from other
-  registries are added after a [check against Google Maps or
-  OpenStreetMap](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
+  23,989: 565 points lying over 25 km from their listed city move to the
+  institution’s Google Maps place, and 14,216 locations from other
+  registries are added after a [check against Google Maps, OpenStreetMap
+  or satellite
+  imagery](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
 - **Checks based on GBIF metadata.** Tests check GBIF’s reported issues,
   the type of record, and whether the organism is recorded as native or
   introduced. Habitat information for the recorded genus helps

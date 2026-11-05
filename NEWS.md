@@ -1,3 +1,7 @@
+# OccurrenceCleaner (development version)
+
+* The institution test uses 14,216 points of other sources (from 11,899), 23,989 points in all. The 2,317 new confirmations come from satellite imagery with place labels, read together with the named OpenStreetMap features within 1 km, of the points no other check confirmed; they are listed in `data-raw/institution_imagery.csv`. The table contains 10,586 unconfirmed points (from 12,903).
+
 # OccurrenceCleaner 0.2.2
 
 * The institution test uses CoordinateCleaner's 9,773 institution points and 11,899 points of other sources that a check beyond their own source confirms (21,672 points, from 12,559). The new confirmations come from a Google Maps and OpenStreetMap check of the points that were unconfirmed. When the two names share only words of place names, they must also name the same kind of institution (university, museum, garden, zoo, herbarium, institute), so University of Oxford does not confirm Oxford Zoo. The table contains 12,903 unconfirmed points (from 22,133).

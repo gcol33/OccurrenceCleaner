@@ -37,7 +37,7 @@
 <g clip-path='url(#cpMC4wMHw0NjguMDB8MC4wMHwzMjQuMDA=)'>
 <rect x='173.88' y='221.56' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='198.16' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
-<rect x='173.88' y='174.75' width='5.85' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
+<rect x='173.88' y='174.75' width='7.31' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='151.35' width='16.08' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='127.95' width='64.31' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
 <rect x='173.88' y='104.54' width='64.31' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #9DB4C0;' />
@@ -66,7 +66,7 @@
 <rect x='173.88' y='127.95' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='104.54' width='0.00' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <rect x='173.88' y='81.14' width='90.61' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
-<rect x='173.88' y='57.73' width='220.69' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
+<rect x='173.88' y='57.73' width='219.23' height='19.50' style='stroke-width: 0.75; stroke: none; fill: #2C5D73;' />
 <text x='167.16' y='236.33' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>invalid</text>
 <text x='167.16' y='212.92' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>gbif_headquarters</text>
 <text x='167.16' y='189.52' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>institution</text>
@@ -77,7 +77,7 @@
 <text x='167.16' y='72.50' text-anchor='end' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>capital</text>
 <text x='182.28' y='234.66' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
 <text x='182.28' y='211.25' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.0</text>
-<text x='188.13' y='187.85' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.1</text>
+<text x='189.59' y='187.85' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.2</text>
 <text x='198.36' y='164.44' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>0.4</text>
 <text x='246.59' y='141.04' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>
 <text x='246.59' y='117.63' style='font-size: 1.4em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>1.4</text>

@@ -1013,9 +1013,13 @@ institutions <- institutions[!ext_dup, ]
 # data-raw/institution_rejections.csv lists points that a later reading
 # (satellite imagery, or the institution's name and site) shows are not on the
 # institution; matched on coordinates and name, they stay unconfirmed whatever
-# their checks say.
+# their checks say. data-raw/institution_imagery.csv lists points that a
+# reading of satellite imagery with place labels, together with the named
+# OpenStreetMap features within 1 km, places on the named institution; matched
+# the same way, they count as confirmed unless they are rejected.
 checks <- read.csv("data-raw/institution_checks.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 rejections <- read.csv("data-raw/institution_rejections.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
+imagery <- read.csv("data-raw/institution_imagery.csv", stringsAsFactors = FALSE, encoding = "UTF-8")
 from_osm <- startsWith(institutions$key, "osm:") | grepl("OpenStreetMap", institutions$master_source)
 at <- paste(institutions$lon, institutions$lat)
 stale <- !paste(checks$lon, checks$lat) %in% at
@@ -1035,10 +1039,15 @@ cat("rejected points:", nrow(rejections), "- rows of the table matched:", sum(re
 stopifnot(all(paste(rejections$lon, rejections$lat, rejections$name) %in% at_name))
 ok_google <- ok_google & !rejected
 ok_osm <- ok_osm & !rejected
-institutions$status <- ifelse(ok_google | ok_osm, "confirmed", "unconfirmed")
+ok_imagery <- at_name %in% paste(imagery$lon, imagery$lat, imagery$name)
+cat("imagery confirmations:", nrow(imagery), "- rows of the table matched:", sum(ok_imagery), "\n")
+stopifnot(all(paste(imagery$lon, imagery$lat, imagery$name) %in% at_name))
+ok_imagery <- ok_imagery & !rejected & !ok_google & !ok_osm
+institutions$status <- ifelse(ok_google | ok_osm | ok_imagery, "confirmed", "unconfirmed")
 institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenStreetMap feature of that name",
                          ifelse(ok_google, "Google Maps place of that name",
-                         ifelse(ok_osm, "OpenStreetMap feature of that name", NA_character_)))
+                         ifelse(ok_osm, "OpenStreetMap feature of that name",
+                         ifelse(ok_imagery, "satellite imagery with place labels", NA_character_))))
 institutions$cc_lon <- NA_real_
 institutions$cc_lat <- NA_real_
 
@@ -1135,13 +1144,14 @@ meta <- rbind(
              sha256 = paste(vapply(osm_files, sha256, character(1)), collapse = ", "), retrieved = osm_retrieved,
              licence = "ODbL 1.0, (c) OpenStreetMap contributors", stringsAsFactors = FALSE),
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
-                                                           "institutions; overrides and checks by Google Maps and OpenStreetMap"),
-             file = "institution_overrides.csv, institution_checks.csv, institution_rejections.csv",
-             version = "2026-11-04",
+                                                           "institutions; overrides and checks by Google Maps, OpenStreetMap and satellite imagery"),
+             file = "institution_overrides.csv, institution_checks.csv, institution_rejections.csv, institution_imagery.csv",
+             version = "2026-11-05",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
-                            sha256("data-raw/institution_rejections.csv"), sep = ", "),
-             retrieved = "2026-11-04", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+                            sha256("data-raw/institution_rejections.csv"), sha256("data-raw/institution_imagery.csv"),
+                            sep = ", "),
+             retrieved = "2026-11-05", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")

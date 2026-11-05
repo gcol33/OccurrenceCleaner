@@ -1,5 +1,14 @@
 # Changelog
 
+## OccurrenceCleaner (development version)
+
+- The institution test uses 14,216 points of other sources (from
+  11,899), 23,989 points in all. The 2,317 new confirmations come from
+  satellite imagery with place labels, read together with the named
+  OpenStreetMap features within 1 km, of the points no other check
+  confirmed; they are listed in `data-raw/institution_imagery.csv`. The
+  table contains 10,586 unconfirmed points (from 12,903).
+
 ## OccurrenceCleaner 0.2.2
 
 - The institution test uses CoordinateCleaner’s 9,773 institution points
