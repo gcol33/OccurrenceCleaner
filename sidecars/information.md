@@ -118,7 +118,7 @@
 
 ### extension-points
 - forms: `extension` column; points marked `extension`; extension points
-- as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (31 Natural Earth capitals more than 20 km from a Factbook capital, 516 Natural Earth country centroids and label points, 7,660 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); capitals and centroids used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
+- as: the gazetteer points from sources CoordinateCleaner's tables do not draw on (22 Natural Earth capitals more than 20 km from a Factbook capital, 516 Natural Earth country centroids and label points, 7,660 institutions from Wikidata beyond the English list's museums and from the non-English Wikipedia lists); capitals and centroids used by default, left out by passing the rows with `extension` FALSE through `gazetteers`
 - defined: @p:ref.extension; ?test_capital, ?test_centroid, ?test_institution
 - note: of the 7,660 institution extension points, 4,560 are confirmed and used by the institution test, 3,100 unconfirmed and left out (institutions-status)
 - stated-at: @p:cc.gazetteers; @p:gaz.opener; @p:ref.vs-cc; NEWS.md

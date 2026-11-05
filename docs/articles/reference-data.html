@@ -370,10 +370,16 @@ World Factbook, the source of <a href="https://ropensci.github.io/CoordinateClea
 capitals, read from the same factbook.json mirror: one point per country
 profile, 232 in all. The Natural Earth admin-0 capitals, alternative
 capitals and capitals of dependent territories that lie more than 20 km
-from every Factbook capital (31) are added with <code>extension</code>
-<code>TRUE</code>; a Natural Earth point nearer a Factbook capital
-places the same city a second time (Berlin 0.8 km, London 2.5 km from
-the Factbook point) and would only widen its 10 km buffer.</p>
+from every Factbook capital are added with <code>extension</code>
+<code>TRUE</code>, except the capitals of regions within a country whose
+country code has its own Factbook capital (Edinburgh, Funchal, Novi
+Sad): 22 points. A Natural Earth point nearer a Factbook capital places
+the same city a second time (Berlin 0.8 km, London 2.5 km from the
+Factbook point) and would only widen its 10 km buffer. A record
+georeferenced to its country code lands at the capital of that code, so
+a region capital adds a place where such records gather only when the
+region has a code of its own (Hong Kong, Macau, Mariehamn for the Aland
+Islands, Gaza City for Palestine).</p>
 </div>
 <div class="section level3">
 <h3 id="country-and-province-centroids">Country and province centroids<a class="anchor" aria-label="anchor" href="#country-and-province-centroids"></a>
@@ -642,7 +648,7 @@ the last institution check:</p>
 <tr class="odd">
 <td align="left">capitals</td>
 <td align="left">225 (one per ISO3 code)</td>
-<td align="left">263: 232 Factbook capitals and 31 Natural Earth
+<td align="left">254: 232 Factbook capitals and 22 Natural Earth
 capitals, alternative capitals and dependent-territory capitals more
 than 20 km from a Factbook capital, marked as extension</td>
 </tr>
@@ -755,7 +761,7 @@ and only the extension points catch it.</p>
 points from sources CoordinateCleaner does not use, marked
 <code>extension</code> <code>TRUE</code>:</p>
 <ul>
-<li><p>capitals: 31 Natural Earth capitals, alternative capitals and
+<li><p>capitals: 22 Natural Earth capitals, alternative capitals and
 capitals of dependent territories that lie more than 20 km from a
 Factbook capital;</p></li>
 <li><p>country centroids: 516 Natural Earth polygon centroids and label

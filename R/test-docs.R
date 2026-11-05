@@ -69,12 +69,14 @@ NULL
 #' CIA World Factbook (public domain; 232 points, one per country profile,
 #' through the factbook.json mirror retrieved 2026-10-11), the source
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s capitals are taken from. The column `extension` marks
-#' 31 Natural Earth populated places of the classes admin-0 capital,
+#' 22 Natural Earth populated places of the classes admin-0 capital,
 #' alternative capital and admin-0 region capital (dependent territories)
 #' that lie more than 20 km from every Factbook capital. They add the second
-#' capitals of countries that have several (The Hague, Cape Town); a Natural
-#' Earth point nearer a Factbook capital places the same city a second time
-#' and is not used. Passing the points with `extension` FALSE as
+#' capitals of countries that have several (The Hague, Cape Town) and the
+#' capitals of territories with a country code of their own (Hong Kong,
+#' Mariehamn); a Natural Earth point nearer a Factbook capital places the same
+#' city a second time and is not used, and the capital of a region within a
+#' country (Edinburgh, Funchal) is not used either. Passing the points with `extension` FALSE as
 #' `gazetteers = list(capital = ...)` leaves them out. See [reference_info()].
 #'
 #' @section Fields: `lon`, `lat`.

@@ -9,7 +9,11 @@
 # extension point within 20 km of a Factbook capital (twice the default buffer)
 # places the same city a second time and is dropped (Natural Earth's Berlin lies
 # 0.8 km from the Factbook point, Washington 2.8 km, London 2.5 km), as is an
-# extension point at the coordinates of another row.
+# extension point at the coordinates of another row. A region capital is kept
+# only when its country code has no Factbook capital (Mariehamn for AX, Hong
+# Kong for HK): a record georeferenced to its country code lands at the capital
+# of that code, so Edinburgh, Funchal and Novi Sad, capitals of parts of a
+# country, are dropped.
 #
 # Run from the package root after natural_earth.R:  Rscript data-raw/capitals.R
 
@@ -39,6 +43,9 @@ d_fb <- vapply(seq_len(nrow(cap_ne)), function(i) min(km_to(cap_ne$lon[i], cap_n
                numeric(1))
 cat("extension points within 20 km of a Factbook capital, dropped:", sum(d_fb <= 20), "of", nrow(cap_ne), "\n")
 cap_ne <- cap_ne[d_fb > 20, ]
+sub_region <- cap_ne$class == "Admin-0 region capital" & cap_ne$iso_a2 %in% cap_fb$iso_a2
+cat("region capitals within a country with a Factbook capital, dropped:", sum(sub_region), "\n")
+cap_ne <- cap_ne[!sub_region, ]
 
 capitals <- rbind(cap_fb, cap_ne)
 capitals <- capitals[!duplicated(capitals[, c("source", "lon", "lat")]), ]

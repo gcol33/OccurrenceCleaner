@@ -138,7 +138,7 @@ records near either:
 caps <- reference_points("capital")
 both <- rbind(caps[, c("lon", "lat")], reference_points("capital", reference = "CoordinateCleaner"))
 nrow(both)
-#> [1] 488
+#> [1] 479
 y <- data.frame(city = c("Cape Town", "Naypyidaw", "Vienna"), decimalLongitude = c(18.42, 96.13, 16.37),
                 decimalLatitude = c(-33.92, 19.75, 48.21))
 data.frame(city = y$city,

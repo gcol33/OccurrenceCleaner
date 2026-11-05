@@ -115,10 +115,13 @@
   of place names, they must also name the same kind of institution
   (university, museum, garden, zoo, herbarium, institute), so University
   of Oxford does not confirm Oxford Zoo.
-- The capital extension keeps the 31 Natural Earth capitals that lie
+- The capital extension keeps 22 Natural Earth capitals: those that lie
   more than 20 km from every Factbook capital (The Hague, Cape Town,
-  Edinburgh). The other 212 placed a Factbook capital a second time,
-  within 20 km of it, and widened its buffer beyond 10 km.
+  Hong Kong). Of the others, 212 placed a Factbook capital a second
+  time, within 20 km of it, and widened its buffer beyond 10 km, and 9
+  were capitals of regions within a country whose country code has its
+  own Factbook capital (Edinburgh, Cardiff, Belfast, Funchal, Ponta
+  Delgada, Banja Luka, Batumi, Sukhumi, Novi Sad).
 - The table also contains 12,903 unconfirmed points, which the test
   leaves out unless they are passed through `gazetteers`. They come from
   GRSciColl, Wikidata, Wikipedia’s lists of natural history museums,

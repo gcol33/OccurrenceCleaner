@@ -95,10 +95,15 @@ Factbook, the source of
 capitals, read from the same factbook.json mirror: one point per country
 profile, 232 in all. The Natural Earth admin-0 capitals, alternative
 capitals and capitals of dependent territories that lie more than 20 km
-from every Factbook capital (31) are added with `extension` `TRUE`; a
-Natural Earth point nearer a Factbook capital places the same city a
-second time (Berlin 0.8 km, London 2.5 km from the Factbook point) and
-would only widen its 10 km buffer.
+from every Factbook capital are added with `extension` `TRUE`, except
+the capitals of regions within a country whose country code has its own
+Factbook capital (Edinburgh, Funchal, Novi Sad): 22 points. A Natural
+Earth point nearer a Factbook capital places the same city a second time
+(Berlin 0.8 km, London 2.5 km from the Factbook point) and would only
+widen its 10 km buffer. A record georeferenced to its country code lands
+at the capital of that code, so a region capital adds a place where such
+records gather only when the region has a code of its own (Hong Kong,
+Macau, Mariehamn for the Aland Islands, Gaza City for Palestine).
 
 ### Country and province centroids
 
@@ -374,7 +379,7 @@ check:
 
 | gazetteer | CoordinateCleaner | OccurrenceCleaner |
 |:---|:---|:---|
-| capitals | 225 (one per ISO3 code) | 263: 232 Factbook capitals and 31 Natural Earth capitals, alternative capitals and dependent-territory capitals more than 20 km from a Factbook capital, marked as extension |
+| capitals | 225 (one per ISO3 code) | 254: 232 Factbook capitals and 22 Natural Earth capitals, alternative capitals and dependent-territory capitals more than 20 km from a Factbook capital, marked as extension |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate | 1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
 | institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 21,672 used by the test: CoordinateCleaner’s 9,773 (573 moved, 565 of them to their Google Maps place) and 11,899 confirmed points of other sources; 12,903 unconfirmed points left out |
@@ -461,7 +466,7 @@ and only the extension points catch it.
 The capital, country centroid and institution tables also contain points
 from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
 
-- capitals: 31 Natural Earth capitals, alternative capitals and capitals
+- capitals: 22 Natural Earth capitals, alternative capitals and capitals
   of dependent territories that lie more than 20 km from a Factbook
   capital;
 

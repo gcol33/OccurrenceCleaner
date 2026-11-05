@@ -126,7 +126,7 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmpye7cjD\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpsvseGV\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
@@ -197,7 +197,7 @@ sel <- t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital",
 | kingdom  | year_bin  |    n | flagged_sea | flagged_capital | removed_coordinatecleaner |
 |:---------|:----------|-----:|------------:|----------------:|--------------------------:|
 | Animalia | \<1950    | 1427 |         577 |               3 |                       581 |
-| Animalia | 1950-2000 | 1075 |         428 |               5 |                       434 |
+| Animalia | 1950-2000 | 1075 |         428 |               4 |                       433 |
 | Animalia | \>=2000   |  513 |         195 |               2 |                       197 |
 | Fungi    | \<1950    | 1424 |         553 |               4 |                       557 |
 | Fungi    | 1950-2000 | 1030 |         414 |               4 |                       418 |
@@ -207,7 +207,7 @@ sel <- t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital",
 | Plantae  | \>=2000   |  543 |         212 |               0 |                       212 |
 
 The sea test flags 40 % of all records, and it accounts for most of the
-3,590 records the rule removes: the points were drawn uniformly over a
+3,589 records the rule removes: the points were drawn uniformly over a
 box that includes the Mediterranean, the Bay of Biscay and the North
 Sea. A grouping column that was not kept is an error that names it:
 
