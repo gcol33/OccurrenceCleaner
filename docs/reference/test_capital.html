@@ -26,7 +26,7 @@ decided with the Vincenty inverse formula."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,12 +116,14 @@ columns of <code>x</code> unchanged. See <code><a href="keep_unflagged.html">kee
 CIA World Factbook (public domain; 232 points, one per country profile,
 through the factbook.json mirror retrieved 2026-10-11), the source
 <a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a>'s capitals are taken from. The column <code>extension</code> marks
-31 Natural Earth populated places of the classes admin-0 capital,
+22 Natural Earth populated places of the classes admin-0 capital,
 alternative capital and admin-0 region capital (dependent territories)
 that lie more than 20 km from every Factbook capital. They add the second
-capitals of countries that have several (The Hague, Cape Town); a Natural
-Earth point nearer a Factbook capital places the same city a second time
-and is not used. Passing the points with <code>extension</code> FALSE as
+capitals of countries that have several (The Hague, Cape Town) and the
+capitals of territories with a country code of their own (Hong Kong,
+Mariehamn); a Natural Earth point nearer a Factbook capital places the same
+city a second time and is not used, and the capital of a region within a
+country (Edinburgh, Funchal) is not used either. Passing the points with <code>extension</code> FALSE as
 <code>gazetteers = list(capital = ...)</code> leaves them out. See <code><a href="reference_info.html">reference_info()</a></code>.</p>
     </div>
     <div class="section level2">

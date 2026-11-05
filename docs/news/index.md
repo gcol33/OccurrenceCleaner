@@ -1,5 +1,30 @@
 # Changelog
 
+## OccurrenceCleaner 0.2.2
+
+- The institution test uses CoordinateCleaner’s 9,773 institution points
+  and 11,899 points of other sources that a check beyond their own
+  source confirms (21,672 points, from 12,559). The new confirmations
+  come from a Google Maps and OpenStreetMap check of the points that
+  were unconfirmed. When the two names share only words of place names,
+  they must also name the same kind of institution (university, museum,
+  garden, zoo, herbarium, institute), so University of Oxford does not
+  confirm Oxford Zoo. The table contains 12,903 unconfirmed points (from
+  22,133).
+- The capital extension keeps 22 Natural Earth capitals: those that lie
+  more than 20 km from every Factbook capital (The Hague, Cape Town,
+  Hong Kong). Of the others, 212 placed a Factbook capital a second
+  time, within 20 km of it, and widened its buffer beyond 10 km, and 9
+  were capitals of regions within a country whose country code has its
+  own Factbook capital (Edinburgh, Cardiff, Belfast, Funchal, Ponta
+  Delgada, Banja Luka, Batumi, Sukhumi, Novi Sad).
+- Requires vectra 0.14.1. Its appends no longer leave the previous index
+  of row groups in the file, so a file built from many appends is the
+  size of its rows; under vectra 0.13.4 the flagged rows of the
+  duplicate step took 386 GB on the GBIF snapshot. Flag files are
+  written in the storage format of vectra 0.14, which earlier versions
+  cannot read.
+
 ## OccurrenceCleaner 0.2.1
 
 - The group stage of a streamed run has a waste collector, so its
@@ -10,7 +35,10 @@
   write at the end of each step. A resumed run first removes what an
   interruption left behind (files of unfinished writes, count tables of
   other checkpoints, splits of a bucket being decided) and says how much
-  it freed.
+  it freed. Every append to a `.vtr` file adds an index of its row
+  groups, so files built from many small appends grew to many times
+  their rows: on the GBIF snapshot the flagged rows of the duplicate
+  step took 386 GB on disk.
 - `flag_occurrences(workers = )` runs the record pass of streamed input
   with more than one file in several R processes.
 - The group stage keeps its per-species and per-dataset counts in C++
@@ -25,12 +53,8 @@
   `out/progress_steps.csv`.
 - Each moved institution point records the source of its new position;
   the hand-placed points follow the same bar for a move as the others.
-- Requires vectra 0.14.1. Its appends no longer leave the previous index
-  of row groups in the file, so a file built from many appends is the
-  size of its rows; under vectra 0.13.4 the flagged rows of the
-  duplicate step took 386 GB on the GBIF snapshot. Flag files are
-  written in the storage format of vectra 0.14, which earlier versions
-  cannot read.
+- Requires vectra 0.13.4, which appends the rows of a data frame without
+  a temporary file.
 
 ## OccurrenceCleaner 0.2.0
 
@@ -98,31 +122,21 @@
   on every bar however many tests a rule holds; the map takes `xlim` and
   `ylim`.
 - The institution test uses CoordinateCleaner’s 9,773 institution points
-  and 11,899 points of other sources that a check beyond their own
-  source confirms (21,672 points, from 18,245). Of CoordinateCleaner’s
-  points, 573 are moved: 565 to the Google Maps place of the
-  institution, where the place lies within 25 km of the city of
-  CoordinateCleaner’s record and CoordinateCleaner’s point more than 25
-  km from both, 7 whose Google Maps search gave no place to the site
-  Wikipedia or OpenStreetMap gives, and the SCAR Expert Group on Birds
-  and Marine Mammals to the SCAR secretariat.
-  `reference_points("institution")` gives each point a `status` (“cc”,
-  “override”, “confirmed”, “unconfirmed”) and `evidence`, and keeps
-  CoordinateCleaner’s coordinates of a moved point in `cc_lon` and
-  `cc_lat`. A point of another source is confirmed by a Google Maps
-  place of the institution’s name within 300 m or the OpenStreetMap
-  feature of that name within 200 m; when the two names share only words
-  of place names, they must also name the same kind of institution
-  (university, museum, garden, zoo, herbarium, institute), so University
-  of Oxford does not confirm Oxford Zoo.
-- The capital extension keeps 22 Natural Earth capitals: those that lie
-  more than 20 km from every Factbook capital (The Hague, Cape Town,
-  Hong Kong). Of the others, 212 placed a Factbook capital a second
-  time, within 20 km of it, and widened its buffer beyond 10 km, and 9
-  were capitals of regions within a country whose country code has its
-  own Factbook capital (Edinburgh, Cardiff, Belfast, Funchal, Ponta
-  Delgada, Banja Luka, Batumi, Sukhumi, Novi Sad).
-- The table also contains 12,903 unconfirmed points, which the test
+  and 2,786 points of other sources that a check beyond their own source
+  confirms (12,559 points, from 18,245). Of CoordinateCleaner’s points,
+  573 are moved: 565 to the Google Maps place of the institution, where
+  the place lies within 25 km of the city of CoordinateCleaner’s record
+  and CoordinateCleaner’s point more than 25 km from both, 7 whose
+  Google Maps search gave no place to the site Wikipedia or
+  OpenStreetMap gives, and the SCAR Expert Group on Birds and Marine
+  Mammals to the SCAR secretariat. `reference_points("institution")`
+  gives each point a `status` (“cc”, “override”, “confirmed”,
+  “unconfirmed”) and `evidence`, and keeps CoordinateCleaner’s
+  coordinates of a moved point in `cc_lon` and `cc_lat`. A point of
+  another source is confirmed by a Google Maps place of the
+  institution’s name within 300 m or the OpenStreetMap feature of that
+  name within 200 m.
+- The table also contains 22,133 unconfirmed points, which the test
   leaves out unless they are passed through `gazetteers`. They come from
   GRSciColl, Wikidata, Wikipedia’s lists of natural history museums,
   GeoNames, BGCI, the 1,062 herbaria of Index Herbariorum that GRSciColl
