@@ -1048,6 +1048,18 @@ institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenS
                          ifelse(ok_google, "Google Maps place of that name",
                          ifelse(ok_osm, "OpenStreetMap feature of that name",
                          ifelse(ok_imagery, "satellite imagery with place labels", NA_character_))))
+# A point of institution_imagery.csv with `moved_lon` and `moved_lat` lay near
+# the institution, not on it: the institution's building or grounds was read
+# off the image and the moved point was read again as on the institution. The
+# point is moved there; `evidence` keeps the source's coordinates.
+mv <- match(at_name, paste(imagery$lon, imagery$lat, imagery$name))
+moved <- ok_imagery & !is.na(imagery$moved_lon[mv])
+cat("imagery confirmations moved onto the institution:", sum(moved), "\n")
+institutions$evidence[moved] <- paste0("satellite imagery with place labels; moved ", imagery$moved_m[mv[moved]],
+                                       " m from the source's point ", institutions$lon[moved], ", ",
+                                       institutions$lat[moved])
+institutions$lon[moved] <- imagery$moved_lon[mv[moved]]
+institutions$lat[moved] <- imagery$moved_lat[mv[moved]]
 institutions$cc_lon <- NA_real_
 institutions$cc_lat <- NA_real_
 

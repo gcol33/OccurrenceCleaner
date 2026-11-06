@@ -85,7 +85,7 @@ museum is unlikely in a plant table, and use a wider buffer for them:
 used <- inst[inst$status != "unconfirmed", ]
 herbaria <- used[used$type %in% "Herbarium", ]
 nrow(herbaria)
-#> [1] 5414
+#> [1] 5491
 near <- rbind(herbaria[1:3, ], used[used$type %in% "Museum", ][1:3, ])
 x <- data.frame(species = "Quercus robur", decimalLongitude = near$lon + 0.005,
                 decimalLatitude = near$lat)
@@ -94,20 +94,13 @@ f_herb <- flag_occurrences(x, tests = "institution", buffers = list(institution 
                            gazetteers = list(institution = herbaria))
 data.frame(near = near$name, type = near$type, all = f_all$flag_institution,
            herbaria_only = f_herb$flag_institution)
-#>                                                                                            near
-#> 1                                                                 Andorra Research + Innovation
-#> 2                                                           CENMA, Institut d Estudis Andorrans
-#> 3 United Arab Emirates University, Islamic Institute, Faculty of Science, Department of Biology
-#> 4                                                              Natural History Museum Abu Dhabi
-#> 5                                                             Museum of Natural History, Tirane
-#> 6                                                                        Natural Science Museum
-#>        type  all herbaria_only
-#> 1 Herbarium TRUE          TRUE
-#> 2 Herbarium TRUE          TRUE
-#> 3 Herbarium TRUE          TRUE
-#> 4    Museum TRUE         FALSE
-#> 5    Museum TRUE         FALSE
-#> 6    Museum TRUE         FALSE
+#>                                  near      type  all herbaria_only
+#> 1       Andorra Research + Innovation Herbarium TRUE          TRUE
+#> 2 CENMA, Institut d Estudis Andorrans Herbarium TRUE          TRUE
+#> 3                      UAE University Herbarium TRUE          TRUE
+#> 4    Natural History Museum Abu Dhabi    Museum TRUE         FALSE
+#> 5   Museum of Natural History, Tirane    Museum TRUE         FALSE
+#> 6              Natural Science Museum    Museum TRUE         FALSE
 ```
 
 Each record lies about 0.005 degrees (a few hundred metres) east of an
@@ -166,7 +159,7 @@ test leaves out:
 table(inst$status)
 #> 
 #>          cc   confirmed    override unconfirmed 
-#>        9200       14216         573       10586
+#>        9200       14456         573       10346
 ```
 
 `gazetteers = list(institution = inst)` flags records near any point of
@@ -328,7 +321,7 @@ output:
 
 f <- flag_occurrences(x, tests = "institution", gazetteers = list(institution = herbaria))
 attr(f, "occ_reference")
-#> [1] "OccurrenceCleaner 0.2.2 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-05, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5414 points md5 917d46df9f7062461ea10a295f20d4aa"
+#> [1] "OccurrenceCleaner 0.2.2 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-05, aohi 2022-10-10, habitat 2026-10-06); custom: institution 5491 points md5 16eec4ce2faad0ef6f1f077408e49b34"
 ```
 
 The checksum identifies the exact table, so two analyses that report the

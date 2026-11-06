@@ -429,17 +429,17 @@ out.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">inst</span><span class="op">$</span><span class="va">source</span>, <span class="va">inst</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                         </span></span>
 <span><span class="co">#&gt;                            cc confirmed override unconfirmed</span></span>
-<span><span class="co">#&gt;   BGCI                      0      1446        0        2201</span></span>
+<span><span class="co">#&gt;   BGCI                      0      1495        0        2152</span></span>
 <span><span class="co">#&gt;   CoordinateCleaner      9200         0        0           0</span></span>
-<span><span class="co">#&gt;   CoordinateCleaner list    0      1661        0        1469</span></span>
-<span><span class="co">#&gt;   GBIF registry             0      1286        0        1179</span></span>
+<span><span class="co">#&gt;   CoordinateCleaner list    0      1701        0        1429</span></span>
+<span><span class="co">#&gt;   GBIF registry             0      1301        0        1164</span></span>
 <span><span class="co">#&gt;   GeoNames                  0         3        0           0</span></span>
 <span><span class="co">#&gt;   Google Maps               0         0      565           0</span></span>
-<span><span class="co">#&gt;   GRSciColl                 0      3225        0        2778</span></span>
-<span><span class="co">#&gt;   Index Herbariorum         0       565        0         496</span></span>
+<span><span class="co">#&gt;   GRSciColl                 0      3286        0        2717</span></span>
+<span><span class="co">#&gt;   Index Herbariorum         0       581        0         480</span></span>
 <span><span class="co">#&gt;   OpenStreetMap             0         0        4           0</span></span>
-<span><span class="co">#&gt;   Wikidata                  0      5969        0        1824</span></span>
-<span><span class="co">#&gt;   Wikipedia                 0        61        4         639</span></span></code></pre></div>
+<span><span class="co">#&gt;   Wikidata                  0      6026        0        1767</span></span>
+<span><span class="co">#&gt;   Wikipedia                 0        63        4         637</span></span></code></pre></div>
 <p>Of CoordinateCleaner’s points, 9,200 are used as that package has
 them. The other 573 are moved. Of these, 565 are moved to the place
 Google Maps gives for the institution. For each of them, a Google Maps
@@ -505,7 +505,13 @@ named institution; they are listed in
 <code>data-raw/institution_imagery.csv</code> and count as confirmed.
 The reading was done by a language model (Claude Opus 5.5). On 100 of
 these points that I had read by hand, it placed none of the 33 I had
-found elsewhere on the institution.</p>
+found elsewhere on the institution. For the points it placed within
+about 200 m of the institution, it then read the position of the
+institution’s building or grounds off the image; the 240 points moved
+there and read again as on the institution are confirmed at the new
+place, with the source’s coordinates kept in <code>evidence</code>. Of
+30 of them that I read by hand, 26 were on the institution, 4 could not
+be judged from the image and none was elsewhere.</p>
 <p>The other points come from the sources below. The first set is the
 bulk export of GBIF’s Global Registry of Scientific Collections
 (GRSciColl), retrieved on 2026-10-09: 10,002 institutions, of which
@@ -676,9 +682,9 @@ centroids and label points marked as extension</td>
 <td align="left">institutions</td>
 <td align="left">9,773 with coordinates (GRBio, Index Herbariorum, GBIF,
 BGCI, Wikipedia, GeoNames)</td>
-<td align="left">23,989 used by the test: CoordinateCleaner’s 9,773 (573
-moved, 565 of them to their Google Maps place) and 14,216 confirmed
-points of other sources; 10,586 unconfirmed points left out</td>
+<td align="left">24,229 used by the test: CoordinateCleaner’s 9,773 (573
+moved, 565 of them to their Google Maps place) and 14,456 confirmed
+points of other sources; 10,346 unconfirmed points left out</td>
 </tr>
 </tbody>
 </table>
@@ -726,7 +732,7 @@ no tagged release.</p>
 CoordinateCleaner’s 9,773 institution points, 9,200 of them at
 CoordinateCleaner’s coordinates and 573 moved, 565 of them to the Google
 Maps place of the institution (<a href="#institutions">Institutions</a>
-gives the conditions). It also uses 14,216 points of other sources that
+gives the conditions). It also uses 14,456 points of other sources that
 a check has confirmed. A record near a moved or confirmed point is
 flagged here and not by CoordinateCleaner.</p>
 <p>CoordinateCleaner geocoded nearly all its institutions itself. For
@@ -777,8 +783,8 @@ points;</p></li>
 history museums, zoos, aquaria and herbaria of Wikidata beyond the
 museums of the English Wikipedia list, and the museums of the Arabic,
 Dutch, Esperanto, French, German and Portuguese lists. A check confirms
-5,564 of them, which the institution test uses; it leaves out the other
-2,096.</p></li>
+5,623 of them, which the institution test uses; it leaves out the other
+2,037.</p></li>
 </ul>
 <p>The capital and centroid tests use them by default. Passing the rows
 with <code>extension</code> <code>FALSE</code> through
