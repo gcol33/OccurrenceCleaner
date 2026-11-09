@@ -1,6 +1,6 @@
 # Changelog
 
-## OccurrenceCleaner (development version)
+## OccurrenceCleaner 0.2.3
 
 - The institution test uses 14,456 points of other sources (from
   11,899), 24,229 points in all. The new confirmations come from
