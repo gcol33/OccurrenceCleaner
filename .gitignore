@@ -15,3 +15,4 @@ data-raw/cache/
 README.html
 .lib_bench/
 .bench_install.log
+bench/results/snapshot/
