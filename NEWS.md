@@ -1,3 +1,7 @@
+# OccurrenceCleaner 0.2.4
+
+* The institution test uses 14,569 points of other sources (from 14,456), 24,342 points in all. The new confirmations come from the OpenStreetMap test applied to every named feature within 300 m of the points the imagery reading left unclear, or placed within about 200 m without finding the institution: 138 points lie within 200 m of a feature of their name, and the names of each pair were read by hand. The 112 points whose feature is the same institution are added to `data-raw/institution_checks.csv`; two points whose feature is another institution (Botanical Survey of India, Forest Survey of India) are added to `data-raw/institution_rejections.csv`; sub-units matched to their parent's grounds and generic names stay unconfirmed. The table contains 10,233 unconfirmed points (from 10,346).
+
 # OccurrenceCleaner 0.2.3
 
 * The institution test uses 14,456 points of other sources (from 11,899), 24,229 points in all. The new confirmations come from satellite imagery with place labels, read together with the named OpenStreetMap features within 1 km, of the points no other check confirmed: 2,317 points read as on the institution, and 240 points read as within about 200 m that were moved to the institution's building or grounds as read off the image and then read as on the institution (the source's coordinates are kept in `evidence`). They are listed in `data-raw/institution_imagery.csv`. The table contains 10,346 unconfirmed points (from 12,903).

@@ -1010,6 +1010,10 @@ institutions <- institutions[!ext_dup, ]
 # above), so "Durban Museum" is not confirmed by Durban Botanic Gardens. A
 # check on coordinates no longer in the table (a point the
 # OpenStreetMap match no longer adds, or adds at another feature) is not used.
+# The OpenStreetMap test also ran on every named feature within 300 m of the
+# points the imagery reading below left unclear or near and not located; those
+# checks were kept only where the two names, read by hand, name the same
+# institution.
 # data-raw/institution_rejections.csv lists points that a later reading
 # (satellite imagery, or the institution's name and site) shows are not on the
 # institution; matched on coordinates and name, they stay unconfirmed whatever
