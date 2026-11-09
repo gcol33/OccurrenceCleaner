@@ -47,8 +47,8 @@ exclude. OccurrenceCleaner supports:
   CoordinateCleaner installed, `reference = "CoordinateCleaner"` uses
   its 9,773 institutions as they are. The default,
   `reference = "OccurrenceCleaner"`, corrects and extends them to
-  24,229: 565 points lying over 25 km from their listed city move to the
-  institution’s Google Maps place, and 14,456 locations from other
+  24,342: 565 points lying over 25 km from their listed city move to the
+  institution’s Google Maps place, and 14,569 locations from other
   registries are added after a [check against Google Maps, OpenStreetMap
   or satellite
   imagery](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.html#institutions).
@@ -441,7 +441,7 @@ which provides the test definitions and default buffers.
 
 ``` text
 Colling G (2026). _OccurrenceCleaner: Fast Quality Checks for Species
-Occurrence Records_. R package version 0.2.3,
+Occurrence Records_. R package version 0.2.4,
 <https://gillescolling.com/OccurrenceCleaner/>.
 ```
 
@@ -452,7 +452,7 @@ BibTeX:
   title = {OccurrenceCleaner: Fast Quality Checks for Species Occurrence Records},
   author = {Gilles Colling},
   year = {2026},
-  note = {R package version 0.2.3},
+  note = {R package version 0.2.4},
   url = {https://gillescolling.com/OccurrenceCleaner/},
 }
 ```

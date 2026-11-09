@@ -37,10 +37,10 @@ Cleaning functions.
 
 ## Details
 
-The default gazetteer has 24,229 points. Of these, 9,773 are the
+The default gazetteer has 24,342 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-(`source` "CoordinateCleaner", `status` "cc"), and 14,456 are further
+(`source` "CoordinateCleaner", `status` "cc"), and 14,569 are further
 points that a check beyond their own source confirms (`status`
 "confirmed").
 
@@ -87,7 +87,7 @@ elsewhere. Points that a later reading showed are not on the institution
 stay unconfirmed.
 
 [`reference_points()`](https://gillescolling.com/OccurrenceCleaner/reference/reference_points.md)
-also returns 10,346 unconfirmed points, which the test leaves out. They
+also returns 10,233 unconfirmed points, which the test leaves out. They
 come from GBIF's Global Registry of Scientific Collections (GRSciColl),
 Wikidata, Wikipedia's lists of natural history museums, GeoNames,
 Botanic Gardens Conservation International (BGCI) GardenSearch, Index
@@ -111,7 +111,7 @@ institution. Passing the whole table as
 
 Equivalent to `cc_inst()`. Its 40-gon buffer edge lies within 0.31 m of
 the 100 m circle. The default gazetteer differs from its `institutions`
-table by the 573 moved points and the 14,456 confirmed points.
+table by the 573 moved points and the 14,569 confirmed points.
 `reference = "CoordinateCleaner"` uses its table as it is.
 
 ## Custom gazetteer

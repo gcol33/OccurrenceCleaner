@@ -113,12 +113,12 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species done [0 s]
-#> group tests: done [0.4 s]
+#> group tests: done [0.3 s]
 #> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
-#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 1 s
+#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
 #> progress: record pass done [0 s]
 ```
 
@@ -126,11 +126,11 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpmawtCE\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpqApMrW\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
-#>   reference: OccurrenceCleaner 0.2.3, land 110
+#>   reference: OccurrenceCleaner 0.2.4, land 110
 #>   keep:      kingdom, year
 ```
 
@@ -378,7 +378,7 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species done [0 s]
-#> group tests: done [0.4 s]
+#> group tests: done [0.3 s]
 #> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> occurrence-1: done (3000 rows), skipped
 #> occurrence-3: done (3000 rows), skipped
@@ -456,7 +456,7 @@ minute.
 ``` r
 
 readLines(file.path(out, "progress.txt"))
-#> [1] "record 9000 9000 0.4 0.0 0.0 1.0000"
+#> [1] "record 9000 9000 0.3 0.0 0.0 1.0000"
 ```
 
 `n_threads` spreads the exact outlier test and the proximity and
