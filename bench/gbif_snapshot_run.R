@@ -2,10 +2,11 @@
 # snapshot's columns support, then tally_flags() over the on-disk output.
 # Writes timing.csv (stage, seconds), tally.rds and session.txt to <out>.
 #
-# Usage: Rscript gbif_snapshot_run.R <parquet dir> <out dir> [max files] [reference] [threads] [workers]
+# Usage: Rscript gbif_snapshot_run.R <parquet dir> <out dir> [max files] [reference] [threads] [workers] [scope]
 #   reference: OccurrenceCleaner (default) or CoordinateCleaner (its countryref,
 #   institutions and aohi tables, rnaturalearth polygons); threads: n_threads, 0 = all cores;
-#   workers: R processes for the record pass.
+#   workers: R processes for the record pass; scope: all (default) or coordinatecleaner,
+#   the tests that have a CoordinateCleaner equivalent and the rule cc only.
 
 args <- commandArgs(TRUE)
 snap <- args[1]; out <- args[2]
@@ -13,6 +14,8 @@ max_files <- if (length(args) >= 3) as.integer(args[3]) else Inf
 reference <- if (length(args) >= 4) args[4] else "OccurrenceCleaner"
 threads <- if (length(args) >= 5) as.integer(args[5]) else 1L
 workers <- if (length(args) >= 6) as.integer(args[6]) else 1L
+scope <- if (length(args) >= 7) args[7] else "all"
+stopifnot(scope %in% c("all", "coordinatecleaner"))
 suppressMessages(library("OccurrenceCleaner"))
 
 files <- sort(list.files(snap, full.names = TRUE))
@@ -23,6 +26,8 @@ flag_dir <- file.path(out, "flags")
 
 tests <- c(flag_tests()$test[flag_tests()$bit <= 18], "outlier", "dataset_ddmm",
            "dataset_rounded", "aohi", "sea_nonmarine", "land_marine")
+if (scope == "coordinatecleaner")
+  tests <- intersect(tests, flag_tests()$test[!is.na(flag_tests()$equivalent)])
 cols <- occ_columns(id = "gbifid")
 keep <- c("kingdom", "phylum", "class", "order", "year", "coordinateuncertaintyinmeters",
           "basisofrecord")
@@ -38,7 +43,7 @@ stamp <- function(stage, t0) {
 writeLines(c(capture.output(sessionInfo()),
              paste("OccurrenceCleaner RemoteSha:", utils::packageDescription("OccurrenceCleaner")$RemoteSha %||% "none"),
              paste("files:", length(files)), paste("tests:", paste(tests, collapse = ", ")),
-             paste("reference:", reference), paste("threads:", threads), paste("workers:", workers)),
+             paste("reference:", reference), paste("threads:", threads), paste("workers:", workers), paste("scope:", scope)),
            file.path(out, "session.txt"))
 
 t0 <- Sys.time()
@@ -53,6 +58,7 @@ rules <- list(
          "outlier"),
   cc_gbif = c("zero", "equal", "capital", "centroid", "institution", "gbif_headquarters", "sea",
               "outlier", "country_mismatch", "issue_coordinate", "issue_taxon"))
+if (scope == "coordinatecleaner") rules <- rules["cc"]
 t0 <- Sys.time()
 tl <- tally_flags(f, rules = rules)
 stamp("tally", t0)

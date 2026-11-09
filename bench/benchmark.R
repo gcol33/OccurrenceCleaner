@@ -3,10 +3,13 @@
 # fastest repetition is kept. Writes <out>/bench-cc.csv, <out>/bench-auto.csv and
 # <out>/ENVIRONMENT.txt.
 #
-#   Rscript bench/benchmark.R [out dir] [max n] [reps] [n_threads]
+#   Rscript bench/benchmark.R [out dir] [max n] [reps] [n_threads] [auto max n]
 #
 # n_threads is passed to every flag_occurrences() call; CoordinateCleaner
-# runs on one thread.
+# runs on one thread. The call without `tests` (bench-auto.csv) runs every test
+# the columns allow, among them the exact outlier test, whose cost grows with
+# the square of the records per species; it is timed up to `auto max n`
+# (default 1e6) records.
 #
 # CoordinateCleaner is run only while a single test takes under `cc_budget`
 # seconds at the previous size; larger sizes are reported as not run (NA).
@@ -17,6 +20,7 @@ out <- if (length(args) >= 1) args[1] else "bench/results"
 max_n <- if (length(args) >= 2) as.numeric(args[2]) else 1e7
 reps <- if (length(args) >= 3) as.integer(args[3]) else 3L
 n_threads <- if (length(args) >= 4) as.integer(args[4]) else 1L
+auto_max_n <- if (length(args) >= 5) as.numeric(args[5]) else 1e6
 cc_budget <- 600
 # The tests clean_coordinates() runs by default that need only coordinates and
 # a species name, timed together as one call with OccurrenceCleaner's own
@@ -79,11 +83,13 @@ for (n in sizes) {
                                          coordinatecleaner_s = NA_real_, agreement = NA_real_)
   cat(sprintf("n=%.0e coordinatecleaner_nine_tests %.2f s\n", n, t_all))
   # Automatic selection: no `tests`, so every test the columns allow runs.
-  t_auto <- best_of(f_auto <- flag_occurrences(x, n_threads = n_threads), reps)
-  plan <- test_plan(f_auto)
-  auto[[length(auto) + 1]] <- data.frame(n = n, n_threads = n_threads, seconds = t_auto, n_tests = sum(plan$run),
-                                         tests = paste(plan$test[plan$run], collapse = ";"))
-  cat(sprintf("n=%.0e automatic selection, %d tests %.2f s\n", n, sum(plan$run), t_auto))
+  if (n <= auto_max_n) {
+    t_auto <- best_of(f_auto <- flag_occurrences(x, n_threads = n_threads), reps)
+    plan <- test_plan(f_auto)
+    auto[[length(auto) + 1]] <- data.frame(n = n, n_threads = n_threads, seconds = t_auto, n_tests = sum(plan$run),
+                                           tests = paste(plan$test[plan$run], collapse = ";"))
+    cat(sprintf("n=%.0e automatic selection, %d tests %.2f s\n", n, sum(plan$run), t_auto))
+  }
 }
 res <- do.call(rbind, rows)
 write.csv(res, file.path(out, "bench-cc.csv"), row.names = FALSE)
