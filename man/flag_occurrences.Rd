@@ -10,7 +10,7 @@ flag_occurrences(
   columns = occ_columns(),
   reference = c("OccurrenceCleaner", "CoordinateCleaner"),
   gazetteers = NULL,
-  land_scale = 110,
+  land_scale = NULL,
   buffers = NULL,
   settings = NULL,
   duplicate_by = NULL,
@@ -55,10 +55,11 @@ habitats for \link{test_habitat} (see \code{\link[=reference_habitat]{reference_
 given for \code{sea} is also the land of the habitat tests.}
 
 \item{land_scale}{Natural Earth scale of the land layer for \code{sea} and the
-habitat tests: 110
-(the default of CoordinateCleaner's \code{cc_sea()}; its \code{clean_coordinates()}
-uses \code{seas_scale = 50}), 50, or 10 (downloaded on first use, see
-\code{\link[=download_reference]{download_reference()}}).}
+habitat tests: 10, 50, or 110. \code{NULL} selects 10 for the package's own
+reference and 110 for \code{reference = "CoordinateCleaner"}, matching
+\code{cc_sea()}. Its \code{clean_coordinates()} uses \code{seas_scale = 50}.
+The 1:10 million layer is downloaded on first use; see
+\code{\link[=download_reference]{download_reference()}}.}
 
 \item{buffers}{Named list overriding buffer distances in metres for
 \code{capital} (10000), \code{centroid} (1000), \code{institution} (100),
@@ -245,6 +246,10 @@ records without a dataset key.
 sources; \code{reference = "CoordinateCleaner"} uses that package's own tables,
 and \code{gazetteers} replaces the layer of single tests, as the \code{ref}
 arguments of CoordinateCleaner's functions do.
+\item The own-reference coastline defaults to 1:10 million, an addition for
+coastal and island records. \code{reference = "CoordinateCleaner"} defaults
+to 1:110 million as \code{cc_sea()} does. An explicit \code{land_scale} takes
+precedence for either reference.
 }
 }
 

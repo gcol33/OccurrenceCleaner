@@ -21,8 +21,13 @@ columns of \code{x} unchanged. See \code{\link[=keep_unflagged]{keep_unflagged()
 Flags records outside the Natural Earth land polygons, by a planar
 point-in-polygon test in longitude and latitude through a grid index that
 resolves boundary cells exactly. The land layer is chosen with
-\code{land_scale}: 110 (default), 50, or 10. The 1:10 million layer is downloaded once
-by \code{\link[=download_reference]{download_reference()}}.
+\code{land_scale}: 10 with the package's own reference, 110 with
+\code{reference = "CoordinateCleaner"}, or an explicit 10, 50 or 110.
+The 1:10 million layer is downloaded once by \code{\link[=download_reference]{download_reference()}}.
+It includes Natural Earth's fictitious Null Island at (0, 0), which
+\link{test_zero} flags. Use both tests to screen terrestrial coordinates.
+This finer default is an addition: it includes small islands absent from
+the 1:110 million layer, including the Azores and Reunion.
 }
 \section{Fields}{
  \code{lon}, \code{lat}.
@@ -33,7 +38,8 @@ by \code{\link[=download_reference]{download_reference()}}.
 \code{scale = 110} (\code{clean_coordinates()} uses \code{seas_scale = 50}, which is
 \code{land_scale = 50} here); identical flags on
 the same layer. \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} downloads the layer through
-\href{https://docs.ropensci.org/rnaturalearth/}{rnaturalearth} at run time; here it is bundled and pinned.
+\href{https://docs.ropensci.org/rnaturalearth/}{rnaturalearth} at run time; the
+package's own layers are pinned, with scales 110 and 50 bundled and 10 cached.
 }
 
 \section{Custom gazetteer}{

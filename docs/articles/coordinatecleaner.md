@@ -218,9 +218,11 @@ as in the chunks above, with the same tests and the same reference data:
 
 - `land_scale = 50` when the sea test is included, since
   [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-  uses the 1:50 million land and
-  [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-  defaults to 1:110 million.
+  uses the 1:50 million land. OccurrenceCleaner’s own reference defaults
+  to 1:10 million, and `reference = "CoordinateCleaner"` defaults to
+  1:110 million as
+  [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
+  does.
 
 - The buffers you set in CoordinateCleaner (`capitals_rad`, …) passed in
   `buffers`, mapped in [Arguments and output](#arguments-and-output).
@@ -307,7 +309,7 @@ records that pass it.
 | Options of the outlier and dataset tests | `method`, `mltpl`, `size_thresh`, `replicates`, … | `settings = list(outlier = list(method = ...), ...)` |
 | Record counts for the sampling correction of the outlier test | `cc_outl(sampling_thresh = ...)`, counts queried from GBIF | the same option in `settings`, with the counts given as a table in `gazetteers = list(sampling = ...)` |
 | Your own reference points | `ref` of each test function; `capitals_ref`, `seas_ref`, … in [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html) | `gazetteers = list(capital = ..., sea = ...)` |
-| Scale of the land polygons in the sea test | `seas_scale` (default 50) | `land_scale` (default 110, as [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)) |
+| Scale of the land polygons in the sea test | `seas_scale` (default 50) | `land_scale` (default 10; 110 with `reference = "CoordinateCleaner"`, as [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)) |
 | Columns that define a duplicate | `cc_dupl(additions = ...)` | `duplicate_by` |
 | Limit on the width of a fossil’s age range | `cf_range(method = "time", max_range = ...)` | no test; `tally_flags(bins = ...)` on the range width |
 | Removing the flagged records | `value = "clean"` | [`clean_capital()`](https://gillescolling.com/OccurrenceCleaner/reference/test_capital.md) and the other cleaning functions, or `keep_unflagged(f, tests = rule)` after flagging |

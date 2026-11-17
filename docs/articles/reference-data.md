@@ -45,7 +45,7 @@ ri <- reference_info()
 | institutions_gbif_registry | GBIF registry, publishing organisations | 2026-10-13 | 2026-10-13 |
 | institutions_coordinatecleaner_list | CoordinateCleaner 3.0.1 institution list, placed by Wikidata, OpenStreetMap (Nominatim) and GeoNames | 3.0.1 | 2026-10-13 |
 | institutions_openstreetmap | OpenStreetMap, Overpass API (named institution features) | 2026-10-13 | 2026-10-13 |
-| institutions_status | CoordinateCleaner 3.0.1 institutions; overrides and checks by Google Maps, OpenStreetMap and satellite imagery | 2026-11-05 | 2026-11-05 |
+| institutions_status | CoordinateCleaner 3.0.1 institutions; overrides and checks by Google Maps, OpenStreetMap and satellite imagery | 2026-11-17 | 2026-11-17 |
 | aohi | AHOI (Park et al. 2023) | 2022-10-10 | 2026-10-10 |
 | habitat | IRMNG (Rees 2026) | 2026-10-06 | 2026-10-10 |
 
@@ -79,7 +79,7 @@ The tests use the following layers:
 | institution | CoordinateCleaner’s institutions, 573 moved (565 to their Google Maps place), and the confirmed points of GBIF GRSciColl, Wikidata, Wikipedia’s lists of natural history museums, BGCI, Index Herbariorum, the GBIF registry and OpenStreetMap |
 | gbif_headquarters | one fixed point, 12.58 E, 55.67 N |
 | aohi | Artificial Hotspot Occurrence Inventory (Park et al. 2023), 308 points |
-| sea | Natural Earth land at 1:110 million (default), 1:50 million or 1:10 million |
+| sea | Natural Earth land at 1:10 million (default), 1:50 million or 1:110 million |
 | urban | Natural Earth urban areas 1:50 million |
 | country_mismatch | Natural Earth admin-0 countries 1:50 million |
 | sea_nonmarine, land_marine | the land of sea, and genus habitats from the Interim Register of Marine and Nonmarine Genera |
@@ -142,8 +142,11 @@ The institution test uses the 9,773 institutions with coordinates in
 CoordinateCleaner 3.0.1’s table, and the points of other sources that a
 check beyond their own source confirms. The `status` column of
 `reference_points("institution")` says which a point is: `"cc"`,
-`"override"`, `"confirmed"` or `"unconfirmed"`. The test leaves the
-unconfirmed points out.
+`"override"`, `"confirmed"` or `"unconfirmed"`. The test excludes all
+10,210 unconfirmed points. Google Maps, OpenStreetMap, labelled
+satellite imagery and the final nearby-feature review found no accepted
+independent confirmation for them. They remain available for inspection
+and explicit custom-gazetteer use.
 
 ``` r
 
@@ -151,17 +154,17 @@ inst <- reference_points("institution")
 table(inst$source, inst$status)
 #>                         
 #>                            cc confirmed override unconfirmed
-#>   BGCI                      0      1520        0        2127
+#>   BGCI                      0      1528        0        2119
 #>   CoordinateCleaner      9200         0        0           0
-#>   CoordinateCleaner list    0      1705        0        1425
-#>   GBIF registry             0      1317        0        1148
+#>   CoordinateCleaner list    0      1708        0        1422
+#>   GBIF registry             0      1318        0        1147
 #>   GeoNames                  0         3        0           0
 #>   Google Maps               0         0      565           0
-#>   GRSciColl                 0      3303        0        2700
-#>   Index Herbariorum         0       586        0         475
+#>   GRSciColl                 0      3306        0        2697
+#>   Index Herbariorum         0       588        0         473
 #>   OpenStreetMap             0         0        4           0
-#>   Wikidata                  0      6072        0        1721
-#>   Wikipedia                 0        63        4         637
+#>   Wikidata                  0      6075        0        1718
+#>   Wikipedia                 0        66        4         634
 ```
 
 Of CoordinateCleaner’s points, 9,200 are used as that package has them.
@@ -244,11 +247,14 @@ not find, every named OpenStreetMap feature within 300 m was fetched and
 the OpenStreetMap test above applied to it: 138 points lie within 200 m
 of a feature of their name. I read each pair of names: 113 name the same
 institution, and all but one, rejected earlier after a satellite
-reading, are confirmed; 19 name a sub-unit matched to the grounds of its
-parent, such as a botanic garden to its university campus, and 3 have a
-generic name (Rose Garden), and these stay unconfirmed; 3 name another
-institution (such as Botanical Survey of India and Forest Survey of
-India) and are listed in `data-raw/institution_rejections.csv`.
+reading, are confirmed; 18 pairs identify a sub-unit on its parent
+institution’s grounds and are confirmed; Bongil Bongil Garden names a
+private garden in Korora Basin, so its match to Bongil Bongil National
+Park is rejected; the 3 generic names (Butterfly Farm, Green Farm and
+Rose Garden) are confirmed by matching Wikidata identifiers and local
+place evidence; 3 name another institution (such as Botanical Survey of
+India and Forest Survey of India) and are listed in
+`data-raw/institution_rejections.csv`.
 
 The other points come from the sources below. The first set is the bulk
 export of GBIF’s Global Registry of Scientific Collections (GRSciColl),
@@ -261,6 +267,13 @@ institution as well. GRSciColl absorbed the Global Registry of
 Biodiversity Repositories (GRBio) in 2018 and is synchronised weekly
 with Index Herbariorum. GBIF publishes the registry through its open API
 and states no separate licence for it.
+
+A department, herbarium or garden on its named parent institution’s
+grounds counts as an institution site. Each accepted pair must identify
+that relationship. A park boundary alone supplies insufficient evidence
+for a garden; Booderee’s point is beside the named visitor centre of the
+jointly managed park and gardens. The 22 decisions and their evidence
+are recorded in `data-raw/institution_review_2026-11-17.csv`.
 
 The institution table includes locations from Wikidata, Wikipedia,
 GeoNames and Botanic Gardens Conservation International (BGCI). The
@@ -396,7 +409,7 @@ layers from their source datasets.
 The package’s reference points describe the same places as
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 3.0.1’s `countryref` and `institutions` tables, but they are not the
-same tables. Counts as of 2026-11-09, the date of the last institution
+same tables. Counts as of 2026-11-17, the date of the last institution
 check:
 
 | gazetteer | CoordinateCleaner | OccurrenceCleaner |
@@ -404,7 +417,7 @@ check:
 | capitals | 225 (one per ISO3 code) | 254: 232 Factbook capitals and 22 Natural Earth capitals, alternative capitals and dependent-territory capitals more than 20 km from a Factbook capital, marked as extension |
 | country centroids | 660 rows from the CIA World Factbook, thematicmapping.org and GEOLocate | 1,585: 1,069 from the same three sources (275 Factbook, 246 World Borders, 548 GEOLocate) and 516 Natural Earth polygon centroids and label points marked as extension |
 | province centroids | 4,645 (older Natural Earth admin-1 label points) | 4,594 (Natural Earth 5.1.1 admin-1 label points) |
-| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 24,342 used by the test: CoordinateCleaner’s 9,773 (573 moved, 565 of them to their Google Maps place) and 14,569 confirmed points of other sources; 10,233 unconfirmed points left out |
+| institutions | 9,773 with coordinates (GRBio, Index Herbariorum, GBIF, BGCI, Wikipedia, GeoNames) | 24,365 used by the test: CoordinateCleaner’s 9,773 (573 moved, 565 of them to their Google Maps place) and 14,592 confirmed points of other sources; 10,210 unconfirmed points left out |
 
 - **Capitals.** Of CoordinateCleaner’s 225 capital points, 221 match
   this package’s Factbook points when rounded to 0.01 degrees. Rounding
@@ -445,7 +458,7 @@ check:
   institution points, 9,200 of them at CoordinateCleaner’s coordinates
   and 573 moved, 565 of them to the Google Maps place of the institution
   ([Institutions](#institutions) gives the conditions). It also uses
-  14,569 points of other sources that a check has confirmed. A record
+  14,592 points of other sources that a check has confirmed. A record
   near a moved or confirmed point is flagged here and not by
   CoordinateCleaner.
 
@@ -498,9 +511,9 @@ from sources CoordinateCleaner does not use, marked `extension` `TRUE`:
 - institutions: 7,660 points, the botanical gardens, natural history
   museums, zoos, aquaria and herbaria of Wikidata beyond the museums of
   the English Wikipedia list, and the museums of the Arabic, Dutch,
-  Esperanto, French, German and Portuguese lists. A check confirms 5,667
+  Esperanto, French, German and Portuguese lists. A check confirms 5,671
   of them, which the institution test uses; it leaves out the other
-  1,993.
+  1,989.
 
 The capital and centroid tests use them by default. Passing the rows
 with `extension` `FALSE` through `gazetteers` restricts a test to
@@ -527,14 +540,17 @@ data.frame(city = x$city,
 
 The `sea` test flags records outside the land polygons. It supports
 Natural Earth land polygons at scales of 1:110 million, 1:50 million and
-1:10 million. OccurrenceCleaner defaults to 1:110 million
-(`land_scale = 110`).
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
-defaults to 1:110 million in
-[`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
-and 1:50 million in
+1:10 million. OccurrenceCleaner uses 1:10 million by default. This finer
+coastline is an addition for coastal and island records: the 1:110
+million layer omits the Azores and Reunion. With
+`reference = "CoordinateCleaner"`, the default is 1:110 million,
+matching
+[`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
+`land_scale = 50` matches the layer of
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
-The 1:10 million layer is downloaded on first use and cached.
+An explicit `land_scale` overrides either default. The 1:10 million
+layer is downloaded on first use and cached. It includes Natural Earth’s
+fictitious Null Island at (0, 0); the `zero` test flags that location.
 
 The coarse 1:110 million layer smooths the coast and drops small
 islands; the 1:50 million layer follows the coast more closely. A grid
@@ -546,7 +562,7 @@ disagree:
 g <- expand.grid(decimalLongitude = seq(7.5, 15.5, by = 0.05),
                  decimalLatitude = seq(54, 58, by = 0.05))
 g$species <- "a"
-s110 <- flag_occurrences(g, tests = "sea")$flag_sea
+s110 <- flag_occurrences(g, tests = "sea", land_scale = 110)$flag_sea
 s50 <- flag_occurrences(g, tests = "sea", land_scale = 50)$flag_sea
 g$verdict <- ifelse(s110 & s50, "sea at both", ifelse(!s110 & !s50, "land at both",
                     ifelse(s110, "sea at 1:110 million only", "sea at 1:50 million only")))
@@ -629,7 +645,7 @@ snapshot date or page revision:
 
 f <- flag_occurrences(x, tests = c("capital", "sea"), land_scale = 50)
 f
-#> <occ_flags> 2 records, 2 tests, reference OccurrenceCleaner 0.2.4, land 50
+#> <occ_flags> 2 records, 2 tests, reference OccurrenceCleaner 0.3.0, land 50
 #>   species decimalLongitude decimalLatitude flags flagged_by
 #> 1       a            16.37           48.21     8    capital
 #> 2       a            16.45           48.21     8    capital
@@ -640,7 +656,7 @@ attr(f, "occ_layout_version")
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.4 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-05, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.3.0 (land 50; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-17, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 `reference = "CoordinateCleaner"` stamps the installed

@@ -1,0 +1,72 @@
+
+R version 4.6.1 (2026-06-24 ucrt) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(testthat)
+> library(OccurrenceCleaner)
+>
+> test_check("OccurrenceCleaner")
+Reading 'ne_110m_land.zip' from naturalearth...
+Reading 'ne_50m_urban_areas.zip' from naturalearth...
+tests: 3 run
+group tests: reading 2 file(s) (pass 1 of 2)
+progress: group pass (counts), 0 of 400 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
+group tests: reading 2 file(s) (pass 2 of 2)
+progress: group pass (counts), 400 of 400 rows | step ETA 0 s | run 4%, ETA ~0 s | elapsed 0 s
+progress: group pass (counts) done [0 s]
+progress: group pass (buckets), 0 of 400 rows | step ETA 0 s | run 4%, ETA ~0 s | elapsed 0 s
+group tests: duplicate: 64 bucket(s)
+progress: group pass (buckets), 400 of 400 rows | step ETA 0 s | run 24%, ETA ~0 s | elapsed 0 s
+progress: group pass (buckets) done [0 s]
+progress: duplicate buckets, 0 of 400 rows | step ETA 0 s | run 24%, ETA ~0 s | elapsed 0 s
+group tests: outlier: 2 bucket(s)
+progress: duplicate buckets, 400 of 400 rows | step ETA 0 s | run 30%, ETA ~0 s | elapsed 0 s
+progress: duplicate buckets done [0 s]
+progress: outlier buckets, 0 of 400 rows | step ETA 0 s | run 30%, ETA ~0 s | elapsed 0 s
+progress: outlier buckets, 400 of 400 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
+progress: outlier buckets done [0 s]
+progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
+progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
+progress: large species done [0 s]
+group tests: done [0.2 s]
+1: 200 rows in 1 part(s) [0 s]
+2: 200 rows in 1 part(s) [0 s]
+progress: record pass, 400 of 400 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+progress: record pass done [0 s]
+tests: 6 run
+progress: record pass, 0 of 550 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
+b: done (250 rows), skipped
+progress: record pass, 550 of 550 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+progress: record pass done [0 s]
+tests: 1 run
+group tests: reading 2 file(s)
+progress: group pass (buckets), 0 of 400 rows | step ETA 0 s | run 0%, ETA ~0 s | elapsed 0 s
+progress: group pass (buckets), 400 of 400 rows | step ETA 0 s | run 44%, ETA ~0 s | elapsed 0 s
+progress: group pass (buckets) done [0 s]
+progress: duplicate buckets, 0 of 400 rows | step ETA 0 s | run 44%, ETA ~0 s | elapsed 0 s
+progress: duplicate buckets, 400 of 400 rows | step ETA 0 s | run 59%, ETA ~0 s | elapsed 0 s
+progress: duplicate buckets done [0 s]
+group tests: done [0.2 s]
+progress: record pass, 0 of 400 rows | step ETA 0 s | run 59%, ETA ~0 s | elapsed 0 s
+p1: 200 rows in 1 part(s) [0 s]
+p2: 200 rows in 1 part(s) [0 s]
+progress: record pass, 400 of 400 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+progress: record pass done [0 s]
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 639 ]
+>
+> proc.time()
+   user  system elapsed
+  55.17   12.76   73.31

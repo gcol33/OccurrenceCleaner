@@ -41,7 +41,9 @@ TAXON_MATCH_NONE, TAXON_MATCH_AGGREGATE;
 \item \code{issue_date}: RECORDED_DATE_INVALID, RECORDED_DATE_UNLIKELY,
 RECORDED_DATE_MISMATCH;
 \item \code{issue_rounded}: COORDINATE_ROUNDED, which GBIF sets when it rounds a
-coordinate to five decimals.
+coordinate to six decimals. This records a processing change and is
+left out of the named cleaning rules in the vignettes. Spatial precision
+requirements can be applied to the stated coordinate uncertainty.
 }
 }
 \details{

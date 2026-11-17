@@ -62,7 +62,8 @@ test_that("polygon tests: sea, urban and country", {
            decimalLatitude = c(48.85, 40, 55.70, 48.21, 34.52, 0, 1),
            countryCode = c("FR", "FR", "DNK", "DE", "AF", NA, "FR"))
   f <- flag_occurrences(x, tests = c("invalid", "sea", "urban", "country_mismatch"))
-  expect_identical(f$flag_sea, c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE))
+  # Natural Earth's 1:10m land includes the fictitious Null Island at (0, 0).
+  expect_identical(f$flag_sea, c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE))
   expect_identical(f$flag_urban, c(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE))
   # Paris FR ok; at sea flagged; alpha-3 accepted; Vienna with DE flagged; Kabul AF ok; missing code flagged
   expect_identical(f$flag_country_mismatch, c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE))

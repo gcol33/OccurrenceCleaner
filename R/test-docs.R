@@ -162,10 +162,10 @@ NULL
 #' universities holding collections, where specimens are often georeferenced
 #' to the institution.
 #'
-#' The default gazetteer has 24,342 points. Of these, 9,773 are the
+#' The default gazetteer has 24,365 points. Of these, 9,773 are the
 #' institutions with coordinates in the table of
 #' [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) 3.0.1
-#' (`source` "CoordinateCleaner", `status` "cc"), and 14,569 are further
+#' (`source` "CoordinateCleaner", `status` "cc"), and 14,592 are further
 #' points that a check beyond their own source confirms (`status`
 #' "confirmed").
 #'
@@ -209,7 +209,14 @@ NULL
 #' image and none was elsewhere. Points that a later
 #' reading showed are not on the institution stay unconfirmed.
 #'
-#' [reference_points()] also returns 10,233 unconfirmed points, which the
+#' A named department, herbarium or garden on its parent institution's grounds
+#' also counts as an institution site when the names establish that relation
+#' and an independent mapped feature confirms the location. The final nearby
+#' OpenStreetMap review confirms 18 parent-site candidates and 3 generic names
+#' tied to specific mapped places. Bongil Bongil Garden is a private garden
+#' in Korora Basin; its match to Bongil Bongil National Park is rejected.
+#'
+#' [reference_points()] also returns 10,210 unconfirmed points, which the
 #' test leaves out. They come from GBIF's Global Registry of Scientific
 #' Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 #' museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -217,7 +224,9 @@ NULL
 #' organisations and OpenStreetMap, and from searches for
 #' CoordinateCleaner's institutions by name. `source` and `master_source` say
 #' which, and [reference_info()] gives the versions and retrieval dates.
-#' No check placed them on the institution. Passing
+#' Google Maps, OpenStreetMap, labelled satellite imagery and the nearby-feature
+#' review found no accepted independent confirmation for these points. They
+#' are excluded from the default test. Passing
 #' the whole table as `gazetteers = list(institution = ...)` uses them too
 #' (see the examples).
 #'
@@ -226,7 +235,7 @@ NULL
 #' @section CoordinateCleaner: Equivalent to `cc_inst()`. Its 40-gon buffer
 #'   edge lies within 0.31 m of the 100 m circle. The default gazetteer
 #'   differs from its `institutions` table by the 573 moved points and the
-#'   14,569 confirmed points. `reference = "CoordinateCleaner"` uses its table
+#'   14,592 confirmed points. `reference = "CoordinateCleaner"` uses its table
 #'   as it is.
 #' @section Custom gazetteer: `gazetteers = list(institution = points)`, a data frame
 #'   of longitude and latitude; see [flag_occurrences()].
@@ -270,15 +279,21 @@ NULL
 #' Flags records outside the Natural Earth land polygons, by a planar
 #' point-in-polygon test in longitude and latitude through a grid index that
 #' resolves boundary cells exactly. The land layer is chosen with
-#' `land_scale`: 110 (default), 50, or 10. The 1:10 million layer is downloaded once
-#' by [download_reference()].
+#' `land_scale`: 10 with the package's own reference, 110 with
+#' `reference = "CoordinateCleaner"`, or an explicit 10, 50 or 110.
+#' The 1:10 million layer is downloaded once by [download_reference()].
+#' It includes Natural Earth's fictitious Null Island at (0, 0), which
+#' [test_zero] flags. Use both tests to screen terrestrial coordinates.
+#' This finer default is an addition: it includes small islands absent from
+#' the 1:110 million layer, including the Azores and Reunion.
 #'
 #' @section Fields: `lon`, `lat`.
 #' @section CoordinateCleaner: Equivalent to `cc_sea()` with its default
 #'   `scale = 110` (`clean_coordinates()` uses `seas_scale = 50`, which is
 #'   `land_scale = 50` here); identical flags on
 #'   the same layer. [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/) downloads the layer through
-#'   [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) at run time; here it is bundled and pinned.
+#'   [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) at run time; the
+#'   package's own layers are pinned, with scales 110 and 50 bundled and 10 cached.
 #' @section Custom gazetteer: `gazetteers = list(sea = polygons)`, an `sf` or
 #'   `sfc` object of land polygons; see [flag_occurrences()].
 #' @family tests
@@ -347,6 +362,12 @@ NULL
 #' `duplicated()`, so records without a species at the same coordinates are
 #' duplicates of each other.
 #'
+#' The default measures repeated species locations. It is useful when each
+#' location should contribute once to a spatial analysis. Observations on
+#' different dates at the same location share this flag. For repeated surveys,
+#' set `duplicate_by = "eventDate"` using the date column's actual name.
+#' A spatial grid is an analysis choice supplied through `duplicate_cell`.
+#'
 #' The test compares each record with all records before it in the input
 #' order: the rows of a data frame, or on streamed input the files in sorted
 #' order and the rows within each file. Streamed input therefore gets the same
@@ -387,7 +408,9 @@ NULL
 #' * `issue_date`: RECORDED_DATE_INVALID, RECORDED_DATE_UNLIKELY,
 #'   RECORDED_DATE_MISMATCH;
 #' * `issue_rounded`: COORDINATE_ROUNDED, which GBIF sets when it rounds a
-#'   coordinate to five decimals.
+#'   coordinate to six decimals. This records a processing change and is
+#'   left out of the named cleaning rules in the vignettes. Spatial precision
+#'   requirements can be applied to the stated coordinate uncertainty.
 #'
 #' The `issue` column is a string of names separated by `;`, `,`, `|` or
 #' spaces, or a list column of character vectors; case is ignored.

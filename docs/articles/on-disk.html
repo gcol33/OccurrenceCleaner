@@ -45,7 +45,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,7 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/OccurrenceCleaner.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
@@ -216,21 +216,21 @@ The call and its progress messages
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
 <span><span class="co">#&gt; progress: large species done [0 s]</span></span>
-<span><span class="co">#&gt; group tests: done [0.3 s]</span></span>
+<span><span class="co">#&gt; group tests: done [0.4 s]</span></span>
 <span><span class="co">#&gt; progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s</span></span>
-<span><span class="co">#&gt; occurrence-1: 3000 rows in 1 part(s) [0.1 s]</span></span>
+<span><span class="co">#&gt; occurrence-1: 3000 rows in 1 part(s) [0.2 s]</span></span>
 <span><span class="co">#&gt; occurrence-2: 3000 rows in 1 part(s) [0 s]</span></span>
 <span><span class="co">#&gt; occurrence-3: 3000 rows in 1 part(s) [0 s]</span></span>
-<span><span class="co">#&gt; progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s</span></span>
+<span><span class="co">#&gt; progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 1 s</span></span>
 <span><span class="co">#&gt; progress: record pass done [0 s]</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span></span>
 <span><span class="co">#&gt; &lt;occ_flagged&gt; 9,000 records in 3 part(s)</span></span>
-<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpqApMrW\flags</span></span>
+<span><span class="co">#&gt;   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp6nu9a1\flags</span></span>
 <span><span class="co">#&gt;   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi</span></span>
 <span><span class="co">#&gt;   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them</span></span>
 <span><span class="co">#&gt;   layout:    v4</span></span>
-<span><span class="co">#&gt;   reference: OccurrenceCleaner 0.2.4, land 110</span></span>
+<span><span class="co">#&gt;   reference: OccurrenceCleaner 0.3.0, land 10</span></span>
 <span><span class="co">#&gt;   keep:      kingdom, year</span></span></code></pre></div>
 <p>Without <code>tests</code>, the run covers every test the columns
 allow. The printed object lists them, and <code><a href="../reference/test_plan.html">test_plan()</a></code> gives
@@ -302,25 +302,25 @@ coordinates and a species, apart from its outlier test.</p>
 <td align="left">Animalia</td>
 <td align="left">&lt;1950</td>
 <td align="right">1427</td>
-<td align="right">577</td>
+<td align="right">585</td>
 <td align="right">3</td>
-<td align="right">581</td>
+<td align="right">589</td>
 </tr>
 <tr class="even">
 <td align="left">Animalia</td>
 <td align="left">1950-2000</td>
 <td align="right">1075</td>
-<td align="right">428</td>
-<td align="right">4</td>
 <td align="right">433</td>
+<td align="right">4</td>
+<td align="right">437</td>
 </tr>
 <tr class="odd">
 <td align="left">Animalia</td>
 <td align="left">&gt;=2000</td>
 <td align="right">513</td>
-<td align="right">195</td>
+<td align="right">205</td>
 <td align="right">2</td>
-<td align="right">197</td>
+<td align="right">207</td>
 </tr>
 <tr class="even">
 <td align="left">Fungi</td>
@@ -334,46 +334,46 @@ coordinates and a species, apart from its outlier test.</p>
 <td align="left">Fungi</td>
 <td align="left">1950-2000</td>
 <td align="right">1030</td>
-<td align="right">414</td>
+<td align="right">409</td>
 <td align="right">4</td>
-<td align="right">418</td>
+<td align="right">413</td>
 </tr>
 <tr class="even">
 <td align="left">Fungi</td>
 <td align="left">&gt;=2000</td>
 <td align="right">493</td>
-<td align="right">200</td>
+<td align="right">198</td>
 <td align="right">1</td>
-<td align="right">202</td>
+<td align="right">200</td>
 </tr>
 <tr class="odd">
 <td align="left">Plantae</td>
 <td align="left">&lt;1950</td>
 <td align="right">1492</td>
-<td align="right">588</td>
-<td align="right">1</td>
 <td align="right">590</td>
+<td align="right">1</td>
+<td align="right">592</td>
 </tr>
 <tr class="even">
 <td align="left">Plantae</td>
 <td align="left">1950-2000</td>
 <td align="right">1003</td>
-<td align="right">397</td>
+<td align="right">407</td>
 <td align="right">2</td>
-<td align="right">399</td>
+<td align="right">409</td>
 </tr>
 <tr class="odd">
 <td align="left">Plantae</td>
 <td align="left">&gt;=2000</td>
 <td align="right">543</td>
-<td align="right">212</td>
+<td align="right">213</td>
 <td align="right">0</td>
-<td align="right">212</td>
+<td align="right">213</td>
 </tr>
 </tbody>
 </table>
 <p>The sea test flags 40 % of all records, and it accounts for most of
-the 3,589 records the rule removes: the points were drawn uniformly over
+the 3,617 records the rule removes: the points were drawn uniformly over
 a box that includes the Mediterranean, the Bay of Biscay and the North
 Sea. A grouping column that was not kept is an error that names it:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -398,14 +398,14 @@ well as the tests of the rule above:</p>
 <code class="sourceCode R"><span><span class="va">fungi</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_flagged.html">flagged_table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>, <span class="va">kingdom</span> <span class="op">==</span> <span class="st">"Fungi"</span>, <span class="va">flags</span> <span class="op">!=</span> <span class="fl">0L</span><span class="op">)</span></span>
 <span><span class="va">flagged</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">collect</a></span><span class="op">(</span><span class="va">fungi</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1251</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1244</span></span></code></pre></div>
 <p>vectra filters cannot test a single bit of the flag word, so a rule
 is applied after collecting, with <code><a href="../reference/flag_mask.html">has_flag()</a></code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>removed <span class="op">=</span> <span class="fu"><a href="../reference/flag_mask.html">has_flag</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">$</span><span class="va">flags</span>, <span class="va">coordinatecleaner</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; removed</span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;    74  1177</span></span></code></pre></div>
+<span><span class="co">#&gt;    74  1170</span></span></code></pre></div>
 <p>To attach the flags to the full records, join on the identifier.
 vectra runs the join on disk, so only the joined rows of the selection
 are collected:</p>
@@ -417,12 +417,12 @@ are collected:</p>
 <span><span class="va">merged</span> <span class="op">&lt;-</span> <span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/collect.html" class="external-link">collect</a></span><span class="op">(</span><span class="fu">vectra</span><span class="fu">::</span><span class="fu"><a href="https://gillescolling.com/vectra/reference/left_join.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">fungi</span>, <span class="va">records</span>, by <span class="op">=</span> <span class="st">"gbifid"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gbifid"</span>, <span class="st">"species"</span>, <span class="st">"decimallongitude"</span>, <span class="st">"flags"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   gbifid species decimallongitude flags</span></span>
-<span><span class="co">#&gt; 1      4    sp10           27.043   128</span></span>
-<span><span class="co">#&gt; 2      9    sp02           13.312   128</span></span>
-<span><span class="co">#&gt; 3     22    sp27           19.655   128</span></span>
-<span><span class="co">#&gt; 4     25    sp06           28.251   128</span></span>
-<span><span class="co">#&gt; 5     28    sp15            8.826   128</span></span>
-<span><span class="co">#&gt; 6     33    sp12           20.121   128</span></span></code></pre></div>
+<span><span class="co">#&gt; 1      2    sp18           -1.194   128</span></span>
+<span><span class="co">#&gt; 2      4    sp10           27.043   128</span></span>
+<span><span class="co">#&gt; 3      9    sp02           13.312   128</span></span>
+<span><span class="co">#&gt; 4     22    sp27           19.655   128</span></span>
+<span><span class="co">#&gt; 5     25    sp06           28.251   128</span></span>
+<span><span class="co">#&gt; 6     28    sp15            8.826   128</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="duplicates-across-files">Duplicates across files<a class="anchor" aria-label="anchor" href="#duplicates-across-files"></a>
@@ -586,7 +586,7 @@ until the slower steps have started. With <code>verbose = TRUE</code>
 the same line is printed every minute.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"progress.txt"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "record 9000 9000 0.3 0.0 0.0 1.0000"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "record 9000 9000 0.4 0.0 0.0 1.0000"</span></span></code></pre></div>
 <p><code>n_threads</code> spreads the exact outlier test and the
 proximity and point-in-polygon queries over several threads, and the
 flags are the same for any number of threads. <a href="parallel.html">Running on several threads</a> lists the tests that

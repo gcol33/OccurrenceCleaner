@@ -123,6 +123,10 @@
 #'   sources; `reference = "CoordinateCleaner"` uses that package's own tables,
 #'   and `gazetteers` replaces the layer of single tests, as the `ref`
 #'   arguments of CoordinateCleaner's functions do.
+#' * The own-reference coastline defaults to 1:10 million, an addition for
+#'   coastal and island records. `reference = "CoordinateCleaner"` defaults
+#'   to 1:110 million as `cc_sea()` does. An explicit `land_scale` takes
+#'   precedence for either reference.
 #'
 #' @param x A data frame, a `vectra_node`, or a path (file or directory).
 #' @param tests Character vector of test names, see [flag_tests()]. `NULL`
@@ -149,10 +153,11 @@
 #'   habitats for [test_habitat] (see [reference_habitat()]). The land layer
 #'   given for `sea` is also the land of the habitat tests.
 #' @param land_scale Natural Earth scale of the land layer for `sea` and the
-#'   habitat tests: 110
-#'   (the default of CoordinateCleaner's `cc_sea()`; its `clean_coordinates()`
-#'   uses `seas_scale = 50`), 50, or 10 (downloaded on first use, see
-#'   [download_reference()]).
+#'   habitat tests: 10, 50, or 110. `NULL` selects 10 for the package's own
+#'   reference and 110 for `reference = "CoordinateCleaner"`, matching
+#'   `cc_sea()`. Its `clean_coordinates()` uses `seas_scale = 50`.
+#'   The 1:10 million layer is downloaded on first use; see
+#'   [download_reference()].
 #' @param buffers Named list overriding buffer distances in metres for
 #'   `capital` (10000), `centroid` (1000), `institution` (100),
 #'   `gbif_headquarters` (1000), `range` (0), `aohi` (10000),
@@ -203,7 +208,7 @@
 #' @export
 flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
                              reference = c("OccurrenceCleaner", "CoordinateCleaner"),
-                             gazetteers = NULL, land_scale = 110, buffers = NULL,
+                             gazetteers = NULL, land_scale = NULL, buffers = NULL,
                              settings = NULL, duplicate_by = NULL,
                              duplicate_cell = NULL,
                              out = NULL, keep = NULL, part_rows = 2e6, resume = TRUE,
@@ -223,14 +228,16 @@ flag_occurrences <- function(x, tests = NULL, columns = occ_columns(),
 # The validated configuration of a call: tests, columns, reference layers and
 # the settings of the tests.
 flag_config <- function(tests = NULL, columns = occ_columns(), reference = "OccurrenceCleaner",
-                        gazetteers = NULL, land_scale = 110, buffers = NULL, settings = NULL,
+                        gazetteers = NULL, land_scale = NULL, buffers = NULL, settings = NULL,
                         duplicate_by = NULL, duplicate_cell = NULL, n_threads = 1L) {
   if (!is.null(tests)) {
     tests <- check_tests(tests)
     if ("range" %in% tests && is.null(gazetteers$range))
       stop("the range test needs species range polygons: gazetteers = list(range = <sf>)")
   }
-  if (!land_scale %in% c(110, 50, 10)) stop("`land_scale` must be 110, 50 or 10")
+  if (is.null(land_scale)) land_scale <- if (reference == "CoordinateCleaner") 110 else 10
+  if (!is.numeric(land_scale) || length(land_scale) != 1L || is.na(land_scale) ||
+      !land_scale %in% c(110, 50, 10)) stop("`land_scale` must be NULL, 110, 50 or 10")
   if (!inherits(columns, "occ_columns")) stop("`columns` must come from occ_columns()")
   custom <- prepare_gazetteers(gazetteers, columns)
   list(tests = tests, plan = if (!is.null(tests)) requested_plan(tests),

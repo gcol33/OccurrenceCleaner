@@ -3,9 +3,15 @@
 Flags records outside the Natural Earth land polygons, by a planar
 point-in-polygon test in longitude and latitude through a grid index
 that resolves boundary cells exactly. The land layer is chosen with
-`land_scale`: 110 (default), 50, or 10. The 1:10 million layer is
-downloaded once by
+`land_scale`: 10 with the package's own reference, 110 with
+`reference = "CoordinateCleaner"`, or an explicit 10, 50 or 110. The
+1:10 million layer is downloaded once by
 [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).
+It includes Natural Earth's fictitious Null Island at (0, 0), which
+[test_zero](https://gillescolling.com/OccurrenceCleaner/reference/test_zero.md)
+flags. Use both tests to screen terrestrial coordinates. This finer
+default is an addition: it includes small islands absent from the 1:110
+million layer, including the Azores and Reunion.
 
 ## Usage
 
@@ -44,7 +50,8 @@ Equivalent to `cc_sea()` with its default `scale = 110`
 [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)
 downloads the layer through
 [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) at run time;
-here it is bundled and pinned.
+the package's own layers are pinned, with scales 110 and 50 bundled and
+10 cached.
 
 ## Custom gazetteer
 

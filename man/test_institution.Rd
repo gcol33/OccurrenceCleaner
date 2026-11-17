@@ -27,10 +27,10 @@ universities holding collections, where specimens are often georeferenced
 to the institution.
 }
 \details{
-The default gazetteer has 24,342 points. Of these, 9,773 are the
+The default gazetteer has 24,365 points. Of these, 9,773 are the
 institutions with coordinates in the table of
 \href{https://ropensci.github.io/CoordinateCleaner/}{CoordinateCleaner} 3.0.1
-(\code{source} "CoordinateCleaner", \code{status} "cc"), and 14,569 are further
+(\code{source} "CoordinateCleaner", \code{status} "cc"), and 14,592 are further
 points that a check beyond their own source confirms (\code{status}
 "confirmed").
 
@@ -74,7 +74,14 @@ read by hand, 26 were on the institution, 4 could not be judged from the
 image and none was elsewhere. Points that a later
 reading showed are not on the institution stay unconfirmed.
 
-\code{\link[=reference_points]{reference_points()}} also returns 10,233 unconfirmed points, which the
+A named department, herbarium or garden on its parent institution's grounds
+also counts as an institution site when the names establish that relation
+and an independent mapped feature confirms the location. The final nearby
+OpenStreetMap review confirms 18 parent-site candidates and 3 generic names
+tied to specific mapped places. Bongil Bongil Garden is a private garden
+in Korora Basin; its match to Bongil Bongil National Park is rejected.
+
+\code{\link[=reference_points]{reference_points()}} also returns 10,210 unconfirmed points, which the
 test leaves out. They come from GBIF's Global Registry of Scientific
 Collections (GRSciColl), Wikidata, Wikipedia's lists of natural history
 museums, GeoNames, Botanic Gardens Conservation International (BGCI)
@@ -82,7 +89,9 @@ GardenSearch, Index Herbariorum, the GBIF registry of publishing
 organisations and OpenStreetMap, and from searches for
 CoordinateCleaner's institutions by name. \code{source} and \code{master_source} say
 which, and \code{\link[=reference_info]{reference_info()}} gives the versions and retrieval dates.
-No check placed them on the institution. Passing
+Google Maps, OpenStreetMap, labelled satellite imagery and the nearby-feature
+review found no accepted independent confirmation for these points. They
+are excluded from the default test. Passing
 the whole table as \code{gazetteers = list(institution = ...)} uses them too
 (see the examples).
 }
@@ -98,7 +107,7 @@ the whole table as \code{gazetteers = list(institution = ...)} uses them too
  Equivalent to \code{cc_inst()}. Its 40-gon buffer
 edge lies within 0.31 m of the 100 m circle. The default gazetteer
 differs from its \code{institutions} table by the 573 moved points and the
-14,569 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
+14,592 confirmed points. \code{reference = "CoordinateCleaner"} uses its table
 as it is.
 }
 

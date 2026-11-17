@@ -140,7 +140,7 @@ To check agreement on your own data, run both packages on a sample of it as in t
 
 - `reference = "CoordinateCleaner"`, so both use CoordinateCleaner's reference points.
 
-- `land_scale = 50` when the sea test is included, since `clean_coordinates()` uses the 1:50 million land and `flag_occurrences()` defaults to 1:110 million.
+- `land_scale = 50` when the sea test is included, since `clean_coordinates()` uses the 1:50 million land. OccurrenceCleaner's own reference defaults to 1:10 million, and `reference = "CoordinateCleaner"` defaults to 1:110 million as `cc_sea()` does.
 
 - The buffers you set in CoordinateCleaner (`capitals_rad`, ...) passed in `buffers`, mapped in [Arguments and output](#arguments-and-output).
 
@@ -212,7 +212,7 @@ knitr::kable(data.frame(
                         "`settings = list(outlier = list(method = ...), ...)`",
                         "the same option in `settings`, with the counts given as a table in `gazetteers = list(sampling = ...)`",
                         "`gazetteers = list(capital = ..., sea = ...)`",
-                        "`land_scale` (default 110, as `cc_sea()`)",
+                        "`land_scale` (default 10; 110 with `reference = \"CoordinateCleaner\"`, as `cc_sea()`)",
                         "`duplicate_by`",
                         "no test; `tally_flags(bins = ...)` on the range width",
                         "`clean_capital()` and the other cleaning functions, or `keep_unflagged(f, tests = rule)` after flagging",

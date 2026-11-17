@@ -58,7 +58,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### readme.usecases  [A2 A3 A5 A4 A7]  (list)
 - idea: scale · comparing rules · extension points · GBIF fields
-- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, checked institution locations as a choice of two tables: `reference = "CoordinateCleaner"` for its 9,773 institutions as they are, or the default `reference = "OccurrenceCleaner"`, which corrects and extends them to 24,342 (565 of CoordinateCleaner's points over 25 km from their listed city moved to the Google Maps place; 14,569 points of other registries confirmed by a Google Maps, OpenStreetMap or satellite-imagery check, linked to the reference-data Institutions section), GBIF issues, record type, native or introduced status, and genus habitat.
+- job: Lists the four things the package supports, each with its reason: large tables with the measured capital-test time, chunked processing keeping memory bounded so billions of records (hundreds of gigabytes) are cleaned on a desktop computer in a single R session, interrupted runs resume from saved progress, rule comparison (flags once, then a choice of tests) with `tally_flags()`, checked institution locations as a choice of two tables: `reference = "CoordinateCleaner"` for its 9,773 institutions as they are, or the default `reference = "OccurrenceCleaner"`, which corrects and extends them to 24,365 (565 of CoordinateCleaner's points over 25 km from their listed city moved to the Google Maps place; 14,592 points of other registries confirmed by a Google Maps, OpenStreetMap or satellite-imagery check, linked to the reference-data Institutions section), GBIF issues, record type, native or introduced status, and genus habitat.
 - leaves: why a reader would pick this package, each reason backed by a number, a function or a mechanism
 
 ### readme.comparable  [A1]
@@ -226,7 +226,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 ### gs.reference-tests  [A1 A3 A5]  (section)
 - idea: every test the columns allow; running vs excluding; the reference tests
 - job: Says that without `tests` every test whose columns are present runs, that running only adds flags and exclusion is a later rule; names the tests coordinates and species allow (reference points and polygons, GBIF and AHOI expanded, the species outlier test) and that the header names the missing columns, `test_plan()` the tests; runs it and says which records the capital, urban, sea, equal and AHOI tests flag; the outlier test flags none; two records pass every test run here.
-- leaves: the default selection, `test_plan()`; the land scale (1:110 million default) changes `sea` near coasts, linked to Reference data
+- leaves: the default selection, `test_plan()`; the land scale (1:10 million default) changes `sea` near coasts, linked to Reference data
 
 ### gs.valid  [A3]
 - idea: a flag may mark a valid record; summary
@@ -379,7 +379,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 - leaves: removing flagged records leaves one per key; a taxon key avoids spelling splits
 
 ### tests.issues  [A4]  (section)
-- idea: four issue groups; rounding is precision
+- idea: four issue groups; rounding records GBIF processing
 - job: Defines the four issue tests by the GBIF issue names they hold and why rounding is separate.
 - leaves: the group table; precision belongs to `coordinateUncertaintyInMeters`
 
@@ -417,7 +417,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### rules.compare  [A3]  (section)
 - idea: three candidate rules, named for this article
-- job: Defines `strict`, `coordinatecleaner` (the eight `clean_coordinates()` defaults in this set; its outlier test left out, duplicates not in its default) and `minimal` (screening for terrestrial records; `sea` removes valid marine records); limits `coordinatecleaner` to this plot and the kingdom comparison.
+- job: Defines `strict` (all selected tests except `issue_rounded`), `coordinatecleaner` (the eight `clean_coordinates()` defaults in this set; its outlier test left out, duplicates not in its default) and `minimal` (screening for terrestrial records; `sea` removes valid marine records); limits `coordinatecleaner` to this plot and the kingdom comparison.
 - leaves: named rules in `summary()`; records failing several tests contribute zero to every `only` count (said in those words)
 
 ### rules.by-group  [A3]  (section)
@@ -600,7 +600,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.vs-cc  [A1 A5]  (section, "How the reference data differ from CoordinateCleaner's")
 - idea: same places, different tables
-- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-11-09, the date of the last change to the institution checks; institutions: CoordinateCleaner's points used, 573 moved, 14,569 confirmed points added; its own geocoding against the source coordinates; `reference = "CoordinateCleaner"` uses its table as it is), and shows the capital difference in flags.
+- job: Compares the package's reference points with CoordinateCleaner's, layer by layer (counts as of 2026-11-17, the date of the last change to the institution checks; institutions: CoordinateCleaner's points used, 573 moved, 14,592 confirmed points added; its own geocoding against the source coordinates; `reference = "CoordinateCleaner"` uses its table as it is), and shows the capital difference in flags.
 - leaves: where the two references flag different records and why
 
 ### ref.extension  [A1 A5]  (section)
@@ -610,7 +610,7 @@ Source is `README.Rmd`; `README.md` is rendered by `devtools::build_readme()`.
 
 ### ref.land-scale  [A1 A5]  (section)
 - idea: 1:110 million vs 1:50 million on the Danish coast
-- job: States the three supported scales, OccurrenceCleaner's default (1:110 million) beside CoordinateCleaner's two defaults, that 1:10 million is downloaded once and cached, then measures where 1:110 million and 1:50 million disagree.
+- job: States the three supported scales, OccurrenceCleaner's default (1:10 million) beside CoordinateCleaner's two defaults, that 1:10 million is downloaded once and cached, then measures where 1:110 million and 1:50 million disagree.
 - leaves: the scale matters for coastal and island taxa; the download is checksummed
 
 ### ref.buffers  [A1]  (section)

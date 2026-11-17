@@ -1,0 +1,1 @@
+25 named flag columns match the bit words for 12439653 POC rows

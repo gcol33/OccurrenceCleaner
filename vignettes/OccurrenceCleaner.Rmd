@@ -97,7 +97,7 @@ f
 
 Records 3 and 4 lie in Vienna, within 10 km of a capital and inside an urban area. Record 6 is in the Atlantic. Record 2, at (0, 0), is also at sea, has equal longitude and latitude, and lies within 10 km of an inventory point. The outlier test flags no record. Records 1 and 7 pass every test run here.
 
-The `sea` test compares each record with land polygons from Natural Earth, at the 1:110 million scale by default. Near coasts and on small islands a finer scale (`land_scale = 50` or `10`) can change the flag; [Reference data](reference-data.html) maps the difference.
+The `sea` test compares each record with Natural Earth land polygons at 1:10 million by default, including small islands such as the Azores and Reunion. `reference = "CoordinateCleaner"` selects its `cc_sea()` default of 1:110 million. An explicit `land_scale` selects 10, 50 or 110 with either reference; [Reference data](reference-data.html) maps the difference.
 
 A flagged record may still be valid: a beech can grow within 10 km of a capital, so you decide which tests suit your analysis. A rule for species distribution modelling might exclude fossil and living specimens along with coordinate problems, and another study can choose a different set.
 

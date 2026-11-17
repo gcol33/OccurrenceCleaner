@@ -113,12 +113,12 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species, 0 of 0 species | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
 #> progress: large species done [0 s]
-#> group tests: done [0.3 s]
+#> group tests: done [0.4 s]
 #> progress: record pass, 0 of 9,000 rows | step ETA 0 s | run 82%, ETA ~0 s | elapsed 0 s
-#> occurrence-1: 3000 rows in 1 part(s) [0.1 s]
+#> occurrence-1: 3000 rows in 1 part(s) [0.2 s]
 #> occurrence-2: 3000 rows in 1 part(s) [0 s]
 #> occurrence-3: 3000 rows in 1 part(s) [0 s]
-#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 0 s
+#> progress: record pass, 9,000 of 9,000 rows | step ETA 0 s | run 100%, ETA ~0 s | elapsed 1 s
 #> progress: record pass done [0 s]
 ```
 
@@ -126,11 +126,11 @@ f <- flag_occurrences(src, out = out, keep = c("kingdom", "year"),
 
 f
 #> <occ_flagged> 9,000 records in 3 part(s)
-#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\RtmpqApMrW\flags
+#>   out:       C:\Users\Gilles Colling\AppData\Local\Temp\Rtmp6nu9a1\flags
 #>   tests:     invalid, zero, equal, capital, centroid, institution, gbif_headquarters, sea, urban, duplicate, outlier, aohi
 #>   not run:   missing input: countryCode, issue, basisOfRecord, establishmentMeans, min_ma, max_ma, datasetKey, range polygons, genus (18 tests); test_plan() lists them
 #>   layout:    v4
-#>   reference: OccurrenceCleaner 0.2.4, land 110
+#>   reference: OccurrenceCleaner 0.3.0, land 10
 #>   keep:      kingdom, year
 ```
 
@@ -196,18 +196,18 @@ sel <- t[, c("kingdom", "year_bin", "n", "flagged_sea", "flagged_capital",
 
 | kingdom  | year_bin  |    n | flagged_sea | flagged_capital | removed_coordinatecleaner |
 |:---------|:----------|-----:|------------:|----------------:|--------------------------:|
-| Animalia | \<1950    | 1427 |         577 |               3 |                       581 |
-| Animalia | 1950-2000 | 1075 |         428 |               4 |                       433 |
-| Animalia | \>=2000   |  513 |         195 |               2 |                       197 |
+| Animalia | \<1950    | 1427 |         585 |               3 |                       589 |
+| Animalia | 1950-2000 | 1075 |         433 |               4 |                       437 |
+| Animalia | \>=2000   |  513 |         205 |               2 |                       207 |
 | Fungi    | \<1950    | 1424 |         553 |               4 |                       557 |
-| Fungi    | 1950-2000 | 1030 |         414 |               4 |                       418 |
-| Fungi    | \>=2000   |  493 |         200 |               1 |                       202 |
-| Plantae  | \<1950    | 1492 |         588 |               1 |                       590 |
-| Plantae  | 1950-2000 | 1003 |         397 |               2 |                       399 |
-| Plantae  | \>=2000   |  543 |         212 |               0 |                       212 |
+| Fungi    | 1950-2000 | 1030 |         409 |               4 |                       413 |
+| Fungi    | \>=2000   |  493 |         198 |               1 |                       200 |
+| Plantae  | \<1950    | 1492 |         590 |               1 |                       592 |
+| Plantae  | 1950-2000 | 1003 |         407 |               2 |                       409 |
+| Plantae  | \>=2000   |  543 |         213 |               0 |                       213 |
 
 The sea test flags 40 % of all records, and it accounts for most of the
-3,589 records the rule removes: the points were drawn uniformly over a
+3,617 records the rule removes: the points were drawn uniformly over a
 box that includes the Mediterranean, the Bay of Biscay and the North
 Sea. A grouping column that was not kept is an error that names it:
 
@@ -239,7 +239,7 @@ above:
 fungi <- vectra::filter(flagged_table(out), kingdom == "Fungi", flags != 0L)
 flagged <- vectra::collect(fungi)
 nrow(flagged)
-#> [1] 1251
+#> [1] 1244
 ```
 
 vectra filters cannot test a single bit of the flag word, so a rule is
@@ -251,7 +251,7 @@ applied after collecting, with
 table(removed = has_flag(flagged$flags, coordinatecleaner))
 #> removed
 #> FALSE  TRUE 
-#>    74  1177
+#>    74  1170
 ```
 
 To attach the flags to the full records, join on the identifier. vectra
@@ -267,12 +267,12 @@ fungi <- vectra::select(fungi, gbifid, flags)
 merged <- vectra::collect(vectra::inner_join(fungi, records, by = "gbifid"))
 head(merged[, c("gbifid", "species", "decimallongitude", "flags")])
 #>   gbifid species decimallongitude flags
-#> 1      4    sp10           27.043   128
-#> 2      9    sp02           13.312   128
-#> 3     22    sp27           19.655   128
-#> 4     25    sp06           28.251   128
-#> 5     28    sp15            8.826   128
-#> 6     33    sp12           20.121   128
+#> 1      2    sp18           -1.194   128
+#> 2      4    sp10           27.043   128
+#> 3      9    sp02           13.312   128
+#> 4     22    sp27           19.655   128
+#> 5     25    sp06           28.251   128
+#> 6     28    sp15            8.826   128
 ```
 
 ### Duplicates across files
@@ -456,7 +456,7 @@ minute.
 ``` r
 
 readLines(file.path(out, "progress.txt"))
-#> [1] "record 9000 9000 0.3 0.0 0.0 1.0000"
+#> [1] "record 9000 9000 0.4 0.0 0.0 1.0000"
 ```
 
 `n_threads` spreads the exact outlier test and the proximity and

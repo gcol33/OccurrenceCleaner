@@ -70,7 +70,7 @@ test_that("a column subset keeping flags keeps the tests run and the reference",
 test_that("print is short: header, first records, failed tests by name", {
   f <- flag_occurrences(records(), tests = c("zero", "capital"))
   out <- capture.output(print(f, n = 3))
-  expect_match(out[1], "<occ_flags> 6 records, 2 tests, reference OccurrenceCleaner [0-9.]+, land 110$")
+  expect_match(out[1], "<occ_flags> 6 records, 2 tests, reference OccurrenceCleaner [0-9.]+, land 10$")
   expect_false(any(grepl("flag_zero", out)))
   expect_true(any(grepl("zero$", out)))
   expect_match(out[length(out)], "3 more records")

@@ -117,7 +117,7 @@ For records spread evenly over a disc, the share grows with the square of the bu
 
 ## Land and sea
 
-`sea` flags records outside the land polygons of Natural Earth. The land layer comes at three scales: 1:110 million (the default, as in [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_sea()`; its `clean_coordinates()` uses 1:50 million), 1:50 million and 1:10 million, set with `land_scale`. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
+`sea` flags records outside the land polygons of Natural Earth. The default layer is 1:10 million, an addition that includes small islands omitted at 1:110 million. `reference = "CoordinateCleaner"` selects 1:110 million, matching `cc_sea()`; `land_scale = 50` matches the layer of `clean_coordinates()`. An explicit `land_scale` selects 10, 50 or 110 with either reference. The test is a planar point-in-polygon test in longitude and latitude, through a grid index whose boundary cells are resolved exactly.
 
 The scale decides the result for records near the coast. The GBIF headquarters in Copenhagen are on land at 1:110 million and in the sea at 1:50 million:
 

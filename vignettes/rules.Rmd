@@ -111,7 +111,7 @@ summary(f)
 
 For each test of the rule, `flagged` is the number of records carrying that test and `pct` the same as a percentage of all records. `only` counts the records for which that test is the sole flag among the rule's tests: dropping that test from the rule would keep exactly these records. The row `(any)` is the rule itself, the records that carry at least one of its tests.
 
-A record can fail several tests at once. The 44 records at (0, 0), the 40 moved there and 4 of the copies, are flagged by `zero`, `equal` (|0| = |0|) and `sea`, so none of them is counted under `only`. The per-test shares therefore add up to more than the rule's total. The rule's `pct` minus the sum of the `pct_only` shares is the share of records flagged by more than one of its tests. `pct` says how often a test flags a record; `pct_only` says how much of the rule's loss would disappear without that test.
+A record can fail several tests at once. The 44 records at (0, 0), the 40 moved there and 4 of the copies, are flagged by `zero` and `equal` (|0| = |0|), so none of them is counted under `only`. The per-test shares therefore add up to more than the rule's total. The rule's `pct` minus the sum of the `pct_only` shares is the share of records flagged by more than one of its tests. `pct` says how often a test flags a record; `pct_only` says how much of the rule's loss would disappear without that test.
 
 The same numbers as a plot: the full bar is `pct`, the dark part `pct_only`.
 
@@ -123,14 +123,14 @@ plot(f)
 
 Candidate rules go into `rules` as a named list. This example compares three, with names that label them for this article:
 
-- `strict` uses all twelve tests.
+- `strict` uses the eleven tests other than GBIF's rounding note.
 
 - `coordinatecleaner` uses the eight tests of this set that [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `clean_coordinates()` runs by default: `invalid`, `zero`, `equal`, `capital`, `centroid`, `institution`, `gbif_headquarters` and `sea`. That default also runs an outlier test, which this example leaves out, and does not run the duplicate test.
 
 - `minimal` uses `invalid`, `zero` and `sea`: coordinates outside the valid range, on either zero axis or near (0, 0), and in the sea. For terrestrial records such as these, the three screen for misplaced coordinates; for marine species, `sea` would remove valid records.
 
 ```{r}
-rules <- list(strict = tests,
+rules <- list(strict = setdiff(tests, "issue_rounded"),
               coordinatecleaner = setdiff(cc_tests, "duplicate"),
               minimal = c("invalid", "zero", "sea"))
 s <- summary(f, rules = rules)
@@ -164,13 +164,13 @@ plot(f, rules = rules["coordinatecleaner"], by = "kingdom")
 
 Year and coordinate uncertainty stay raw columns of the records and are cut into classes only when tallying. `bins` takes the break points and adds a `<column>_bin` grouping column. Each class includes its lower break and excludes its upper one, so `1950-1970` holds the years 1950 to 1969. Values below the first break form `<1900`, values from the last break on form `>=2000`, and missing values form the class `missing`. Each percentage is out of the records in its class.
 
-This section reads the shares under `strict`, the only one of the three rules that includes `issue_rounded`, so the share of records with GBIF's rounding issue can be followed across age and uncertainty classes.
+This section reads `issue_rounded` separately to follow GBIF's processing note across age and uncertainty classes. The named cleaning rules leave it out.
 
 ```{r}
-t <- tally_flags(f, rules = rules,
+t <- tally_flags(f, tests = "issue_rounded",
                  bins = list(year = c(1900, 1950, 1970, 2000)))
 s <- summary(t)
-s[s$rule == "strict" & s$test %in% c("issue_rounded", "(any)"),
+s[s$test %in% c("issue_rounded", "(any)"),
   c("year_bin", "test", "n", "pct")]
 ```
 
@@ -179,13 +179,13 @@ The higher `issue_rounded` share before 1970 reproduces the rate the simulation 
 `tally_flags()` returns the counts; `summary()` on its result gives the percentages, and `plot()` the grid. The tally is the one to keep when the counts will be summed or merged later.
 
 ```{r, fig.height = 7.5}
-plot(t, rule = "strict")
+plot(t)
 ```
 
 The same works for coordinate uncertainty, `coordinateUncertaintyInMeters`, a distance in metres describing how uncertain the stated location is:
 
 ```{r}
-t <- tally_flags(f, rules = rules["strict"],
+t <- tally_flags(f, tests = "issue_rounded",
                  bins = list(coordinateUncertaintyInMeters = c(100, 1000, 10000)))
 s <- summary(t)
 s[s$test %in% c("issue_rounded", "(any)"),
@@ -214,7 +214,7 @@ Other analyses add other tests:
 
 - `issue_coordinate` to exclude records with GBIF's georeferencing warnings.
 
-`issue_rounded` is left out. GBIF sets `COORDINATE_ROUNDED` when the original coordinate was modified by rounding to five decimals ([GBIF issue definition](https://gbif.github.io/gbif-api/apidocs/org/gbif/api/vocabulary/OccurrenceIssue.html#COORDINATE_ROUNDED)). A precision threshold can be taken from coordinate uncertainty instead.
+`issue_rounded` is left out of every named cleaning rule here. GBIF sets `COORDINATE_ROUNDED` when processing rounds a coordinate to six decimals ([GBIF issue definition](https://techdocs.gbif.org/en/data-use/occurrence-issues-and-flags)). The flag records that processing step. A precision threshold can be taken from the stated coordinate uncertainty.
 
 `keep_unflagged()` keeps the records that carry no flag from the rule. `has_flag()` gives the logical vector behind it, `TRUE` for every record carrying at least one test of the rule.
 
@@ -233,7 +233,7 @@ sum(keep)
 
 The removed records keep their flags. Another rule built from the tests already run reads the same `f`. Adding a test that was not run, or changing buffers, `settings`, reference data or the land scale, needs a new call to `flag_occurrences()`.
 
-To compare with `clean_coordinates()` output, both packages need the same tests, buffers and reference data. At its defaults, `clean_coordinates()` adds its outlier test and draws the sea test from the 1:50 million land, while `flag_occurrences()` uses the 1:110 million land and its own gazetteers; `land_scale = 50` and `reference = "CoordinateCleaner"` align the last two. [Compatibility with CoordinateCleaner](coordinatecleaner.html) maps the remaining arguments.
+To compare with `clean_coordinates()` output, both packages need the same tests, buffers and reference data. At its defaults, `clean_coordinates()` adds its outlier test and draws the sea test from the 1:50 million land. Set `land_scale = 50` and `reference = "CoordinateCleaner"` to use that layer and its gazetteers. [Compatibility with CoordinateCleaner](coordinatecleaner.html) maps the remaining arguments.
 
 ## How the shares are computed
 

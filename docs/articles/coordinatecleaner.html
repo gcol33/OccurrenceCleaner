@@ -45,7 +45,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,7 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/OccurrenceCleaner.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
@@ -347,8 +347,10 @@ data:</p>
 <li><p><code>reference = "CoordinateCleaner"</code>, so both use
 CoordinateCleaner’s reference points.</p></li>
 <li><p><code>land_scale = 50</code> when the sea test is included, since
-<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> uses the 1:50 million land and
-<code><a href="../reference/flag_occurrences.html">flag_occurrences()</a></code> defaults to 1:110 million.</p></li>
+<code><a href="https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html" class="external-link">clean_coordinates()</a></code> uses the 1:50 million land.
+OccurrenceCleaner’s own reference defaults to 1:10 million, and
+<code>reference = "CoordinateCleaner"</code> defaults to 1:110 million
+as <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code> does.</p></li>
 <li><p>The buffers you set in CoordinateCleaner
 (<code>capitals_rad</code>, …) passed in <code>buffers</code>, mapped in
 <a href="#arguments-and-output">Arguments and output</a>.</p></li>
@@ -583,7 +585,8 @@ counts given as a table in
 <td align="left">
 <code>seas_scale</code> (default 50)</td>
 <td align="left">
-<code>land_scale</code> (default 110, as
+<code>land_scale</code> (default 10; 110 with
+<code>reference = "CoordinateCleaner"</code>, as
 <code><a href="https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html" class="external-link">cc_sea()</a></code>)</td>
 </tr>
 <tr class="odd">

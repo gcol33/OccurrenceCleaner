@@ -25,8 +25,8 @@ The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
 with the package. This fetches the pinned zip from Natural Earth, verifies
 its SHA-256 against \code{\link[=reference_info]{reference_info()}}, converts it and stores the result in
 the user cache directory (\code{tools::R_user_dir("OccurrenceCleaner", "cache")}).
-\code{\link[=flag_occurrences]{flag_occurrences()}} calls it when \code{land_scale = 10} is requested and the
-layer is not cached yet.
+\code{\link[=flag_occurrences]{flag_occurrences()}} calls it for the default own-reference coastline,
+or an explicit \code{land_scale = 10}, when the layer is not cached yet.
 }
 \examples{
 if (interactive()) {

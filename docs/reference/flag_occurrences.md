@@ -12,7 +12,7 @@ flag_occurrences(
   columns = occ_columns(),
   reference = c("OccurrenceCleaner", "CoordinateCleaner"),
   gazetteers = NULL,
-  land_scale = 110,
+  land_scale = NULL,
   buffers = NULL,
   settings = NULL,
   duplicate_by = NULL,
@@ -80,10 +80,11 @@ flag_occurrences(
 - land_scale:
 
   Natural Earth scale of the land layer for `sea` and the habitat tests:
-  110 (the default of CoordinateCleaner's `cc_sea()`; its
-  `clean_coordinates()` uses `seas_scale = 50`), 50, or 10 (downloaded
-  on first use, see
-  [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md)).
+  10, 50, or 110. `NULL` selects 10 for the package's own reference and
+  110 for `reference = "CoordinateCleaner"`, matching `cc_sea()`. Its
+  `clean_coordinates()` uses `seas_scale = 50`. The 1:10 million layer
+  is downloaded on first use; see
+  [`download_reference()`](https://gillescolling.com/OccurrenceCleaner/reference/download_reference.md).
 
 - buffers:
 
@@ -320,6 +321,11 @@ package tests:
   original sources; `reference = "CoordinateCleaner"` uses that
   package's own tables, and `gazetteers` replaces the layer of single
   tests, as the `ref` arguments of CoordinateCleaner's functions do.
+
+- The own-reference coastline defaults to 1:10 million, an addition for
+  coastal and island records. `reference = "CoordinateCleaner"` defaults
+  to 1:110 million as `cc_sea()` does. An explicit `land_scale` takes
+  precedence for either reference.
 
 ## Examples
 

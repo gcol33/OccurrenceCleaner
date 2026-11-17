@@ -191,7 +191,7 @@ table that goes into an analysis.
 ``` r
 
 flag_reference(f)
-#> [1] "OccurrenceCleaner 0.2.4 (land 110; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-05, aohi 2022-10-10, habitat 2026-10-06)"
+#> [1] "OccurrenceCleaner 0.3.0 (land 10; land_110 4.1.0, land_50 4.1.0, land_10 5.1.1, countries_50 5.1.1, urban_50 4.1.0, places_10 5.1.2, admin0_10 5.1.1, admin1_10 5.1.1, factbook factbook.json 144d6977b2b01ac1cbd220de754c0a005616760b, world_borders 0.3 (2008-07-30), geolocate 2026-10-11, institutions 2026-10-09, institutions_wikidata 2026-10-10, institutions_wikipedia en revision 1376233148; de revision 267938927; fr revision 240149609; nl revision 69876533; pt revision 71307420; ar revision 76691072; eo revision 9165115, institutions_geonames 2026-10-10, institutions_bgci 2026-10-10, institutions_index_herbariorum 2026-10-13, institutions_gbif_registry 2026-10-13, institutions_coordinatecleaner_list 3.0.1, institutions_openstreetmap 2026-10-13, institutions_status 2026-11-17, aohi 2022-10-10, habitat 2026-10-06)"
 ```
 
 [`summary()`](https://rdrr.io/r/base/summary.html) turns the flags into
@@ -213,9 +213,9 @@ shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 | centroid              |      14 |  0.62 |    2 |
 | institution           |       2 |  0.09 |    0 |
 | gbif_headquarters     |      15 |  0.66 |    0 |
-| sea                   |      44 |  1.93 |    1 |
+| sea                   |      39 |  1.71 |    0 |
 | urban                 |      80 |  3.51 |   19 |
-| country_mismatch      |      79 |  3.47 |    5 |
+| country_mismatch      |      79 |  3.47 |    3 |
 | duplicate             |      87 |  3.82 |   41 |
 | issue_coordinate      |      25 |  1.10 |    0 |
 | issue_taxon           |      20 |  0.88 |    0 |
@@ -224,7 +224,7 @@ shown <- s[s$flagged > 0, c("test", "flagged", "pct", "only")]
 | establishment_managed |      21 |  0.92 |   14 |
 | outlier               |      45 |  1.98 |    0 |
 | aohi                  |      41 |  1.80 |    6 |
-| (any)                 |     273 | 11.99 |      |
+| (any)                 |     272 | 11.95 |      |
 
 The `(any)` row is the rule as a whole: 273 of the 2,276 records carry
 at least one flag. The `only` column counts the records flagged by that
@@ -255,7 +255,7 @@ tab <- t(tab[groups, ])
 | centroid | 0 | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 |
 | institution | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | gbif_headquarters | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |
-| sea | 0 | 0 | 20 | 0 | 9 | 15 | 0 | 0 | 0 |
+| sea | 0 | 0 | 0 | 15 | 8 | 16 | 0 | 0 | 0 |
 | country_mismatch | 2 | 0 | 20 | 15 | 25 | 17 | 0 | 0 | 0 |
 | duplicate | 0 | 0 | 15 | 10 | 0 | 0 | 3 | 7 | 7 |
 | issue_coordinate | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
@@ -264,15 +264,15 @@ tab <- t(tab[groups, ])
 
 Most error types trip more than one test. All 25 swapped records fail
 `country_mismatch` and carry GBIF’s own `PRESUMED_SWAPPED_COORDINATE`
-warning (`issue_coordinate`); 9 of them also land at sea. The 15
+warning (`issue_coordinate`); 8 also land at sea. The 15
 GBIF-headquarters records are flagged by `gbif_headquarters` and
 `capital` (Copenhagen is within 10 km), and by `country_mismatch`,
 because the point lies just off the 1:50 million Natural Earth coastline
-of Denmark that the country test uses, while the 1:110 million land of
-the `sea` test still covers it. The zero coordinates fail `zero`,
-`equal`, `sea` and `country_mismatch`.
+of Denmark that the country test uses. The `sea` test uses the 1:10
+million land. The zero coordinates fail `zero`, `equal` and
+`country_mismatch`.
 
-The negated longitudes show the limit of the spatial tests. Only 18 of
+The negated longitudes show the limit of the spatial tests. Only 17 of
 25 are caught: a French record at 1.5 E negated to 1.5 W is still in
 western France, on land and in the right country, and no record test can
 tell it from a correct one. Of the 30 records entered at whole degrees,
@@ -280,7 +280,7 @@ five are caught by `centroid`, because they fall on the whole-degree
 country centroids of France (2 E, 46 N) and Germany (9 E, 51 N). The
 others are not caught: a whole-degree point in Austria is still in
 Austria, and GBIF’s `COORDINATE_ROUNDED` warning does not mark them,
-since it records that GBIF itself rounded a coordinate to five decimals.
+since it records that GBIF itself rounded a coordinate to six decimals.
 Low precision of this kind is read from `coordinateuncertaintyinmeters`
 when the source states it; these 30 records state none.
 
@@ -325,32 +325,33 @@ combo <- vapply(flagged$flags, function(w)
 knitr::kable(head(sort(table(combo), decreasing = TRUE), 12), col.names = c("tests", "records"))
 ```
 
-| tests | records |
-|:---|---:|
-| capital + urban | 43 |
-| duplicate | 41 |
-| urban | 19 |
-| country_mismatch + issue_coordinate + outlier | 16 |
-| issue_taxon + issue_rounded | 15 |
-| zero + equal + sea + country_mismatch + duplicate + outlier + aohi | 15 |
-| establishment_managed | 14 |
-| sea + country_mismatch | 14 |
-| basis_living | 13 |
-| capital + gbif_headquarters + country_mismatch + duplicate | 10 |
-| sea + country_mismatch + issue_coordinate + outlier | 9 |
-| duplicate + basis_living | 7 |
+| tests                                                            | records |
+|:-----------------------------------------------------------------|--------:|
+| capital + urban                                                  |      43 |
+| duplicate                                                        |      41 |
+| urban                                                            |      19 |
+| country_mismatch + issue_coordinate + outlier                    |      17 |
+| sea + country_mismatch                                           |      16 |
+| issue_taxon + issue_rounded                                      |      15 |
+| zero + equal + country_mismatch + duplicate + outlier + aohi     |      15 |
+| establishment_managed                                            |      14 |
+| basis_living                                                     |      13 |
+| capital + gbif_headquarters + sea + country_mismatch + duplicate |      10 |
+| sea + country_mismatch + issue_coordinate + outlier              |       8 |
+| duplicate + basis_living                                         |       7 |
 
 The most common combination is `capital + urban`: a capital lies inside
 its own urban area, so in a rule that already includes `capital`, adding
 `urban` removes only the city records more than 10 km from the capital
-point. Of the 20 zero-coordinate records, 15 carry seven tests at once:
-`zero`, `equal`, `sea`, `country_mismatch`, `outlier`, `aohi` (the
-inventory has a point at (0, 0)) and `duplicate`, since they share their
-coordinates and often their species. The swapped records lie far from
-the other records of their species, so `outlier` flags all 25 of them.
-Records with a single flag (`duplicate`, `issue_rounded`,
-`establishment_managed`, `basis_living`) are the ones a rule keeps or
-loses depending on whether that one test is in it.
+point. Of the 20 zero-coordinate records, 15 carry six tests at once:
+`zero`, `equal`, `country_mismatch`, `outlier`, `aohi` (the inventory
+has a point at (0, 0)) and `duplicate`, since they share their
+coordinates and often their species. Natural Earth’s 1:10 million layer
+includes its fictitious Null Island at the origin; `zero` flags that
+location. The swapped records lie far from the other records of their
+species, so `outlier` flags all 25 of them. Records with a single flag
+(`duplicate`, `establishment_managed`, `basis_living`) are the ones a
+rule keeps or loses depending on whether that one test is in it.
 
 ## Comparing cleaning rules
 
@@ -375,7 +376,8 @@ show the range of choices on the same flags:
 - `wild`: `coordinatecleaner_gbif`, and also excludes living specimens
   and cultivated or managed individuals;
 
-- `strict`: every test, including duplicates and GBIF’s rounding note.
+- `strict`: all the tests in this example except GBIF’s rounding note,
+  including duplicates.
 
 ``` r
 
@@ -388,7 +390,7 @@ rules$coordinatecleaner_gbif <- c(rules$coordinatecleaner_country,
                                   "issue_coordinate", "issue_taxon")
 rules$wild <- c(rules$coordinatecleaner_gbif,
                 "basis_living", "establishment_managed")
-rules$strict <- all_tests
+rules$strict <- setdiff(all_tests, "issue_rounded")
 t_all <- as.data.frame(tally_flags(f, rules = rules))
 ladder <- data.frame(rule = names(rules), tests = lengths(rules),
                      removed = unlist(t_all[1, paste0("removed_", names(rules))], use.names = FALSE),
@@ -399,17 +401,16 @@ ladder$added <- c(ladder$removed[1], diff(ladder$removed))
 | rule                      | tests | removed | kept | added |
 |:--------------------------|------:|--------:|-----:|------:|
 | coordinatecleaner         |     8 |     124 | 2152 |   124 |
-| coordinatecleaner_country |     9 |     145 | 2131 |    21 |
-| coordinatecleaner_gbif    |    11 |     165 | 2111 |    20 |
-| wild                      |    13 |     206 | 2070 |    41 |
-| strict                    |    21 |     273 | 2003 |    67 |
+| coordinatecleaner_country |     9 |     144 | 2132 |    20 |
+| coordinatecleaner_gbif    |    11 |     164 | 2112 |    20 |
+| wild                      |    13 |     205 | 2071 |    41 |
+| strict                    |    20 |     272 | 2004 |    67 |
 
-The ladder removes 124 records under `coordinatecleaner` and 273 under
-`strict`. The country check adds 21, the GBIF warnings 20 and the living
-and cultivated records 41. `strict` adds the remaining 67 through
-`duplicate` (42 records, 40 of them the injected copies), `urban` (20)
-and `aohi` (6), some records carrying more than one; the 20 records with
-`issue_rounded` are already removed through `issue_taxon`.
+The ladder removes 124 records under `coordinatecleaner` and 272 under
+`strict`. The country check adds 20, the GBIF warnings 20 and the living
+and cultivated records 41. `strict` adds the remaining 67 through its
+additional tests. The 20 records with `issue_rounded` also carry
+`issue_taxon`.
 
 For one rule, [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 on the summary draws a bar per test: the full bar is the share the test
@@ -441,10 +442,10 @@ dimnames(share) <- list(t_k$kingdom, names(rules))
 |                           | Animalia | Fungi | Plantae |
 |:--------------------------|---------:|------:|--------:|
 | coordinatecleaner         |    0.062 | 0.028 |   0.060 |
-| coordinatecleaner_country |    0.072 | 0.035 |   0.070 |
-| coordinatecleaner_gbif    |    0.085 | 0.043 |   0.075 |
-| wild                      |    0.109 | 0.063 |   0.086 |
-| strict                    |    0.132 | 0.102 |   0.118 |
+| coordinatecleaner_country |    0.071 | 0.035 |   0.070 |
+| coordinatecleaner_gbif    |    0.084 | 0.043 |   0.075 |
+| wild                      |    0.108 | 0.063 |   0.086 |
+| strict                    |    0.130 | 0.102 |   0.118 |
 
 The same table as a figure, one line per kingdom across the rule ladder:
 
@@ -488,7 +489,7 @@ shown <- t_y[, c("year_bin", "n", "flagged_capital", "removed_coordinatecleaner_
 | \<1900    | 267 |                 31 |      37 | 0.139 |
 | 1900-1950 | 605 |                 34 |      53 | 0.088 |
 | 1950-2000 | 846 |                  7 |      37 | 0.044 |
-| \>=2000   | 558 |                  3 |      18 | 0.032 |
+| \>=2000   | 558 |                  3 |      17 | 0.030 |
 
 The rule removes 13.9 % of the records before 1900 and 3.2 % of those
 from 2000 on, because the capital-georeferenced herbarium sheets were
@@ -505,7 +506,7 @@ shown <- t_u[, c("coordinateuncertaintyinmeters_bin", "n",
 
 | uncertainty (m) |   n | removed | kept |
 |:----------------|----:|--------:|-----:|
-| \<100           | 775 |      59 |  716 |
+| \<100           | 775 |      58 |  717 |
 | 100-1000        | 370 |      23 |  347 |
 | \>=1000         | 736 |      36 |  700 |
 | missing         | 395 |      27 |  368 |
@@ -520,7 +521,7 @@ kept <- keep_unflagged(f, rules$coordinatecleaner_country)
 kept <- kept[which(kept$coordinateuncertaintyinmeters <= 1000), ]
 c(records = nrow(f), kept = nrow(kept))
 #> records    kept 
-#>    2276    1423
+#>    2276    1424
 ```
 
 ## The cleaned table
@@ -535,11 +536,11 @@ anything:
 
 clean <- keep_unflagged(f, rules$wild)
 nrow(clean)
-#> [1] 2070
+#> [1] 2071
 table(clean$truth)
 #> 
 #> background  duplicate    negated    rounded 
-#>       1998         40          7         25
+#>       1998         40          8         25
 ```
 
 The `wild` rule keeps 1,998 of the 2,000 background records and removes
@@ -568,11 +569,12 @@ removed through `issue_taxon`, although their coordinates are fine.
   can flag a large share; the tally per test shows it before it goes
   into a rule.
 
-- **`sea` depends on the land scale.** The default 1:110 million land is
-  coarse: in the example the GBIF headquarters are on land at that scale
-  and at sea on the 1:50 million coast. For coastal or island taxa,
-  `land_scale = 50` or `10` changes the result for records within a few
-  kilometres of the coast; [Reference
+- **`sea` depends on the land scale.** The default 1:10 million land
+  includes small islands such as the Azores and Reunion.
+  `reference = "CoordinateCleaner"` selects its
+  [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html)
+  default of 1:110 million; an explicit `land_scale` selects the scale
+  with either reference. [Reference
   data](https://gillescolling.com/OccurrenceCleaner/articles/reference-data.md)
   shows the size of the difference.
 
@@ -585,10 +587,9 @@ removed through `issue_taxon`, although their coordinates are fine.
 
 - **GBIF issue tests are GBIF’s own processing results.** They catch
   errors that the spatial tests cannot see (a swapped coordinate that
-  still lands on land, a fuzzy taxon match). `issue_rounded` is a
-  precision note rather than an error: GBIF sets `COORDINATE_ROUNDED`
-  when it rounds a coordinate given with more than five decimals, which
-  moves the point by at most about 1 m.
+  still lands on land, a fuzzy taxon match). GBIF sets
+  `COORDINATE_ROUNDED` when processing rounds a coordinate to six
+  decimals. The named cleaning rules leave this processing note out.
 
 - **Do not cut at a threshold during flagging.** Year, uncertainty and
   any other numeric field belong in `bins` or in a subset after the

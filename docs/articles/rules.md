@@ -98,10 +98,10 @@ head(x[, c("species", "kingdom", "decimalLongitude", "decimalLatitude", "year",
 #>      species  kingdom decimalLongitude decimalLatitude year
 #> 1 species 10 Animalia          26.5922         46.0742 2003
 #> 2  species 1 Animalia          27.4830         55.8274 1935
-#> 3 species 59  Plantae          23.2179         40.8941 2000
+#> 3 species 59  Plantae           1.4456         38.6952 2000
 #>   coordinateUncertaintyInMeters issue
-#> 1                            28      
-#> 2                           592      
+#> 1                            28
+#> 2                           592
 #> 3                            52
 ```
 
@@ -121,10 +121,10 @@ cc_tests <- c("invalid", "zero", "equal", "capital", "centroid", "institution",
 tests <- c(cc_tests, "issue_coordinate", "issue_rounded", "basis_fossil")
 f <- flag_occurrences(x, tests = tests)
 setdiff(names(f), names(x))
-#>  [1] "flags"                  "flag_invalid"           "flag_zero"             
-#>  [4] "flag_equal"             "flag_capital"           "flag_centroid"         
-#>  [7] "flag_institution"       "flag_gbif_headquarters" "flag_sea"              
-#> [10] "flag_duplicate"         "flag_issue_coordinate"  "flag_issue_rounded"    
+#>  [1] "flags"                  "flag_invalid"           "flag_zero"
+#>  [4] "flag_equal"             "flag_capital"           "flag_centroid"
+#>  [7] "flag_institution"       "flag_gbif_headquarters" "flag_sea"
+#> [10] "flag_duplicate"         "flag_issue_coordinate"  "flag_issue_rounded"
 #> [13] "flag_basis_fossil"
 ```
 
@@ -141,21 +141,21 @@ holding every test that was run.
 
 summary(f)
 #> <occ_summary> 3,120 records
-#>   rule all: removes 743 (23.81 %)
+#>   rule all: removes 740 (23.72 %)
 #>  rule              test    n flagged   pct only pct_only
 #>   all           invalid 3120       0  0.00    0     0.00
 #>   all              zero 3120      44  1.41    0     0.00
 #>   all             equal 3120      44  1.41    0     0.00
-#>   all           capital 3120     165  5.29  131     4.20
-#>   all          centroid 3120      11  0.35    1     0.03
+#>   all           capital 3120     167  5.35  130     4.17
+#>   all          centroid 3120      11  0.35    0     0.00
 #>   all       institution 3120       5  0.16    0     0.00
 #>   all gbif_headquarters 3120       0  0.00    0     0.00
-#>   all               sea 3120     106  3.40   50     1.60
-#>   all         duplicate 3120     131  4.20   95     3.04
+#>   all               sea 3120      61  1.96   49     1.57
+#>   all         duplicate 3120     131  4.20   93     2.98
 #>   all  issue_coordinate 3120       0  0.00    0     0.00
-#>   all     issue_rounded 3120     394 12.63  349    11.19
+#>   all     issue_rounded 3120     394 12.63  347    11.12
 #>   all      basis_fossil 3120      16  0.51   11     0.35
-#>   all             (any) 3120     743 23.81
+#>   all             (any) 3120     740 23.72
 ```
 
 For each test of the rule, `flagged` is the number of records carrying
@@ -166,13 +166,13 @@ records. The row `(any)` is the rule itself, the records that carry at
 least one of its tests.
 
 A record can fail several tests at once. The 44 records at (0, 0), the
-40 moved there and 4 of the copies, are flagged by `zero`, `equal`
-(\|0\| = \|0\|) and `sea`, so none of them is counted under `only`. The
-per-test shares therefore add up to more than the rule’s total. The
-rule’s `pct` minus the sum of the `pct_only` shares is the share of
-records flagged by more than one of its tests. `pct` says how often a
-test flags a record; `pct_only` says how much of the rule’s loss would
-disappear without that test.
+40 moved there and 4 of the copies, are flagged by `zero` and `equal`
+(\|0\| = \|0\|), so none of them is counted under `only`. The per-test
+shares therefore add up to more than the rule’s total. The rule’s `pct`
+minus the sum of the `pct_only` shares is the share of records flagged
+by more than one of its tests. `pct` says how often a test flags a
+record; `pct_only` says how much of the rule’s loss would disappear
+without that test.
 
 The same numbers as a plot: the full bar is `pct`, the dark part
 `pct_only`.
@@ -189,7 +189,7 @@ plot(f)
 Candidate rules go into `rules` as a named list. This example compares
 three, with names that label them for this article:
 
-- `strict` uses all twelve tests.
+- `strict` uses the eleven tests other than GBIF’s rounding note.
 
 - `coordinatecleaner` uses the eight tests of this set that
   [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
@@ -206,15 +206,15 @@ three, with names that label them for this article:
 
 ``` r
 
-rules <- list(strict = tests,
+rules <- list(strict = setdiff(tests, "issue_rounded"),
               coordinatecleaner = setdiff(cc_tests, "duplicate"),
               minimal = c("invalid", "zero", "sea"))
 s <- summary(f, rules = rules)
 s[s$test == "(any)", c("rule", "n", "flagged", "pct")]
 #>               rule    n flagged   pct
-#>             strict 3120     743 23.81
-#>  coordinatecleaner 3120     272  8.72
-#>            minimal 3120     106  3.40
+#>             strict 3120     393 12.60
+#>  coordinatecleaner 3120     273  8.75
+#>            minimal 3120     105  3.37
 ```
 
 The selection above keeps one row per rule.
@@ -247,15 +247,15 @@ s <- summary(f, rules = rules["coordinatecleaner"], by = "kingdom")
 s[s$test %in% c("capital", "sea", "(any)"), ]
 #> <occ_summary> 3,120 records, grouped by kingdom
 #>   kingdom              rule    test    n flagged  pct only pct_only
-#>  Animalia coordinatecleaner capital 1770      92 5.20   83     4.69
-#>  Animalia coordinatecleaner     sea 1770      64 3.62   36     2.03
-#>  Animalia coordinatecleaner   (any) 1770     156 8.81              
-#>     Fungi coordinatecleaner capital  311      18 5.79   15     4.82
-#>     Fungi coordinatecleaner     sea  311       6 1.93    3     0.96
-#>     Fungi coordinatecleaner   (any)  311      24 7.72              
-#>   Plantae coordinatecleaner capital 1039      55 5.29   52     5.00
-#>   Plantae coordinatecleaner     sea 1039      36 3.46   23     2.21
-#>   Plantae coordinatecleaner   (any) 1039      92 8.85
+#>  Animalia coordinatecleaner capital 1770      91 5.14   82     4.63
+#>  Animalia coordinatecleaner     sea 1770      35 1.98   35     1.98
+#>  Animalia coordinatecleaner   (any) 1770     154 8.70
+#>     Fungi coordinatecleaner capital  311      17 5.47   14     4.50
+#>     Fungi coordinatecleaner     sea  311       3 0.96    3     0.96
+#>     Fungi coordinatecleaner   (any)  311      23 7.40
+#>   Plantae coordinatecleaner capital 1039      59 5.68   56     5.39
+#>   Plantae coordinatecleaner     sea 1039      23 2.21   23     2.21
+#>   Plantae coordinatecleaner   (any) 1039      96 9.24
 ```
 
 With grouping, [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
@@ -279,28 +279,28 @@ break and excludes its upper one, so `1950-1970` holds the years 1950 to
 break on form `>=2000`, and missing values form the class `missing`.
 Each percentage is out of the records in its class.
 
-This section reads the shares under `strict`, the only one of the three
-rules that includes `issue_rounded`, so the share of records with GBIF’s
-rounding issue can be followed across age and uncertainty classes.
+This section reads `issue_rounded` separately to follow GBIF’s
+processing note across age and uncertainty classes. The named cleaning
+rules leave it out.
 
 ``` r
 
-t <- tally_flags(f, rules = rules,
+t <- tally_flags(f, tests = "issue_rounded",
                  bins = list(year = c(1900, 1950, 1970, 2000)))
 s <- summary(t)
-s[s$rule == "strict" & s$test %in% c("issue_rounded", "(any)"),
+s[s$test %in% c("issue_rounded", "(any)"),
   c("year_bin", "test", "n", "pct")]
 #>   year_bin          test    n   pct
 #>      <1900 issue_rounded  223 26.91
-#>      <1900         (any)  223 35.87
+#>      <1900         (any)  223 26.91
 #>  1900-1950 issue_rounded  505 31.09
-#>  1900-1950         (any)  505 39.21
+#>  1900-1950         (any)  505 31.09
 #>  1950-1970 issue_rounded  364 31.04
-#>  1950-1970         (any)  364 40.38
+#>  1950-1970         (any)  364 31.04
 #>  1970-2000 issue_rounded  867  3.11
-#>  1970-2000         (any)  867 15.80
+#>  1970-2000         (any)  867  3.11
 #>     >=2000 issue_rounded 1161  3.19
-#>     >=2000         (any) 1161 15.59
+#>     >=2000         (any) 1161  3.19
 ```
 
 The higher `issue_rounded` share before 1970 reproduces the rate the
@@ -314,7 +314,7 @@ tally is the one to keep when the counts will be summed or merged later.
 
 ``` r
 
-plot(t, rule = "strict")
+plot(t)
 ```
 
 ![](rules_files/figure-html/unnamed-chunk-14-1.svg)
@@ -325,22 +325,22 @@ uncertain the stated location is:
 
 ``` r
 
-t <- tally_flags(f, rules = rules["strict"],
+t <- tally_flags(f, tests = "issue_rounded",
                  bins = list(coordinateUncertaintyInMeters = c(100, 1000, 10000)))
 s <- summary(t)
 s[s$test %in% c("issue_rounded", "(any)"),
   c("coordinateUncertaintyInMeters_bin", "test", "n", "pct")]
 #>  coordinateUncertaintyInMeters_bin          test    n   pct
 #>                               <100 issue_rounded 1203  2.66
-#>                               <100         (any) 1203 14.96
+#>                               <100         (any) 1203  2.66
 #>                           100-1000 issue_rounded  544  9.38
-#>                           100-1000         (any)  544 21.51
+#>                           100-1000         (any)  544  9.38
 #>                         1000-10000 issue_rounded  645 30.08
-#>                         1000-10000         (any)  645 39.53
+#>                         1000-10000         (any)  645 30.08
 #>                            >=10000 issue_rounded  102 27.45
-#>                            >=10000         (any)  102 30.39
+#>                            >=10000         (any)  102 27.45
 #>                            missing issue_rounded  626 14.22
-#>                            missing         (any)  626 25.56
+#>                            missing         (any)  626 14.22
 ```
 
 The simulation drew larger uncertainties for older records, so the share
@@ -380,11 +380,12 @@ Other analyses add other tests:
 - `issue_coordinate` to exclude records with GBIF’s georeferencing
   warnings.
 
-`issue_rounded` is left out. GBIF sets `COORDINATE_ROUNDED` when the
-original coordinate was modified by rounding to five decimals ([GBIF
-issue
-definition](https://gbif.github.io/gbif-api/apidocs/org/gbif/api/vocabulary/OccurrenceIssue.html#COORDINATE_ROUNDED)).
-A precision threshold can be taken from coordinate uncertainty instead.
+`issue_rounded` is left out of every named cleaning rule here. GBIF sets
+`COORDINATE_ROUNDED` when processing rounds a coordinate to six decimals
+([GBIF issue
+definition](https://techdocs.gbif.org/en/data-use/occurrence-issues-and-flags)).
+The flag records that processing step. A precision threshold can be
+taken from the stated coordinate uncertainty.
 
 [`keep_unflagged()`](https://gillescolling.com/OccurrenceCleaner/reference/keep_unflagged.md)
 keeps the records that carry no flag from the rule.
@@ -396,7 +397,7 @@ least one test of the rule.
 
 clean <- keep_unflagged(f, rules$coordinatecleaner)
 nrow(clean)
-#> [1] 2848
+#> [1] 2847
 ```
 
 A cut on record age or coordinate uncertainty is a filter on the raw
@@ -409,7 +410,7 @@ most 10 km or not stated:
 u <- clean$coordinateUncertaintyInMeters
 keep <- !is.na(clean$year) & clean$year >= 1950 & (is.na(u) | u <= 10000)
 sum(keep)
-#> [1] 2145
+#> [1] 2143
 ```
 
 The removed records keep their flags. Another rule built from the tests
@@ -423,12 +424,9 @@ To compare with
 output, both packages need the same tests, buffers and reference data.
 At its defaults,
 [`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-adds its outlier test and draws the sea test from the 1:50 million land,
-while
-[`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-uses the 1:110 million land and its own gazetteers; `land_scale = 50`
-and `reference = "CoordinateCleaner"` align the last two. [Compatibility
-with
+adds its outlier test and draws the sea test from the 1:50 million land.
+Set `land_scale = 50` and `reference = "CoordinateCleaner"` to use that
+layer and its gazetteers. [Compatibility with
 CoordinateCleaner](https://gillescolling.com/OccurrenceCleaner/articles/coordinatecleaner.md)
 maps the remaining arguments.
 

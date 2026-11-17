@@ -3,13 +3,13 @@
 with the package. This fetches the pinned zip from Natural Earth, verifies
 its SHA-256 against reference_info(), converts it and stores the result in
 the user cache directory (tools::R_user_dir("OccurrenceCleaner", "cache")).
-flag_occurrences() calls it when land_scale = 10 is requested and the
-layer is not cached yet.'><meta property="og:description" content='The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
+flag_occurrences() calls it for the default own-reference coastline,
+or an explicit land_scale = 10, when the layer is not cached yet.'><meta property="og:description" content='The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
 with the package. This fetches the pinned zip from Natural Earth, verifies
 its SHA-256 against reference_info(), converts it and stores the result in
 the user cache directory (tools::R_user_dir("OccurrenceCleaner", "cache")).
-flag_occurrences() calls it when land_scale = 10 is requested and the
-layer is not cached yet.'><meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg"><script>
+flag_occurrences() calls it for the default own-reference coastline,
+or an explicit land_scale = 10, when the layer is not cached yet.'><meta property="og:image" content="https://gillescolling.com/OccurrenceCleaner/logo.svg"><script>
 (function () {
   var D = String.fromCharCode(36);
   window.MathJax = {
@@ -30,7 +30,7 @@ layer is not cached yet.'><meta property="og:image" content="https://gillescolli
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,8 +84,8 @@ layer is not cached yet.'><meta property="og:image" content="https://gillescolli
 with the package. This fetches the pinned zip from Natural Earth, verifies
 its SHA-256 against <code><a href="reference_info.html">reference_info()</a></code>, converts it and stores the result in
 the user cache directory (<code>tools::R_user_dir("OccurrenceCleaner", "cache")</code>).
-<code><a href="flag_occurrences.html">flag_occurrences()</a></code> calls it when <code>land_scale = 10</code> is requested and the
-layer is not cached yet.</p>
+<code><a href="flag_occurrences.html">flag_occurrences()</a></code> calls it for the default own-reference coastline,
+or an explicit <code>land_scale = 10</code>, when the layer is not cached yet.</p>
     </div>
 
     <div class="section level2">

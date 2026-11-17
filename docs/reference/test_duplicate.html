@@ -30,7 +30,7 @@ duplicates of each other."><meta property="og:image" content="https://gillescoll
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,12 @@ columns of <code>x</code> unchanged. See <code><a href="keep_unflagged.html">kee
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The test compares each record with all records before it in the input
+    <p>The default measures repeated species locations. It is useful when each
+location should contribute once to a spatial analysis. Observations on
+different dates at the same location share this flag. For repeated surveys,
+set <code>duplicate_by = "eventDate"</code> using the date column's actual name.
+A spatial grid is an analysis choice supplied through <code>duplicate_cell</code>.</p>
+<p>The test compares each record with all records before it in the input
 order: the rows of a data frame, or on streamed input the files in sorted
 order and the rows within each file. Streamed input therefore gets the same
 flags as the same records in one data frame. It is a grouped test: the

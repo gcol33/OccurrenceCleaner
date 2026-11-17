@@ -22,7 +22,7 @@ record per test. Nothing is removed and no threshold is baked in."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">OccurrenceCleaner</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@ record per test. Nothing is removed and no threshold is baked in.</p>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="occ_columns.html">occ_columns</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"OccurrenceCleaner"</span>, <span class="st">"CoordinateCleaner"</span><span class="op">)</span>,</span>
 <span>  gazetteers <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  land_scale <span class="op">=</span> <span class="fl">110</span>,</span>
+<span>  land_scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  buffers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  settings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  duplicate_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -144,10 +144,11 @@ given for <code>sea</code> is also the land of the habitat tests.</p></dd>
 
 <dt id="arg-land-scale">land_scale<a class="anchor" aria-label="anchor" href="#arg-land-scale"></a></dt>
 <dd><p>Natural Earth scale of the land layer for <code>sea</code> and the
-habitat tests: 110
-(the default of CoordinateCleaner's <code>cc_sea()</code>; its <code>clean_coordinates()</code>
-uses <code>seas_scale = 50</code>), 50, or 10 (downloaded on first use, see
-<code><a href="download_reference.html">download_reference()</a></code>).</p></dd>
+habitat tests: 10, 50, or 110. <code>NULL</code> selects 10 for the package's own
+reference and 110 for <code>reference = "CoordinateCleaner"</code>, matching
+<code>cc_sea()</code>. Its <code>clean_coordinates()</code> uses <code>seas_scale = 50</code>.
+The 1:10 million layer is downloaded on first use; see
+<code><a href="download_reference.html">download_reference()</a></code>.</p></dd>
 
 
 <dt id="arg-buffers">buffers<a class="anchor" aria-label="anchor" href="#arg-buffers"></a></dt>
@@ -350,6 +351,10 @@ records without a dataset key.</p></li>
 sources; <code>reference = "CoordinateCleaner"</code> uses that package's own tables,
 and <code>gazetteers</code> replaces the layer of single tests, as the <code>ref</code>
 arguments of CoordinateCleaner's functions do.</p></li>
+<li><p>The own-reference coastline defaults to 1:10 million, an addition for
+coastal and island records. <code>reference = "CoordinateCleaner"</code> defaults
+to 1:110 million as <code>cc_sea()</code> does. An explicit <code>land_scale</code> takes
+precedence for either reference.</p></li>
 </ul></div>
 
     <div class="section level2">

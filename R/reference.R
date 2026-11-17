@@ -35,8 +35,8 @@ reference_info <- function() {
 #' with the package. This fetches the pinned zip from Natural Earth, verifies
 #' its SHA-256 against [reference_info()], converts it and stores the result in
 #' the user cache directory (`tools::R_user_dir("OccurrenceCleaner", "cache")`).
-#' [flag_occurrences()] calls it when `land_scale = 10` is requested and the
-#' layer is not cached yet.
+#' [flag_occurrences()] calls it for the default own-reference coastline,
+#' or an explicit `land_scale = 10`, when the layer is not cached yet.
 #'
 #' @param layer Layer to download; only `"land_10"` is not bundled.
 #' @param cache_dir Directory for the converted layer.

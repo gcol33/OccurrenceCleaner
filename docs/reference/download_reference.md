@@ -7,8 +7,8 @@ Earth, verifies its SHA-256 against
 converts it and stores the result in the user cache directory
 (`tools::R_user_dir("OccurrenceCleaner", "cache")`).
 [`flag_occurrences()`](https://gillescolling.com/OccurrenceCleaner/reference/flag_occurrences.md)
-calls it when `land_scale = 10` is requested and the layer is not cached
-yet.
+calls it for the default own-reference coastline, or an explicit
+`land_scale = 10`, when the layer is not cached yet.
 
 ## Usage
 

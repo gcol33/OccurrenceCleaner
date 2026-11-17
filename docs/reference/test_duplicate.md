@@ -45,6 +45,13 @@ Cleaning functions.
 
 ## Details
 
+The default measures repeated species locations. It is useful when each
+location should contribute once to a spatial analysis. Observations on
+different dates at the same location share this flag. For repeated
+surveys, set `duplicate_by = "eventDate"` using the date column's actual
+name. A spatial grid is an analysis choice supplied through
+`duplicate_cell`.
+
 The test compares each record with all records before it in the input
 order: the rows of a data frame, or on streamed input the files in
 sorted order and the rows within each file. Streamed input therefore

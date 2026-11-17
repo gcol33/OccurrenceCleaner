@@ -202,16 +202,16 @@ reports directly.
 
 ## Land and sea
 
-`sea` flags records outside the land polygons of Natural Earth. The land
-layer comes at three scales: 1:110 million (the default, as in
-[CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)’s
+`sea` flags records outside the land polygons of Natural Earth. The
+default layer is 1:10 million, an addition that includes small islands
+omitted at 1:110 million. `reference = "CoordinateCleaner"` selects
+1:110 million, matching
 [`cc_sea()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_sea.html);
-its
-[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html)
-uses 1:50 million), 1:50 million and 1:10 million, set with
-`land_scale`. The test is a planar point-in-polygon test in longitude
-and latitude, through a grid index whose boundary cells are resolved
-exactly.
+`land_scale = 50` matches the layer of
+[`clean_coordinates()`](https://ropensci.github.io/CoordinateCleaner/reference/clean_coordinates.html).
+An explicit `land_scale` selects 10, 50 or 110 with either reference.
+The test is a planar point-in-polygon test in longitude and latitude,
+through a grid index whose boundary cells are resolved exactly.
 
 The scale decides the result for records near the coast. The GBIF
 headquarters in Copenhagen are on land at 1:110 million and in the sea
@@ -225,7 +225,7 @@ data.frame(x[, 2:3],
            sea_110 = flag_occurrences(x, tests = "sea")$flag_sea,
            sea_50 = flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea)
 #>   decimalLongitude decimalLatitude sea_110 sea_50
-#> 1            12.58           55.67   FALSE   TRUE
+#> 1            12.58           55.67    TRUE   TRUE
 #> 2            16.37           48.21   FALSE  FALSE
 #> 3           -30.00           40.00    TRUE   TRUE
 ```
