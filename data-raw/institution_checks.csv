@@ -197,6 +197,7 @@
 -123.802181,49.486583,"Google Maps place of that name","Sunshine Coast Botanical Garden Society",246,8393
 -123.802181,49.486583,"OpenStreetMap feature of that name","osm:way/1098247808",6,8393
 -123.658976,42.141164,"Google Maps place of that name","Great Cats World Park",106,NA
+-123.477595,48.439643,"OpenStreetMap parent institution","osm:relation/2379502; Royal Roads University Botanical Gardens explicitly names its parent; the point is within the university campus feature.; https://www.openstreetmap.org/relation/2379502",0,NA
 -123.46908,48.56509,"Google Maps place of that name","The Butchart Gardens",203,NA
 -123.426,43.1417,"Google Maps place of that name","Wildlife Safari",153,NA
 -123.426,43.1417,"OpenStreetMap feature of that name","osm:way/469267605",0,NA
@@ -232,6 +233,7 @@
 -123.278888888,44.565833333,"Google Maps place of that name","Department of Botany and Plant Pathology",262,NA
 -123.2787,44.5652,"Google Maps place of that name","Oregon State University",237,6861
 -123.2787,44.5652,"OpenStreetMap feature of that name","osm:relation/5969826",0,6861
+-123.2553,49.25794,"OpenStreetMap parent institution","osm:relation/11678160; University of British Columbia Botanical Garden explicitly names its parent; the point is within the university campus feature.; https://www.openstreetmap.org/relation/11678160",0,NA
 -123.252777777,49.264722222,"Google Maps place of that name","Pacific Museum of Earth",247,NA
 -123.252342,49.2624508,"Google Maps place of that name","Pacific Museum of Earth",30,6933
 -123.252342,49.2624508,"OpenStreetMap feature of that name","osm:node/6089281216",0,6933
@@ -591,6 +593,7 @@
 -122.057,36.9937,"OpenStreetMap feature of that name","osm:way/670613089",0,NA
 -122.0563,37.6572,"Google Maps place of that name","California State University, East Bay",130,NA
 -122.0563,37.6572,"OpenStreetMap feature of that name","osm:relation/4009469",0,NA
+-122.0534422,36.9775,"OpenStreetMap parent institution","osm:way/670613089; The arboretum name explicitly names University of California, Santa Cruz; the point is within that university's campus feature.; https://www.openstreetmap.org/way/670613089",0,NA
 -122.04487,37.91802,"Google Maps place of that name","The Gardens at Heather Farm",120,NA
 -122.043,37.9189,"Google Maps place of that name","The Gardens at Heather Farm",93,NA
 -122.041,37.2524,"Google Maps place of that name","Hakone Estate and Gardens",66,NA
@@ -2272,6 +2275,7 @@
 -97.1358,49.8117,"Google Maps place of that name","Robert B. Ferguson Museum of Mineralogy",14,7450
 -97.1355,49.9002,"Google Maps place of that name","Manitoba Museum",70,NA
 -97.1355,49.9002,"OpenStreetMap feature of that name","osm:relation/19755567",0,NA
+-97.134188,49.80752,"OpenStreetMap parent institution","osm:relation/19825023; University of Manitoba Arboretum explicitly names its parent; the point is within the university campus feature.; https://www.openstreetmap.org/relation/19825023",0,NA
 -97.1331,49.8106,"Google Maps place of that name","Ed Leith Cretaceous Menagerie",224,2335
 -97.1331,49.8106,"Google Maps place of that name","Faculty of Science, University of Manitoba",101,10382
 -97.1266,44.9086,"OpenStreetMap feature of that name","osm:way/244913395",16,NA
@@ -3739,6 +3743,7 @@
 -84.475812,42.7228,"OpenStreetMap feature of that name","osm:relation/13708038",0,5082
 -84.4742804,42.722923,"OpenStreetMap feature of that name","osm:relation/13708038",0,NA
 -84.473627,42.722532,"Google Maps place of that name","Plant Biology Laboratories",60,5087
+-84.4736,42.7225,"OpenStreetMap parent institution","osm:relation/13708038; Michigan State University Museum explicitly names its parent; the point is within Michigan State University's campus feature.; https://www.openstreetmap.org/relation/13708038",0,NA
 -84.4735,42.7213,"Google Maps place of that name","Horticulture Gardens",57,NA
 -84.4735,42.7213,"OpenStreetMap feature of that name","osm:relation/13708038",0,NA
 -84.4548,39.0392,"OpenStreetMap feature of that name","osm:relation/14675392",0,6662
@@ -3869,7 +3874,9 @@
 -83.98523,9.90823,"Google Maps place of that name","Municipality of La Union",14,NA
 -83.951944444,43.411944444,"Google Maps place of that name","Saginaw Children's Zoo",5,NA
 -83.951944444,43.411944444,"OpenStreetMap feature of that name","osm:way/53082984",0,NA
+-83.9400324,35.9473976,"OpenStreetMap parent institution","osm:way/957594046; University of Tennessee Gardens explicitly names its parent; the point is within the university campus feature.; https://www.openstreetmap.org/way/957594046",0,NA
 -83.9379425,35.9442591,"OpenStreetMap feature of that name","osm:way/268219144",0,10709
+-83.93316,35.95116,"OpenStreetMap parent institution","osm:relation/12878230; University of Tennessee Herbarium explicitly names its parent; the point is within the university campus feature.; https://www.openstreetmap.org/relation/12878230",0,NA
 -83.9318,35.9524,"OpenStreetMap feature of that name","osm:way/376167113",0,NA
 -83.9268,35.9535,"Google Maps place of that name","McClung Museum of Natural History & Culture",169,NA
 -83.9268,35.9535,"OpenStreetMap feature of that name","osm:way/376167113",0,NA
@@ -7778,6 +7785,7 @@
 -9.1602002,38.7328407,"OpenStreetMap feature of that name","osm:node/9729426585",0,9626
 -9.1593,38.6835,"Google Maps place of that name","Casa da Cerca - Contemporary Art Center",43,NA
 -9.1593,38.6835,"OpenStreetMap feature of that name","osm:node/6544813272",55,NA
+-9.15917,38.75199,"OpenStreetMap parent institution","osm:way/460999059; Lisbon Faculty of Sciences names a faculty of Universidade de Lisboa; the point is within its Cidade Universitaria campus feature.; https://www.openstreetmap.org/way/460999059",0,NA
 -9.158888888,38.7525,"OpenStreetMap feature of that name","osm:way/460999059",0,NA
 -9.15663605,38.7566869,"Google Maps place of that name","Centre for Ecology, Evolution and Environmental Changes - CE3C",96,1261
 -9.15663605,38.7566869,"Google Maps place of that name","Faculty of Sciences of the University of Lisbon",116,805
@@ -7853,6 +7861,7 @@
 -8.42661,40.20809,"Google Maps place of that name","University of Coimbra",67,10137
 -8.42661,40.20809,"OpenStreetMap feature of that name","osm:relation/4861849",0,9390
 -8.42661,40.20809,"OpenStreetMap feature of that name","osm:relation/4861849",0,10137
+-8.4265,40.2074,"OpenStreetMap parent institution","osm:way/22965909; The science museum and Jardim Botanico both explicitly name Universidade de Coimbra; the point is 48 m from the university's botanic garden, an institution site in its own right.; https://www.openstreetmap.org/way/22965909",48,NA
 -8.4241482,40.210282,"OpenStreetMap feature of that name","osm:relation/4861849",0,NA
 -8.42382,40.21015,"Google Maps place of that name","Science Museum of the University of Coimbra",10,NA
 -8.42382,40.21015,"OpenStreetMap feature of that name","osm:relation/4861849",0,NA
@@ -9177,6 +9186,7 @@
 -1.35678,53.43012,"Google Maps place of that name","Rotherham Metropolitan Borough Council",284,NA
 -1.32417,48.8339,"Google Maps place of that name","Zoo de Champrépus",28,NA
 -1.32417,48.8339,"OpenStreetMap feature of that name","osm:way/108243858",0,NA
+-1.319269,51.064024,"OpenStreetMap parent institution","osm:way/102202041; Hampshire County Council Museums Service explicitly names its parent council; the point is 50 m from the council's mapped building.; https://www.openstreetmap.org/way/102202041",50,NA
 -1.31494045,51.0619931,"Google Maps place of that name","Winchester City Museum",2,11300
 -1.31494045,51.0619931,"OpenStreetMap feature of that name","osm:way/222795694",0,11300
 -1.3144,51.0584,"Google Maps place of that name","Winchester College",122,11302
@@ -10711,6 +10721,7 @@
 5.321580555,60.387622222,"OpenStreetMap feature of that name","osm:relation/7726458",0,10032
 5.321580555,60.387622222,"OpenStreetMap feature of that name","osm:way/419311417",0,10034
 5.32258611,60.38758889,"OpenStreetMap feature of that name","osm:way/419311417",9,NA
+5.3261,60.3836,"OpenStreetMap parent institution","osm:relation/7726458; University Museum of Bergen explicitly names its parent; Universitet i Bergen is the Norwegian university name and the point is within its campus feature.; https://www.openstreetmap.org/relation/7726458",0,NA
 5.32611,60.38356,"OpenStreetMap feature of that name","osm:relation/7726458",0,NA
 5.32853,60.38487,"OpenStreetMap feature of that name","osm:relation/7726458",0,NA
 5.33173,60.3808,"Google Maps place of that name","Institutt for Biovitenskap - Universitetet i Bergen",30,10033
@@ -14226,6 +14237,7 @@
 21.60273,63.099239,"Google Maps place of that name","Ostrobothnian Museum",62,NA
 21.60273,63.099239,"OpenStreetMap feature of that name","osm:way/717765186",7,NA
 21.612916666,56.57095,"Google Maps place of that name","Riga Zoo affiliate ""Cīruļi”",127,NA
+21.621388888,47.553888888,"OpenStreetMap parent institution","osm:relation/3783763; University of Debrecen Botanic Garden explicitly names its parent; Debreceni Egyetem is the Hungarian university name and the point is within its campus.; https://www.openstreetmap.org/relation/3783763",0,NA
 21.6219,47.5561,"Google Maps place of that name","University of Debrecen",277,NA
 21.6221346,47.5331127,"Google Maps place of that name","Déri Museum",25,2115
 21.6221346,47.5331127,"OpenStreetMap feature of that name","osm:way/121177950",0,2115
@@ -14331,6 +14343,7 @@
 23.5733,46.76,"OpenStreetMap feature of that name","osm:way/951903106",0,NA
 23.579971,46.763989,"OpenStreetMap feature of that name","osm:node/2634653094",0,5142
 23.5893,46.7651,"Google Maps place of that name","Alexandru Borza Botanical Garden",298,2995
+23.59066,46.76891,"OpenStreetMap parent institution","osm:relation/2721807; The paleontological and stratigraphical museum explicitly names Babes-Bolyai University; the point is 77 m from the university feature.; https://www.openstreetmap.org/relation/2721807",77,NA
 23.59127375,46.767778,"Google Maps place of that name","Universitatea Babeș-Bolyai din Cluj-Napoca",97,477
 23.59127375,46.767778,"Google Maps place of that name","Universitatea Babeș-Bolyai din Cluj-Napoca",97,478
 23.59127375,46.767778,"OpenStreetMap feature of that name","osm:relation/2721807",0,477
@@ -16306,6 +16319,8 @@
 98.9764246,18.81160685,"Google Maps place of that name","Chiang Mai National Museum",50,1415
 98.9764246,18.81160685,"OpenStreetMap feature of that name","osm:way/200414775",0,1415
 99.0588213,2.9526171,"Google Maps place of that name","Taman Hewan Pematang Siantar -THPS",61,NA
+99.067996,7.584327,"OpenStreetMap feature of that name","osm:node/4508525989; OSM node has name:en Butterfly Farm, describes a butterfly farm and botanical garden, and identifies Wikidata Q55424278 in Sala Dan, Ko Lanta; 6 m from the point.; https://www.openstreetmap.org/node/4508525989",6,NA
+99.069603,7.58686,"OpenStreetMap feature of that name","osm:node/5747537496; OSM node names Green Farm, gives Sala Dan postcode 81150 and a telephone number, and identifies Wikidata Q55424230; 36 m from the point.; https://www.openstreetmap.org/node/5747537496",36,NA
 99.09821,18.85755,"Google Maps place of that name","Tweechol Botanical Garden",166,NA
 99.5002495,14.2522092,"Google Maps place of that name","Safari Park Kanchanaburi",27,NA
 99.728591,6.287717,"Google Maps place of that name","Underwater World Langkawi",0,NA
@@ -16817,6 +16832,7 @@
 116.305277777,39.989722222,"OpenStreetMap feature of that name","osm:way/1330709889",0,7051
 116.32449965,39.96083795,"Google Maps place of that name","Chinese Academy of Agricultural Sciences",21,NA
 116.32777778,39.93625,"OpenStreetMap feature of that name","osm:way/256653719",0,NA
+116.3296,39.9096,"OpenStreetMap parent institution","osm:way/1033913368; Institute of Microbiology explicitly names Chinese Academy of Sciences; the OSM name translates to Chinese Academy of Sciences and the point is within its site.; https://www.openstreetmap.org/way/1033913368",0,NA
 116.3325,39.9581,"OpenStreetMap feature of that name","osm:way/849088061",61,1446
 116.333333333,39.938611111,"OpenStreetMap feature of that name","osm:way/29222967",0,NA
 116.333696,39.496618,"Google Maps place of that name","Beijing Wildlife Park",0,NA
@@ -16874,6 +16890,7 @@
 118.96332,-3.54407,"Google Maps place of that name","Museum - Ziekenhuis - Mandar Majene",14,5847
 119.1809,26.074,"Google Maps place of that name","Fujian University of Traditional Chinese Medicine",72,NA
 119.23807383,26.08349734,"Google Maps place of that name","Fujian Agriculture and Forestry University",229,2756
+119.4223,32.3882,"OpenStreetMap parent institution","osm:relation/13824427; Fungarium of Yangzhou University explicitly names its parent; the OSM name translates to Yangzhou University and the point is within its campus.; https://www.openstreetmap.org/relation/13824427",0,NA
 119.4419,-5.1827,"Google Maps place of that name","Universitas Muhammadiyah Makassar (Unismuh Makassar)",90,NA
 119.4419,-5.1827,"OpenStreetMap feature of that name","osm:way/761783411",0,NA
 119.57469,-5.00613,"Google Maps place of that name","Museum Daerah Maros",0,NA
@@ -18570,6 +18587,7 @@
 141.3421,43.0721,"Google Maps place of that name","The Hokkaido University Museum",60,3992
 141.3421,43.0721,"Google Maps place of that name","The Hokkaido University Museum",60,3323
 141.3421,43.0721,"OpenStreetMap feature of that name","osm:way/162657842",0,3323
+141.34213,43.072069,"OpenStreetMap parent institution","osm:way/162657842; Hokkaido University Botanic Garden explicitly names its parent; the OSM name translates to Hokkaido University and the point is within its mapped site.; https://www.openstreetmap.org/way/162657842",0,NA
 141.342133,43.072071,"Google Maps place of that name","The Hokkaido University Museum",63,NA
 141.342133,43.072071,"OpenStreetMap feature of that name","osm:way/162657842",0,NA
 141.3426479,43.063892,"Google Maps place of that name","Botanic Garden, Hokkaidō University",142,NA
@@ -18963,6 +18981,7 @@
 150.67,-33.869722222,"OpenStreetMap feature of that name","osm:way/1527828113",0,NA
 150.6735325,-35.1445908,"Google Maps place of that name","Booderee Botanic Gardens",52,NA
 150.6735325,-35.1445908,"OpenStreetMap feature of that name","osm:relation/16221684",0,NA
+150.68191,-35.12112,"OpenStreetMap parent institution","osm:relation/4447256; Booderee Botanic Gardens and the national park share management (Parks Australia). The point is beside Booderee Visitor Centre, OSM node/1514056572 at 150.6822167,-35.1212821; confirmation is of this administrative site, not of the garden footprint or the whole national park.; https://www.openstreetmap.org/relation/4447256; https://www.openstreetmap.org/node/1514056572; https://booderee.gov.au/things-do/visit/botanic-gardens/",0,NA
 150.75984,-34.05287,"OpenStreetMap feature of that name","osm:way/158313255",129,NA
 150.767,-34.0703,"Google Maps place of that name","Australian Botanic Garden Mount Annan",63,NA
 150.767,-34.0703,"OpenStreetMap feature of that name","osm:way/158313255",0,NA
@@ -19336,6 +19355,7 @@
 176.265366,-38.160004,"Google Maps place of that name","Scion",28,6562
 176.265366,-38.160004,"Google Maps place of that name","Scion",28,6561
 176.83072265,-39.622081158,"Google Maps place of that name","Frimley Park Rose Garden",5,NA
+176.845438,-39.633989,"OpenStreetMap feature of that name","osm:node/14104212420; OSM node identifies Wikidata Q134517161, the rose garden in Cornwall Park, Hastings; the council lists the formal rose garden in that park. The point is 4 m from the garden node.; https://www.openstreetmap.org/node/14104212420; https://www.hastingsdc.govt.nz/hastings/reserves/cornwall-park/",4,NA
 176.9166,-39.49322,"Google Maps place of that name","Hawke's Bay Regional Council",24,NA
 176.918888888,-39.500833333,"Google Maps place of that name","National Aquarium of New Zealand",30,NA
 176.918888888,-39.500833333,"OpenStreetMap feature of that name","osm:way/89202812",0,NA

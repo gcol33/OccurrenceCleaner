@@ -1012,8 +1012,9 @@ institutions <- institutions[!ext_dup, ]
 # OpenStreetMap match no longer adds, or adds at another feature) is not used.
 # The OpenStreetMap test also ran on every named feature within 300 m of the
 # points the imagery reading below left unclear or near and not located; those
-# checks were kept only where the two names, read by hand, name the same
-# institution.
+# checks require a reviewed identity or a named sub-unit on the grounds of
+# its parent institution. A park boundary alone does not confirm a garden;
+# a named administrative building can confirm the institution's site.
 # data-raw/institution_rejections.csv lists points that a later reading
 # (satellite imagery, or the institution's name and site) shows are not on the
 # institution; matched on coordinates and name, they stay unconfirmed whatever
@@ -1036,7 +1037,9 @@ g_kind <- mapply(function(p, ev) any(vapply(names_at[[p]], function(n) kind_ok(n
                                              logical(1))), paste(g_chk$lon, g_chk$lat), g_chk$evidence)
 cat("Google checks whose kind of institution disagrees with the point's name:", sum(!g_kind), "\n")
 ok_google <- at %in% with(g_chk[g_kind, ], paste(lon, lat))
-ok_osm <- at %in% with(checks[checks$check == "OpenStreetMap feature of that name", ], paste(lon, lat)) & !from_osm
+osm_checks <- checks[checks$check %in% c("OpenStreetMap feature of that name", "OpenStreetMap parent institution"), ]
+osm_match_row <- match(at, paste(osm_checks$lon, osm_checks$lat))
+ok_osm <- !is.na(osm_match_row) & !from_osm
 at_name <- paste(at, institutions$name)
 rejected <- at_name %in% paste(rejections$lon, rejections$lat, rejections$name)
 cat("rejected points:", nrow(rejections), "- rows of the table matched:", sum(rejected), "\n")
@@ -1052,6 +1055,9 @@ institutions$evidence <- ifelse(ok_google & ok_osm, "Google Maps place and OpenS
                          ifelse(ok_google, "Google Maps place of that name",
                          ifelse(ok_osm, "OpenStreetMap feature of that name",
                          ifelse(ok_imagery, "satellite imagery with place labels", NA_character_))))
+parent <- ok_osm & osm_checks$check[osm_match_row] %in% "OpenStreetMap parent institution"
+institutions$evidence[parent] <- paste(osm_checks$check[osm_match_row[parent]],
+                                      osm_checks$evidence[osm_match_row[parent]], sep = "; ")
 # A point of institution_imagery.csv with `moved_lon` and `moved_lat` lay near
 # the institution, not on it: the institution's building or grounds was read
 # off the image and the moved point was read again as on the institution. The
@@ -1162,12 +1168,12 @@ meta <- rbind(
   data.frame(layer = "institutions_status", source = paste("CoordinateCleaner", cc_version,
                                                            "institutions; overrides and checks by Google Maps, OpenStreetMap and satellite imagery"),
              file = "institution_overrides.csv, institution_checks.csv, institution_rejections.csv, institution_imagery.csv",
-             version = "2026-11-05",
+             version = "2026-11-17",
              url = "https://github.com/gcol33/OccurrenceCleaner/tree/main/data-raw",
              sha256 = paste(sha256("data-raw/institution_overrides.csv"), sha256("data-raw/institution_checks.csv"),
                             sha256("data-raw/institution_rejections.csv"), sha256("data-raw/institution_imagery.csv"),
                             sep = ", "),
-             retrieved = "2026-11-05", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
+             retrieved = "2026-11-17", licence = "see dev_notes/reference_data.md", stringsAsFactors = FALSE))
 saveRDS(list(institutions = institutions, meta = meta), file.path(cache, "institutions.rds"), compress = "xz")
 cat("GRSciColl institutions with coordinates:", sum(valid), "of", nrow(d), "- dropped as zero coordinates:",
     sum(zero), "- kept:", n_grscicoll, "\n")
