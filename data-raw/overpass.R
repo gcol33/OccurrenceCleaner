@@ -28,6 +28,21 @@ osm_get <- function(tag, bbox, file) {
   }
   FALSE
 }
+osm_cached_tiles <- function(tagname, s, w, n, e) {
+  f <- file.path(cache, sprintf("osm_%s_s%g_w%g_n%g_e%g.json", tagname, s, w, n, e))
+  if (file.exists(f)) return(f)
+  if (n - s < 1 || e - w < 1) return(NULL)
+  ms <- (s + n) / 2; mw <- (w + e) / 2
+  bounds <- list(c(s, w, ms, mw), c(s, mw, ms, e), c(ms, w, n, mw), c(ms, mw, n, e))
+  files <- character()
+  for (b in bounds) {
+    part <- osm_cached_tiles(tagname, b[1], b[2], b[3], b[4])
+    if (is.null(part)) return(NULL)
+    files <- c(files, part)
+  }
+  files
+}
+
 osm_fetch <- function(tag, s = NULL, w = NULL, n = NULL, e = NULL) {
   tagname <- sub("=", "_", sub(":", "_", tag))
   if (is.null(s)) {
@@ -36,7 +51,8 @@ osm_fetch <- function(tag, s = NULL, w = NULL, n = NULL, e = NULL) {
     return(f)
   }
   f <- file.path(cache, sprintf("osm_%s_s%g_w%g_n%g_e%g.json", tagname, s, w, n, e))
-  if (file.exists(f)) return(f)
+  cached <- osm_cached_tiles(tagname, s, w, n, e)
+  if (!is.null(cached)) return(cached)
   if (osm_get(tag, sprintf("(%g,%g,%g,%g)", s, w, n, e), f)) return(f)
   stopifnot(n - s >= 1, e - w >= 1)
   ms <- (s + n) / 2; mw <- (w + e) / 2

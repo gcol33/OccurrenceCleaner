@@ -1,0 +1,17 @@
+source("data-raw/overpass.R")
+local({
+  cache <<- tempfile("osm-cache-")
+  dir.create(cache)
+  on.exit(unlink(cache, recursive = TRUE))
+  children <- file.path(cache, c("osm_museum_s0_w0_n1_e1.json", "osm_museum_s0_w1_n1_e2.json",
+                                "osm_museum_s1_w0_n2_e1.json", "osm_museum_s1_w1_n2_e2.json"))
+  stopifnot(is.null(osm_cached_tiles("museum", 0, 0, 2, 2)))
+  file.create(children[1:3])
+  stopifnot(is.null(osm_cached_tiles("museum", 0, 0, 2, 2)))
+  file.create(children[4])
+  stopifnot(identical(osm_cached_tiles("museum", 0, 0, 2, 2), children))
+  parent <- file.path(cache, "osm_museum_s0_w0_n2_e2.json")
+  file.create(parent)
+  stopifnot(identical(osm_cached_tiles("museum", 0, 0, 2, 2), parent))
+})
+cat("Overpass cache checks passed\n")
