@@ -5,14 +5,19 @@ This is the first submission of OccurrenceCleaner.
 ## Test environments
 
 * local Windows 11, R 4.6.1: R CMD check --as-cran
-* win-builder: R-devel and R-release
-* GitHub Actions: ubuntu-latest (R-devel, R-release), macos-latest, windows-latest (R-release)
+* win-builder: R-devel (2026-11-17 r90926 ucrt) and R-release (4.6.2)
+* GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1), macos-latest
+  (R-release), windows-latest (R-release)
 
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
 
 * This is a new submission.
+* Possibly misspelled words in DESCRIPTION: GBIF (the Global Biodiversity
+  Information Facility, expanded at first use), Nonmarine (part of the name
+  "Interim Register of Marine and Nonmarine Genera"), Zizka et al. (the
+  reference), gridded. All are spelled as intended.
 
 ## Package size
 

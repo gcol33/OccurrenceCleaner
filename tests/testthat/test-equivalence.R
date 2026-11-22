@@ -48,6 +48,7 @@ test_that("capital matches cc_cap up to the 72-gon band", {
 })
 
 test_that("centroid matches cc_cen up to the 72-gon band", {
+  skip_on_cran()
   s <- check_proximity("centroid", CoordinateCleaner::cc_cen, 1000, 72)
   expect_gt(s[["flagged_cc"]], 0)
 })

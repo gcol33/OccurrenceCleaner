@@ -128,6 +128,7 @@ test_that("random age draws are seeded per taxon and do not depend on the input 
 })
 
 test_that("dataset_ddmm and dataset_rounded match cd_ddmm and cd_round", {
+  skip_on_cran()
   skip_if_not_installed("CoordinateCleaner")
   set.seed(2)
   y <- data.frame(datasetKey = rep(c("big", "ddmm", "grid"), c(400, 400, 400)),
@@ -232,6 +233,7 @@ test_that("group tests give the same flags on streamed input as on a data frame"
 })
 
 test_that("an interrupted group stage resumes from its checkpoint with the same result", {
+  skip_on_cran()
   x <- species_data()
   x$datasetKey <- sample(c("d1", "d2"), nrow(x), TRUE)
   x <- rbind(x, x[sample(nrow(x), 80), ])
