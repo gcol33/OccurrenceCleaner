@@ -1,10 +1,12 @@
 # OccurrenceCleaner 0.3.0
 
 * The institution test uses 24,365 points: CoordinateCleaner's 9,773 and 14,592 confirmed points from other sources. A named sub-unit on its parent institution's grounds counts as an institution site when the relationship and location are confirmed. The final review confirms 18 parent-site candidates and 3 generic names tied to specific places; Bongil Bongil Garden's match to the national park is rejected. All 10,210 unconfirmed points are excluded because the Google Maps, OpenStreetMap, imagery and nearby-feature reviews found no accepted independent confirmation.
-* The default land layer is Natural Earth 1:10 million, an addition for coastal and island records. In the 12,439,653-record, 25-species comparison it flags 329,317 records as at sea; the 1:110 million layer flags 574,465. `reference = "CoordinateCleaner"` defaults to 1:110 million, matching `cc_sea()`. An explicit `land_scale` selects either reference's layer. Natural Earth's fictitious Null Island at the origin is flagged by `zero`.
+* The default land layer is Natural Earth 1:10 million, an addition for coastal and island records. It is bundled with the 1:50 million and 1:110 million layers, so flagging needs no download and writes no cache; `download_reference()` is removed. Polygon coordinates are stored as successive differences, which the package restores exactly on first use. In the 12,439,653-record, 25-species comparison it flags 329,317 records as at sea; the 1:110 million layer flags 574,465. `reference = "CoordinateCleaner"` defaults to 1:110 million, matching `cc_sea()`. An explicit `land_scale` selects either reference's layer. Natural Earth's fictitious Null Island at the origin is flagged by `zero`.
 * The named cleaning rules in the articles exclude `issue_rounded`. GBIF's `COORDINATE_ROUNDED` records rounding to six decimal places during processing; the issue remains available as a diagnostic. It is present on 559,053,689 records in the saved whole-snapshot tally.
 * The default duplicate key is species and exact coordinates. It flags 7,573,378 records in the 25-species comparison. `duplicate_by` adds fields such as `eventDate`; `duplicate_cell` selects a grid resolution explicitly.
 * Reference-data builds reuse a complete set of cached OpenStreetMap child tiles when their parent tile is absent.
+* Under R CMD check with `_R_CHECK_LIMIT_CORES_` set, `n_threads` is limited to two threads.
+* `inst/COPYRIGHTS` lists the third-party sources of the bundled reference data and their licences or terms.
 
 # OccurrenceCleaner 0.2.4
 

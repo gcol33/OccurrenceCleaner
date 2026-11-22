@@ -1,0 +1,31 @@
+OccurrenceCleaner is copyright Gilles Colling and released under the MIT licence.
+
+The reference data in R/sysdata.rda are built in data-raw/ from the third-party
+sources below. reference_info() returns each source's version, file, URL,
+SHA-256 checksum, retrieval date and licence or terms; the Reference data
+article describes how each layer was built.
+
+- Natural Earth land, country and urban-area polygons and populated places
+  (naturalearthdata.com): public domain.
+- CIA World Factbook capitals and country centroids, through the factbook.json
+  mirror: public domain (mirror CC0 1.0).
+- thematicmapping.org World Borders Dataset 0.3, Bjorn Sandvik: CC BY-SA.
+- GEOLocate web service country centroids: no terms stated by geo-locate.org.
+- Biodiversity institutions: CoordinateCleaner 3.0.1 institution list
+  (Zizka et al. 2019, doi:10.1111/2041-210X.13152; package licence GPL-3),
+  with positions checked against Google Maps, OpenStreetMap and satellite
+  imagery; GBIF Global Registry of Scientific Collections (GRSciColl) and
+  GBIF registry (no licence stated for registry data); Wikidata (CC0 1.0);
+  Wikipedia lists of natural history museums (CC BY-SA 4.0); GeoNames
+  (CC BY 4.0); BGCI GardenSearch (BGCI terms,
+  https://www.bgci.org/terms-and-conditions/); Index Herbariorum, New York
+  Botanical Garden (no licence stated by the API); OpenStreetMap
+  (ODbL 1.0, (c) OpenStreetMap contributors).
+- Artificial Hotspot Occurrence Inventory, Park et al. 2023
+  (Dryad doi:10.5061/dryad.v41ns1s0p): CC0 1.0.
+- Interim Register of Marine and Nonmarine Genera (IRMNG), Rees, T.
+  (compiler) (2026), VLIZ: CC BY 4.0.
+
+data/gentiana.rda holds GBIF occurrence records under CC0 1.0 or CC BY 4.0
+(GBIF.org occurrence download doi:10.15468/dl.tup2g6); the licence and
+dataset of each record are columns of the data set.

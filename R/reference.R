@@ -29,62 +29,21 @@ reference_info <- function() {
   ref_meta
 }
 
-#' Download the 1:10 million land layer
-#'
-#' The 1:10 million Natural Earth land polygons (2.3 MB compressed) are not bundled
-#' with the package. This fetches the pinned zip from Natural Earth, verifies
-#' its SHA-256 against [reference_info()], converts it and stores the result in
-#' the user cache directory (`tools::R_user_dir("OccurrenceCleaner", "cache")`).
-#' [flag_occurrences()] calls it for the default own-reference coastline,
-#' or an explicit `land_scale = 10`, when the layer is not cached yet.
-#'
-#' @param layer Layer to download; only `"land_10"` is not bundled.
-#' @param cache_dir Directory for the converted layer.
-#' @param quiet Suppress the download message.
-#' @return The path of the cached layer, invisibly.
-#' @examples
-#' if (interactive()) {
-#'   download_reference()
-#'   x <- data.frame(decimalLongitude = c(12.58, -30), decimalLatitude = c(55.67, 40))
-#'   flag_occurrences(x, tests = "sea", land_scale = 10)$flag_sea
-#' }
-#' @export
-download_reference <- function(layer = "land_10",
-                               cache_dir = tools::R_user_dir("OccurrenceCleaner", "cache"),
-                               quiet = FALSE) {
-  layer <- match.arg(layer)
-  meta <- ref_meta[ref_meta$layer == layer, ]
-  dest <- file.path(cache_dir, paste0(layer, "_v", meta$version, ".rds"))
-  if (file.exists(dest)) return(invisible(dest))
-  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
-  zip <- tempfile(fileext = ".zip")
-  if (!quiet) message("Downloading Natural Earth ", meta$file, " (version ", meta$version, ")")
-  utils::download.file(meta$url, zip, mode = "wb", quiet = TRUE)
-  got <- sha256_file(zip)
-  if (!identical(got, meta$sha256))
-    stop("downloaded ", meta$file, " has SHA-256 ", got, ", expected ", meta$sha256,
-         "; Natural Earth may have published a new version. Not using it.")
-  exdir <- tempfile("ne_")
-  utils::unzip(zip, exdir = exdir)
-  shp <- list.files(exdir, "[.]shp$", full.names = TRUE)
-  rings <- read_shp_polygons(shp)
-  compact <- list(x = as.integer(round(rings$x * 1e7)), y = as.integer(round(rings$y * 1e7)),
-                  ring_start = rings$ring_start, ring_feature = rings$ring_feature,
-                  features = data.frame(id = seq_len(max(rings$ring_feature))))
-  saveRDS(compact, dest, compress = "xz")
-  unlink(c(zip, exdir), recursive = TRUE)
-  invisible(dest)
+# Polygon layers are stored with coordinates in 1e-7 degrees as successive
+# differences wrapped to 32 bits, which compress to about two thirds of the
+# plain integers; the cumulative sum taken modulo 2^32 restores them exactly.
+unpack_rings <- function(layer) {
+  unwrap <- function(d) as.integer((cumsum(as.double(d)) + 2^31) %% 2^32 - 2^31)
+  layer$x <- unwrap(layer$x)
+  layer$y <- unwrap(layer$y)
+  layer
 }
 
-sha256_file <- function(path) {
-  # R >= 4.5 ships sha256 in tools; fall back to the command line otherwise.
-  if (exists("sha256sum", asNamespace("tools"), inherits = FALSE))
-    return(unname(get("sha256sum", asNamespace("tools"))(path)))
-  if (.Platform$OS.type == "windows") {
-    out <- system2("certutil", c("-hashfile", shQuote(path), "SHA256"), stdout = TRUE)
-    return(tolower(gsub(" ", "", out[2])))
-  }
-  strsplit(system2("sha256sum", shQuote(path), stdout = TRUE), " ")[[1]][1]
+ref_polygons <- function(key) {
+  unpack_rings(switch(key,
+    land_110 = ref_land_110, land_50 = ref_land_50, land_10 = ref_land_10,
+    urban_50 = ref_urban_50, countries_50 = ref_countries_50,
+    stop("unknown polygon layer ", key)))
 }
 
 # ---- compiled indices, cached per session -----------------------------------
@@ -206,11 +165,9 @@ reference_layers <- function(cfg) {
 read_polygon_layer <- function(test, reference, land_scale) {
   if (reference == "OccurrenceCleaner") {
     return(switch(test,
-      sea = switch(as.character(land_scale),
-        "110" = ref_land_110, "50" = ref_land_50,
-        "10" = readRDS(download_reference("land_10"))),
-      urban = ref_urban_50,
-      country_mismatch = ref_countries_50))
+      sea = ref_polygons(paste0("land_", land_scale)),
+      urban = ref_polygons("urban_50"),
+      country_mismatch = ref_polygons("countries_50")))
   }
   if (!requireNamespace("rnaturalearth", quietly = TRUE))
     stop("reference = \"CoordinateCleaner\" needs the rnaturalearth package for polygon layers")

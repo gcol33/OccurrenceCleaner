@@ -13,7 +13,8 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     range, duplicates, outliers within a species, and datasets with converted
     or gridded coordinates, with the test definitions and default buffers
     of 'CoordinateCleaner' apart from documented differences. It also reads
-    the quality warnings GBIF attaches to each record, the basis of record and
+    the quality warnings the Global Biodiversity Information Facility (GBIF)
+    attaches to each record, the basis of record and
     the establishment means, and checks records at sea or on land against the
     habitat of their genus from the Interim Register of Marine and Nonmarine
     Genera. Records are flagged and kept, and users choose
@@ -21,6 +22,7 @@ Description: An extension of 'CoordinateCleaner' (Zizka et al. 2019
     are flagged in seconds, and GBIF snapshots of billions of records are
     processed by reading Parquet files in chunks.
 License: MIT + file LICENSE
+Copyright: see file COPYRIGHTS
 URL: https://gillescolling.com/OccurrenceCleaner/, https://github.com/gcol33/OccurrenceCleaner
 BugReports: https://github.com/gcol33/OccurrenceCleaner/issues
 Depends:
@@ -68,7 +70,6 @@ Collate:
     'progress.R'
     'pyrate.R'
     'reference.R'
-    'shapefile.R'
     'spatialvalid.R'
     'store.R'
     'stream.R'

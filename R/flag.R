@@ -156,8 +156,7 @@
 #'   habitat tests: 10, 50, or 110. `NULL` selects 10 for the package's own
 #'   reference and 110 for `reference = "CoordinateCleaner"`, matching
 #'   `cc_sea()`. Its `clean_coordinates()` uses `seas_scale = 50`.
-#'   The 1:10 million layer is downloaded on first use; see
-#'   [download_reference()].
+#'   All three layers are bundled with the package.
 #' @param buffers Named list overriding buffer distances in metres for
 #'   `capital` (10000), `centroid` (1000), `institution` (100),
 #'   `gbif_headquarters` (1000), `range` (0), `aohi` (10000),
@@ -394,14 +393,17 @@ flag_chunk <- function(d, cfg, cols) {
 }
 
 # Threads granted for a request: `0` or less is every thread OpenMP hands
-# out, a larger request is reduced to that, with a message.
+# out, a larger request is reduced to that, with a message. Under R CMD check
+# with `_R_CHECK_LIMIT_CORES_` set, as on CRAN, the limit is two threads.
 resolve_threads <- function(n_threads) {
   if (!is.numeric(n_threads) || length(n_threads) != 1L || is.na(n_threads))
     stop("`n_threads` must be a single number")
   cap <- cpp_max_threads()
+  limit <- tolower(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))
+  if (nzchar(limit) && limit != "false") cap <- min(cap, 2L)
   req <- as.integer(n_threads)
   if (req <= 0L) return(cap)
-  if (req > cap) message("n_threads: ", req, " requested, running ", cap, " (the OpenMP limit)")
+  if (req > cap) message("n_threads: ", req, " requested, running ", cap, " (the thread limit)")
   min(req, cap)
 }
 

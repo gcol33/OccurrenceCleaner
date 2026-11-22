@@ -58,8 +58,7 @@ given for \code{sea} is also the land of the habitat tests.}
 habitat tests: 10, 50, or 110. \code{NULL} selects 10 for the package's own
 reference and 110 for \code{reference = "CoordinateCleaner"}, matching
 \code{cc_sea()}. Its \code{clean_coordinates()} uses \code{seas_scale = 50}.
-The 1:10 million layer is downloaded on first use; see
-\code{\link[=download_reference]{download_reference()}}.}
+All three layers are bundled with the package.}
 
 \item{buffers}{Named list overriding buffer distances in metres for
 \code{capital} (10000), \code{centroid} (1000), \code{institution} (100),

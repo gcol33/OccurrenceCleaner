@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4,
-                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
+                      dev = if (nzchar(Sys.getenv("IN_PKGDOWN"))) "svglite" else "png", dpi = 96, dev.args = list(pointsize = 14))
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
 

@@ -84,7 +84,7 @@ test_that("grouped cell statistics equal one call per group on any number of thr
       expect_identical(whole$mean[i], alone$mean)
       expect_identical(whole$min[i], alone$min)
     }
-    expect_identical(OccurrenceCleaner:::cpp_cell_dist(cx, cy, count, start, weighted, 25, n_threads = 4), whole)
+    expect_identical(OccurrenceCleaner:::cpp_cell_dist(cx, cy, count, start, weighted, 25, n_threads = 2), whole)
   }
 })
 

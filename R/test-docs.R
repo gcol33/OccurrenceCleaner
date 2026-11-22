@@ -281,7 +281,7 @@ NULL
 #' resolves boundary cells exactly. The land layer is chosen with
 #' `land_scale`: 10 with the package's own reference, 110 with
 #' `reference = "CoordinateCleaner"`, or an explicit 10, 50 or 110.
-#' The 1:10 million layer is downloaded once by [download_reference()].
+#' All three layers are bundled with the package.
 #' It includes Natural Earth's fictitious Null Island at (0, 0), which
 #' [test_zero] flags. Use both tests to screen terrestrial coordinates.
 #' This finer default is an addition: it includes small islands absent from

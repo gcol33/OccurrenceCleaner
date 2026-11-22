@@ -295,7 +295,7 @@ plot_flag_map <- function(lon, lat, removed, rule, xlim = NULL, ylim = NULL) {
   on.exit(graphics::par(op))
   graphics::plot.new()
   graphics::plot.window(xr, yr, asp = 1 / cos(mean(yr) * pi / 180))
-  land <- ref_land_110
+  land <- ref_polygons("land_110")
   starts <- land$ring_start
   idx <- unlist(lapply(seq_len(length(starts) - 1L), function(i) c(NA, seq.int(starts[i] + 1L, starts[i + 1L]))))[-1L]
   graphics::polypath(land$x[idx] / 1e7, land$y[idx] / 1e7, col = grDevices::adjustcolor(.col_map, 0.15),

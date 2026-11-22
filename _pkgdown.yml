@@ -89,7 +89,6 @@ reference:
   - flag_reference
   - reference_points
   - reference_habitat
-  - download_reference
 - title: Data
   contents:
   - gentiana

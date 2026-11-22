@@ -100,7 +100,7 @@ test_that("sea, urban and country_mismatch match CoordinateCleaner on its Natura
   n <- 1500
   x <- data.frame(species = "a", decimalLongitude = runif(n, -180, 180), decimalLatitude = runif(n, -60, 75))
   # coastal emphasis: points near the 1:110m land vertices
-  L <- OccurrenceCleaner:::ref_land_110
+  L <- OccurrenceCleaner:::ref_polygons("land_110")
   i <- sample(length(L$x), 1500)
   near <- geosphere::destPoint(cbind(L$x[i] / 1e7, L$y[i] / 1e7), runif(1500, 0, 360), runif(1500, 10, 20000))
   x <- rbind(x, data.frame(species = "a", decimalLongitude = near[, 1], decimalLatitude = near[, 2]))

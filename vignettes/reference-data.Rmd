@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4.5,
-                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
+                      dev = if (nzchar(Sys.getenv("IN_PKGDOWN"))) "svglite" else "png", dpi = 96, dev.args = list(pointsize = 14))
 has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 has_cc <- requireNamespace("CoordinateCleaner", quietly = TRUE)
 ```
@@ -48,7 +48,7 @@ knitr::kable(shown, col.names = c("Layer", "Source", "Version / snapshot",
 
 - The Interim Register of Marine and Nonmarine Genera (IRMNG) is cited as: Rees, T. (compiler) (2026), *The Interim Register of Marine and Nonmarine Genera*, available from [irmng.org](https://www.irmng.org) at VLIZ.
 
-- The layer name `aohi` follows CoordinateCleaner's [`cc_aohi()`](https://ropensci.github.io/CoordinateCleaner/reference/cc_aohi.html). The inventory itself uses the abbreviation AHOI.
+- The layer name `aohi` follows [CoordinateCleaner](https://ropensci.github.io/CoordinateCleaner/)'s `cc_aohi()`. The inventory itself uses the abbreviation AHOI.
 
 The tests use the following layers:
 
@@ -245,7 +245,7 @@ data.frame(city = x$city,
 
 ## Land scale and the `sea` test
 
-The `sea` test flags records outside the land polygons. It supports Natural Earth land polygons at scales of 1:110 million, 1:50 million and 1:10 million. OccurrenceCleaner uses 1:10 million by default. This finer coastline is an addition for coastal and island records: the 1:110 million layer omits the Azores and Reunion. With `reference = "CoordinateCleaner"`, the default is 1:110 million, matching `cc_sea()`; `land_scale = 50` matches the layer of `clean_coordinates()`. An explicit `land_scale` overrides either default. The 1:10 million layer is downloaded on first use and cached. It includes Natural Earth’s fictitious Null Island at (0, 0); the `zero` test flags that location.
+The `sea` test flags records outside the land polygons. It supports Natural Earth land polygons at scales of 1:110 million, 1:50 million and 1:10 million. OccurrenceCleaner uses 1:10 million by default. This finer coastline is an addition for coastal and island records: the 1:110 million layer omits the Azores and Reunion. With `reference = "CoordinateCleaner"`, the default is 1:110 million, matching `cc_sea()`; `land_scale = 50` matches the layer of `clean_coordinates()`. An explicit `land_scale` overrides either default. All three layers are bundled with the package. The 1:10 million layer includes Natural Earth’s fictitious Null Island at (0, 0); the `zero` test flags that location.
 
 The coarse 1:110 million layer smooths the coast and drops small islands; the 1:50 million layer follows the coast more closely. A grid of points over Denmark and the western Baltic shows where the two disagree:
 
@@ -281,11 +281,8 @@ dis <- mean(s110 != s50)
 On this grid the two scales disagree for `r round(100 * dis, 1)` % of the points, all of them along the coast. At 1:110 million Funen, Lolland, Falster, Rügen and Bornholm are missing, so records on them are flagged as at sea (red); the coarse 1:110 million coastline also reaches out into the water, so records in a strip of coastal water count as on land there and are flagged only at 1:50 million (dark). For coastal and island taxa the scale therefore changes a share of the `sea` flags large enough to see in a tally. The 1:10 million layer is the most detailed of the three:
 
 ```{r land-10, eval = FALSE}
-download_reference("land_10")
 f <- flag_occurrences(x, tests = "sea", land_scale = 10)
 ```
-
-The download is checked against the SHA-256 in `reference_info()` and refused if Natural Earth has published a different file under the same name. The converted layer is stored in `tools::R_user_dir("OccurrenceCleaner", "cache")`, so it is downloaded once per machine.
 
 ## Buffers
 

@@ -87,7 +87,7 @@ test_that("polygon index resolves holes, shared borders and boundaries", {
 })
 
 test_that("land index agrees with brute force on the bundled 1:110m layer", {
-  L <- OccurrenceCleaner:::ref_land_110
+  L <- OccurrenceCleaner:::ref_polygons("land_110")
   xs <- L$x / 1e7; ys <- L$y / 1e7
   set.seed(3)
   n <- 3000
@@ -108,45 +108,4 @@ test_that("land index agrees with brute force on the bundled 1:110m layer", {
   expect_identical(OccurrenceCleaner:::cpp_polygon_locate(idx, 0, 89.99), 0L)  # Arctic ocean
   expect_true(OccurrenceCleaner:::cpp_polygon_locate(idx, 179.99, 66) > 0)   # Chukotka
   expect_true(OccurrenceCleaner:::cpp_polygon_locate(idx, -179.99, 66) > 0)
-})
-
-# A minimal shapefile writer (polygon type 5) to test the reader.
-write_shp <- function(path, rings) {
-  con <- file(path, "wb"); on.exit(close(con))
-  recs <- lapply(rings, function(parts) {
-    pts <- do.call(rbind, parts)
-    starts <- c(0L, cumsum(vapply(parts, nrow, 1L))[-length(parts)])
-    content_words <- (4 + 32 + 8 + 4 * length(parts) + 16 * nrow(pts)) / 2
-    list(pts = pts, starts = starts, words = content_words)
-  })
-  total_words <- 50 + sum(vapply(recs, function(r) 4 + r$words, 1))
-  writeBin(as.integer(c(9994, 0, 0, 0, 0, 0, total_words)), con, size = 4, endian = "big")
-  writeBin(as.integer(c(1000, 5)), con, size = 4, endian = "little")
-  all <- do.call(rbind, lapply(recs, `[[`, "pts"))
-  writeBin(c(min(all[, 1]), min(all[, 2]), max(all[, 1]), max(all[, 2]), 0, 0, 0, 0), con, size = 8, endian = "little")
-  for (i in seq_along(recs)) {
-    r <- recs[[i]]
-    writeBin(as.integer(c(i, r$words)), con, size = 4, endian = "big")
-    writeBin(5L, con, size = 4, endian = "little")
-    writeBin(c(min(r$pts[, 1]), min(r$pts[, 2]), max(r$pts[, 1]), max(r$pts[, 2])), con, size = 8, endian = "little")
-    writeBin(as.integer(c(length(r$starts), nrow(r$pts))), con, size = 4, endian = "little")
-    writeBin(as.integer(r$starts), con, size = 4, endian = "little")
-    writeBin(as.vector(t(r$pts)), con, size = 8, endian = "little")
-  }
-}
-
-test_that("the shapefile reader returns rings per feature", {
-  sq <- function(x0, y0, s) cbind(c(x0, x0 + s, x0 + s, x0, x0), c(y0, y0, y0 + s, y0 + s, y0))
-  f <- tempfile(fileext = ".shp")
-  write_shp(f, list(list(sq(0, 0, 10), sq(4, 4, 2)), list(sq(20, -5, 10))))
-  r <- OccurrenceCleaner:::read_shp_polygons(f)
-  expect_identical(r$ring_feature, c(1L, 1L, 2L))
-  expect_identical(r$ring_start, c(0L, 4L, 8L, 12L))
-  expect_identical(r$x[1:4], c(0, 10, 10, 0))
-  p <- OccurrenceCleaner:::cpp_polygon_index(r$x, r$y, r$ring_start, r$ring_feature, 1)
-  expect_identical(OccurrenceCleaner:::cpp_polygon_locate(p, c(1, 5, 25, 50), c(1, 5, 0, 0)), c(1L, 0L, 2L, 0L))
-  expect_error(suppressWarnings(OccurrenceCleaner:::read_shp_polygons(tempfile())), "cannot open")
-  bad <- tempfile(fileext = ".shp")
-  writeBin(as.integer(rep(0, 25)), bad, size = 4)
-  expect_error(OccurrenceCleaner:::read_shp_polygons(bad), "not a shapefile")
 })

@@ -16,3 +16,4 @@ README.html
 .lib_bench/
 .bench_install.log
 bench/results/snapshot/
+tests/testthat/testthat-problems.rds

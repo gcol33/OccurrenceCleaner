@@ -11,7 +11,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6.5, fig.height = 4,
-                      dev = "svglite", fig.ext = "svg", dev.args = list(pointsize = 14))
+                      dev = if (nzchar(Sys.getenv("IN_PKGDOWN"))) "svglite" else "png", dpi = 96, dev.args = list(pointsize = 14))
 has_geosphere <- requireNamespace("geosphere", quietly = TRUE)
 has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
 ```
@@ -129,7 +129,7 @@ data.frame(x[, 2:3],
            sea_50 = flag_occurrences(x, tests = "sea", land_scale = 50)$flag_sea)
 ```
 
-The 1:10 million layer is downloaded once on first use (`download_reference()`) and cached. The reference-data article measures how many coastal records change between scales.
+All three layers are bundled with the package. The reference-data article measures how many coastal records change between scales.
 
 ## Habitat at sea and on land
 
